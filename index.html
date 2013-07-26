@@ -1,0 +1,85 @@
+---
+layout: default
+title: nanodbc
+---
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="nanodbc : A very small C++ wrapper for the native C ODBC API." />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/highlight.css">
+
+    <title>nanodbc</title>
+  </head>
+
+  <body>
+
+    <div id="main">
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/lexicalunit/nanodbc">View on GitHub</a>
+          <a id="doc_banner" href="http://lexicalunit.github.com/nanodbc/doxygen/index.html">API Documentation</a>
+
+          <h1 id="project_title">nanodbc</h1>
+          <h2 id="project_tagline">A very small C++ wrapper for the native C ODBC API.</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/lexicalunit/nanodbc/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/lexicalunit/nanodbc/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+
+<p>Originally nanodbc began as a simple fork of <a href="http://code.google.com/p/tiodbc/">TinyODBC</a> with some additional features. Eventually it grew to the point where it made sense to break with many of the basic underlaying design decisions of TinyODBC and completely refactor much of the codebase. Other projects that have had influence on nanodbc include <a href="http://simpledb.sourceforge.net">SimpleDB</a>, <a href="http://code.google.com/p/pyodbc/">pyodbc</a>, <a href="http://dtemplatelib.sourceforge.net">Database Template Library</a>, and <a href="http://www.codeguru.com/mfc_database/gsodbc.html">GSODBC</a>.
+</p>
+
+<p>For all the gory details see the <a href="http://lexicalunit.github.com/nanodbc/doxygen/index.html">source level documentation</a>, courtesy of <a href="http://www.stack.nl/~dimitri/doxygen/">Doxygen</a>!</p>
+
+<p>Why should you use nanodbc?</p>
+
+<ul>
+<li>Small! Just like TinyODBC, nanodbc is small. Just one header and one implementation file.</li>
+<li>Simple! There are only a handful of significant classes to learn.</li>
+<li>Portable! Nanodbc uses  only standard C++ headers in addition to the ODBC API headers.</li>
+<li>Robust! Where it makes sense, error handling is done with exceptions rather than return codes.</li>
+<li>Features! Nanodbc supports ODBC 3, SQLDriverConnect(), Transactions, Bound Parameters, Bulk Operations, and much more.</li>
+<li>Documented! I have tried to provide very clean and useful documentation with example usage.</li>
+<li>Active! I am currently actively using and developing nanodbc so I hope to add more and more features all the time.</li>
+</ul>
+
+<h1>Example Usage</h1>
+{% highlight cpp %}
+{% include example.cpp %}
+{% endhighlight %}
+
+<h1>Todo List</h1>
+<ul>
+<li>Blob support</li>
+<li>Unit tests</li>
+<li>Verify unicode support</li>
+<li>Testing on many different systems</li>
+<li>Testing with many different ODBC drivers</li>
+</ul>
+
+</section>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">nanodbc maintained by <a href="https://github.com/lexicalunit">lexicalunit</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>

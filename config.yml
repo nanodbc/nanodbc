@@ -1,0 +1,21 @@
+source:      .
+destination: ./doc
+include:     ['.htaccess']
+exclude:     []
+timezone:    nil
+
+future:      true
+show_drafts: nil
+limit_posts: 0
+pygments:    true
+
+relative_permalinks: true
+
+permalink:     date
+paginate_path: 'page:num'
+
+markdown:      maruku
+markdown_ext:  markdown,mkd,mkdn,md
+textile_ext:   textile
+
+excerpt_separator: "\n\n"
