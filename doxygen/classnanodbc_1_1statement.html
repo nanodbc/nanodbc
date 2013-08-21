@@ -72,7 +72,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -88,6 +88,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#friends">Friends</a> &#124;
 <a href="classnanodbc_1_1statement-members.html">List of all members</a>  </div>
@@ -101,6 +102,16 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <p><code>#include &lt;<a class="el" href="nanodbc_8h_source.html">nanodbc.h</a>&gt;</code></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a523142f53cbbee8d68a074da993e7fa6"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#a523142f53cbbee8d68a074da993e7fa6">param_direction</a> { <a class="el" href="classnanodbc_1_1statement.html#a523142f53cbbee8d68a074da993e7fa6ae33f42ce0677d00c291ff4d8e39f99de">PARAM_IN</a>, 
+<a class="el" href="classnanodbc_1_1statement.html#a523142f53cbbee8d68a074da993e7fa6a62f755c84582e1dc9e5a8c0ab703e615">PARAM_OUT</a>, 
+<a class="el" href="classnanodbc_1_1statement.html#a523142f53cbbee8d68a074da993e7fa6a75c3aa96cde8c4cbd8c58e3837fbdc5b">PARAM_INOUT</a>, 
+<a class="el" href="classnanodbc_1_1statement.html#a523142f53cbbee8d68a074da993e7fa6a2ee8caf768eba50d5b8517ba832b69f4">PARAM_RETURN</a>
+ }</td></tr>
+<tr class="memdesc:a523142f53cbbee8d68a074da993e7fa6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides support for retrieving output/return parameters.  <a href="classnanodbc_1_1statement.html#a523142f53cbbee8d68a074da993e7fa6">More...</a><br/></td></tr>
+<tr class="separator:a523142f53cbbee8d68a074da993e7fa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ac9ea91624b4b6136f98b002f75376cd9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#ac9ea91624b4b6136f98b002f75376cd9">statement</a> ()</td></tr>
@@ -183,10 +194,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#a3143847d022bab2e10fca186b64f0665">parameter_size</a> (long param) const </td></tr>
 <tr class="memdesc:a3143847d022bab2e10fca186b64f0665"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the parameter size for the indicated parameter placeholder within a prepared statement. <br/></td></tr>
 <tr class="separator:a3143847d022bab2e10fca186b64f0665"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4b53ad0c5f0adf13baadbe97ce944f55"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:a4b53ad0c5f0adf13baadbe97ce944f55"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#a4b53ad0c5f0adf13baadbe97ce944f55">bind_parameter</a> (long param, const T *value, long *nulls=0)</td></tr>
-<tr class="memdesc:a4b53ad0c5f0adf13baadbe97ce944f55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the given value to the given parameter placeholder number in the prepared statement.  <a href="#a4b53ad0c5f0adf13baadbe97ce944f55">More...</a><br/></td></tr>
-<tr class="separator:a4b53ad0c5f0adf13baadbe97ce944f55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b3de5e1a8ab9bf0efe4c268fbed17c0"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a5b3de5e1a8ab9bf0efe4c268fbed17c0"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#a5b3de5e1a8ab9bf0efe4c268fbed17c0">bind_parameter</a> (long param, const T *value, long *nulls=0, <a class="el" href="classnanodbc_1_1statement.html#a523142f53cbbee8d68a074da993e7fa6">param_direction</a> direction=<a class="el" href="classnanodbc_1_1statement.html#a523142f53cbbee8d68a074da993e7fa6ae33f42ce0677d00c291ff4d8e39f99de">PARAM_IN</a>)</td></tr>
+<tr class="memdesc:a5b3de5e1a8ab9bf0efe4c268fbed17c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the given value to the given parameter placeholder number in the prepared statement.  <a href="#a5b3de5e1a8ab9bf0efe4c268fbed17c0">More...</a><br/></td></tr>
+<tr class="separator:a5b3de5e1a8ab9bf0efe4c268fbed17c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4652eee4ec14b3806db4a5058757cf7b"><td class="memTemplParams" colspan="2">template&lt;class T , std::size_t N&gt; </td></tr>
 <tr class="memitem:a4652eee4ec14b3806db4a5058757cf7b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#a4652eee4ec14b3806db4a5058757cf7b">bind_parameter</a> (long param, const T(*values)[N])</td></tr>
 <tr class="memdesc:a4652eee4ec14b3806db4a5058757cf7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the given values to the given parameter placeholder number in the prepared statement.  <a href="#a4652eee4ec14b3806db4a5058757cf7b">More...</a><br/></td></tr>
@@ -198,6 +209,34 @@ Friends</h2></td></tr>
 class&#160;</td><td class="memItemRight" valign="bottom"><b>nanodbc::result</b></td></tr>
 <tr class="separator:acd5af29ec5e35cfbeb0751b6d9859b28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Enumeration Documentation</h2>
+<a class="anchor" id="a523142f53cbbee8d68a074da993e7fa6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="classnanodbc_1_1statement.html#a523142f53cbbee8d68a074da993e7fa6">nanodbc::statement::param_direction</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classnanodbc_1_1statement.html#a5b3de5e1a8ab9bf0efe4c268fbed17c0" title="Binds the given value to the given parameter placeholder number in the prepared statement. ">bind_parameter()</a> </dd></dl>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><em><a class="anchor" id="a523142f53cbbee8d68a074da993e7fa6ae33f42ce0677d00c291ff4d8e39f99de"></a>PARAM_IN</em>&nbsp;</td><td class="fielddoc">
+<p>Binding an input parameter. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a523142f53cbbee8d68a074da993e7fa6a62f755c84582e1dc9e5a8c0ab703e615"></a>PARAM_OUT</em>&nbsp;</td><td class="fielddoc">
+<p>Binding an output parameter. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a523142f53cbbee8d68a074da993e7fa6a75c3aa96cde8c4cbd8c58e3837fbdc5b"></a>PARAM_INOUT</em>&nbsp;</td><td class="fielddoc">
+<p>Binding an input/output parameter. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a523142f53cbbee8d68a074da993e7fa6a2ee8caf768eba50d5b8517ba832b69f4"></a>PARAM_RETURN</em>&nbsp;</td><td class="fielddoc">
+<p>Binding a return parameter. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="ac9ea91624b4b6136f98b002f75376cd9"></a>
 <div class="memitem">
@@ -324,7 +363,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>nanodbc::result</b><
 
 </div>
 </div>
-<a class="anchor" id="a4b53ad0c5f0adf13baadbe97ce944f55"></a>
+<a class="anchor" id="a5b3de5e1a8ab9bf0efe4c268fbed17c0"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
@@ -346,7 +385,13 @@ template&lt;class T &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">long *&#160;</td>
-          <td class="paramname"><em>nulls</em> = <code>0</code>&#160;</td>
+          <td class="paramname"><em>nulls</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classnanodbc_1_1statement.html#a523142f53cbbee8d68a074da993e7fa6">param_direction</a>&#160;</td>
+          <td class="paramname"><em>direction</em> = <code><a class="el" href="classnanodbc_1_1statement.html#a523142f53cbbee8d68a074da993e7fa6ae33f42ce0677d00c291ff4d8e39f99de">PARAM_IN</a></code>&#160;</td>
         </tr>
         <tr>
           <td></td>
