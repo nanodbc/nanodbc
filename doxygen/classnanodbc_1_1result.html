@@ -188,6 +188,8 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1result.html#a380a3c0d7f10a352c3e06d14c2c7bb22">next_result</a> () const </td></tr>
 <tr class="memdesc:a380a3c0d7f10a352c3e06d14c2c7bb22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the next result, for example when stored procedure returns multiple result sets. <br/></td></tr>
 <tr class="separator:a380a3c0d7f10a352c3e06d14c2c7bb22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2549fc312f78de653d393a8e0dac038b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1result.html#a2549fc312f78de653d393a8e0dac038b">operator bool</a> () const </td></tr>
+<tr class="separator:a2549fc312f78de653d393a8e0dac038b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><dl class="section see"><dt>See Also</dt><dd><a class="el" href="classnanodbc_1_1statement.html#aab9f6066efcfb5dc4244cd082c7d27a4" title="Execute the previously prepared query now. ">statement::execute()</a>, <a class="el" href="classnanodbc_1_1statement.html#ae4b8d93b3550f333334d2c8d30a039b9" title="Immediately opens, prepares, and executes the given query directly on the given connection. ">statement::execute_direct()</a> </dd></dl>
@@ -454,6 +456,23 @@ template&lt;class T &gt; </div>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a class="anchor" id="a2549fc312f78de653d393a8e0dac038b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">nanodbc::result::operator bool </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>If and only if result object is valid, returns true. </p>
+<dl class="section note"><dt>Note</dt><dd>A safe-bool idiom is used if NANODBC_USE_CPP11 is not defined, otherwise an explicit conversion operator is used. </dd></dl>
 
 </div>
 </div>
