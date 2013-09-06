@@ -124,9 +124,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:ae5119a17fea556d44472ba06d1576548"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1connection.html#ae5119a17fea556d44472ba06d1576548">connection</a> (const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;connection_string, long timeout=0)</td></tr>
 <tr class="memdesc:ae5119a17fea556d44472ba06d1576548"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create new connection object and immediately connect using the given connection string.  <a href="#ae5119a17fea556d44472ba06d1576548">More...</a><br/></td></tr>
 <tr class="separator:ae5119a17fea556d44472ba06d1576548"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac1c950cf86fd205f8c41399a8d96c1bb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac1c950cf86fd205f8c41399a8d96c1bb"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1connection.html#ac1c950cf86fd205f8c41399a8d96c1bb">~connection</a> ()  throw ()</td></tr>
-<tr class="memdesc:ac1c950cf86fd205f8c41399a8d96c1bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Automatically disconnects from the database and frees all associated resources. <br/></td></tr>
+<tr class="memitem:ac1c950cf86fd205f8c41399a8d96c1bb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1connection.html#ac1c950cf86fd205f8c41399a8d96c1bb">~connection</a> ()  throw ()</td></tr>
+<tr class="memdesc:ac1c950cf86fd205f8c41399a8d96c1bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Automatically disconnects from the database and frees all associated resources.  <a href="#ac1c950cf86fd205f8c41399a8d96c1bb">More...</a><br/></td></tr>
 <tr class="separator:ac1c950cf86fd205f8c41399a8d96c1bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a693524630eff2384e4c4aef8f6adcfad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1connection.html#a693524630eff2384e4c4aef8f6adcfad">connect</a> (const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;dsn, const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;user, const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;pass, long timeout=0)</td></tr>
 <tr class="memdesc:a693524630eff2384e4c4aef8f6adcfad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create new connection object and immediately connect to the given data source.  <a href="#a693524630eff2384e4c4aef8f6adcfad">More...</a><br/></td></tr>
@@ -250,6 +249,28 @@ void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
   </dd>
 </dl>
 <dl class="section see"><dt>See Also</dt><dd><a class="el" href="classnanodbc_1_1connection.html#ac8c14ab783a6eade3ec63fda284beabb" title="Returns true if connected to the database. ">connected()</a>, <a class="el" href="classnanodbc_1_1connection.html#a693524630eff2384e4c4aef8f6adcfad" title="Create new connection object and immediately connect to the given data source. ">connect()</a> </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ac1c950cf86fd205f8c41399a8d96c1bb"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">nanodbc::connection::~connection </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td align="right">throw </td><td>(</td><td colspan="2"></td>
+        </tr>
+        <tr>
+          <td align="right"></td><td>)</td><td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Will not throw even if disconnecting causes some kind of error and raises an exception. If you explicitly need to know if <a class="el" href="classnanodbc_1_1connection.html#adf614b7fdc08596122ca12e21a61ba34" title="Disconnects from the database, but maintains environment and handle resources. ">disconnect()</a> succeeds, call it directly. </p>
 
 </div>
 </div>
