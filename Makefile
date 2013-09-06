@@ -1,5 +1,6 @@
 index:
 	# Compile GitHub Pages content
+	cp ../example.cpp ./_includes
 	jekyll build --config config.yml
 
 dox:
