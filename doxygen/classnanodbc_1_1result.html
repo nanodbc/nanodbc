@@ -167,23 +167,41 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memdesc:aad619da0f6099108a51d9c2854709134"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if there are no more results in the current result set. <br/></td></tr>
 <tr class="separator:aad619da0f6099108a51d9c2854709134"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a621a4c4a6dfaaa40f890da7e7b7fd068"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:a621a4c4a6dfaaa40f890da7e7b7fd068"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1result.html#a621a4c4a6dfaaa40f890da7e7b7fd068">get</a> (short column) const </td></tr>
-<tr class="memdesc:a621a4c4a6dfaaa40f890da7e7b7fd068"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets data from the given column in the selected row of the current rowset.  <a href="#a621a4c4a6dfaaa40f890da7e7b7fd068">More...</a><br/></td></tr>
+<tr class="memitem:a621a4c4a6dfaaa40f890da7e7b7fd068"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1result.html#a621a4c4a6dfaaa40f890da7e7b7fd068">get</a> (short <a class="el" href="classnanodbc_1_1result.html#ac157d6b97848e41f943fd1f1bafa0bc3">column</a>) const </td></tr>
+<tr class="memdesc:a621a4c4a6dfaaa40f890da7e7b7fd068"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets data from the given column of the current rowset.  <a href="#a621a4c4a6dfaaa40f890da7e7b7fd068">More...</a><br/></td></tr>
 <tr class="separator:a621a4c4a6dfaaa40f890da7e7b7fd068"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8461ff92c1a566fcf6809dba1706f942"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:a8461ff92c1a566fcf6809dba1706f942"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1result.html#a8461ff92c1a566fcf6809dba1706f942">get</a> (short column, const T &amp;fallback) const </td></tr>
-<tr class="memdesc:a8461ff92c1a566fcf6809dba1706f942"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets data from the given column in the selected row of the current rowset. If the data is null, fallback is returned instead.  <a href="#a8461ff92c1a566fcf6809dba1706f942">More...</a><br/></td></tr>
+<tr class="memitem:a8461ff92c1a566fcf6809dba1706f942"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1result.html#a8461ff92c1a566fcf6809dba1706f942">get</a> (short <a class="el" href="classnanodbc_1_1result.html#ac157d6b97848e41f943fd1f1bafa0bc3">column</a>, const T &amp;fallback) const </td></tr>
+<tr class="memdesc:a8461ff92c1a566fcf6809dba1706f942"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets data from the given column of the current rowset. If the data is null, fallback is returned instead.  <a href="#a8461ff92c1a566fcf6809dba1706f942">More...</a><br/></td></tr>
 <tr class="separator:a8461ff92c1a566fcf6809dba1706f942"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a46777a452792e0184f63bc370c3303a4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1result.html#a46777a452792e0184f63bc370c3303a4">is_null</a> (short column) const </td></tr>
-<tr class="memdesc:a46777a452792e0184f63bc370c3303a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if and only if the given column in the selected row of the current rowset is null.  <a href="#a46777a452792e0184f63bc370c3303a4">More...</a><br/></td></tr>
+<tr class="memitem:a57c4686b03381e5c460cf88f7803dcb8"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a57c4686b03381e5c460cf88f7803dcb8"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1result.html#a57c4686b03381e5c460cf88f7803dcb8">get</a> (const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;<a class="el" href="classnanodbc_1_1result.html#af8cbcfaf255c7e60a67e00137358c7cb">column_name</a>) const </td></tr>
+<tr class="memdesc:a57c4686b03381e5c460cf88f7803dcb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets data from the given column by name of the current rowset.  <a href="#a57c4686b03381e5c460cf88f7803dcb8">More...</a><br/></td></tr>
+<tr class="separator:a57c4686b03381e5c460cf88f7803dcb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb9102e41e20c5da3e57601e71dc56b4"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:aeb9102e41e20c5da3e57601e71dc56b4"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1result.html#aeb9102e41e20c5da3e57601e71dc56b4">get</a> (const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;<a class="el" href="classnanodbc_1_1result.html#af8cbcfaf255c7e60a67e00137358c7cb">column_name</a>, const T &amp;fallback) const </td></tr>
+<tr class="memdesc:aeb9102e41e20c5da3e57601e71dc56b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets data from the given column by name of the current rowset. If the data is null, fallback is returned instead.  <a href="#aeb9102e41e20c5da3e57601e71dc56b4">More...</a><br/></td></tr>
+<tr class="separator:aeb9102e41e20c5da3e57601e71dc56b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46777a452792e0184f63bc370c3303a4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1result.html#a46777a452792e0184f63bc370c3303a4">is_null</a> (short <a class="el" href="classnanodbc_1_1result.html#ac157d6b97848e41f943fd1f1bafa0bc3">column</a>) const </td></tr>
+<tr class="memdesc:a46777a452792e0184f63bc370c3303a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if and only if the given column of the current rowset is null.  <a href="#a46777a452792e0184f63bc370c3303a4">More...</a><br/></td></tr>
 <tr class="separator:a46777a452792e0184f63bc370c3303a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af8cbcfaf255c7e60a67e00137358c7cb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1result.html#af8cbcfaf255c7e60a67e00137358c7cb">column_name</a> (short column) const </td></tr>
+<tr class="memitem:a15ee16345c0e98ababfef409740ab257"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1result.html#a15ee16345c0e98ababfef409740ab257">is_null</a> (const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;<a class="el" href="classnanodbc_1_1result.html#af8cbcfaf255c7e60a67e00137358c7cb">column_name</a>) const </td></tr>
+<tr class="memdesc:a15ee16345c0e98ababfef409740ab257"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if and only if the given column by name of the current rowset is null.  <a href="#a15ee16345c0e98ababfef409740ab257">More...</a><br/></td></tr>
+<tr class="separator:a15ee16345c0e98ababfef409740ab257"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8cbcfaf255c7e60a67e00137358c7cb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1result.html#af8cbcfaf255c7e60a67e00137358c7cb">column_name</a> (short <a class="el" href="classnanodbc_1_1result.html#ac157d6b97848e41f943fd1f1bafa0bc3">column</a>) const </td></tr>
 <tr class="memdesc:af8cbcfaf255c7e60a67e00137358c7cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the name of the specified column.  <a href="#af8cbcfaf255c7e60a67e00137358c7cb">More...</a><br/></td></tr>
 <tr class="separator:af8cbcfaf255c7e60a67e00137358c7cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac157d6b97848e41f943fd1f1bafa0bc3"><td class="memItemLeft" align="right" valign="top">short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1result.html#ac157d6b97848e41f943fd1f1bafa0bc3">column</a> (const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;<a class="el" href="classnanodbc_1_1result.html#af8cbcfaf255c7e60a67e00137358c7cb">column_name</a>) const </td></tr>
+<tr class="memdesc:ac157d6b97848e41f943fd1f1bafa0bc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the column number of the specified column name.  <a href="#ac157d6b97848e41f943fd1f1bafa0bc3">More...</a><br/></td></tr>
+<tr class="separator:ac157d6b97848e41f943fd1f1bafa0bc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1859170a42f5127e3079642c85c92060"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1859170a42f5127e3079642c85c92060"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1result.html#a1859170a42f5127e3079642c85c92060">column_datatype</a> (short column) const </td></tr>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1result.html#a1859170a42f5127e3079642c85c92060">column_datatype</a> (short <a class="el" href="classnanodbc_1_1result.html#ac157d6b97848e41f943fd1f1bafa0bc3">column</a>) const </td></tr>
 <tr class="memdesc:a1859170a42f5127e3079642c85c92060"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a identifying integer value representing the C type of this column. <br/></td></tr>
 <tr class="separator:a1859170a42f5127e3079642c85c92060"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10849f03d9b133df7c550770ec262a0b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a10849f03d9b133df7c550770ec262a0b"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1result.html#a10849f03d9b133df7c550770ec262a0b">column_datatype</a> (const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;<a class="el" href="classnanodbc_1_1result.html#af8cbcfaf255c7e60a67e00137358c7cb">column_name</a>) const </td></tr>
+<tr class="memdesc:a10849f03d9b133df7c550770ec262a0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a identifying integer value representing the C type of this column by name. <br/></td></tr>
+<tr class="separator:a10849f03d9b133df7c550770ec262a0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a380a3c0d7f10a352c3e06d14c2c7bb22"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a380a3c0d7f10a352c3e06d14c2c7bb22"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1result.html#a380a3c0d7f10a352c3e06d14c2c7bb22">next_result</a> () const </td></tr>
 <tr class="memdesc:a380a3c0d7f10a352c3e06d14c2c7bb22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the next result, for example when stored procedure returns multiple result sets. <br/></td></tr>
@@ -216,6 +234,35 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
+<a class="anchor" id="ac157d6b97848e41f943fd1f1bafa0bc3"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">short nanodbc::result::column </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;&#160;</td>
+          <td class="paramname"><em>column_name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Columns are numbered from left to right and 0-indexed. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">column</td><td>column's name. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classnanodbc_1_1index__range__error.html" title="Index out of range. ">index_range_error</a></td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="af8cbcfaf255c7e60a67e00137358c7cb"></a>
 <div class="memitem">
 <div class="memproto">
@@ -232,7 +279,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <p>Columns are numbered from left to right and 0-indexed. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">Column</td><td>position. </td></tr>
+    <tr><td class="paramname">column</td><td>position. </td></tr>
   </table>
   </dd>
 </dl>
@@ -306,8 +353,7 @@ template&lt;class T &gt; </div>
 <p>Columns are numbered from left to right and 0-indexed. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">Column</td><td>position. </td></tr>
-    <tr><td class="paramname">row</td><td>If there are multiple rows in this rowset, get from the specified row. </td></tr>
+    <tr><td class="paramname">column</td><td>position. </td></tr>
   </table>
   </dd>
 </dl>
@@ -348,8 +394,80 @@ template&lt;class T &gt; </div>
 <p>Columns are numbered from left to right and 0-indexed. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">Column</td><td>position. </td></tr>
+    <tr><td class="paramname">column</td><td>position. </td></tr>
+    <tr><td class="paramname">fallback</td><td>if value is null, return fallback instead. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classnanodbc_1_1database__error.html" title="General database error. ">database_error</a>,<a class="el" href="classnanodbc_1_1index__range__error.html" title="Index out of range. ">index_range_error</a>,<a class="el" href="classnanodbc_1_1type__incompatible__error.html" title="Type incompatible. ">type_incompatible_error</a></td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a57c4686b03381e5c460cf88f7803dcb8"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">template <a class="el" href="structnanodbc_1_1timestamp.html">timestamp</a> nanodbc::result::get </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;&#160;</td>
+          <td class="paramname"><em>column_name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">column</td><td>column's name. </td></tr>
     <tr><td class="paramname">row</td><td>If there are multiple rows in this rowset, get from the specified row. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classnanodbc_1_1database__error.html" title="General database error. ">database_error</a>,<a class="el" href="classnanodbc_1_1index__range__error.html" title="Index out of range. ">index_range_error</a>,<a class="el" href="classnanodbc_1_1type__incompatible__error.html" title="Type incompatible. ">type_incompatible_error</a>,<a class="el" href="classnanodbc_1_1null__access__error.html" title="Accessed null data. ">null_access_error</a></td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="aeb9102e41e20c5da3e57601e71dc56b4"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">T nanodbc::result::get </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;&#160;</td>
+          <td class="paramname"><em>column_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T &amp;&#160;</td>
+          <td class="paramname"><em>fallback</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">column_name</td><td>column's name. </td></tr>
+    <tr><td class="paramname">fallback</td><td>if value is null, return fallback instead. </td></tr>
   </table>
   </dd>
 </dl>
@@ -378,8 +496,35 @@ template&lt;class T &gt; </div>
 <p>Columns are numbered from left to right and 0-indexed. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">Column</td><td>position. </td></tr>
-    <tr><td class="paramname">row</td><td>If there are multiple rows in this rowset, get from the specified row. </td></tr>
+    <tr><td class="paramname">column</td><td>position. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classnanodbc_1_1database__error.html" title="General database error. ">database_error</a>,<a class="el" href="classnanodbc_1_1index__range__error.html" title="Index out of range. ">index_range_error</a></td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a15ee16345c0e98ababfef409740ab257"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool nanodbc::result::is_null </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;&#160;</td>
+          <td class="paramname"><em>column_name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">column</td><td>column's name. </td></tr>
   </table>
   </dd>
 </dl>

@@ -121,6 +121,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">    <a class="code" href="classnanodbc_1_1result.html">nanodbc::result</a> results = <a class="code" href="group__main.html#ga8e4ffe9d3ffb66cf0304975a432e0eb0">execute</a>(<a class="code" href="classnanodbc_1_1statement.html#a4eb59e468b303a9d6acbe3ba1c408495">connection</a>, <span class="stringliteral">&quot;select * from public.simple_test;&quot;</span>);</div>
 <div class="line">    show(results);</div>
 <div class="line"></div>
+<div class="line">    <span class="comment">// Accessing results by name, or column number</span></div>
+<div class="line">    results = <a class="code" href="group__main.html#ga8e4ffe9d3ffb66cf0304975a432e0eb0">execute</a>(<a class="code" href="classnanodbc_1_1statement.html#a4eb59e468b303a9d6acbe3ba1c408495">connection</a>, <span class="stringliteral">&quot;select a as first, b as second from public.simple_test where a = 1;&quot;</span>);</div>
+<div class="line">    results.<a class="code" href="classnanodbc_1_1result.html#a31470b51f194181373e4c2c4292d11c4">next</a>();</div>
+<div class="line">    cout &lt;&lt; endl &lt;&lt; results.<a class="code" href="classnanodbc_1_1result.html#a621a4c4a6dfaaa40f890da7e7b7fd068">get</a>&lt;<span class="keywordtype">int</span>&gt;(<span class="stringliteral">&quot;first&quot;</span>) &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; results.<a class="code" href="classnanodbc_1_1result.html#a621a4c4a6dfaaa40f890da7e7b7fd068">get</a>&lt;<span class="keywordtype">string</span>&gt;(1) &lt;&lt; endl;</div>
+<div class="line"></div>
 <div class="line">    <span class="comment">// Binding parameters</span></div>
 <div class="line">    {</div>
 <div class="line">        <a class="code" href="classnanodbc_1_1statement.html">nanodbc::statement</a> <a class="code" href="classnanodbc_1_1statement.html#ac9ea91624b4b6136f98b002f75376cd9">statement</a>(<a class="code" href="classnanodbc_1_1statement.html#a4eb59e468b303a9d6acbe3ba1c408495">connection</a>);</div>
