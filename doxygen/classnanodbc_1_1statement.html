@@ -120,9 +120,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aaa2dbe21f428c67d7dd32b9d8eeb8877"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#aaa2dbe21f428c67d7dd32b9d8eeb8877">statement</a> (class <a class="el" href="classnanodbc_1_1connection.html">connection</a> &amp;conn)</td></tr>
 <tr class="memdesc:aaa2dbe21f428c67d7dd32b9d8eeb8877"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a statement object and associates it to the given connection.  <a href="#aaa2dbe21f428c67d7dd32b9d8eeb8877">More...</a><br/></td></tr>
 <tr class="separator:aaa2dbe21f428c67d7dd32b9d8eeb8877"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a039609899a4d3b53ded69877882cfaf1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#a039609899a4d3b53ded69877882cfaf1">statement</a> (class <a class="el" href="classnanodbc_1_1connection.html">connection</a> &amp;conn, const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;query)</td></tr>
-<tr class="memdesc:a039609899a4d3b53ded69877882cfaf1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs and prepares a statement using the given connection and query.  <a href="#a039609899a4d3b53ded69877882cfaf1">More...</a><br/></td></tr>
-<tr class="separator:a039609899a4d3b53ded69877882cfaf1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab711e5ef116c846a59ea3d37e89cbd14"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#ab711e5ef116c846a59ea3d37e89cbd14">statement</a> (class <a class="el" href="classnanodbc_1_1connection.html">connection</a> &amp;conn, const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;query, long <a class="el" href="classnanodbc_1_1statement.html#adbd1acbbdcc529dc668bfef341593573">timeout</a>=0)</td></tr>
+<tr class="memdesc:ab711e5ef116c846a59ea3d37e89cbd14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs and prepares a statement using the given connection and query.  <a href="#ab711e5ef116c846a59ea3d37e89cbd14">More...</a><br/></td></tr>
+<tr class="separator:ab711e5ef116c846a59ea3d37e89cbd14"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a78cdb0dbf1437cd98eff448e8c6a8757"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a78cdb0dbf1437cd98eff448e8c6a8757"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#a78cdb0dbf1437cd98eff448e8c6a8757">statement</a> (const <a class="el" href="classnanodbc_1_1statement.html">statement</a> &amp;rhs)</td></tr>
 <tr class="memdesc:a78cdb0dbf1437cd98eff448e8c6a8757"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor. <br/></td></tr>
@@ -168,18 +168,21 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:a81f6e6e0b547a900d20652fe5abe7b75"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#a81f6e6e0b547a900d20652fe5abe7b75">cancel</a> ()</td></tr>
 <tr class="memdesc:a81f6e6e0b547a900d20652fe5abe7b75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancels execution of the statement.  <a href="#a81f6e6e0b547a900d20652fe5abe7b75">More...</a><br/></td></tr>
 <tr class="separator:a81f6e6e0b547a900d20652fe5abe7b75"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1632042190b8abaf3f6ae627dddc2e99"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#a1632042190b8abaf3f6ae627dddc2e99">prepare</a> (class <a class="el" href="classnanodbc_1_1connection.html">connection</a> &amp;conn, const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;query)</td></tr>
-<tr class="memdesc:a1632042190b8abaf3f6ae627dddc2e99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opens and prepares the given statement to execute on the given connection.  <a href="#a1632042190b8abaf3f6ae627dddc2e99">More...</a><br/></td></tr>
-<tr class="separator:a1632042190b8abaf3f6ae627dddc2e99"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3cf8a05e55b6512473b31cc8a5783df7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#a3cf8a05e55b6512473b31cc8a5783df7">prepare</a> (const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;query)</td></tr>
-<tr class="memdesc:a3cf8a05e55b6512473b31cc8a5783df7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepares the given statement to execute its associated connection. If the statement is not open throws <a class="el" href="classnanodbc_1_1programming__error.html" title="Programming logic error. ">programming_error</a>.  <a href="#a3cf8a05e55b6512473b31cc8a5783df7">More...</a><br/></td></tr>
-<tr class="separator:a3cf8a05e55b6512473b31cc8a5783df7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4b8d93b3550f333334d2c8d30a039b9"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classnanodbc_1_1result.html">result</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#ae4b8d93b3550f333334d2c8d30a039b9">execute_direct</a> (class <a class="el" href="classnanodbc_1_1connection.html">connection</a> &amp;conn, const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;query, long batch_operations=1)</td></tr>
-<tr class="memdesc:ae4b8d93b3550f333334d2c8d30a039b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immediately opens, prepares, and executes the given query directly on the given connection.  <a href="#ae4b8d93b3550f333334d2c8d30a039b9">More...</a><br/></td></tr>
-<tr class="separator:ae4b8d93b3550f333334d2c8d30a039b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aab9f6066efcfb5dc4244cd082c7d27a4"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classnanodbc_1_1result.html">result</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#aab9f6066efcfb5dc4244cd082c7d27a4">execute</a> (long batch_operations=1)</td></tr>
-<tr class="memdesc:aab9f6066efcfb5dc4244cd082c7d27a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute the previously prepared query now.  <a href="#aab9f6066efcfb5dc4244cd082c7d27a4">More...</a><br/></td></tr>
-<tr class="separator:aab9f6066efcfb5dc4244cd082c7d27a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94ac4d6e92a8b18100f27d86bf6a6356"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#a94ac4d6e92a8b18100f27d86bf6a6356">prepare</a> (class <a class="el" href="classnanodbc_1_1connection.html">connection</a> &amp;conn, const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;query, long <a class="el" href="classnanodbc_1_1statement.html#adbd1acbbdcc529dc668bfef341593573">timeout</a>=0)</td></tr>
+<tr class="memdesc:a94ac4d6e92a8b18100f27d86bf6a6356"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opens and prepares the given statement to execute on the given connection.  <a href="#a94ac4d6e92a8b18100f27d86bf6a6356">More...</a><br/></td></tr>
+<tr class="separator:a94ac4d6e92a8b18100f27d86bf6a6356"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdc014263a2052063f748d70a2430aee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#acdc014263a2052063f748d70a2430aee">prepare</a> (const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;query, long <a class="el" href="classnanodbc_1_1statement.html#adbd1acbbdcc529dc668bfef341593573">timeout</a>=0)</td></tr>
+<tr class="memdesc:acdc014263a2052063f748d70a2430aee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepares the given statement to execute its associated connection. If the statement is not open throws <a class="el" href="classnanodbc_1_1programming__error.html" title="Programming logic error. ">programming_error</a>.  <a href="#acdc014263a2052063f748d70a2430aee">More...</a><br/></td></tr>
+<tr class="separator:acdc014263a2052063f748d70a2430aee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbd1acbbdcc529dc668bfef341593573"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#adbd1acbbdcc529dc668bfef341593573">timeout</a> (long timeout=0)</td></tr>
+<tr class="memdesc:adbd1acbbdcc529dc668bfef341593573"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the number in seconds before query timeout. Default is 0 indicating no timeout.  <a href="#adbd1acbbdcc529dc668bfef341593573">More...</a><br/></td></tr>
+<tr class="separator:adbd1acbbdcc529dc668bfef341593573"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe953aaed1c7e93cfa33c578eaf13c06"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classnanodbc_1_1result.html">result</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#abe953aaed1c7e93cfa33c578eaf13c06">execute_direct</a> (class <a class="el" href="classnanodbc_1_1connection.html">connection</a> &amp;conn, const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;query, long batch_operations=1, long <a class="el" href="classnanodbc_1_1statement.html#adbd1acbbdcc529dc668bfef341593573">timeout</a>=0)</td></tr>
+<tr class="memdesc:abe953aaed1c7e93cfa33c578eaf13c06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immediately opens, prepares, and executes the given query directly on the given connection.  <a href="#abe953aaed1c7e93cfa33c578eaf13c06">More...</a><br/></td></tr>
+<tr class="separator:abe953aaed1c7e93cfa33c578eaf13c06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab30dac3e4defd5a90181202e99ee8ca5"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classnanodbc_1_1result.html">result</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#ab30dac3e4defd5a90181202e99ee8ca5">execute</a> (long batch_operations=1, long <a class="el" href="classnanodbc_1_1statement.html#adbd1acbbdcc529dc668bfef341593573">timeout</a>=0)</td></tr>
+<tr class="memdesc:ab30dac3e4defd5a90181202e99ee8ca5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute the previously prepared query now.  <a href="#ab30dac3e4defd5a90181202e99ee8ca5">More...</a><br/></td></tr>
+<tr class="separator:ab30dac3e4defd5a90181202e99ee8ca5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af134dc3bf4b490135d839c251a8b84b5"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#af134dc3bf4b490135d839c251a8b84b5">affected_rows</a> () const </td></tr>
 <tr class="memdesc:af134dc3bf4b490135d839c251a8b84b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of rows affected by the request or –1 if the number of affected rows is not available.  <a href="#af134dc3bf4b490135d839c251a8b84b5">More...</a><br/></td></tr>
 <tr class="separator:af134dc3bf4b490135d839c251a8b84b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -250,7 +253,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>nanodbc::result</b><
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classnanodbc_1_1statement.html#aab9f6066efcfb5dc4244cd082c7d27a4" title="Execute the previously prepared query now. ">execute()</a>, <a class="el" href="classnanodbc_1_1statement.html#ae4b8d93b3550f333334d2c8d30a039b9" title="Immediately opens, prepares, and executes the given query directly on the given connection. ">execute_direct()</a>, <a class="el" href="classnanodbc_1_1statement.html#a473ec2d726f6d8acc42ce0f5f6d1b967" title="Creates a statement for the given connection. ">open()</a>, <a class="el" href="classnanodbc_1_1statement.html#a1632042190b8abaf3f6ae627dddc2e99" title="Opens and prepares the given statement to execute on the given connection. ">prepare()</a> </dd></dl>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classnanodbc_1_1statement.html#ab30dac3e4defd5a90181202e99ee8ca5" title="Execute the previously prepared query now. ">execute()</a>, <a class="el" href="classnanodbc_1_1statement.html#abe953aaed1c7e93cfa33c578eaf13c06" title="Immediately opens, prepares, and executes the given query directly on the given connection. ">execute_direct()</a>, <a class="el" href="classnanodbc_1_1statement.html#a473ec2d726f6d8acc42ce0f5f6d1b967" title="Creates a statement for the given connection. ">open()</a>, <a class="el" href="classnanodbc_1_1statement.html#a94ac4d6e92a8b18100f27d86bf6a6356" title="Opens and prepares the given statement to execute on the given connection. ">prepare()</a> </dd></dl>
 
 </div>
 </div>
@@ -281,11 +284,11 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>nanodbc::result</b><
   </table>
   </dd>
 </dl>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classnanodbc_1_1statement.html#a473ec2d726f6d8acc42ce0f5f6d1b967" title="Creates a statement for the given connection. ">open()</a>, <a class="el" href="classnanodbc_1_1statement.html#a1632042190b8abaf3f6ae627dddc2e99" title="Opens and prepares the given statement to execute on the given connection. ">prepare()</a> </dd></dl>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classnanodbc_1_1statement.html#a473ec2d726f6d8acc42ce0f5f6d1b967" title="Creates a statement for the given connection. ">open()</a>, <a class="el" href="classnanodbc_1_1statement.html#a94ac4d6e92a8b18100f27d86bf6a6356" title="Opens and prepares the given statement to execute on the given connection. ">prepare()</a> </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a039609899a4d3b53ded69877882cfaf1"></a>
+<a class="anchor" id="ab711e5ef116c846a59ea3d37e89cbd14"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -299,7 +302,13 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>nanodbc::result</b><
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;&#160;</td>
-          <td class="paramname"><em>query</em>&#160;</td>
+          <td class="paramname"><em>query</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long&#160;</td>
+          <td class="paramname"><em>timeout</em> = <code>0</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -312,10 +321,11 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>nanodbc::result</b><
   <table class="params">
     <tr><td class="paramname">conn</td><td>The connection to use. </td></tr>
     <tr><td class="paramname">query</td><td>The SQL query statement. </td></tr>
+    <tr><td class="paramname">timeout</td><td>The number in seconds before query timeout. Default is 0 indicating no timeout. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classnanodbc_1_1statement.html#aab9f6066efcfb5dc4244cd082c7d27a4" title="Execute the previously prepared query now. ">execute()</a>, <a class="el" href="classnanodbc_1_1statement.html#ae4b8d93b3550f333334d2c8d30a039b9" title="Immediately opens, prepares, and executes the given query directly on the given connection. ">execute_direct()</a>, <a class="el" href="classnanodbc_1_1statement.html#a473ec2d726f6d8acc42ce0f5f6d1b967" title="Creates a statement for the given connection. ">open()</a>, <a class="el" href="classnanodbc_1_1statement.html#a1632042190b8abaf3f6ae627dddc2e99" title="Opens and prepares the given statement to execute on the given connection. ">prepare()</a> </dd></dl>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classnanodbc_1_1statement.html#ab30dac3e4defd5a90181202e99ee8ca5" title="Execute the previously prepared query now. ">execute()</a>, <a class="el" href="classnanodbc_1_1statement.html#abe953aaed1c7e93cfa33c578eaf13c06" title="Immediately opens, prepares, and executes the given query directly on the given connection. ">execute_direct()</a>, <a class="el" href="classnanodbc_1_1statement.html#a473ec2d726f6d8acc42ce0f5f6d1b967" title="Creates a statement for the given connection. ">open()</a>, <a class="el" href="classnanodbc_1_1statement.html#a94ac4d6e92a8b18100f27d86bf6a6356" title="Opens and prepares the given statement to execute on the given connection. ">prepare()</a> </dd></dl>
 
 </div>
 </div>
@@ -512,7 +522,7 @@ template&lt;class T , std::size_t N&gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="aab9f6066efcfb5dc4244cd082c7d27a4"></a>
+<a class="anchor" id="ab30dac3e4defd5a90181202e99ee8ca5"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -520,14 +530,25 @@ template&lt;class T , std::size_t N&gt; </div>
           <td class="memname"><a class="el" href="classnanodbc_1_1result.html">result</a> nanodbc::statement::execute </td>
           <td>(</td>
           <td class="paramtype">long&#160;</td>
-          <td class="paramname"><em>batch_operations</em> = <code>1</code></td><td>)</td>
+          <td class="paramname"><em>batch_operations</em> = <code>1</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">long&#160;</td>
+          <td class="paramname"><em>timeout</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">batch_operations</td><td>Numbers of rows to fetch per rowset, or the number of batch parameters to process. </td></tr>
+    <tr><td class="paramname">timeout</td><td>The number in seconds before query timeout. Default is 0 indicating no timeout. </td></tr>
   </table>
   </dd>
 </dl>
@@ -539,11 +560,11 @@ template&lt;class T , std::size_t N&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A result set object. </dd></dl>
 <dl class="section attention"><dt>Attention</dt><dd>You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed. </dd></dl>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classnanodbc_1_1statement.html#a473ec2d726f6d8acc42ce0f5f6d1b967" title="Creates a statement for the given connection. ">open()</a>, <a class="el" href="classnanodbc_1_1statement.html#a1632042190b8abaf3f6ae627dddc2e99" title="Opens and prepares the given statement to execute on the given connection. ">prepare()</a>, <a class="el" href="classnanodbc_1_1statement.html#aab9f6066efcfb5dc4244cd082c7d27a4" title="Execute the previously prepared query now. ">execute()</a>, <a class="el" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution. ">result</a>, <a class="el" href="classnanodbc_1_1transaction.html" title="A resource for managing transaction commits and rollbacks. ">transaction</a> </dd></dl>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classnanodbc_1_1statement.html#a473ec2d726f6d8acc42ce0f5f6d1b967" title="Creates a statement for the given connection. ">open()</a>, <a class="el" href="classnanodbc_1_1statement.html#a94ac4d6e92a8b18100f27d86bf6a6356" title="Opens and prepares the given statement to execute on the given connection. ">prepare()</a>, <a class="el" href="classnanodbc_1_1statement.html#ab30dac3e4defd5a90181202e99ee8ca5" title="Execute the previously prepared query now. ">execute()</a>, <a class="el" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution. ">result</a>, <a class="el" href="classnanodbc_1_1transaction.html" title="A resource for managing transaction commits and rollbacks. ">transaction</a> </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="ae4b8d93b3550f333334d2c8d30a039b9"></a>
+<a class="anchor" id="abe953aaed1c7e93cfa33c578eaf13c06"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -563,7 +584,13 @@ template&lt;class T , std::size_t N&gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">long&#160;</td>
-          <td class="paramname"><em>batch_operations</em> = <code>1</code>&#160;</td>
+          <td class="paramname"><em>batch_operations</em> = <code>1</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long&#160;</td>
+          <td class="paramname"><em>timeout</em> = <code>0</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -577,12 +604,13 @@ template&lt;class T , std::size_t N&gt; </div>
     <tr><td class="paramname">conn</td><td>The connection where the statement will be executed. </td></tr>
     <tr><td class="paramname">query</td><td>The SQL query that will be executed. </td></tr>
     <tr><td class="paramname">batch_operations</td><td>Numbers of rows to fetch per rowset, or the number of batch parameters to process. </td></tr>
+    <tr><td class="paramname">timeout</td><td>The number in seconds before query timeout. Default is 0 indicating no timeout. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A result set object. </dd></dl>
 <dl class="section attention"><dt>Attention</dt><dd>You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed. </dd></dl>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classnanodbc_1_1statement.html#a473ec2d726f6d8acc42ce0f5f6d1b967" title="Creates a statement for the given connection. ">open()</a>, <a class="el" href="classnanodbc_1_1statement.html#a1632042190b8abaf3f6ae627dddc2e99" title="Opens and prepares the given statement to execute on the given connection. ">prepare()</a>, <a class="el" href="classnanodbc_1_1statement.html#aab9f6066efcfb5dc4244cd082c7d27a4" title="Execute the previously prepared query now. ">execute()</a>, <a class="el" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution. ">result</a>, <a class="el" href="classnanodbc_1_1transaction.html" title="A resource for managing transaction commits and rollbacks. ">transaction</a> </dd></dl>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classnanodbc_1_1statement.html#a473ec2d726f6d8acc42ce0f5f6d1b967" title="Creates a statement for the given connection. ">open()</a>, <a class="el" href="classnanodbc_1_1statement.html#a94ac4d6e92a8b18100f27d86bf6a6356" title="Opens and prepares the given statement to execute on the given connection. ">prepare()</a>, <a class="el" href="classnanodbc_1_1statement.html#ab30dac3e4defd5a90181202e99ee8ca5" title="Execute the previously prepared query now. ">execute()</a>, <a class="el" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution. ">result</a>, <a class="el" href="classnanodbc_1_1transaction.html" title="A resource for managing transaction commits and rollbacks. ">transaction</a> </dd></dl>
 
 </div>
 </div>
@@ -614,7 +642,7 @@ template&lt;class T , std::size_t N&gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a1632042190b8abaf3f6ae627dddc2e99"></a>
+<a class="anchor" id="a94ac4d6e92a8b18100f27d86bf6a6356"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -628,7 +656,13 @@ template&lt;class T , std::size_t N&gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;&#160;</td>
-          <td class="paramname"><em>query</em>&#160;</td>
+          <td class="paramname"><em>query</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long&#160;</td>
+          <td class="paramname"><em>timeout</em> = <code>0</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -641,6 +675,7 @@ template&lt;class T , std::size_t N&gt; </div>
   <table class="params">
     <tr><td class="paramname">conn</td><td>The connection where the statement will be executed. </td></tr>
     <tr><td class="paramname">query</td><td>The SQL query that will be executed. </td></tr>
+    <tr><td class="paramname">timeout</td><td>The number in seconds before query timeout. Default is 0 indicating no timeout. </td></tr>
   </table>
   </dd>
 </dl>
@@ -654,7 +689,7 @@ template&lt;class T , std::size_t N&gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a3cf8a05e55b6512473b31cc8a5783df7"></a>
+<a class="anchor" id="acdc014263a2052063f748d70a2430aee"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -662,14 +697,25 @@ template&lt;class T , std::size_t N&gt; </div>
           <td class="memname">void nanodbc::statement::prepare </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;&#160;</td>
-          <td class="paramname"><em>query</em></td><td>)</td>
+          <td class="paramname"><em>query</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">long&#160;</td>
+          <td class="paramname"><em>timeout</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">query</td><td>The SQL query that will be executed. </td></tr>
+    <tr><td class="paramname">timeout</td><td>The number in seconds before query timeout. Default is 0 indicating no timeout. </td></tr>
   </table>
   </dd>
 </dl>
@@ -677,6 +723,28 @@ template&lt;class T , std::size_t N&gt; </div>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
     <tr><td class="paramname"><a class="el" href="classnanodbc_1_1database__error.html" title="General database error. ">database_error</a>,<a class="el" href="classnanodbc_1_1programming__error.html" title="Programming logic error. ">programming_error</a></td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="adbd1acbbdcc529dc668bfef341593573"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nanodbc::statement::timeout </td>
+          <td>(</td>
+          <td class="paramtype">long&#160;</td>
+          <td class="paramname"><em>timeout</em> = <code>0</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classnanodbc_1_1database__error.html" title="General database error. ">database_error</a></td><td></td></tr>
   </table>
   </dd>
 </dl>
