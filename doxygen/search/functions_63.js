@@ -5,6 +5,7 @@ var searchData=
   ['column',['column',['../classnanodbc_1_1result.html#ac157d6b97848e41f943fd1f1bafa0bc3',1,'nanodbc::result']]],
   ['column_5fdatatype',['column_datatype',['../classnanodbc_1_1result.html#a1859170a42f5127e3079642c85c92060',1,'nanodbc::result::column_datatype(short column) const '],['../classnanodbc_1_1result.html#a10849f03d9b133df7c550770ec262a0b',1,'nanodbc::result::column_datatype(const string_type &amp;column_name) const ']]],
   ['column_5fname',['column_name',['../classnanodbc_1_1result.html#af8cbcfaf255c7e60a67e00137358c7cb',1,'nanodbc::result']]],
+  ['column_5fsize',['column_size',['../classnanodbc_1_1result.html#a1f92be8e23c6503464dfbb4645914dfa',1,'nanodbc::result']]],
   ['columns',['columns',['../classnanodbc_1_1statement.html#aa0c021f78768849d0c89368de514954f',1,'nanodbc::statement::columns()'],['../classnanodbc_1_1result.html#a839990af1305d8dcb249f8464433034a',1,'nanodbc::result::columns()']]],
   ['commit',['commit',['../classnanodbc_1_1transaction.html#ad13c6871ac5f572456e881c2e52c2c91',1,'nanodbc::transaction']]],
   ['connect',['connect',['../classnanodbc_1_1connection.html#a693524630eff2384e4c4aef8f6adcfad',1,'nanodbc::connection::connect(const string_type &amp;dsn, const string_type &amp;user, const string_type &amp;pass, long timeout=0)'],['../classnanodbc_1_1connection.html#a9dd73b98358c6124e16854e94d94891c',1,'nanodbc::connection::connect(const string_type &amp;connection_string, long timeout=0)']]],

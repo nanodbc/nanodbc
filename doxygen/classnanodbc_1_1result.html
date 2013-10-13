@@ -191,6 +191,9 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:af8cbcfaf255c7e60a67e00137358c7cb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1result.html#af8cbcfaf255c7e60a67e00137358c7cb">column_name</a> (short <a class="el" href="classnanodbc_1_1result.html#ac157d6b97848e41f943fd1f1bafa0bc3">column</a>) const </td></tr>
 <tr class="memdesc:af8cbcfaf255c7e60a67e00137358c7cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the name of the specified column.  <a href="#af8cbcfaf255c7e60a67e00137358c7cb">More...</a><br/></td></tr>
 <tr class="separator:af8cbcfaf255c7e60a67e00137358c7cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f92be8e23c6503464dfbb4645914dfa"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1result.html#a1f92be8e23c6503464dfbb4645914dfa">column_size</a> (short <a class="el" href="classnanodbc_1_1result.html#ac157d6b97848e41f943fd1f1bafa0bc3">column</a>) const </td></tr>
+<tr class="memdesc:a1f92be8e23c6503464dfbb4645914dfa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the size of the specified column.  <a href="#a1f92be8e23c6503464dfbb4645914dfa">More...</a><br/></td></tr>
+<tr class="separator:a1f92be8e23c6503464dfbb4645914dfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac157d6b97848e41f943fd1f1bafa0bc3"><td class="memItemLeft" align="right" valign="top">short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1result.html#ac157d6b97848e41f943fd1f1bafa0bc3">column</a> (const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;<a class="el" href="classnanodbc_1_1result.html#af8cbcfaf255c7e60a67e00137358c7cb">column_name</a>) const </td></tr>
 <tr class="memdesc:ac157d6b97848e41f943fd1f1bafa0bc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the column number of the specified column name.  <a href="#ac157d6b97848e41f943fd1f1bafa0bc3">More...</a><br/></td></tr>
 <tr class="separator:ac157d6b97848e41f943fd1f1bafa0bc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -280,6 +283,35 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">column</td><td>position. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classnanodbc_1_1index__range__error.html" title="Index out of range. ">index_range_error</a></td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a1f92be8e23c6503464dfbb4645914dfa"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">long nanodbc::result::column_size </td>
+          <td>(</td>
+          <td class="paramtype">short&#160;</td>
+          <td class="paramname"><em>column</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Columns are numbered from left to right and 0-indexed. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Column</td><td>position. </td></tr>
   </table>
   </dd>
 </dl>
