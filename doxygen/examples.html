@@ -82,6 +82,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="contents">
 <div class="textblock"><p>Example library usage.</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="nanodbc_8h.html">nanodbc.h</a>&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;sql.h&gt;</span> <span class="comment">// including only for SQL_NULL_DATA</span></div>
+<div class="line"><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"></div>
@@ -120,6 +122,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">    <a class="code" href="group__main.html#ga72a83c5d4cf4b115f637faa7c5e1702f">execute</a>(<a class="code" href="classnanodbc_1_1statement.html#a4eb59e468b303a9d6acbe3ba1c408495">connection</a>, <span class="stringliteral">&quot;insert into public.simple_test (b) values (&#39;z&#39;);&quot;</span>);</div>
 <div class="line">    <a class="code" href="classnanodbc_1_1result.html">nanodbc::result</a> results = <a class="code" href="group__main.html#ga72a83c5d4cf4b115f637faa7c5e1702f">execute</a>(<a class="code" href="classnanodbc_1_1statement.html#a4eb59e468b303a9d6acbe3ba1c408495">connection</a>, <span class="stringliteral">&quot;select * from public.simple_test;&quot;</span>);</div>
 <div class="line">    show(results);</div>
+<div class="line"></div>
+<div class="line">    <span class="comment">// Inserting NULL values using bind_parameter()</span></div>
+<div class="line">    {</div>
+<div class="line">        <a class="code" href="classnanodbc_1_1statement.html">nanodbc::statement</a> <a class="code" href="classnanodbc_1_1statement.html#ac9ea91624b4b6136f98b002f75376cd9">statement</a>(<a class="code" href="classnanodbc_1_1statement.html#a4eb59e468b303a9d6acbe3ba1c408495">connection</a>);</div>
+<div class="line">        <a class="code" href="group__main.html#ga32162976c26f57bac5ec3501d9cfddc6">prepare</a>(<a class="code" href="classnanodbc_1_1statement.html#ac9ea91624b4b6136f98b002f75376cd9">statement</a>, <span class="stringliteral">&quot;insert into public.simple_test (a, b) values (?, ?);&quot;</span>);</div>
+<div class="line">        <span class="keyword">const</span> <span class="keywordtype">int</span> howmany = 5;</div>
+<div class="line">        <a class="code" href="namespacenanodbc.html#ad8979d857f720c78b74ab44d16a5f7d1">nanodbc::null_type</a> nulls[howmany];</div>
+<div class="line">        fill(&amp;nulls[0], &amp;nulls[howmany], SQL_NULL_DATA);</div>
+<div class="line">        <a class="code" href="classnanodbc_1_1statement.html#ac9ea91624b4b6136f98b002f75376cd9">statement</a>.bind_parameter(0, (<span class="keywordtype">int</span>*)0, nulls);</div>
+<div class="line">        <a class="code" href="classnanodbc_1_1statement.html#ac9ea91624b4b6136f98b002f75376cd9">statement</a>.bind_parameter(1, (<span class="keywordtype">char</span>*)0, nulls);</div>
+<div class="line">        <a class="code" href="group__main.html#ga72a83c5d4cf4b115f637faa7c5e1702f">execute</a>(<a class="code" href="classnanodbc_1_1statement.html#ac9ea91624b4b6136f98b002f75376cd9">statement</a>, howmany);</div>
+<div class="line">        <a class="code" href="classnanodbc_1_1result.html">nanodbc::result</a> results = <a class="code" href="group__main.html#ga72a83c5d4cf4b115f637faa7c5e1702f">execute</a>(<a class="code" href="classnanodbc_1_1statement.html#a4eb59e468b303a9d6acbe3ba1c408495">connection</a>, <span class="stringliteral">&quot;select * from public.simple_test;&quot;</span>);</div>
+<div class="line">        show(results);</div>
+<div class="line">    }</div>
 <div class="line"></div>
 <div class="line">    <span class="comment">// Accessing results by name, or column number</span></div>
 <div class="line">    results = <a class="code" href="group__main.html#ga72a83c5d4cf4b115f637faa7c5e1702f">execute</a>(<a class="code" href="classnanodbc_1_1statement.html#a4eb59e468b303a9d6acbe3ba1c408495">connection</a>, <span class="stringliteral">&quot;select a as first, b as second from public.simple_test where a = 1;&quot;</span>);</div>
