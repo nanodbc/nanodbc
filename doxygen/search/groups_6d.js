@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['main_20classes',['Main Classes',['../group__main.html',1,'']]]
+  ['main_20classes',['Main classes',['../group__main.html',1,'']]]
 ];
