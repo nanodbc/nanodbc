@@ -157,9 +157,7 @@ Functions</h2></td></tr>
 <tr class="separator:ga32162976c26f57bac5ec3501d9cfddc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Todo:</a></b></dt><dd><p class="startdd">Implement retrieval of blob data. </p>
-<p class="enddd">Implement reflective features for columns, such as type, to enable visitation. </p>
-</dd></dl>
+<div class="textblock"><dl class="section note"><dt>Note</dt><dd>This library does not make any exception safety guarantees, but should work just fine with a threading enabled ODBC driver. If you want to use nanodbc objects in threads I recommend each thread keep their own connection to the database. Otherwise you must synchronize any access to nanodbc objects. </dd></dl>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/>
