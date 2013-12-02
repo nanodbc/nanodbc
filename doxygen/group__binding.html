@@ -89,9 +89,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="groups"></a>
 Modules</h2></td></tr>
-<tr class="memitem:group__bind__single"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__bind__single.html">Binding a single value</a></td></tr>
-<tr class="memdesc:group__bind__single"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the given value to the given parameter placeholder number in the prepared statement. <br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:group__bind__multi"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__bind__multi.html">Binding multiple non-string values</a></td></tr>
 <tr class="memdesc:group__bind__multi"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the given values to the given parameter placeholder number in the prepared statement. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -101,12 +98,66 @@ Modules</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:ga8f2144ef9126e454cdede3545e146fd7"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:ga8f2144ef9126e454cdede3545e146fd7"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__binding.html#ga8f2144ef9126e454cdede3545e146fd7">nanodbc::statement::bind</a> (short param, const T *value, param_direction direction=PARAM_IN)</td></tr>
+<tr class="memdesc:ga8f2144ef9126e454cdede3545e146fd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the given value to the given parameter placeholder number in the prepared statement.  <a href="#ga8f2144ef9126e454cdede3545e146fd7">More...</a><br/></td></tr>
+<tr class="separator:ga8f2144ef9126e454cdede3545e146fd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga62903fa78ce9444f9e6cf3015c427f62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__binding.html#ga62903fa78ce9444f9e6cf3015c427f62">nanodbc::statement::bind_null</a> (short param, std::size_t elements=1)</td></tr>
 <tr class="memdesc:ga62903fa78ce9444f9e6cf3015c427f62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds null values to the given parameter placeholder number in the prepared statement.  <a href="#ga62903fa78ce9444f9e6cf3015c427f62">More...</a><br/></td></tr>
 <tr class="separator:ga62903fa78ce9444f9e6cf3015c427f62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="ga8f2144ef9126e454cdede3545e146fd7"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void nanodbc::statement::bind </td>
+          <td>(</td>
+          <td class="paramtype">short&#160;</td>
+          <td class="paramname"><em>param</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T *&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classnanodbc_1_1statement.html#a523142f53cbbee8d68a074da993e7fa6">param_direction</a>&#160;</td>
+          <td class="paramname"><em>direction</em> = <code><a class="el" href="classnanodbc_1_1statement.html#a523142f53cbbee8d68a074da993e7fa6ae33f42ce0677d00c291ff4d8e39f99de">PARAM_IN</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>If your prepared SQL query has any ? placeholders, this is how you bind values to them. Placeholder numbers count from left to right and are 0-indexed.</p>
+<p>It is NOT possible to use these functions for bulk operations as number of elements is not specified here.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">param</td><td>Placeholder position. </td></tr>
+    <tr><td class="paramname">value</td><td>Value to substitute into placeholder. </td></tr>
+    <tr><td class="paramname">param_direciton</td><td>ODBC parameter direction. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classnanodbc_1_1database__error.html" title="General database error. ">database_error</a></td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="ga62903fa78ce9444f9e6cf3015c427f62"></a>
 <div class="memitem">
 <div class="memproto">

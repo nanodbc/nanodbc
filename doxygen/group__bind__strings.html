@@ -102,6 +102,13 @@ Functions</h2></td></tr>
 <tr class="memitem:ga493ce833393bfcac9e98ba6edc7b7ef7"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__bind__strings.html#ga493ce833393bfcac9e98ba6edc7b7ef7">nanodbc::statement::bind_strings</a> (short param, const string_type::value_type(&amp;values)[N][M], const string_type::value_type *null_sentry, param_direction direction=PARAM_IN)</td></tr>
 <tr class="memdesc:ga493ce833393bfcac9e98ba6edc7b7ef7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds multiple string values.  <a href="#ga493ce833393bfcac9e98ba6edc7b7ef7">More...</a><br/></td></tr>
 <tr class="separator:ga493ce833393bfcac9e98ba6edc7b7ef7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7b2a8f30eb259684f1b3b8a5ac3b7815"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__bind__strings.html#ga7b2a8f30eb259684f1b3b8a5ac3b7815">nanodbc::statement::bind_strings</a> (short param, const string_type::value_type *values, std::size_t length, std::size_t elements, const bool *nulls, param_direction direction=PARAM_IN)</td></tr>
+<tr class="memdesc:ga7b2a8f30eb259684f1b3b8a5ac3b7815"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds multiple string values.  <a href="#ga7b2a8f30eb259684f1b3b8a5ac3b7815">More...</a><br/></td></tr>
+<tr class="separator:ga7b2a8f30eb259684f1b3b8a5ac3b7815"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga475aad05cf4e90224270d1a525d38f1e"><td class="memTemplParams" colspan="2">template&lt;std::size_t N, std::size_t M&gt; </td></tr>
+<tr class="memitem:ga475aad05cf4e90224270d1a525d38f1e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__bind__strings.html#ga475aad05cf4e90224270d1a525d38f1e">nanodbc::statement::bind_strings</a> (short param, const string_type::value_type(&amp;values)[N][M], const bool *nulls, param_direction direction=PARAM_IN)</td></tr>
+<tr class="memdesc:ga475aad05cf4e90224270d1a525d38f1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds multiple string values.  <a href="#ga475aad05cf4e90224270d1a525d38f1e">More...</a><br/></td></tr>
+<tr class="separator:ga475aad05cf4e90224270d1a525d38f1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>If your prepared SQL query has any ? placeholders, this is how you bind values to them. Placeholder numbers count from left to right and are 0-indexed.</p>
@@ -113,6 +120,7 @@ Functions</h2></td></tr>
     <tr><td class="paramname">length</td><td>Maximum length of string elements. </td></tr>
     <tr><td class="paramname">elements</td><td>The number of elements being bound. Otherwise the value N is taken as the number of elements. </td></tr>
     <tr><td class="paramname">null_sentry</td><td>Value which should represent a null value. </td></tr>
+    <tr><td class="paramname">nulls</td><td>Flags for values that should be set to a null value. </td></tr>
     <tr><td class="paramname">param_direciton</td><td>ODBC parameter direction. </td></tr>
   </table>
   </dd>
@@ -289,6 +297,106 @@ template&lt;std::size_t N, std::size_t M&gt; </div>
           <td></td>
           <td class="paramtype">const string_type::value_type *&#160;</td>
           <td class="paramname"><em>null_sentry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classnanodbc_1_1statement.html#a523142f53cbbee8d68a074da993e7fa6">param_direction</a>&#160;</td>
+          <td class="paramname"><em>direction</em> = <code><a class="el" href="classnanodbc_1_1statement.html#a523142f53cbbee8d68a074da993e7fa6ae33f42ce0677d00c291ff4d8e39f99de">PARAM_IN</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="group__bind__strings.html#ga151f4ab504de6243cdbe54f070c85a2e" title="Binds multiple string values. ">bind_strings</a> </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga7b2a8f30eb259684f1b3b8a5ac3b7815"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nanodbc::statement::bind_strings </td>
+          <td>(</td>
+          <td class="paramtype">short&#160;</td>
+          <td class="paramname"><em>param</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const string_type::value_type *&#160;</td>
+          <td class="paramname"><em>values</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>length</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>elements</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool *&#160;</td>
+          <td class="paramname"><em>nulls</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classnanodbc_1_1statement.html#a523142f53cbbee8d68a074da993e7fa6">param_direction</a>&#160;</td>
+          <td class="paramname"><em>direction</em> = <code><a class="el" href="classnanodbc_1_1statement.html#a523142f53cbbee8d68a074da993e7fa6ae33f42ce0677d00c291ff4d8e39f99de">PARAM_IN</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="group__bind__strings.html#ga151f4ab504de6243cdbe54f070c85a2e" title="Binds multiple string values. ">bind_strings</a> </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga475aad05cf4e90224270d1a525d38f1e"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;std::size_t N, std::size_t M&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nanodbc::statement::bind_strings </td>
+          <td>(</td>
+          <td class="paramtype">short&#160;</td>
+          <td class="paramname"><em>param</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const string_type::value_type(&amp;)&#160;</td>
+          <td class="paramname"><em>values</em>[N][M], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool *&#160;</td>
+          <td class="paramname"><em>nulls</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>

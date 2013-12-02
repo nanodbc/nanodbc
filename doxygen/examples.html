@@ -127,26 +127,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">        show(results);</div>
 <div class="line">    }</div>
 <div class="line"></div>
-<div class="line">    <span class="comment">// Inserting NULL values with sentry</span></div>
-<div class="line">    {</div>
-<div class="line">        <a class="code" href="classnanodbc_1_1statement.html">nanodbc::statement</a> <a class="code" href="classnanodbc_1_1statement.html#ac9ea91624b4b6136f98b002f75376cd9">statement</a>(<a class="code" href="classnanodbc_1_1statement.html#a4eb59e468b303a9d6acbe3ba1c408495">connection</a>);</div>
-<div class="line">        <a class="code" href="group__main.html#ga32162976c26f57bac5ec3501d9cfddc6">prepare</a>(<a class="code" href="classnanodbc_1_1statement.html#ac9ea91624b4b6136f98b002f75376cd9">statement</a>, <span class="stringliteral">&quot;insert into public.simple_test (a, b) values (?, ?);&quot;</span>);</div>
-<div class="line"></div>
-<div class="line">        <span class="keyword">const</span> <span class="keywordtype">int</span> elements = 5;</div>
-<div class="line">        <span class="keyword">const</span> <span class="keywordtype">int</span> a_null = 0;</div>
-<div class="line">        <span class="keyword">const</span> <span class="keywordtype">char</span>* b_null = <span class="stringliteral">&quot;&quot;</span>; </div>
-<div class="line">        <span class="keywordtype">int</span> a_data[elements] = {0, 88, 0, 0, 0};</div>
-<div class="line">        <span class="keywordtype">char</span> b_data[elements][10] = {<span class="stringliteral">&quot;&quot;</span>, <span class="stringliteral">&quot;non-null&quot;</span>, <span class="stringliteral">&quot;&quot;</span>, <span class="stringliteral">&quot;&quot;</span>, <span class="stringliteral">&quot;&quot;</span>};</div>
-<div class="line"></div>
-<div class="line">        <a class="code" href="classnanodbc_1_1statement.html#ac9ea91624b4b6136f98b002f75376cd9">statement</a>.bind(0, a_data, elements, &amp;a_null);</div>
-<div class="line">        <a class="code" href="classnanodbc_1_1statement.html#ac9ea91624b4b6136f98b002f75376cd9">statement</a>.bind_strings(1, b_data, b_null);</div>
-<div class="line"></div>
-<div class="line">        <a class="code" href="group__main.html#ga72a83c5d4cf4b115f637faa7c5e1702f">execute</a>(<a class="code" href="classnanodbc_1_1statement.html#ac9ea91624b4b6136f98b002f75376cd9">statement</a>, elements);</div>
-<div class="line"></div>
-<div class="line">        <a class="code" href="classnanodbc_1_1result.html">nanodbc::result</a> results = <a class="code" href="group__main.html#ga72a83c5d4cf4b115f637faa7c5e1702f">execute</a>(<a class="code" href="classnanodbc_1_1statement.html#a4eb59e468b303a9d6acbe3ba1c408495">connection</a>, <span class="stringliteral">&quot;select * from public.simple_test;&quot;</span>);</div>
-<div class="line">        show(results);</div>
-<div class="line">    }</div>
-<div class="line"></div>
 <div class="line">    <span class="comment">// Accessing results by name, or column number</span></div>
 <div class="line">    {</div>
 <div class="line">        results = <a class="code" href="group__main.html#ga72a83c5d4cf4b115f637faa7c5e1702f">execute</a>(<a class="code" href="classnanodbc_1_1statement.html#a4eb59e468b303a9d6acbe3ba1c408495">connection</a>, <span class="stringliteral">&quot;select a as first, b as second from public.simple_test where a = 1;&quot;</span>);</div>
@@ -238,6 +218,45 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">        show(results);</div>
 <div class="line"></div>
 <div class="line">        <a class="code" href="group__main.html#ga72a83c5d4cf4b115f637faa7c5e1702f">execute</a>(<a class="code" href="classnanodbc_1_1statement.html#a4eb59e468b303a9d6acbe3ba1c408495">connection</a>, <span class="stringliteral">&quot;drop table if exists public.date_test;&quot;</span>);</div>
+<div class="line">    }</div>
+<div class="line"></div>
+<div class="line">    <span class="comment">// Inserting NULL values with a sentry</span></div>
+<div class="line">    {</div>
+<div class="line">        <a class="code" href="classnanodbc_1_1statement.html">nanodbc::statement</a> <a class="code" href="classnanodbc_1_1statement.html#ac9ea91624b4b6136f98b002f75376cd9">statement</a>(<a class="code" href="classnanodbc_1_1statement.html#a4eb59e468b303a9d6acbe3ba1c408495">connection</a>);</div>
+<div class="line">        <a class="code" href="group__main.html#ga32162976c26f57bac5ec3501d9cfddc6">prepare</a>(<a class="code" href="classnanodbc_1_1statement.html#ac9ea91624b4b6136f98b002f75376cd9">statement</a>, <span class="stringliteral">&quot;insert into public.simple_test (a, b) values (?, ?);&quot;</span>);</div>
+<div class="line"></div>
+<div class="line">        <span class="keyword">const</span> <span class="keywordtype">int</span> elements = 5;</div>
+<div class="line">        <span class="keyword">const</span> <span class="keywordtype">int</span> a_null = 0;</div>
+<div class="line">        <span class="keyword">const</span> <span class="keywordtype">char</span>* b_null = <span class="stringliteral">&quot;&quot;</span>; </div>
+<div class="line">        <span class="keywordtype">int</span> a_data[elements] = {0, 88, 0, 0, 0};</div>
+<div class="line">        <span class="keywordtype">char</span> b_data[elements][10] = {<span class="stringliteral">&quot;&quot;</span>, <span class="stringliteral">&quot;non-null&quot;</span>, <span class="stringliteral">&quot;&quot;</span>, <span class="stringliteral">&quot;&quot;</span>, <span class="stringliteral">&quot;&quot;</span>};</div>
+<div class="line"></div>
+<div class="line">        <a class="code" href="classnanodbc_1_1statement.html#ac9ea91624b4b6136f98b002f75376cd9">statement</a>.bind(0, a_data, elements, &amp;a_null);</div>
+<div class="line">        <a class="code" href="classnanodbc_1_1statement.html#ac9ea91624b4b6136f98b002f75376cd9">statement</a>.bind_strings(1, b_data, b_null);</div>
+<div class="line"></div>
+<div class="line">        <a class="code" href="group__main.html#ga72a83c5d4cf4b115f637faa7c5e1702f">execute</a>(<a class="code" href="classnanodbc_1_1statement.html#ac9ea91624b4b6136f98b002f75376cd9">statement</a>, elements);</div>
+<div class="line"></div>
+<div class="line">        <a class="code" href="classnanodbc_1_1result.html">nanodbc::result</a> results = <a class="code" href="group__main.html#ga72a83c5d4cf4b115f637faa7c5e1702f">execute</a>(<a class="code" href="classnanodbc_1_1statement.html#a4eb59e468b303a9d6acbe3ba1c408495">connection</a>, <span class="stringliteral">&quot;select * from public.simple_test;&quot;</span>);</div>
+<div class="line">        show(results);</div>
+<div class="line">    }</div>
+<div class="line"></div>
+<div class="line">    <span class="comment">// Inserting NULL values with flags</span></div>
+<div class="line">    {</div>
+<div class="line">        <a class="code" href="classnanodbc_1_1statement.html">nanodbc::statement</a> <a class="code" href="classnanodbc_1_1statement.html#ac9ea91624b4b6136f98b002f75376cd9">statement</a>(<a class="code" href="classnanodbc_1_1statement.html#a4eb59e468b303a9d6acbe3ba1c408495">connection</a>);</div>
+<div class="line">        <a class="code" href="group__main.html#ga32162976c26f57bac5ec3501d9cfddc6">prepare</a>(<a class="code" href="classnanodbc_1_1statement.html#ac9ea91624b4b6136f98b002f75376cd9">statement</a>, <span class="stringliteral">&quot;insert into public.simple_test (a, b) values (?, ?);&quot;</span>);</div>
+<div class="line"></div>
+<div class="line">        <span class="keyword">const</span> <span class="keywordtype">int</span> elements = 2;</div>
+<div class="line">        <span class="keywordtype">int</span> a_data[elements] = {0, 42};</div>
+<div class="line">        <span class="keywordtype">char</span> b_data[elements][10] = {<span class="stringliteral">&quot;&quot;</span>, <span class="stringliteral">&quot;every&quot;</span>};</div>
+<div class="line">        <span class="keywordtype">bool</span> nulls[elements] = {<span class="keyword">true</span>, <span class="keyword">false</span>};</div>
+<div class="line"></div>
+<div class="line">        <a class="code" href="classnanodbc_1_1statement.html#ac9ea91624b4b6136f98b002f75376cd9">statement</a>.bind(0, a_data, elements, nulls);</div>
+<div class="line">        <a class="code" href="classnanodbc_1_1statement.html#ac9ea91624b4b6136f98b002f75376cd9">statement</a>.bind_strings(1, b_data, nulls);</div>
+<div class="line"></div>
+<div class="line">        <a class="code" href="group__main.html#ga72a83c5d4cf4b115f637faa7c5e1702f">execute</a>(<a class="code" href="classnanodbc_1_1statement.html#ac9ea91624b4b6136f98b002f75376cd9">statement</a>, elements);</div>
+<div class="line"></div>
+<div class="line">        <a class="code" href="classnanodbc_1_1result.html">nanodbc::result</a> results = <a class="code" href="group__main.html#ga72a83c5d4cf4b115f637faa7c5e1702f">execute</a>(<a class="code" href="classnanodbc_1_1statement.html#a4eb59e468b303a9d6acbe3ba1c408495">connection</a>, <span class="stringliteral">&quot;select * from public.simple_test;&quot;</span>);</div>
+<div class="line">        show(results);</div>
 <div class="line">    }</div>
 <div class="line"></div>
 <div class="line">    <span class="comment">// Cleanup</span></div>

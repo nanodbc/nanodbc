@@ -96,6 +96,10 @@ Functions</h2></td></tr>
 <tr class="memitem:gac70f19a2fad8b49284a55136b3353429"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__bind__multi.html#gac70f19a2fad8b49284a55136b3353429">nanodbc::statement::bind</a> (short param, const T *values, std::size_t elements, const T *null_sentry, param_direction direction=PARAM_IN)</td></tr>
 <tr class="memdesc:gac70f19a2fad8b49284a55136b3353429"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds multiple values.  <a href="#gac70f19a2fad8b49284a55136b3353429">More...</a><br/></td></tr>
 <tr class="separator:gac70f19a2fad8b49284a55136b3353429"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0fd85270a09707fe837e6dc76256673f"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:ga0fd85270a09707fe837e6dc76256673f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__bind__multi.html#ga0fd85270a09707fe837e6dc76256673f">nanodbc::statement::bind</a> (short param, const T *values, std::size_t elements, const bool *nulls, param_direction direction=PARAM_IN)</td></tr>
+<tr class="memdesc:ga0fd85270a09707fe837e6dc76256673f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds multiple values.  <a href="#ga0fd85270a09707fe837e6dc76256673f">More...</a><br/></td></tr>
+<tr class="separator:ga0fd85270a09707fe837e6dc76256673f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>If your prepared SQL query has any ? placeholders, this is how you bind values to them. Placeholder numbers count from left to right and are 0-indexed.</p>
@@ -106,6 +110,7 @@ Functions</h2></td></tr>
     <tr><td class="paramname">values</td><td>Values to substitute into placeholder. </td></tr>
     <tr><td class="paramname">elements</td><td>The number of elements being bound. </td></tr>
     <tr><td class="paramname">null_sentry</td><td>Value which should represent a null value. </td></tr>
+    <tr><td class="paramname">nulls</td><td>Flags for values that should be set to a null value. </td></tr>
     <tr><td class="paramname">param_direciton</td><td>ODBC parameter direction. </td></tr>
   </table>
   </dd>
@@ -187,6 +192,53 @@ template&lt;class T &gt; </div>
           <td></td>
           <td class="paramtype">const T *&#160;</td>
           <td class="paramname"><em>null_sentry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classnanodbc_1_1statement.html#a523142f53cbbee8d68a074da993e7fa6">param_direction</a>&#160;</td>
+          <td class="paramname"><em>direction</em> = <code><a class="el" href="classnanodbc_1_1statement.html#a523142f53cbbee8d68a074da993e7fa6ae33f42ce0677d00c291ff4d8e39f99de">PARAM_IN</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="group__bind__multi.html" title="Binds the given values to the given parameter placeholder number in the prepared statement. ">Binding multiple non-string values</a> </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga0fd85270a09707fe837e6dc76256673f"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void nanodbc::statement::bind </td>
+          <td>(</td>
+          <td class="paramtype">short&#160;</td>
+          <td class="paramname"><em>param</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T *&#160;</td>
+          <td class="paramname"><em>values</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>elements</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool *&#160;</td>
+          <td class="paramname"><em>nulls</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
