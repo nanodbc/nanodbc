@@ -211,6 +211,7 @@ div.contents > p
 , div.contents > h6
 , div.contents > div
 , div.contents > ul
+, div.contents > dl
 , table.directory td
 , div.summary
 {
@@ -619,7 +620,7 @@ h3.version {
     text-align: center;
 }
 
-div.qindex, div.navtab{
+div.qindex, div.navtab {
     background-color: #EBEFF6;
     border: 1px solid #A3B4D7;
     text-align: center;
