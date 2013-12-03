@@ -212,10 +212,13 @@ div.contents > p
 , table.directory td
 , div.summary
 {
-    padding-left: 30px;
-    padding-right: 30px;
+    width: 70%;
+    margin: 0px auto;
 }
 
+div.contents {
+    padding-bottom: 30px;
+}
 
 /*******************************************************************************
 Code Blocks
@@ -234,7 +237,6 @@ div.fragment {
     
     box-shadow: 0 0 10px rgba(0,0,0,.1);
 
-    width: 70%;
     margin: 0px auto;
     padding: 20px;
     margin-bottom: 20px;
@@ -708,9 +710,24 @@ img.footer {
     /*width: 100%;*/
 }
 
+td.memSeparator {
+    width: 100%;
+    border-top: 1px dashed gray;
+}
+
+td.memItemLeft {
+    padding-right: 1em;
+    width: 20%;
+} 
+
+td.memItemRight {
+
+} 
+
 .memitem {
     padding: 0;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
     margin-right: 5px;
         -webkit-transition: box-shadow 0.5s linear;
         -moz-transition: box-shadow 0.5s linear;
@@ -886,6 +903,7 @@ div.directory {
 
 .directory td.entry {
         /*white-space: nowrap;*/
+        width: 35%;
         padding-right: 6px;
     padding-top: 3px;
 }
@@ -899,7 +917,7 @@ div.directory {
 }
 
 .directory td.desc {
-        /*width: 100%;*/
+        width: 100%;
         padding-left: 6px;
     padding-right: 6px;
     padding-top: 3px;
