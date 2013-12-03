@@ -189,8 +189,8 @@ div.contents {
     background-color: #f2f2f2;
     border-top: 1px solid #f2f2f2;
     border-bottom: 1px solid #111;
-    width: 95%;
-    max-width: 95%;
+    width: 94%;
+    max-width: 94%;
     overflow: scroll;
     margin: 0 auto;
 }
@@ -232,7 +232,7 @@ Github Banners
     display: block;
     position: absolute;
     top:0;
-    right: 140px;
+    right: 187px;
     z-index: 10;
     padding: 10px 50px 10px 10px;
     color: #fff;
@@ -247,7 +247,7 @@ Github Banners
     display: block;
     position: absolute;
     top:0;
-    right: 350px;
+    right: 377px;
     z-index: 10;
     padding: 10px 10px 10px 10px;
     color: #fff;
@@ -375,7 +375,7 @@ Navigation
 }
 
 div.header {
-    width: 95%;
+    width: 94%;
     padding: 0px;
     margin: 0px auto;
     overflow: hidden;
@@ -417,7 +417,7 @@ div.headertitle {
 
 #top {
     background-color: #f2f2f2;
-    width: 95%;
+    width: 94%;
     margin: 0px auto;
     padding: 0px;
     padding-left: 10px !important;
@@ -437,7 +437,7 @@ div.headertitle {
 }
 
 .textblock {
-    width: 95%;
+    width: 94%;
     margin: 0 auto;
 }
 
@@ -489,7 +489,7 @@ address.footer {
     padding-top: 4em;
     padding-bottom: .5em;
     margin: 0 auto;
-    width: 94%;
+    width: 93%;
     background: #212121;
 }
 
