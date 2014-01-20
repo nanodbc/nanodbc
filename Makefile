@@ -1,3 +1,5 @@
+all: index dox clean
+
 index:
 	# Compile GitHub Pages content
 	cp ../example.cpp ./_includes
