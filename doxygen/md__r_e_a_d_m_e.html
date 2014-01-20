@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>nanodbc: README</title>
+<title>nanodbc: Synopsis</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -79,10 +79,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="headertitle">
-<div class="title">README </div>  </div>
+<div class="title">Synopsis </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>A very small C++ wrapper for the native C ODBC API. Please see the <a href="http://lexicalunit.github.com/nanodbc/">online documentation</a> for further information. </p>
+<div class="textblock"><p>A very small C++ wrapper for the native C ODBC API. Please see the <a href="http://lexicalunit.github.com/nanodbc/">online documentation</a> for user information, example usage, propaganda, and detailed source level documentation.</p>
+<h1>Building</h1>
+<p>You don't necessarily need to build nanodbc, as you can just drop the header and implementation files into your project. However I have provided <a href="www.cmake.org/">CMake</a> files which can be used to build a shared library object, or build and run the included unit tests. The CMake files will also support out of source builds.</p>
+<p>Unit tests are built using <a href="www.boost.org/doc/libs/release/libs/test/">Boost.Test</a> and therefore require Boost be installed. In order to build the tests you will also need to have either unixODBC or iODBC installed and discoverable by CMake. This is easy on OS X (for example) where you can just use <a href="brew.sh/‎">Homebrew</a> to install unixodbc with <code>brew install unixodbc</code>, or simply use the system provided iODBC if you have OS X prior to 10.9. Finally, the unit tests attempt to connect to a <a href="www.sqlite.org/‎">SQLite</a> database, so you will need to have that installed as well.</p>
+<h2>Example Build Process</h2>
+<p>```bash cd path/to/nanodbc/repository mkdir build cd build cmake .. make # creates shared library make nanodbc # creates shared library make example # builds example program make tests # builds unit tests make test # runs unit tests make install # installs <a class="el" href="nanodbc_8h.html" title="The entirety of nanodbc can be found within this file and nanodbc.cpp. ">nanodbc.h</a> and shared library ``` </p>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/>
