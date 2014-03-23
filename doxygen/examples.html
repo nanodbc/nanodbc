@@ -90,36 +90,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"></div>
 <div class="line"><span class="keyword">using namespace </span>std;</div>
 <div class="line"></div>
-<div class="line"><span class="keywordtype">void</span> run_test(<span class="keyword">const</span> <span class="keywordtype">char</span>* connection_string);</div>
 <div class="line"><span class="keywordtype">void</span> show(<a class="code" href="classnanodbc_1_1result.html">nanodbc::result</a>&amp; results);</div>
-<div class="line"></div>
-<div class="line"><span class="keywordtype">void</span> usage(std::ostream&amp; out, std::string <span class="keyword">const</span>&amp; binary_name)</div>
-<div class="line">{</div>
-<div class="line">    out &lt;&lt; <span class="stringliteral">&quot;usage: &quot;</span> &lt;&lt; binary_name &lt;&lt; <span class="stringliteral">&quot; connection_string&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line">}</div>
-<div class="line"></div>
-<div class="line"><span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span>* argv[])</div>
-<div class="line">{</div>
-<div class="line">    <span class="keywordflow">if</span>(argc != 2)</div>
-<div class="line">    {</div>
-<div class="line">        <span class="keywordtype">char</span>* app_name = std::strrchr(argv[0], <span class="charliteral">&#39;/&#39;</span>);</div>
-<div class="line">        app_name = app_name ? app_name + 1 : argv[0];</div>
-<div class="line">        <span class="keywordflow">if</span>(0 == std::strncmp(app_name, <span class="stringliteral">&quot;lt-&quot;</span>, 3))</div>
-<div class="line">            app_name += 3; <span class="comment">// remove libtool prefix</span></div>
-<div class="line">        usage(std::cerr, app_name);</div>
-<div class="line">        <span class="keywordflow">return</span> 1;</div>
-<div class="line">    }</div>
-<div class="line"></div>
-<div class="line">    <span class="keywordflow">try</span></div>
-<div class="line">    {</div>
-<div class="line">        run_test(argv[1]);</div>
-<div class="line">    }</div>
-<div class="line">    <span class="keywordflow">catch</span>(<span class="keyword">const</span> exception&amp; e)</div>
-<div class="line">    {</div>
-<div class="line">        cerr &lt;&lt; e.what() &lt;&lt; endl;</div>
-<div class="line">        <span class="keywordflow">return</span> 1;</div>
-<div class="line">    }</div>
-<div class="line">}</div>
 <div class="line"></div>
 <div class="line"><span class="keywordtype">void</span> run_test(<span class="keyword">const</span> <span class="keywordtype">char</span>* connection_string)</div>
 <div class="line">{</div>
@@ -303,6 +274,34 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">        <span class="keywordflow">for</span>(<span class="keywordtype">short</span> col = 0; col &lt; <a class="code" href="classnanodbc_1_1statement.html#aa0c021f78768849d0c89368de514954f">columns</a>; ++col)</div>
 <div class="line">            cout &lt;&lt; <span class="stringliteral">&quot;(&quot;</span> &lt;&lt; results.<a class="code" href="classnanodbc_1_1result.html#a525e38129972d9d874ae6f9973411eee">get</a>&lt;<span class="keywordtype">string</span>&gt;(col, <span class="stringliteral">&quot;null&quot;</span>) &lt;&lt; <span class="stringliteral">&quot;)\t&quot;</span>;</div>
 <div class="line">        cout &lt;&lt; endl;</div>
+<div class="line">    }</div>
+<div class="line">}</div>
+<div class="line"></div>
+<div class="line"><span class="keywordtype">void</span> usage(std::ostream&amp; out, std::string <span class="keyword">const</span>&amp; binary_name)</div>
+<div class="line">{</div>
+<div class="line">    out &lt;&lt; <span class="stringliteral">&quot;usage: &quot;</span> &lt;&lt; binary_name &lt;&lt; <span class="stringliteral">&quot; connection_string&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line">}</div>
+<div class="line"></div>
+<div class="line"><span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span>* argv[])</div>
+<div class="line">{</div>
+<div class="line">    <span class="keywordflow">if</span>(argc != 2)</div>
+<div class="line">    {</div>
+<div class="line">        <span class="keywordtype">char</span>* app_name = std::strrchr(argv[0], <span class="charliteral">&#39;/&#39;</span>);</div>
+<div class="line">        app_name = app_name ? app_name + 1 : argv[0];</div>
+<div class="line">        <span class="keywordflow">if</span>(0 == std::strncmp(app_name, <span class="stringliteral">&quot;lt-&quot;</span>, 3))</div>
+<div class="line">            app_name += 3; <span class="comment">// remove libtool prefix</span></div>
+<div class="line">        usage(std::cerr, app_name);</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"></div>
+<div class="line">    <span class="keywordflow">try</span></div>
+<div class="line">    {</div>
+<div class="line">        run_test(argv[1]);</div>
+<div class="line">    }</div>
+<div class="line">    <span class="keywordflow">catch</span>(<span class="keyword">const</span> exception&amp; e)</div>
+<div class="line">    {</div>
+<div class="line">        cerr &lt;&lt; e.what() &lt;&lt; endl;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
 <div class="line">    }</div>
 <div class="line">}</div>
 </div><!-- fragment --> </div></div><!-- contents -->
