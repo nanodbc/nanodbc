@@ -185,6 +185,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:ab30dac3e4defd5a90181202e99ee8ca5"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classnanodbc_1_1result.html">result</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#ab30dac3e4defd5a90181202e99ee8ca5">execute</a> (long batch_operations=1, long <a class="el" href="classnanodbc_1_1statement.html#adbd1acbbdcc529dc668bfef341593573">timeout</a>=0)</td></tr>
 <tr class="memdesc:ab30dac3e4defd5a90181202e99ee8ca5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute the previously prepared query now.  <a href="#ab30dac3e4defd5a90181202e99ee8ca5">More...</a><br /></td></tr>
 <tr class="separator:ab30dac3e4defd5a90181202e99ee8ca5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ff876a969955a5f4854db670066d3e9"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classnanodbc_1_1result.html">result</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#a6ff876a969955a5f4854db670066d3e9">procedure_columns</a> (const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;catalog, const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;schema, const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;procedure, const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;column)</td></tr>
+<tr class="memdesc:a6ff876a969955a5f4854db670066d3e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the input and output paramters of the specified stored procedure.  <a href="#a6ff876a969955a5f4854db670066d3e9">More...</a><br /></td></tr>
+<tr class="separator:a6ff876a969955a5f4854db670066d3e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af134dc3bf4b490135d839c251a8b84b5"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#af134dc3bf4b490135d839c251a8b84b5">affected_rows</a> () const </td></tr>
 <tr class="memdesc:af134dc3bf4b490135d839c251a8b84b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of rows affected by the request or -1 if the number of affected rows is not available.  <a href="#af134dc3bf4b490135d839c251a8b84b5">More...</a><br /></td></tr>
 <tr class="separator:af134dc3bf4b490135d839c251a8b84b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -653,6 +656,60 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>nanodbc::result</b><
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a class="anchor" id="a6ff876a969955a5f4854db670066d3e9"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classnanodbc_1_1result.html">result</a> nanodbc::statement::procedure_columns </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;&#160;</td>
+          <td class="paramname"><em>catalog</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;&#160;</td>
+          <td class="paramname"><em>schema</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;&#160;</td>
+          <td class="paramname"><em>procedure</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;&#160;</td>
+          <td class="paramname"><em>column</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">catalog</td><td>The catalog name of the procedure. </td></tr>
+    <tr><td class="paramname">schema</td><td>Pattern to use for schema names. </td></tr>
+    <tr><td class="paramname">procedure</td><td>The name of the procedure. </td></tr>
+    <tr><td class="paramname">column</td><td>Pattern to use for column names. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classnanodbc_1_1database__error.html" title="General database error. ">database_error</a></td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A result set object. </dd></dl>
 
 </div>
 </div>
