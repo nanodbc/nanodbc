@@ -7,7 +7,10 @@ index:
 
 dox:
 	# assumes gh-pages branch as a subdirectory named doc in the master branch
-	find doxygen -type f -not -name header.html -and -not -name footer.html | xargs rm 
+	find doxygen \
+		-not -name doxygen \
+		-and -not -name header.html \
+		-and -not -name footer.html | xargs rm -rf
 	cd ..; doxygen doc/Doxyfile
 
 clean:
