@@ -1043,3 +1043,22 @@ table.fieldtable {
     overflow: hidden;
     font-size: 13px;
 }
+
+/*******************************************************************************
+Modifications
+*******************************************************************************/
+
+.license {
+    margin: 0px;
+    word-wrap:normal;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    font-size:85%;
+    line-height:1.45;
+    background-color: #CECECE;
+    border: 0;
+    font: 12px Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    max-width: 800px;
+}
