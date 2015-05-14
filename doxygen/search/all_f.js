@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['synopsis',['Synopsis',['../md__r_e_a_d_m_e.html',1,'']]],
-  ['sec',['sec',['../structnanodbc_1_1timestamp.html#a41c233f469d097bafcac752750d11f36',1,'nanodbc::timestamp']]],
+  ['sec',['sec',['../structnanodbc_1_1timestamp.html#a2656a11498c4efff9488cca0184a0c12',1,'nanodbc::timestamp']]],
   ['skip',['skip',['../classnanodbc_1_1result.html#abcd96eb3fd8fea53fa41289c5fc87377',1,'nanodbc::result']]],
   ['statement',['statement',['../classnanodbc_1_1statement.html',1,'nanodbc']]],
   ['statement',['statement',['../classnanodbc_1_1statement.html#ac9ea91624b4b6136f98b002f75376cd9',1,'nanodbc::statement::statement()'],['../classnanodbc_1_1statement.html#aaa2dbe21f428c67d7dd32b9d8eeb8877',1,'nanodbc::statement::statement(class connection &amp;conn)'],['../classnanodbc_1_1statement.html#ab711e5ef116c846a59ea3d37e89cbd14',1,'nanodbc::statement::statement(class connection &amp;conn, const string_type &amp;query, long timeout=0)'],['../classnanodbc_1_1statement.html#a78cdb0dbf1437cd98eff448e8c6a8757',1,'nanodbc::statement::statement(const statement &amp;rhs)']]],

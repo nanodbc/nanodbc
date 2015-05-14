@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>nanodbc: Synopsis</title>
+<title>nanodbc: src Directory Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -40,7 +40,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li class="current"><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
@@ -77,22 +77,27 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li>  </ul>
+</div>
 </div><!-- top -->
 <div class="header">
   <div class="headertitle">
-<div class="title">Synopsis </div>  </div>
+<div class="title">src Directory Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>A very small C++ wrapper for the native C ODBC API. Please see the <a href="http://lexicalunit.github.com/nanodbc/">online documentation</a> for user information, example usage, propaganda, and detailed source level documentation.</p>
-<h1>Building</h1>
-<p>You don't necessarily need to build nanodbc, as you can just drop the header and implementation files into your project. However I have provided <a href="www.cmake.org/">CMake</a> files which can be used to build a shared library object, or build and run the included unit tests. The CMake files will also support out of source builds.</p>
-<p>Unit tests are built using <a href="www.boost.org/doc/libs/release/libs/test/">Boost.Test</a> and therefore require Boost be installed. In order to build the tests you will also need to have either unixODBC or iODBC installed and discoverable by CMake. This is easy on OS X (for example) where you can just use <a href="brew.sh/‎">Homebrew</a> to install unixODBC with <code>brew install unixodbc</code>, or simply use the system provided iODBC if you have OS X prior to 10.9. Also note that you can install Boost via Homebrew as well, which is very convenient!</p>
-<p>Finally, the unit tests attempt to connect to a <a href="www.sqlite.org/‎">SQLite</a> database, so you will have to have that and a SQLite ODBC driver installed. At the time of this writing, there happens to be a nice <a href="http://www.ch-werner.de/sqliteodbc/">SQLite ODBC driver</a> available from Christian Werner's website. The tests expect to find a data source named <code>sqlite</code>. So for example, your <code>odbcinst.ini</code> file on OS X might have a section similar to the following.</p>
-<p>``` [sqlite] Description = SQLite ODBC Driver Driver = /usr/lib/libsqlite3odbc-0.93.dylib Setup = /usr/lib/libsqlite3odbc-0.93.dylib Threading = 2 ```</p>
-<h2>Example Build Process</h2>
-<p>It's most convenient to create a build directory for an out of source build, but this isn't required. After you've used cmake to generate your Makefiles, you probably only really need to be aware of <code>make nanodbc</code> which will build your shared object, or <code>make check</code> which will build and run the unit tests. If the unit tests fail, please don't hesitate to report it by creating an issue including a log of the output you're getting! You may also want to install nanodbc to your system using <code>make install</code>.</p>
-<p>```bash cd path/to/nanodbc/repository mkdir build cd build cmake .. [-DNANODBC_USE_CPP11=ON] [-DNANODBC_USE_UNICODE=ON] make # creates shared library make nanodbc # creates shared library make example # builds example program make tests # only builds the unit tests make test # only runs the unit tests make check # builds and then runs unit tests make install # installs <a class="el" href="nanodbc_8h.html" title="The entirety of nanodbc can be found within this file and nanodbc.cpp. ">nanodbc.h</a> and shared library ``` </p>
-</div></div><!-- contents -->
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="files"></a>
+Files</h2></td></tr>
+<tr class="memitem:nanodbc_8cpp"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nanodbc_8cpp.html">nanodbc.cpp</a></td></tr>
+<tr class="memdesc:nanodbc_8cpp"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implementation details. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:nanodbc_8h"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nanodbc_8h.html">nanodbc.h</a> <a href="nanodbc_8h_source.html">[code]</a></td></tr>
+<tr class="memdesc:nanodbc_8h"><td class="mdescLeft">&#160;</td><td class="mdescRight">The entirety of nanodbc can be found within this file and <a class="el" href="nanodbc_8cpp.html" title="Implementation details. ">nanodbc.cpp</a>. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/>
 <address class="footer">
