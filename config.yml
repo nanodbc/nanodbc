@@ -1,21 +1,42 @@
-source:      .
-destination: ./doc
-include:     ['.htaccess']
-exclude:     []
-timezone:    nil
+source:             .
+destination:        ./doc
+safe:               false
+include:            [".htaccess"]
+exclude:            []
+encoding:           "utf-8"
+markdown_ext:       "markdown,mkdown,mkdn,mkd,md"
+show_drafts:        null
+limit_posts:        0
+future:             true
+unpublished:        false
+markdown:           kramdown
+highlighter:        rouge
+lsi:                false
+excerpt_separator:  "\n\n"
+permalink:          date
+paginate_path:      /page:num
+timezone:           null
+quiet:              false
+default:            []
 
-future:      true
-show_drafts: nil
-limit_posts: 0
-pygments:    true
+rdiscount:
+  extensions: []
 
-relative_permalinks: true
+redcarpet:
+  extensions: []
 
-permalink:     date
-paginate_path: 'page:num'
+kramdown:
+  auto_ids:       true
+  footnote_nr:    1
+  entity_output:  as_char
+  toc_levels:     1..6
+  smart_quotes:   lsquo,rsquo,ldquo,rdquo
+  enable_coderay: false
 
-markdown:      maruku
-markdown_ext:  markdown,mkd,mkdn,md
-textile_ext:   textile
-
-excerpt_separator: "\n\n"
+  coderay:
+    coderay_wrap:              div
+    coderay_line_numbers:      inline
+    coderay_line_number_start: 1
+    coderay_tab_width:         4
+    coderay_bold_every:        10
+    coderay_css:               style

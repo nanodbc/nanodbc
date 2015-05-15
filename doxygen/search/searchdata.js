@@ -9,8 +9,7 @@ var indexSectionsWithContent =
   6: "ns",
   7: "p",
   8: "p",
-  9: "bemu",
-  10: "e"
+  9: "befmu"
 };
 
 var indexSectionNames =
@@ -24,8 +23,7 @@ var indexSectionNames =
   6: "typedefs",
   7: "enums",
   8: "enumvalues",
-  9: "groups",
-  10: "pages"
+  9: "groups"
 };
 
 var indexSectionLabels =
@@ -39,7 +37,6 @@ var indexSectionLabels =
   6: "Typedefs",
   7: "Enumerations",
   8: "Enumerator",
-  9: "Modules",
-  10: "Pages"
+  9: "Modules"
 };
 
