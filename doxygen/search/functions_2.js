@@ -3,6 +3,7 @@ var searchData=
   ['cancel',['cancel',['../classnanodbc_1_1statement.html#a81f6e6e0b547a900d20652fe5abe7b75',1,'nanodbc::statement']]],
   ['close',['close',['../classnanodbc_1_1statement.html#abcf1dda8ab40a3b8ebd33c69afa4a399',1,'nanodbc::statement']]],
   ['column',['column',['../classnanodbc_1_1result.html#ac157d6b97848e41f943fd1f1bafa0bc3',1,'nanodbc::result']]],
+  ['column_5fc_5fdatatype',['column_c_datatype',['../classnanodbc_1_1result.html#a5c8b44f9c5d8c83fb4dfcf4ca4e592e8',1,'nanodbc::result::column_c_datatype(short column) const '],['../classnanodbc_1_1result.html#a9a518983400b81f79f37f41760a42fae',1,'nanodbc::result::column_c_datatype(const string_type &amp;column_name) const ']]],
   ['column_5fdatatype',['column_datatype',['../classnanodbc_1_1result.html#a1859170a42f5127e3079642c85c92060',1,'nanodbc::result::column_datatype(short column) const '],['../classnanodbc_1_1result.html#a10849f03d9b133df7c550770ec262a0b',1,'nanodbc::result::column_datatype(const string_type &amp;column_name) const ']]],
   ['column_5fname',['column_name',['../classnanodbc_1_1result.html#af8cbcfaf255c7e60a67e00137358c7cb',1,'nanodbc::result']]],
   ['column_5fsize',['column_size',['../classnanodbc_1_1result.html#a1f92be8e23c6503464dfbb4645914dfa',1,'nanodbc::result']]],
