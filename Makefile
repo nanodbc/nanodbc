@@ -1,8 +1,8 @@
-.PHONY: all index dox clean
+.PHONY: all index dox clean commit
 
 all: index dox clean
 
-# Compile GitHub Pages content
+# compiles GitHub Pages content
 index:
 	jekyll build -q --config config.yml
 
@@ -17,3 +17,8 @@ dox:
 # cleans generated jekyll output
 clean:
 	rm -rf doc
+
+# commit update
+commit:
+	git add --all
+	git commit -am "Updated documentation."
