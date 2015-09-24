@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['_7econnection',['~connection',['../classnanodbc_1_1connection.html#ac1c950cf86fd205f8c41399a8d96c1bb',1,'nanodbc::connection']]],
-  ['_7eresult',['~result',['../classnanodbc_1_1result.html#aa5b60db0a4b2fb30bb8c10352f01cc02',1,'nanodbc::result']]],
-  ['_7estatement',['~statement',['../classnanodbc_1_1statement.html#aea8078384372f2c34175722d246b54c1',1,'nanodbc::statement']]],
-  ['_7etransaction',['~transaction',['../classnanodbc_1_1transaction.html#a11d46ef86c8ce55921e8a42a972c3e14',1,'nanodbc::transaction']]]
+  ['_7econnection',['~connection',['../classnanodbc_1_1connection.html#ad2f0e1d2d37bda703125533e70eb89e4',1,'nanodbc::connection']]],
+  ['_7eresult',['~result',['../classnanodbc_1_1result.html#afac7287b846d3fe0373a4cb30455ade9',1,'nanodbc::result']]],
+  ['_7estatement',['~statement',['../classnanodbc_1_1statement.html#aa9c5ff8ff1f8e4d7a2bb8bdaf920d040',1,'nanodbc::statement']]],
+  ['_7etransaction',['~transaction',['../classnanodbc_1_1transaction.html#a4b44b1f3abcd0fc7e6e60be7796b3cc1',1,'nanodbc::transaction']]]
 ];
