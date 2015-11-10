@@ -133,11 +133,21 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memdesc:ad2f0e1d2d37bda703125533e70eb89e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Automatically disconnects from the database and frees all associated resources.  <a href="#ad2f0e1d2d37bda703125533e70eb89e4">More...</a><br /></td></tr>
 <tr class="separator:ad2f0e1d2d37bda703125533e70eb89e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a693524630eff2384e4c4aef8f6adcfad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1connection.html#a693524630eff2384e4c4aef8f6adcfad">connect</a> (const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;dsn, const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;user, const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;pass, long timeout=0)</td></tr>
-<tr class="memdesc:a693524630eff2384e4c4aef8f6adcfad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create new connection object and immediately connect to the given data source.  <a href="#a693524630eff2384e4c4aef8f6adcfad">More...</a><br /></td></tr>
+<tr class="memdesc:a693524630eff2384e4c4aef8f6adcfad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connect to the given data source.  <a href="#a693524630eff2384e4c4aef8f6adcfad">More...</a><br /></td></tr>
 <tr class="separator:a693524630eff2384e4c4aef8f6adcfad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9dd73b98358c6124e16854e94d94891c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1connection.html#a9dd73b98358c6124e16854e94d94891c">connect</a> (const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;connection_string, long timeout=0)</td></tr>
-<tr class="memdesc:a9dd73b98358c6124e16854e94d94891c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create new connection object and immediately connect using the given connection string.  <a href="#a9dd73b98358c6124e16854e94d94891c">More...</a><br /></td></tr>
+<tr class="memdesc:a9dd73b98358c6124e16854e94d94891c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connect using the given connection string.  <a href="#a9dd73b98358c6124e16854e94d94891c">More...</a><br /></td></tr>
 <tr class="separator:a9dd73b98358c6124e16854e94d94891c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88a94660fff1639cce9a1a46c8e9e439"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1connection.html#a88a94660fff1639cce9a1a46c8e9e439">async_connect</a> (const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;dsn, const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;user, const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;pass, void *event_handle, long timeout=0)</td></tr>
+<tr class="memdesc:a88a94660fff1639cce9a1a46c8e9e439"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initiate an asynchronous connection operation to the given data source.  <a href="#a88a94660fff1639cce9a1a46c8e9e439">More...</a><br /></td></tr>
+<tr class="separator:a88a94660fff1639cce9a1a46c8e9e439"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28885aa74be6e52c3f32d5848c7c9223"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1connection.html#a28885aa74be6e52c3f32d5848c7c9223">async_connect</a> (const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;connection_string, void *event_handle, long timeout=0)</td></tr>
+<tr class="memdesc:a28885aa74be6e52c3f32d5848c7c9223"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initiate an asynchronous connection operation using the given connection string.  <a href="#a28885aa74be6e52c3f32d5848c7c9223">More...</a><br /></td></tr>
+<tr class="separator:a28885aa74be6e52c3f32d5848c7c9223"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a553744244891734178611487703063d3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a553744244891734178611487703063d3"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1connection.html#a553744244891734178611487703063d3">async_complete</a> ()</td></tr>
+<tr class="memdesc:a553744244891734178611487703063d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Completes a previously initiated asynchronous connection operation. <br /></td></tr>
+<tr class="separator:a553744244891734178611487703063d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac8c14ab783a6eade3ec63fda284beabb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac8c14ab783a6eade3ec63fda284beabb"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1connection.html#ac8c14ab783a6eade3ec63fda284beabb">connected</a> () const </td></tr>
 <tr class="memdesc:ac8c14ab783a6eade3ec63fda284beabb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if connected to the database. <br /></td></tr>
@@ -213,7 +223,7 @@ void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
   </table>
   </dd>
 </dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classnanodbc_1_1connection.html#ac8c14ab783a6eade3ec63fda284beabb" title="Returns true if connected to the database. ">connected()</a>, <a class="el" href="classnanodbc_1_1connection.html#a693524630eff2384e4c4aef8f6adcfad" title="Create new connection object and immediately connect to the given data source. ">connect()</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classnanodbc_1_1connection.html#ac8c14ab783a6eade3ec63fda284beabb" title="Returns true if connected to the database. ">connected()</a>, <a class="el" href="classnanodbc_1_1connection.html#a693524630eff2384e4c4aef8f6adcfad" title="Connect to the given data source. ">connect()</a> </dd></dl>
 
 </div>
 </div>
@@ -253,7 +263,7 @@ void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
   </table>
   </dd>
 </dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classnanodbc_1_1connection.html#ac8c14ab783a6eade3ec63fda284beabb" title="Returns true if connected to the database. ">connected()</a>, <a class="el" href="classnanodbc_1_1connection.html#a693524630eff2384e4c4aef8f6adcfad" title="Create new connection object and immediately connect to the given data source. ">connect()</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classnanodbc_1_1connection.html#ac8c14ab783a6eade3ec63fda284beabb" title="Returns true if connected to the database. ">connected()</a>, <a class="el" href="classnanodbc_1_1connection.html#a693524630eff2384e4c4aef8f6adcfad" title="Connect to the given data source. ">connect()</a> </dd></dl>
 
 </div>
 </div>
@@ -274,6 +284,116 @@ void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a88a94660fff1639cce9a1a46c8e9e439"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nanodbc::connection::async_connect </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;&#160;</td>
+          <td class="paramname"><em>dsn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;&#160;</td>
+          <td class="paramname"><em>user</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;&#160;</td>
+          <td class="paramname"><em>pass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>event_handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long&#160;</td>
+          <td class="paramname"><em>timeout</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>This method will only be available if nanodbc is built against ODBC headers and library that supports asynchronous mode. Such that the identifiers <code>SQL_ATTR_ASYNC_DBC_EVENT</code> and <code>SQLCompleteAsync</code> are extant. Otherwise this method will be defined, but not implemented.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dsn</td><td>The name of the data source. </td></tr>
+    <tr><td class="paramname">user</td><td>The username for authenticating to the data source. </td></tr>
+    <tr><td class="paramname">pass</td><td>The password for authenticating to the data source. </td></tr>
+    <tr><td class="paramname">event_handle</td><td>The event handle for which the caller will wait before calling async_complete. </td></tr>
+    <tr><td class="paramname">timeout</td><td>The number in seconds before connection timeout. Default is 0 indicating no timeout. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classnanodbc_1_1database__error.html" title="General database error. ">database_error</a></td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classnanodbc_1_1connection.html#ac8c14ab783a6eade3ec63fda284beabb" title="Returns true if connected to the database. ">connected()</a> </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a28885aa74be6e52c3f32d5848c7c9223"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nanodbc::connection::async_connect </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5">string_type</a> &amp;&#160;</td>
+          <td class="paramname"><em>connection_string</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>event_handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long&#160;</td>
+          <td class="paramname"><em>timeout</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>This method will only be available if nanodbc is built against ODBC headers and library that supports asynchronous mode. Such that the identifiers <code>SQL_ATTR_ASYNC_DBC_EVENT</code> and <code>SQLCompleteAsync</code> are extant. Otherwise this method will be defined, but not implemented.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">connection_string</td><td>The connection string for establishing a connection. </td></tr>
+    <tr><td class="paramname">event_handle</td><td>The event handle for which the caller will wait before calling async_complete. </td></tr>
+    <tr><td class="paramname">timeout</td><td>The number in seconds before connection timeout. Default is 0 indicating no timeout. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classnanodbc_1_1database__error.html" title="General database error. ">database_error</a></td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classnanodbc_1_1connection.html#ac8c14ab783a6eade3ec63fda284beabb" title="Returns true if connected to the database. ">connected()</a> </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="a693524630eff2384e4c4aef8f6adcfad"></a>
 <div class="memitem">
 <div class="memproto">
