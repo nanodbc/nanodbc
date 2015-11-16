@@ -728,7 +728,9 @@ template&lt;class T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Columns are numbered from left to right and 0-indexed. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>There is a bug/limitation in ODBC drivers for SQL Server (and possibly others) which causes SQLBindCol() to never write SQL_NOT_NULL to the length/indicator buffer unless you also bind the data column. Nanodbc's <a class="el" href="classnanodbc_1_1result.html#a46777a452792e0184f63bc370c3303a4" title="Returns true if and only if the given column of the current rowset is null. ">is_null()</a> will return correct values for (n)varchar(max) columns when you ensure that SQLGetData() has been called for that column (i.e. after <a class="el" href="classnanodbc_1_1result.html#a525e38129972d9d874ae6f9973411eee" title="Gets data from the given column of the current rowset. ">get()</a> or <a class="el" href="classnanodbc_1_1result.html#a466449d850b565e24511e811eca7b242" title="Gets data from the given column of the current rowset. ">get_ref()</a> is called).</p>
+<p>Columns are numbered from left to right and 0-indexed. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classnanodbc_1_1result.html#a525e38129972d9d874ae6f9973411eee" title="Gets data from the given column of the current rowset. ">get()</a>, <a class="el" href="classnanodbc_1_1result.html#a466449d850b565e24511e811eca7b242" title="Gets data from the given column of the current rowset. ">get_ref()</a> </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">column</td><td>position. </td></tr>
   </table>
@@ -756,6 +758,7 @@ template&lt;class T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>See is_null(short column) for details on a bug/limitation of some ODBC drivers. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classnanodbc_1_1result.html#a46777a452792e0184f63bc370c3303a4" title="Returns true if and only if the given column of the current rowset is null. ">is_null()</a> </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">column_name</td><td>column's name. </td></tr>
