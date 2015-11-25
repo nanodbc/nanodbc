@@ -265,6 +265,10 @@ Github Banners
 Code Blocks
 *******************************************************************************/
 
+code {
+    font-family: monospace;
+}
+
 div.fragment {
     border-radius: 2px;
     -moz-border-radius: 2px;

@@ -78,10 +78,45 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 
 <div class="header">
+  <div class="summary">
+<a href="#define-members">Macros</a>  </div>
   <div class="headertitle">
 <div class="title">Macros</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Macros that nanodbc uses, can be overriden by users.  
+<a href="#details">More...</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:gadf0e8c43472887021329414edff66b67"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__macros.html#gadf0e8c43472887021329414edff66b67">NANODBC_ASSERT</a>(expression)&#160;&#160;&#160;assert(expression)</td></tr>
+<tr class="memdesc:gadf0e8c43472887021329414edff66b67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assertion.  <a href="#gadf0e8c43472887021329414edff66b67">More...</a><br /></td></tr>
+<tr class="separator:gadf0e8c43472887021329414edff66b67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<h2 class="groupheader">Macro Definition Documentation</h2>
+<a class="anchor" id="gadf0e8c43472887021329414edff66b67"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define NANODBC_ASSERT</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">expression</td><td>)</td>
+          <td>&#160;&#160;&#160;assert(expression)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>By default, nanodbc uses C <code>assert()</code> for internal assertions. User can override it by defining <a class="el" href="group__macros.html#gadf0e8c43472887021329414edff66b67" title="Assertion. ">NANODBC_ASSERT(expr)</a> macro in the <a class="el" href="nanodbc_8h.html" title="The entirety of nanodbc can be found within this file and nanodbc.cpp. ">nanodbc.h</a> file and customizing it as desired, before building the library.</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#ifdef _DEBUG</span></div>
+<div class="line"><span class="preprocessor">#include &lt;crtdbg.h&gt;</span></div>
+<div class="line"><span class="preprocessor">#define NANODBC_ASSERT _ASSERTE</span></div>
+<div class="line"><span class="preprocessor">#endif</span></div>
+</div><!-- fragment --> 
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/>

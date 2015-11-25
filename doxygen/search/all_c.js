@@ -3,6 +3,7 @@ var searchData=
   ['nanodbc',['nanodbc',['../namespacenanodbc.html',1,'']]],
   ['nanodbc_2ecpp',['nanodbc.cpp',['../nanodbc_8cpp.html',1,'']]],
   ['nanodbc_2eh',['nanodbc.h',['../nanodbc_8h.html',1,'']]],
+  ['nanodbc_5fassert',['NANODBC_ASSERT',['../group__macros.html#gadf0e8c43472887021329414edff66b67',1,'nanodbc.h']]],
   ['native_5fdbc_5fhandle',['native_dbc_handle',['../classnanodbc_1_1connection.html#a75c8024e3f9b3a6944a1969111514b58',1,'nanodbc::connection']]],
   ['native_5fenv_5fhandle',['native_env_handle',['../classnanodbc_1_1connection.html#a3fed999adfc27f11723f945bf21f8236',1,'nanodbc::connection']]],
   ['native_5fstatement_5fhandle',['native_statement_handle',['../classnanodbc_1_1statement.html#aa9ab1d41fba17763b6ef604a458cdd5d',1,'nanodbc::statement::native_statement_handle()'],['../classnanodbc_1_1result.html#a52c9e3670fd73817fad12f387318e568',1,'nanodbc::result::native_statement_handle()']]],
