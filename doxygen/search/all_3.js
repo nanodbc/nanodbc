@@ -2,6 +2,7 @@ var searchData=
 [
   ['database_5ferror',['database_error',['../classnanodbc_1_1database__error.html',1,'nanodbc']]],
   ['database_5ferror',['database_error',['../classnanodbc_1_1database__error.html#a5896a7b81053281d045eb9a0e127ef76',1,'nanodbc::database_error']]],
+  ['database_5fname',['database_name',['../classnanodbc_1_1connection.html#abbb6164b78dd901937a8e8750d906085',1,'nanodbc::connection']]],
   ['date',['date',['../structnanodbc_1_1date.html',1,'nanodbc']]],
   ['day',['day',['../structnanodbc_1_1date.html#ad796f131143db2ceb9277f52745b8d33',1,'nanodbc::date::day()'],['../structnanodbc_1_1timestamp.html#a5ca9eb0eb39990449ba3f855e119f487',1,'nanodbc::timestamp::day()']]],
   ['disconnect',['disconnect',['../classnanodbc_1_1connection.html#adf614b7fdc08596122ca12e21a61ba34',1,'nanodbc::connection']]],

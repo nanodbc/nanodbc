@@ -1,6 +1,7 @@
 var searchData=
 [
   ['cancel',['cancel',['../classnanodbc_1_1statement.html#a81f6e6e0b547a900d20652fe5abe7b75',1,'nanodbc::statement']]],
+  ['catalog_5fname',['catalog_name',['../classnanodbc_1_1connection.html#a1da2af13e61f54e8af66d6b19da7da57',1,'nanodbc::connection']]],
   ['close',['close',['../classnanodbc_1_1statement.html#abcf1dda8ab40a3b8ebd33c69afa4a399',1,'nanodbc::statement']]],
   ['column',['column',['../classnanodbc_1_1result.html#ac157d6b97848e41f943fd1f1bafa0bc3',1,'nanodbc::result']]],
   ['column_5fc_5fdatatype',['column_c_datatype',['../classnanodbc_1_1result.html#a5c8b44f9c5d8c83fb4dfcf4ca4e592e8',1,'nanodbc::result::column_c_datatype(short column) const '],['../classnanodbc_1_1result.html#a9a518983400b81f79f37f41760a42fae',1,'nanodbc::result::column_c_datatype(const string_type &amp;column_name) const ']]],
