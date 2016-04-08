@@ -710,8 +710,8 @@ struct base_test_fixture
     {
         nanodbc::connection connection = connect();
         REQUIRE(connection.connected());
-        REQUIRE(connection.native_dbc_handle());
-        REQUIRE(connection.native_env_handle());
+        REQUIRE(connection.native_dbc_handle() != nullptr);
+        REQUIRE(connection.native_env_handle() != nullptr);
         REQUIRE(connection.transactions() == std::size_t(0));
 
         drop_table(connection, NANODBC_TEXT("simple_test"));
@@ -735,8 +735,9 @@ struct base_test_fixture
             const bool affected_four = results.affected_rows() == 4;
             const bool affected_zero = results.affected_rows() == 0;
             const bool affected_negative_one = results.affected_rows() == -1;
-            REQUIRE(affected_four + affected_zero + affected_negative_one);
-            if(!(affected_four + affected_zero + affected_negative_one)) {
+            const int affected = affected_four + affected_zero + affected_negative_one;
+            REQUIRE(affected != 0);
+            if(!affected) {
                 // Provide more verbose output if one of the above terms is false:
                 CHECK(affected_four);
                 CHECK(affected_zero);
@@ -823,8 +824,8 @@ struct base_test_fixture
     {
         nanodbc::connection connection = connect();
         REQUIRE(connection.connected());
-        REQUIRE(connection.native_dbc_handle());
-        REQUIRE(connection.native_env_handle());
+        REQUIRE(connection.native_dbc_handle() != nullptr);
+        REQUIRE(connection.native_env_handle() != nullptr);
         REQUIRE(connection.transactions() == std::size_t(0));
 
         const nanodbc::string_type name = NANODBC_TEXT("Fred");
