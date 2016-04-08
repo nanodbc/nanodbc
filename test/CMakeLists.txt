@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 2.8.7)
 include(ExternalProject)
 
-# Workaround for a Travis-CI + Catch build issue: `error: ignoring #pragma gcc diagnostic`
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
+	# Workaround for a Travis-CI + Catch build issue: `error: ignoring #pragma gcc diagnostic`
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
+endif()
 
 find_package(Git REQUIRED)
 ExternalProject_Add(
