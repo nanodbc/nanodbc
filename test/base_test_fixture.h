@@ -86,6 +86,15 @@ struct base_test_fixture
         REQUIRE(results.get<int>(0) == rows);
     }
 
+    static std::string to_hex_string(std::vector<std::uint8_t> const& bytes)
+    {
+        std::ostringstream ss;
+        ss << std::hex << std::setfill('0') << std::uppercase;
+        for (auto const& b : bytes)
+            ss << std::setw(2) << static_cast<int>(b);
+        return ss.str();
+    }
+
     nanodbc::string_type get_connection_string_from_env() const
     {
         const char* env_name = "NANODBC_TEST_CONNSTR";
