@@ -2519,6 +2519,8 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
             {
                 // Input is always std::string, while output may be std::string or wide_string_type
                 std::string out;
+                // The length of the data available to return, decreasing with subsequent SQLGetData calls.
+                // But, NOT the length of data returned into the buffer (apart from the final call).
                 SQLLEN ValueLenOrInd;
                 SQLRETURN rc;
                 void* handle = native_statement_handle();
@@ -2536,14 +2538,17 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
                         , buffer_size - 1   // BufferLength
                         , &ValueLenOrInd);  // StrLen_or_IndPtr
                     if(ValueLenOrInd > 0)
-                        out.append(buffer);
+                        out.append(buffer, std::min<std::size_t>(ValueLenOrInd, buffer_size - 1));
                     else if(ValueLenOrInd == SQL_NULL_DATA)
                         *col.cbdata_ = (SQLINTEGER) SQL_NULL_DATA;
                     // Sequence of successful calls is:
                     // SQL_NO_DATA or SQL_SUCCESS_WITH_INFO followed by SQL_SUCCESS.
                 } while(rc == SQL_SUCCESS_WITH_INFO);
-                if (rc == SQL_SUCCESS || rc == SQL_NO_DATA)
+                if(rc == SQL_SUCCESS || rc == SQL_NO_DATA)
                     convert(out, result);
+                else
+                    if(!success(rc))
+                        NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
             }
             else
             {
@@ -2561,6 +2566,8 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
                 // Input is always wide_string_type, output might be std::string or wide_string_type.
                 // Use a string builder to build the output string.
                 wide_string_type out;
+                // The length of the data available to return, decreasing with subsequent SQLGetData calls.
+                // But, NOT the length of data returned into the buffer (apart from the final call).
                 SQLLEN ValueLenOrInd;
                 SQLRETURN rc;
                 void* handle = native_statement_handle();
@@ -2578,14 +2585,17 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
                         , buffer_size - 1   // BufferLength
                         , &ValueLenOrInd);  // StrLen_or_IndPtr
                     if(ValueLenOrInd > 0)
-                        out.append(buffer);
+                        out.append(buffer, std::min<std::size_t>(ValueLenOrInd, buffer_size - 1));
                     else if(ValueLenOrInd == SQL_NULL_DATA)
                         *col.cbdata_ = (SQLINTEGER) SQL_NULL_DATA;
                     // Sequence of successful calls is:
                     // SQL_NO_DATA or SQL_SUCCESS_WITH_INFO followed by SQL_SUCCESS.
                 } while(rc == SQL_SUCCESS_WITH_INFO);
-                if (rc == SQL_SUCCESS || rc == SQL_NO_DATA)
+                if(rc == SQL_SUCCESS || rc == SQL_NO_DATA)
                     convert(out, result);
+                else
+                    if(!success(rc))
+                        NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);;
             }
             else
             {
