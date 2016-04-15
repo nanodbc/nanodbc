@@ -18,7 +18,11 @@
 #endif
 
 #ifdef NANODBC_USE_UNICODE
-    #define NANODBC_TEXT(s) u ## s
+    #ifdef _MSC_VER
+        #define NANODBC_TEXT(s) L ## s
+    #else
+        #define NANODBC_TEXT(s) u ## s
+    #endif
 #else
     #define NANODBC_TEXT(s) s
 #endif

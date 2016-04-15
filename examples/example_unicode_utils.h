@@ -7,18 +7,28 @@
 #include <locale>
 #include <string>
 
+#ifdef NANODBC_USE_IODBC_WIDE_STRINGS
+#error Examples do not support the iODBC wide strings
+#endif
+
 #ifdef NANODBC_USE_UNICODE
     #undef NANODBC_TEXT
-    #define NANODBC_TEXT(s) u ## s
+    #ifdef _MSC_VER
+        #define NANODBC_TEXT(s) L ## s
+    #else
+        #define NANODBC_TEXT(s) u ## s
+    #endif
 
     inline nanodbc::string_type convert(std::string const& in)
     {
-        std::u16string out;
+        static_assert(sizeof(nanodbc::string_type::value_type) > 1, "NANODBC_USE_UNICODE mode requires wide string_type");
+        nanodbc::string_type out;
         // Workaround for confirmed bug in VS2015.
         // See: https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error
         #if defined(_MSC_VER) && (_MSC_VER == 1900)
-            auto s = std::wstring_convert<std::codecvt_utf8_utf16<int16_t>, int16_t>().from_bytes(in);
-            auto p = reinterpret_cast<char16_t const*>(s.data());
+            using wide_char_t = nanodbc::string_type::value_type;
+            auto s = std::wstring_convert<std::codecvt_utf8_utf16<wide_char_t>, wide_char_t>().from_bytes(in);
+            auto p = reinterpret_cast<wide_char_t const*>(s.data());
             out.assign(p, p + s.size());
         #else
             out = std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>().from_bytes(in);
@@ -28,11 +38,13 @@
 
     inline std::string convert(nanodbc::string_type const& in)
     {
+        static_assert(sizeof(nanodbc::string_type::value_type) > 1, "string_type must be wide");
         std::string out;
         // See above for details about this workaround.
         #if defined(_MSC_VER) && (_MSC_VER == 1900)
-            std::wstring_convert<std::codecvt_utf8_utf16<int16_t>, int16_t> convert;
-            auto p = reinterpret_cast<const int16_t *>(in.data());
+            using wide_char_t = nanodbc::string_type::value_type;
+            std::wstring_convert<std::codecvt_utf8_utf16<wide_char_t>, wide_char_t> convert;
+            auto p = reinterpret_cast<const wide_char_t *>(in.data());
             out = convert.to_bytes(p, p + in.size());
         #else
             out = std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>().to_bytes(in);

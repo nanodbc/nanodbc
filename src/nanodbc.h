@@ -133,7 +133,11 @@ namespace nanodbc
         #ifdef NANODBC_USE_IODBC_WIDE_STRINGS
             typedef std::u32string string_type;
         #else
-            typedef std::u16string string_type;
+            #ifdef _MSC_VER
+                typedef std::wstring string_type;
+            #else
+                typedef std::u16string string_type;
+            #endif
         #endif
     #else
         typedef std::string string_type;
