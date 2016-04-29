@@ -28,10 +28,8 @@ clone_depth: 5
 # - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 init:
-  - ps: |
-      Get-ChildItem Env: | %{"{0}={1}" -f $_.Name,$_.Value}
-  - ps: |
-      Get-OdbcDriver -Platform 64-bit | Select-Object -ExpandProperty Name
+  - ps: `Get-ChildItem Env: | %{"{0}={1}" -f $_.Name,$_.Value}`
+  - ps: `Get-OdbcDriver -Platform 64-bit | Select-Object -ExpandProperty Name`
   - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 services:
@@ -54,6 +52,7 @@ before_build:
       else {
         throw 'TODO: ' + $env:DB + ' not configured yet'
       }
+      if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
   - cmd: call .\scripts\appveyor\configure.bat
 
 build:
@@ -79,3 +78,4 @@ test_script:
   - ps: |
       $cmd = 'ctest -V --output-on-failure -C ' + $Env:CONFIGURATION + ' -R ' + $test_name
       iex "& $cmd"
+      if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
