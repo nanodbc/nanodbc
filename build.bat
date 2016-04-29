@@ -1,5 +1,5 @@
 @echo off
-rem Runs CMake to configure nanodbc (static) for Visual Studio 2015.
+rem Runs CMake to configure nanodbc (static library) for Visual Studio 2015.
 rem Runs MSBuild to build the generated solution.
 setlocal
 
