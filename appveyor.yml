@@ -1,0 +1,81 @@
+version: 1.0.{build}
+
+os: Visual Studio 2015
+
+platform: x64
+
+configuration: Release
+
+matrix:
+  fast_finish: true
+
+environment:
+  matrix:
+    - DB: MySQL
+      USE_UNICODE: OFF
+      USE_BOOST_CONVERT: OFF
+      USE_NODATA_BUG: OFF
+    - DB: PostgreSQL
+      USE_UNICODE: OFF
+      USE_BOOST_CONVERT: OFF
+      USE_NODATA_BUG: OFF
+
+shallow_clone: true
+clone_depth: 5
+
+# Uncomment if you need to debug AppVeyor session (https://www.appveyor.com/docs/how-to/rdp-to-build-worker)
+# on_finish:
+# - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+
+init:
+  - ps: |
+      Get-ChildItem Env: | %{"{0}={1}" -f $_.Name,$_.Value}
+  - ps: |
+      Get-OdbcDriver -Platform 64-bit | Select-Object -ExpandProperty Name
+  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+
+services:
+  - mysql       # start MySQL 5.x service
+  - postgresql  # start PostgreSQL 9.x service
+
+before_build:
+  - ps: |
+      if ($env:DB -Match "MySQL") {
+        $env:MYSQL_PWD="Password12!"
+        $cmd = '"C:\Program Files\MySql\MySQL Server 5.6\bin\mysql" -e "create database nanodbc_test;" --user=root'
+        iex "& $cmd"
+      }
+      elseif ($env:DB -Match "PostgreSQL") {
+        $env:PGUSER="postgres"
+        $env:PGPASSWORD="Password12!"
+        $cmd = '"C:\Program Files\PostgreSQL\9.3\bin\createdb" nanodbc_test'
+        iex "& $cmd"
+      }
+      else {
+        throw 'TODO: ' + $env:DB + ' not configured yet'
+      }
+  - cmd: call .\scripts\appveyor\configure.bat
+
+build:
+  parallel: true
+  project: nanodbc.sln
+  verbosity: minimal
+
+test_script:
+  - ps: |
+      if ($env:DB -Match "MySQL") {
+        $env:NANODBC_TEST_CONNSTR="Driver={MySQL ODBC 5.3 ANSI Driver};Server=127.0.0.1;Database=nanodbc_test;User=root;Password=Password12!;"
+        $test_name = "mysql_test"
+      }
+      elseif ($env:DB -Match "PostgreSQL") {
+        $env:NANODBC_TEST_CONNSTR="Driver={PostgreSQL ANSI(x64)};Server=127.0.0.1;Port=5432;Database=nanodbc_test;Uid=postgres;Pwd=Password12!;"
+        $test_name = "odbc_test"
+      }
+      else {
+        throw 'TODO: ' + $env:DB + ' not configured yet'
+      }
+      Write-Host Running $Env:CONFIGURATION build test: $test_name
+      Write-Host NANODBC_TEST_CONNSTR=$env:NANODBC_TEST_CONNSTR
+  - ps: |
+      $cmd = 'ctest -V --output-on-failure -C ' + $Env:CONFIGURATION + ' -R ' + $test_name
+      iex "& $cmd"
