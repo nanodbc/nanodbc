@@ -28,8 +28,8 @@ clone_depth: 5
 # - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 init:
-  - ps: `Get-ChildItem Env: | %{"{0}={1}" -f $_.Name,$_.Value}`
-  - ps: `Get-OdbcDriver -Platform 64-bit | Select-Object -ExpandProperty Name`
+  - ps: 'Get-ChildItem Env: | %{"{0}={1}" -f $_.Name,$_.Value}'
+  - ps: 'Get-OdbcDriver -Platform 64-bit | Select-Object -ExpandProperty Name'
   - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 services:
