@@ -24,7 +24,7 @@ include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/src ${CATCH_INCLUDE_
 link_directories(${CMAKE_BINARY_DIR}/lib)
 file(GLOB headers *.h *.hpp)
 add_custom_target(tests DEPENDS tests catch)
-set(test_list mysql odbc sqlite)
+set(test_list mssql mysql odbc sqlite)
 foreach(test_item ${test_list})
 	set(test_name ${test_item}_tests)
 	add_executable(${test_name} ${test_item}_test.cpp ${headers})
