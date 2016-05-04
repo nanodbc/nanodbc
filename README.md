@@ -4,11 +4,19 @@ A small C++ wrapper for the native C ODBC API. Please see the [online documentat
 
 | Version | Description |
 |:--- |:--- |
-| `release` | [![release](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=release)](https://travis-ci.org/lexicalunit/nanodbc) Most recent published version that's deemed "stable". Review the [changelog notes](CHANGELOG.md) to see if this version is right for you. |
-| `latest` | [![latest](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=latest)](https://travis-ci.org/lexicalunit/nanodbc) Latest published version; please use this version if CI tests are all passing. **[See all available versions.](https://github.com/lexicalunit/nanodbc/releases)** |
-| `master`  | [![master](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=master)](https://travis-ci.org/lexicalunit/nanodbc) Contains the latest development code, not yet ready for a published version. |
+| `release` | Most recent published version that's deemed "stable". Review the [changelog notes](CHANGELOG.md) to see if this version is right for you. |
+| `latest` | Latest published version; please use this version if CI tests are all passing. **[See all available versions.](https://github.com/lexicalunit/nanodbc/releases)** |
+| `master`  | Contains the latest development code, not yet ready for a published version. |
 | `v2.x.x`  | Targets C++14+. All future development will build upon this version. |
 | `v1.x.x`  | Supports C++03 and optionally C++11. *There is no longer any support for this version.* |
+
+## Build Status
+
+| Branch | Travis CI | AppVeyor |
+|:--- |:--- |:--- |
+| `master`  | [![master](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=master)](https://travis-ci.org/lexicalunit/nanodbc) | [![master](https://ci.appveyor.com/api/projects/status/github/lexicalunit/nanodbc?branch=master&svg=true)](https://ci.appveyor.com/project/lexicalunit/nanodbc)
+| `latest` | [![latest](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=latest)](https://travis-ci.org/lexicalunit/nanodbc) | |
+| `release` | [![release](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=release)](https://travis-ci.org/lexicalunit/nanodbc) | |
 
 # Building
 
