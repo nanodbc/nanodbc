@@ -159,17 +159,17 @@ typedef wide_string_type::value_type wide_char_t;
 namespace
 {
     #ifdef NANODBC_ODBC_API_DEBUG
-        inline nanodbc::string_type return_code(RETCODE rc)
+        inline std::string return_code(RETCODE rc)
         {
             switch(rc)
             {
-                case SQL_SUCCESS: return NANODBC_TEXT("SQL_SUCCESS");
-                case SQL_SUCCESS_WITH_INFO: return NANODBC_TEXT("SQL_SUCCESS_WITH_INFO");
-                case SQL_ERROR: return NANODBC_TEXT("SQL_ERROR");
-                case SQL_INVALID_HANDLE: return NANODBC_TEXT("SQL_INVALID_HANDLE");
-                case SQL_NO_DATA: return NANODBC_TEXT("SQL_NO_DATA");
-                case SQL_NEED_DATA: return NANODBC_TEXT("SQL_NEED_DATA");
-                case SQL_STILL_EXECUTING: return NANODBC_TEXT("SQL_STILL_EXECUTING");
+                case SQL_SUCCESS: return "SQL_SUCCESS";
+                case SQL_SUCCESS_WITH_INFO: return "SQL_SUCCESS_WITH_INFO";
+                case SQL_ERROR: return "SQL_ERROR";
+                case SQL_INVALID_HANDLE: return "SQL_INVALID_HANDLE";
+                case SQL_NO_DATA: return "SQL_NO_DATA";
+                case SQL_NEED_DATA: return "SQL_NEED_DATA";
+                case SQL_STILL_EXECUTING: return "SQL_STILL_EXECUTING";
             }
             NANODBC_ASSERT(0);
             return "unknown"; // should never make it here
@@ -180,7 +180,7 @@ namespace
     inline bool success(RETCODE rc)
     {
         #ifdef NANODBC_ODBC_API_DEBUG
-            std::cerr << "<-- rc: " << return_code(rc) << " | ";
+            std::cerr << "<-- rc: " << return_code(rc) << " | " << std::endl;;
         #endif
         return rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO;
     }
