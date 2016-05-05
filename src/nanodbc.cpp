@@ -704,7 +704,7 @@ public:
             , env_);
     }
 
-#ifdef SQL_ATTR_ASYNC_DBC_EVENT
+#if defined(SQL_ATTR_ASYNC_DBC_EVENT) && !defined(NANODBC_DISABLE_ASYNC)
     void enable_async(void* event_handle)
     {
         RETCODE rc;
@@ -753,7 +753,7 @@ public:
 
         connected_ = success(rc);
     }
-#endif // SQL_ATTR_ASYNC_DBC_EVENT
+#endif // SQL_ATTR_ASYNC_DBC_EVENT && !NANODBC_DISABLE_ASYNC
 
     void connect(
         const string_type& dsn
@@ -792,7 +792,7 @@ public:
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
 
-        #ifdef SQL_ATTR_ASYNC_DBC_EVENT
+        #if defined(SQL_ATTR_ASYNC_DBC_EVENT) && !defined(NANODBC_DISABLE_ASYNC)
             if(event_handle != NULL)
                 enable_async(event_handle);
         #endif
@@ -842,7 +842,7 @@ public:
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
 
-        #ifdef SQL_ATTR_ASYNC_DBC_EVENT
+        #if defined(SQL_ATTR_ASYNC_DBC_EVENT) && !defined(NANODBC_DISABLE_ASYNC)
             if(event_handle != NULL)
                 enable_async(event_handle);
         #endif
@@ -1324,7 +1324,7 @@ public:
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     }
 
-#if defined(SQL_ATTR_ASYNC_STMT_EVENT) && defined(SQL_API_SQLCOMPLETEASYNC)
+#if defined(SQL_ATTR_ASYNC_STMT_EVENT) && defined(SQL_API_SQLCOMPLETEASYNC) && !defined(NANODBC_DISABLE_ASYNC)
     void enable_async(void* event_handle)
     {
         RETCODE rc;
@@ -1393,7 +1393,7 @@ public:
 
         return result(statement, batch_operations);
     }
-#endif // SQL_ATTR_ASYNC_STMT_EVENT && SQL_API_SQLCOMPLETEASYNC
+#endif // SQL_ATTR_ASYNC_STMT_EVENT && SQL_API_SQLCOMPLETEASYNC && !NANODBC_DISABLE_ASYNC
 
     result execute_direct(
         class connection& conn
@@ -1422,7 +1422,7 @@ public:
     {
         open(conn);
 
-        #if defined(SQL_ATTR_ASYNC_STMT_EVENT) && defined(SQL_API_SQLCOMPLETEASYNC)
+        #if defined(SQL_ATTR_ASYNC_STMT_EVENT) && defined(SQL_API_SQLCOMPLETEASYNC) && !defined(NANODBC_DISABLE_ASYNC)
             if(event_handle != NULL)
                 enable_async(event_handle);
         #endif
@@ -2906,7 +2906,7 @@ void connection::connect(const string_type& connection_string, long timeout)
     impl_->connect(connection_string, timeout);
 }
 
-#ifdef SQL_ATTR_ASYNC_DBC_EVENT
+#if defined(SQL_ATTR_ASYNC_DBC_EVENT) && !defined(NANODBC_DISABLE_ASYNC)
 void connection::async_connect(
     const string_type& dsn
     , const string_type& user
@@ -2926,7 +2926,7 @@ void connection::async_complete()
 {
     impl_->async_complete();
 }
-#endif // SQL_ATTR_ASYNC_DBC_EVENT
+#endif // SQL_ATTR_ASYNC_DBC_EVENT && !NANODBC_DISABLE_ASYNC
 
 bool connection::connected() const
 {
@@ -3208,7 +3208,7 @@ result statement::execute_direct(
     return impl_->execute_direct(conn, query, batch_operations, timeout, *this);
 }
 
-#if defined(SQL_ATTR_ASYNC_STMT_EVENT) && defined(SQL_API_SQLCOMPLETEASYNC)
+#if defined(SQL_ATTR_ASYNC_STMT_EVENT) && defined(SQL_API_SQLCOMPLETEASYNC) && !defined(NANODBC_DISABLE_ASYNC)
     void statement::async_execute_direct(
         class connection& conn
         , void* event_handle
