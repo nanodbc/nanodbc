@@ -6,6 +6,12 @@ platform: x64
 
 configuration: Release
 
+branches:
+  only:
+    - master
+    - latest
+    - release
+
 matrix:
   fast_finish: false # set this flag to immediately finish build once one of the jobs fails.
 
