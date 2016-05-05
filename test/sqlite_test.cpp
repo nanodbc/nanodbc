@@ -113,6 +113,11 @@ TEST_CASE_METHOD(sqlite_fixture, "null_test", "[sqlite][null]")
     null_test();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "nullptr_nulls_test", "[sqlite][null]")
+{
+    nullptr_nulls_test();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "simple_test", "[sqlite]")
 {
     simple_test();

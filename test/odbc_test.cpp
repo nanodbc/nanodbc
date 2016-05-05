@@ -80,6 +80,11 @@ TEST_CASE_METHOD(odbc_fixture, "null_test", "[odbc][null]")
     null_test();
 }
 
+TEST_CASE_METHOD(odbc_fixture, "nullptr_nulls_test", "[odbc][null]")
+{
+    nullptr_nulls_test();
+}
+
 TEST_CASE_METHOD(odbc_fixture, "simple_test", "[odbc]")
 {
     simple_test();

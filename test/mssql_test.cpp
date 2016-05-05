@@ -62,6 +62,11 @@ TEST_CASE_METHOD(mssql_fixture, "null_test", "[mssql][null]")
     null_test();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "nullptr_nulls_test", "[mssql][null]")
+{
+    nullptr_nulls_test();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "simple_test", "[mssql]")
 {
     simple_test();

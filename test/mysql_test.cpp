@@ -67,6 +67,11 @@ TEST_CASE_METHOD(mysql_fixture, "null_test", "[mysql][null]")
     null_test();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "nullptr_nulls_test", "[mysql][null]")
+{
+    nullptr_nulls_test();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "simple_test", "[mysql]")
 {
     simple_test();

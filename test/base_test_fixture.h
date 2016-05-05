@@ -721,6 +721,49 @@ struct base_test_fixture
         REQUIRE(!results.next());
     }
 
+    // checks that:         statement.bind(0, &i, 1, nullptr, nanodbc::statement::PARAM_IN);
+    // works the same as:   statement.bind(0, &i, 1, nanodbc::statement::PARAM_IN);
+    void nullptr_nulls_test()
+    {
+        nanodbc::connection connection = connect();
+        drop_table(connection, NANODBC_TEXT("nullptr_nulls_test"));
+        execute(connection, NANODBC_TEXT("create table nullptr_nulls_test (i int);"));
+
+        {
+            nanodbc::statement statement(connection);
+            prepare(statement, NANODBC_TEXT("insert into nullptr_nulls_test (i) values (?);"));
+
+            int i = 5;
+            statement.bind(0, &i, 1, nullptr, nanodbc::statement::PARAM_IN);
+
+            REQUIRE(statement.connected());
+            execute(statement);
+
+            nanodbc::result results = execute(connection, NANODBC_TEXT("select * from nullptr_nulls_test;"));
+            REQUIRE(results.next());
+
+            REQUIRE(results.get<int>(0) == i);
+        }
+
+        execute(connection, NANODBC_TEXT("DELETE FROM nullptr_nulls_test;"));
+
+        {
+            nanodbc::statement statement(connection);
+            prepare(statement, NANODBC_TEXT("insert into nullptr_nulls_test (i) values (?);"));
+
+            int i = 5;
+            statement.bind(0, &i, 1, nanodbc::statement::PARAM_IN);
+
+            REQUIRE(statement.connected());
+            execute(statement);
+
+            nanodbc::result results = execute(connection, NANODBC_TEXT("select * from nullptr_nulls_test;"));
+            REQUIRE(results.next());
+
+            REQUIRE(results.get<int>(0) == i);
+        }
+    }
+
     void simple_test()
     {
         nanodbc::connection connection = connect();
