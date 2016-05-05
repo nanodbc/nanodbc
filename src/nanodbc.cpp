@@ -76,7 +76,11 @@
     #ifdef NANODBC_USE_IODBC_WIDE_STRINGS
         #define NANODBC_TEXT(s) U ## s
     #else
-        #define NANODBC_TEXT(s) u ## s
+        #ifdef _MSC_VER
+            #define NANODBC_TEXT(s) L ## s
+        #else
+            #define NANODBC_TEXT(s) u ## s
+        #endif
     #endif
     #define NANODBC_FUNC(f) f ## W
     #define NANODBC_SQLCHAR SQLWCHAR
@@ -90,8 +94,13 @@
     typedef std::u32string wide_string_type;
     #define NANODBC_CODECVT_TYPE std::codecvt_utf8
 #else
-    typedef std::u16string wide_string_type;
-    #define NANODBC_CODECVT_TYPE std::codecvt_utf8_utf16
+    #ifdef _MSC_VER
+        typedef std::wstring wide_string_type;
+        #define NANODBC_CODECVT_TYPE std::codecvt_utf8_utf16
+    #else
+        typedef std::u16string wide_string_type;
+        #define NANODBC_CODECVT_TYPE std::codecvt_utf8_utf16
+    #endif
 #endif
 typedef wide_string_type::value_type wide_char_t;
 
