@@ -88,7 +88,7 @@ test_script:
       }
       elseif ($env:DB -Match "PostgreSQL") {
         $env:NANODBC_TEST_CONNSTR="Driver={PostgreSQL ANSI(x64)};Server=127.0.0.1;Port=5432;Database=nanodbc_test;Uid=postgres;Pwd=Password12!;"
-        $test_name = "odbc_test"
+        $test_name = "postgresql_test"
       }
       else {
         throw 'TODO: ' + $env:DB + ' not configured yet'

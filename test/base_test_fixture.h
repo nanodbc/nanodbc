@@ -258,9 +258,20 @@ struct base_test_fixture
             REQUIRE(columns.column_name() == NANODBC_TEXT("c2"));
             REQUIRE(columns.sql_data_type() == SQL_FLOAT);
             if (columns.numeric_precision_radix() == 10)
-                REQUIRE(columns.column_size() ==  17); // total number of digits allowed
+            {
+                // total number of digits allowed
+
+                // NOTE: Some variations have been observed:
+                // Windows 64-bit + nanodbc 64-bit build + psqlODBC 9.?.? x64 connected to PostgreSQL 9.3 on Windows x64 (AppVeyor)
+                REQUIRE(columns.column_size() >= 15);
+                // Windows x64      + nanodbc 64-bit build + psqlODBC 9.3.5 x64 connected to PostgreSQL 9.5 on Ubuntu 15.10 x64 (Vagrant)
+                // Ubuntu 12.04 x64 + nanodbc 64-bit build + psqlODBC 9.3.5 x64 connected to PostgreSQL 9.1 on Ubuntu 12.04 x64 (Travsi CI)
+                REQUIRE(columns.column_size() <= 17);
+            }
             else
-                REQUIRE(columns.column_size() ==  53); // total number of bits allowed
+            {
+                REQUIRE(columns.column_size() == 53); // total number of bits allowed
+            }
             REQUIRE(columns.nullable() == SQL_NULLABLE);
             if (!columns.is_nullable().empty()) // nullability determined
                 REQUIRE(columns.is_nullable() == NANODBC_TEXT("YES"));

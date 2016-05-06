@@ -15,10 +15,12 @@ addons:
       - libmyodbc
       - libsqliteodbc
       - mysql-client
+      - odbc-postgresql
       - unixodbc
       - unixodbc-dev
 services:
   - mysql
+  - postgresql
 language: cpp
 compiler:
   - gcc
@@ -27,24 +29,33 @@ env:
   - DB=mysql USE_UNICODE=OFF  USE_BOOST_CONVERT=ON  USE_NODATA_BUG=OFF
   - DB=mysql USE_UNICODE=ON   USE_BOOST_CONVERT=OFF USE_NODATA_BUG=OFF
   - DB=mysql USE_UNICODE=ON   USE_BOOST_CONVERT=ON  USE_NODATA_BUG=OFF
+  #TODO: - DB=postgresql USE_UNICODE=OFF  USE_BOOST_CONVERT=OFF USE_NODATA_BUG=OFF
   - DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=OFF USE_NODATA_BUG=OFF
   - DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=ON  USE_NODATA_BUG=OFF
   - DB=sqlite USE_UNICODE=ON  USE_BOOST_CONVERT=OFF USE_NODATA_BUG=ON
   - DB=sqlite USE_UNICODE=ON  USE_BOOST_CONVERT=ON  USE_NODATA_BUG=ON
 before_install:
-  - if [[ "$DB" == "sqlite" ]]; then sudo odbcinst -i -d -f /usr/share/sqliteodbc/unixodbc.ini; fi
+  - if [[ -f /etc/odbcinst.ini ]]; then export ODBCSYSINI=/etc; fi
+  - if [[ -f /etc/odbc.ini ]]; then export ODBCINI=/etc/odbc.ini; fi
   - if [[ "$DB" == "mysql" ]]; then sudo odbcinst -i -d -f /usr/share/libmyodbc/odbcinst.ini; fi
   - if [[ "$DB" == "mysql" ]]; then mysql -e "DROP DATABASE IF EXISTS nanodbc_tests; CREATE DATABASE IF NOT EXISTS nanodbc_tests;" -uroot; fi
   - if [[ "$DB" == "mysql" ]]; then mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost';" -uroot; fi
   - if [[ "$DB" == "mysql" ]]; then export NANODBC_TEST_CONNSTR="Driver=MySQL;Server=localhost;Database=nanodbc_tests;User=root;Password=;Option=3;"; fi
+  - if [[ "$DB" == "postgresql" ]]; then sudo odbcinst -i -d -f /usr/share/psqlodbc/odbcinst.ini.template; fi
+  - if [[ "$DB" == "postgresql" ]]; then psql -c "CREATE DATABASE nanodbc_tests;" -U postgres; fi
+  - if [[ "$DB" == "postgresql" ]]; then export NANODBC_TEST_CONNSTR="Driver={PostgreSQL ANSI};Server=127.0.0.1;Port=5432;Database=nanodbc_tests;UID=postgres;"; fi
+  - if [[ "$DB" == "sqlite" ]]; then sudo odbcinst -i -d -f /usr/share/sqliteodbc/unixodbc.ini; fi
 before_script:
-  - if [[ -f /etc/odbc.ini ]]; then cat /etc/odbc.ini; fi
-  - if [[ -f /etc/odbcinst.ini ]]; then cat /etc/odbcinst.ini; fi
+  - odbcinst -j
+  - if [[ -f "$ODBCSYSINI/odbcinst.ini" ]]; then odbcinst -q -d; fi
+  - if [[ -s "$ODBCINI" ]]; then odbcinst -q -s; fi
   - export CXX="g++-5"
 script:
   - mkdir build
   - cd build
   - cmake -D NANODBC_USE_UNICODE=${USE_UNICODE} -D NANODBC_USE_BOOST_CONVERT=${USE_BOOST_CONVERT} -D NANODBC_HANDLE_NODATA_BUG=${USE_NODATA_BUG} -D NANODBC_ENABLE_LIBCXX=NO ..
   - make
-  - if [[ "$DB" == "sqlite" ]]; then make VERBOSE=1 sqlite_check; fi
   - if [[ "$DB" == "mysql" ]]; then make VERBOSE=1 mysql_check; fi
+  #TODO: [unixODBC][Driver Manager]Data source name not found, and no default driver specified
+  #- if [[ "$DB" == "postgresql" ]]; then make VERBOSE=1 postgresql_check; fi
+  - if [[ "$DB" == "sqlite" ]]; then make VERBOSE=1 sqlite_check; fi
