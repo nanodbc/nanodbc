@@ -1826,7 +1826,7 @@ void statement::statement_impl::bind(
     prepare_bind(param, elements, direction, data_type, param_type, parameter_size, scale);
 
     for(std::size_t i = 0; i < elements; ++i)
-        if((null_sentry && !equals(values[i], *null_sentry)) || (nulls && !nulls[i]))
+        if((null_sentry && !equals(values[i], *null_sentry)) || (nulls && !nulls[i]) || !nulls)
             bind_len_or_null_[param][i] = parameter_size;
 
     bind_parameter(param, values, elements, data_type, param_type, parameter_size, scale);
