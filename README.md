@@ -14,9 +14,9 @@ A small C++ wrapper for the native C ODBC API. Please see the [online documentat
 
 | Branch | Travis CI | AppVeyor |
 |:--- |:--- |:--- |
-| `master`  | [![master](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=master)](https://travis-ci.org/lexicalunit/nanodbc) | [![master](https://ci.appveyor.com/api/projects/status/github/lexicalunit/nanodbc?branch=master&svg=true)](https://ci.appveyor.com/project/lexicalunit/nanodbc?branch=master) |
-| `latest` | [![latest](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=latest)](https://travis-ci.org/lexicalunit/nanodbc) |  [![latest](https://ci.appveyor.com/api/projects/status/github/lexicalunit/nanodbc?branch=latest&svg=true)](https://ci.appveyor.com/project/lexicalunit/nanodbc?branch=latest) |
-| `release` | [![release](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=release)](https://travis-ci.org/lexicalunit/nanodbc) |  [![recent](https://ci.appveyor.com/api/projects/status/github/lexicalunit/nanodbc?branch=recent&svg=true)](https://ci.appveyor.com/project/lexicalunit/nanodbc?branch=recent) |
+| `master`  | [![master](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=master)](https://travis-ci.org/lexicalunit/nanodbc) | [![master](https://ci.appveyor.com/api/projects/status/71nb7l794n3i8vdj/branch/master?svg=true)](https://ci.appveyor.com/project/lexicalunit/nanodbc?branch=master) |
+| `latest` | [![latest](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=latest)](https://travis-ci.org/lexicalunit/nanodbc) |  [![latest](https://ci.appveyor.com/api/projects/status/71nb7l794n3i8vdj/branch/latest?svg=true)](https://ci.appveyor.com/project/lexicalunit/nanodbc?branch=latest) |
+| `release` | [![release](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=release)](https://travis-ci.org/lexicalunit/nanodbc) |  [![recent](https://ci.appveyor.com/api/projects/status/71nb7l794n3i8vdj/branch/release?svg=true)](https://ci.appveyor.com/project/lexicalunit/nanodbc?branch=release) |
 
 # Building
 
