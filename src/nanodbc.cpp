@@ -2746,6 +2746,67 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
     throw type_incompatible_error();
 }
 
+template<>
+inline void result::result_impl::get_ref_impl<std::vector<std::uint8_t>>(short column, std::vector<std::uint8_t>& result) const
+{
+    bound_column& col = bound_columns_[column];
+    const SQLULEN column_size = col.sqlsize_;
+
+    switch(col.ctype_)
+    {
+        case SQL_C_BINARY:
+        {
+            if(col.blob_)
+            {
+                // Input and output is always array of bytes.
+                std::vector<std::uint8_t> out;
+                std::uint8_t buffer[1024] = {0};
+                std::size_t const buffer_size = sizeof(buffer);
+                // The length of the data available to return, decreasing with subsequent SQLGetData calls.
+                // But, NOT the length of data returned into the buffer (apart from the final call).
+                SQLLEN ValueLenOrInd;
+                SQLRETURN rc;
+                void* handle = native_statement_handle();
+                do
+                {
+                    NANODBC_CALL_RC(
+                        SQLGetData
+                        , rc
+                        , handle            // StatementHandle
+                        , column + 1        // Col_or_Param_Num
+                        , SQL_C_BINARY      // TargetType
+                        , buffer            // TargetValuePtr
+                        , buffer_size       // BufferLength
+                        , &ValueLenOrInd);  // StrLen_or_IndPtr
+                    if(ValueLenOrInd > 0)
+                    {
+                        auto const buffer_size_filled = std::min<std::size_t>(ValueLenOrInd, buffer_size);
+                        NANODBC_ASSERT(buffer_size_filled <= buffer_size);
+                        out.insert(std::end(out), buffer, buffer + buffer_size_filled);
+                    }
+                    else if(ValueLenOrInd == SQL_NULL_DATA)
+                        *col.cbdata_ = (SQLINTEGER) SQL_NULL_DATA;
+                    // Sequence of successful calls is:
+                    // SQL_NO_DATA or SQL_SUCCESS_WITH_INFO followed by SQL_SUCCESS.
+                } while(rc == SQL_SUCCESS_WITH_INFO);
+                if(rc == SQL_SUCCESS || rc == SQL_NO_DATA)
+                    result = std::move(out);
+                else
+                    if(!success(rc))
+                        NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
+            }
+            else
+            {
+                // Read fixed-length binary data
+                const char* s = col.pdata_ + rowset_position_ * col.clen_;
+                result.assign(s, s + column_size);
+            }
+            return;
+        }
+    }
+    throw type_incompatible_error();
+}
+
 template<class T>
 void result::result_impl::get_ref_impl(short column, T& result) const
 {
@@ -3909,6 +3970,7 @@ template void result::get_ref(short, double&) const;
 template void result::get_ref(short, string_type&) const;
 template void result::get_ref(short, date&) const;
 template void result::get_ref(short, timestamp&) const;
+template void result::get_ref(short, std::vector<std::uint8_t>&) const;
 
 template void result::get_ref(const string_type&, string_type::value_type&) const;
 template void result::get_ref(const string_type&, short&) const;
@@ -3922,6 +3984,7 @@ template void result::get_ref(const string_type&, double&) const;
 template void result::get_ref(const string_type&, string_type&) const;
 template void result::get_ref(const string_type&, date&) const;
 template void result::get_ref(const string_type&, timestamp&) const;
+template void result::get_ref(const string_type&, std::vector<std::uint8_t>&) const;
 
 // The following are the only supported instantiations of result::get_ref() with fallback.
 template void result::get_ref(short, const string_type::value_type&, string_type::value_type&) const;
@@ -3936,6 +3999,7 @@ template void result::get_ref(short, const double&, double&) const;
 template void result::get_ref(short, const string_type&, string_type&) const;
 template void result::get_ref(short, const date&, date&) const;
 template void result::get_ref(short, const timestamp&, timestamp&) const;
+template void result::get_ref(short, const std::vector<std::uint8_t>&, std::vector<std::uint8_t>&) const;
 
 template void result::get_ref(const string_type&, const string_type::value_type&, string_type::value_type&) const;
 template void result::get_ref(const string_type&, const short&, short&) const;
@@ -3949,6 +4013,7 @@ template void result::get_ref(const string_type&, const double&, double&) const;
 template void result::get_ref(const string_type&, const string_type&, string_type&) const;
 template void result::get_ref(const string_type&, const date&, date&) const;
 template void result::get_ref(const string_type&, const timestamp&, timestamp&) const;
+template void result::get_ref(const string_type&, const std::vector<std::uint8_t>&, std::vector<std::uint8_t>&) const;
 
 // The following are the only supported instantiations of result::get().
 template string_type::value_type result::get(short) const;
@@ -3963,6 +4028,7 @@ template double result::get(short) const;
 template string_type result::get(short) const;
 template date result::get(short) const;
 template timestamp result::get(short) const;
+template std::vector<std::uint8_t> result::get(short) const;
 
 template string_type::value_type result::get(const string_type&) const;
 template short result::get(const string_type&) const;
@@ -3976,6 +4042,7 @@ template double result::get(const string_type&) const;
 template string_type result::get(const string_type&) const;
 template date result::get(const string_type&) const;
 template timestamp result::get(const string_type&) const;
+template std::vector<std::uint8_t> result::get(const string_type&) const;
 
 // The following are the only supported instantiations of result::get() with fallback.
 template string_type::value_type result::get(short, const string_type::value_type&) const;
@@ -3990,6 +4057,7 @@ template double result::get(short, const double&) const;
 template string_type result::get(short, const string_type&) const;
 template date result::get(short, const date&) const;
 template timestamp result::get(short, const timestamp&) const;
+template std::vector<std::uint8_t> result::get(short, const std::vector<std::uint8_t>&) const;
 
 template string_type::value_type result::get(const string_type&, const string_type::value_type&) const;
 template short result::get(const string_type&, const short&) const;
@@ -4003,6 +4071,7 @@ template double result::get(const string_type&, const double&) const;
 template string_type result::get(const string_type&, const string_type&) const;
 template date result::get(const string_type&, const date&) const;
 template timestamp result::get(const string_type&, const timestamp&) const;
+template std::vector<std::uint8_t> result::get(const string_type&, const std::vector<std::uint8_t>&) const;
 
 } // namespace nanodbc
 
