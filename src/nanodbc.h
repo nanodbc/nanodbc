@@ -327,7 +327,7 @@ public:
     //! \brief If this transaction has not been committed, will will rollback any modifying operations.
     ~transaction() NANODBC_NOEXCEPT;
 
-    //! \brief Marks this transaction for commit.
+    //! \brief Commits transaction immediately.
     //! \throws database_error
     void commit();
 

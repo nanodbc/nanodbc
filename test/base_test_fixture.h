@@ -925,30 +925,44 @@ struct base_test_fixture
 
         check_rows_equal(execute(connection, query), 10);
 
+        REQUIRE(connection.transactions() == 0);
         {
             nanodbc::transaction transaction(connection);
+            REQUIRE(connection.transactions() == 1);
             execute(connection, NANODBC_TEXT("delete from transaction_test;"));
             check_rows_equal(execute(connection, query), 0);
+            REQUIRE(connection.transactions() == 1);
             // ~transaction() calls rollback()
         }
+        REQUIRE(connection.transactions() == 0);
 
         check_rows_equal(execute(connection, query), 10);
 
+        REQUIRE(connection.transactions() == 0);
         {
             nanodbc::transaction transaction(connection);
+            REQUIRE(connection.transactions() == 1);
             execute(connection, NANODBC_TEXT("delete from transaction_test;"));
             check_rows_equal(execute(connection, query), 0);
-            transaction.rollback();
+            REQUIRE(connection.transactions() == 1);
+            transaction.rollback(); // only requests rollback performed in ~transaction()
+            REQUIRE(connection.transactions() == 1); // transaction not released yet
         }
+        REQUIRE(connection.transactions() == 0);
 
         check_rows_equal(execute(connection, query), 10);
 
+        REQUIRE(connection.transactions() == 0);
         {
             nanodbc::transaction transaction(connection);
+            REQUIRE(connection.transactions() == 1);
             execute(connection, NANODBC_TEXT("delete from transaction_test;"));
             check_rows_equal(execute(connection, query), 0);
-            transaction.commit();
+            REQUIRE(connection.transactions() == 1);
+            transaction.commit(); // performs actual commit and releases transaction
+            REQUIRE(connection.transactions() == 0);
         }
+        REQUIRE(connection.transactions() == 0);
 
         check_rows_equal(execute(connection, query), 0);
     }

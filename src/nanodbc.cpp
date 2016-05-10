@@ -994,15 +994,16 @@ public:
         return string_type(&name[0], &name[strarrlen(name)]);
     }
 
-
     std::size_t ref_transaction()
     {
-        return --transactions_;
+        return ++transactions_;
     }
 
     std::size_t unref_transaction()
     {
-        return ++transactions_;
+        if(transactions_ > 0)
+            --transactions_;
+        return transactions_;
     }
 
     bool rollback() const
