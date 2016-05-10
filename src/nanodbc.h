@@ -476,6 +476,8 @@ public:
     //! Such that the identifiers `SQL_ATTR_ASYNC_STMT_EVENT` and `SQLCompleteAsync` are extant. Otherwise
     //! this method will be defined, but not implemented.
     //!
+    //! Asynchronous features can be disabled entierly by defining `NANODBC_DISABLE_ASYNC` when building nanodbc.
+    //!
     //! \param conn The connection where the statement will be executed.
     //! \param event_handle The event handle for which the caller will wait before calling async_complete.
     //! \param query The SQL query that will be executed.
@@ -490,6 +492,8 @@ public:
     //! This method will only be available if nanodbc is built against ODBC headers and library that supports asynchronous mode.
     //! Such that the identifiers `SQL_ATTR_ASYNC_STMT_EVENT` and `SQLCompleteAsync` are extant. Otherwise
     //! this method will be defined, but not implemented.
+    //!
+    //! Asynchronous features can be disabled entierly by defining `NANODBC_DISABLE_ASYNC` when building nanodbc.
     //!
     //! \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
     class result async_complete(long batch_operations = 1);
@@ -810,6 +814,8 @@ public:
     //! Such that the identifiers `SQL_ATTR_ASYNC_DBC_EVENT` and `SQLCompleteAsync` are extant. Otherwise
     //! this method will be defined, but not implemented.
     //!
+    //! Asynchronous features can be disabled entierly by defining `NANODBC_DISABLE_ASYNC` when building nanodbc.
+    //!
     //! \param dsn The name of the data source.
     //! \param user The username for authenticating to the data source.
     //! \param pass The password for authenticating to the data source.
@@ -830,6 +836,8 @@ public:
     //! Such that the identifiers `SQL_ATTR_ASYNC_DBC_EVENT` and `SQLCompleteAsync` are extant. Otherwise
     //! this method will be defined, but not implemented.
     //!
+    //! Asynchronous features can be disabled entierly by defining `NANODBC_DISABLE_ASYNC` when building nanodbc.
+    //!
     //! \param connection_string The connection string for establishing a connection.
     //! \param event_handle The event handle for which the caller will wait before calling async_complete.
     //! \param timeout The number in seconds before connection timeout. Default is 0 indicating no timeout.
@@ -838,6 +846,8 @@ public:
     void async_connect(const string_type& connection_string, void* event_handle, long timeout = 0);
 
     //! \brief Completes a previously initiated asynchronous connection operation.
+    //!
+    //! Asynchronous features can be disabled entierly by defining `NANODBC_DISABLE_ASYNC` when building nanodbc.
     void async_complete();
 
     //! \brief Returns true if connected to the database.

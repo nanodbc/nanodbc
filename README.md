@@ -60,15 +60,16 @@ The following build options are available via CMake. If you are not using CMake 
 
 | CMake&nbsp;Option                     | Possible&nbsp;Values  | Default       | Details |
 | ------------------------------------- | --------------------- | ------------- | ------- |
-| `-D NANODBC_USE_UNICODE=...`          | `OFF` or `ON`         | `OFF`         | Enables full unicode support. `nanodbc::string` becomes `std::u16string` or `std::u32string`. |
-| `-D NANODBC_HANDLE_NODATA_BUG=...`    | `OFF` or `ON`         | `OFF`         | Provided to resolve issue [#33](https://github.com/lexicalunit/nanodbc/issues/33), details [in this commit](https://github.com/lexicalunit/nanodbc/commit/918d73cdf12d5903098381344eecde8e7d5d896e). |
-| `-D NANODBC_USE_BOOST_CONVERT=...`    | `OFF` or `ON`         | `OFF`         | Provided as workaround to issue [#44](https://github.com/lexicalunit/nanodbc/issues/44). |
-| `-D NANODBC_STATIC=...`               | `OFF` or `ON`         | `OFF`         | Enables building a static library, otherwise the build process produces a shared library. |
-| `-D NANODBC_INSTALL=...`              | `OFF` or `ON`         | `ON`          | Enables install target. |
-| `-D NANODBC_EXAMPLES=...`             | `OFF` or `ON`         | `ON`          | Enables building of examples. |
-| `-D NANODBC_TEST=...`                 | `OFF` or `ON`         | `ON`          | Enables tests target (alias `check`). |
+| `-D NANODBC_DISABLE_ASYNC=...`        | `OFF` or `ON`         | `OFF`         | Disables all async features. Can resolve build issues in older ODBC versions. |
 | `-D NANODBC_ENABLE_LIBCXX=...`        | `OFF` or `ON`         | `ON`          | Enables usage of libc++ if found on the system. |
+| `-D NANODBC_EXAMPLES=...`             | `OFF` or `ON`         | `ON`          | Enables building of examples. |
+| `-D NANODBC_HANDLE_NODATA_BUG=...`    | `OFF` or `ON`         | `OFF`         | Provided to resolve issue [#33](https://github.com/lexicalunit/nanodbc/issues/33), details [in this commit](https://github.com/lexicalunit/nanodbc/commit/918d73cdf12d5903098381344eecde8e7d5d896e). |
+| `-D NANODBC_INSTALL=...`              | `OFF` or `ON`         | `ON`          | Enables install target. |
 | `-D NANODBC_ODBC_VERSION=...`         | `SQL_OV_ODBC3[...]`   | See Details   | **[Optional]** Sets the ODBC version macro for nanodbc to use. Default is `SQL_OV_ODBC3_80` if available, otherwise `SQL_OV_ODBC3`. |
+| `-D NANODBC_STATIC=...`               | `OFF` or `ON`         | `OFF`         | Enables building a static library, otherwise the build process produces a shared library. |
+| `-D NANODBC_TEST=...`                 | `OFF` or `ON`         | `ON`          | Enables tests target (alias `check`). |
+| `-D NANODBC_USE_BOOST_CONVERT=...`    | `OFF` or `ON`         | `OFF`         | Provided as workaround to issue [#44](https://github.com/lexicalunit/nanodbc/issues/44). |
+| `-D NANODBC_USE_UNICODE=...`          | `OFF` or `ON`         | `OFF`         | Enables full unicode support. `nanodbc::string` becomes `std::u16string` or `std::u32string`. |
 
 ## Note About iODBC
 
