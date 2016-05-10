@@ -51,6 +51,16 @@
 #include <sql.h>
 #include <sqlext.h>
 
+// Large CLR User-Defined Types (ODBC)
+// https://msdn.microsoft.com/en-us/library/bb677316.aspx
+// Essentially, UDT is a varbinary type with additional metadata.
+// Memory layout: SQLCHAR *(unsigned char *)
+// C data type:   SQL_C_BINARY
+// Value:         SQL_BINARY (-2)
+#ifndef SQL_SS_UDT
+    #define SQL_SS_UDT (-151) // from sqlncli.h
+#endif
+
 // Default to ODBC version defined by NANODBC_ODBC_VERSION if provided.
 #ifndef NANODBC_ODBC_VERSION
     #ifdef SQL_OV_ODBC3_80
@@ -2416,6 +2426,7 @@ private:
                 case SQL_BINARY:
                 case SQL_VARBINARY:
                 case SQL_LONGVARBINARY:
+                case SQL_SS_UDT: // MSDN: Essentially, UDT is a varbinary type with additional metadata.
                     col.ctype_ = SQL_C_BINARY;
                     col.blob_ = true;
                     col.clen_ = 0;
