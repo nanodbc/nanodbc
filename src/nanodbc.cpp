@@ -2556,10 +2556,10 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
                         , column + 1        // Col_or_Param_Num
                         , col.ctype_        // TargetType
                         , buffer            // TargetValuePtr
-                        , buffer_size - 1   // BufferLength
+                        , buffer_size       // BufferLength
                         , &ValueLenOrInd);  // StrLen_or_IndPtr
                     if(ValueLenOrInd > 0)
-                        out.append(buffer, std::min<std::size_t>(ValueLenOrInd, buffer_size - 1));
+                        out.append(buffer, std::min<std::size_t>(ValueLenOrInd, col.ctype_ == SQL_C_BINARY ? buffer_size : buffer_size - 1));
                     else if(ValueLenOrInd == SQL_NULL_DATA)
                         *col.cbdata_ = (SQLINTEGER) SQL_NULL_DATA;
                     // Sequence of successful calls is:
@@ -2603,7 +2603,7 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
                         , column + 1        // Col_or_Param_Num
                         , col.ctype_        // TargetType
                         , buffer            // TargetValuePtr
-                        , buffer_size - 1   // BufferLength
+                        , buffer_size       // BufferLength
                         , &ValueLenOrInd);  // StrLen_or_IndPtr
                     if(ValueLenOrInd > 0)
                         out.append(buffer, std::min<std::size_t>(ValueLenOrInd, buffer_size - 1));
