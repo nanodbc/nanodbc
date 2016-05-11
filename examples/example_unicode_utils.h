@@ -12,13 +12,6 @@
 #endif
 
 #ifdef NANODBC_USE_UNICODE
-    #undef NANODBC_TEXT
-    #ifdef _MSC_VER
-        #define NANODBC_TEXT(s) L ## s
-    #else
-        #define NANODBC_TEXT(s) u ## s
-    #endif
-
     inline nanodbc::string_type convert(std::string const& in)
     {
         static_assert(sizeof(nanodbc::string_type::value_type) > 1, "NANODBC_USE_UNICODE mode requires wide string_type");
@@ -52,9 +45,6 @@
         return out;
     }
 #else
-    #undef NANODBC_TEXT
-    #define NANODBC_TEXT(s) s
-
     inline nanodbc::string_type convert(std::string const& in)
     {
         return in;

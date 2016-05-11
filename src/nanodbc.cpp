@@ -83,19 +83,9 @@
 // MARK: Unicode -
 
 #ifdef NANODBC_USE_UNICODE
-    #ifdef NANODBC_USE_IODBC_WIDE_STRINGS
-        #define NANODBC_TEXT(s) U ## s
-    #else
-        #ifdef _MSC_VER
-            #define NANODBC_TEXT(s) L ## s
-        #else
-            #define NANODBC_TEXT(s) u ## s
-        #endif
-    #endif
     #define NANODBC_FUNC(f) f ## W
     #define NANODBC_SQLCHAR SQLWCHAR
 #else
-    #define NANODBC_TEXT(s) s
     #define NANODBC_FUNC(f) f
     #define NANODBC_SQLCHAR SQLCHAR
 #endif
