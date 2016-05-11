@@ -5,7 +5,7 @@ include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/src ${ODBC_INCLUDE_D
 link_directories(${CMAKE_BINARY_DIR}/lib)
 
 foreach(example ${examples})
-	add_executable(example_${example} ${example}.cpp)
+	add_executable(example_${example} ${example}.cpp example_unicode_utils.h)
 	if (NANODBC_STATIC)
 		target_link_libraries(example_${example} nanodbc ${ODBC_LIBRARIES})
 	else()
