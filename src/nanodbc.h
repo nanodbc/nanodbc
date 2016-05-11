@@ -131,16 +131,20 @@ namespace nanodbc
 #ifndef DOXYGEN
     #ifdef NANODBC_USE_UNICODE
         #ifdef NANODBC_USE_IODBC_WIDE_STRINGS
+            #define NANODBC_TEXT(s) U ## s
             typedef std::u32string string_type;
         #else
             #ifdef _MSC_VER
                 typedef std::wstring string_type;
+                #define NANODBC_TEXT(s) L ## s
             #else
                 typedef std::u16string string_type;
+                #define NANODBC_TEXT(s) u ## s
             #endif
         #endif
     #else
         typedef std::string string_type;
+        #define NANODBC_TEXT(s) s
     #endif // NANODBC_USE_UNICODE
 
     #if defined(_WIN64)
@@ -154,6 +158,17 @@ namespace nanodbc
         typedef long null_type;
     #endif
 #else
+    //! \def NANODBC_TEXT(s)
+    //! \brief Maps generic text to string literal with characters of type corresponding to `nanodbc::string_type`.
+    //!
+    //! By default, the macro maps to an unprefixed string literal.
+    //! If building with options NANODBC_USE_UNICODE=ON and 
+    //! NANODBC_USE_IODBC_WIDE_STRINGS=ON specified, then it prefixes a literal with U"...".
+    //! If only NANODBC_USE_UNICODE=ON is specified, then:
+    //!   * If building with Visual Studio, then the macro prefixes a literal with L"...".
+    //!   * Otherwise, it prefixes a literal with u"...".
+    #define NANODBC_TEXT(s) s
+
     //! \c string_type will be \c std::u16string or \c std::32string if \c NANODBC_USE_UNICODE is defined, otherwise \c std::string.
     typedef unspecified-type string_type;
     //! \c null_type will be \c int64_t for 64-bit compilations, otherwise \c long.

@@ -17,16 +17,6 @@
     #define NANODBC_OVERRIDE override
 #endif
 
-#ifdef NANODBC_USE_UNICODE
-    #ifdef _MSC_VER
-        #define NANODBC_TEXT(s) L ## s
-    #else
-        #define NANODBC_TEXT(s) u ## s
-    #endif
-#else
-    #define NANODBC_TEXT(s) s
-#endif
-
 #ifdef NANODBC_USE_BOOST_CONVERT
     #include <boost/locale/encoding_utf.hpp>
 #else
