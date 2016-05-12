@@ -6,7 +6,7 @@ Vagrant.configure(2) do |config|
   config.vm.provider "virtualbox" do |vb|
     vb.memory = "1024"
   end
-  config.vm.network "public_network", type: "dhcp"
+  config.vm.network "private_network", type: "dhcp"
   config.vm.provision "shell", inline: <<-SHELL
     ############################################################################
     # Environment
