@@ -22,6 +22,57 @@ namespace
 
 // TODO: catlog_* tests
 
+TEST_CASE_METHOD(mssql_fixture, "affected_rows_test", "[mssql][affected_rows]")
+{
+    // Enable MARS required?
+#if 0
+    enum { SQL_COPT_SS_MARS_ENABLED = 1224, SQL_MARS_ENABLED_YES = 1 }; // sqlext.h
+    int rc = ::SQLSetConnectAttr(conn.native_dbc_handle(), SQL_COPT_SS_MARS_ENABLED, (SQLPOINTER)SQL_MARS_ENABLED_YES, SQL_IS_UINTEGER);
+    REQUIRE(rc == 0);
+#endif
+
+    auto conn = connect();
+    auto const current_db_name = conn.database_name();
+
+    // CREATE DATABASE|TABLE
+    {
+        execute(conn, NANODBC_TEXT("IF DB_ID('nanodbc_test_temp_db') IS NOT NULL DROP DATABASE nanodbc_test_temp_db"));
+        nanodbc::result result;
+        result = execute(conn, NANODBC_TEXT("CREATE DATABASE nanodbc_test_temp_db"));
+        REQUIRE(result.affected_rows() == -1);
+        execute(conn, NANODBC_TEXT("USE nanodbc_test_temp_db"));
+        result = execute(conn, NANODBC_TEXT("CREATE TABLE nanodbc_test_temp_table (i int)"));
+        REQUIRE(result.affected_rows() == -1);
+    }
+    // INSERT
+    {
+        nanodbc::result result;
+        result = execute(conn, NANODBC_TEXT("INSERT INTO nanodbc_test_temp_table VALUES (1)"));
+        REQUIRE(result.affected_rows() == 1);
+        result = execute(conn, NANODBC_TEXT("INSERT INTO nanodbc_test_temp_table VALUES (2)"));
+        REQUIRE(result.affected_rows() == 1);
+    }
+    // SELECT
+    {
+        auto result = execute(conn, NANODBC_TEXT("SELECT i FROM nanodbc_test_temp_table"));
+        REQUIRE(result.affected_rows() == -1);
+    }
+    // DELETE
+    {
+        auto result = execute(conn, NANODBC_TEXT("DELETE FROM nanodbc_test_temp_table"));
+        REQUIRE(result.affected_rows() == 2);
+    }
+    // DROP DATABASE|TABLE
+    {
+        nanodbc::result result;
+        result = execute(conn, NANODBC_TEXT("DROP TABLE nanodbc_test_temp_table"));
+        REQUIRE(result.affected_rows() == -1);
+        execute(conn, NANODBC_TEXT("USE ") + current_db_name);
+        result = execute(conn, NANODBC_TEXT("DROP DATABASE nanodbc_test_temp_db"));
+        REQUIRE(result.affected_rows() == -1);
+    }
+}
+
 TEST_CASE_METHOD(mssql_fixture, "blob_test", "[mssql][blob][binary][varbinary]")
 {
     nanodbc::connection connection = connect();
