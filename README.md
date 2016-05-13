@@ -2,6 +2,8 @@
 
 A small C++ wrapper for the native C ODBC API. Please see the [online documentation](http://lexicalunit.github.com/nanodbc/) for user information, example usage, propaganda, and detailed source level documentation.
 
+## Branches
+
 | Version | Description |
 |:--- |:--- |
 | `release` | Most recent published version that's deemed "stable". Review the [changelog notes](CHANGELOG.md) to see if this version is right for you. |
@@ -20,11 +22,11 @@ A small C++ wrapper for the native C ODBC API. Please see the [online documentat
 
 # Building
 
-Nanodbc is intentionally small enough that you can drag and drop the header and implementation files into your project and run with it. For those that want it, I have also provided [CMake](http://www.cmake.org/) files which build a library object, or build and run the included unit tests. The CMake files will also support out of source builds.
+nanodbc is intentionally small enough that you can drag and drop the header and implementation files into your project and run with it. For those that want it, I have also provided [CMake](http://www.cmake.org/) files which build a library object, or build and run the included tests. The CMake files will also support out of source builds.
 
-Unit tests use the [Catch](https://github.com/philsquared/Catch) test framework, and CMake will automatically fetch the latest version of Catch for you at build time. To build the tests you will also need to have either unixODBC or iODBC installed and discoverable by CMake. This is easy on OS X where you can use [Homebrew](http://brew.sh/) to install unixODBC with `brew install unixodbc`, or use the system provided iODBC if you have OS X 10.9 or earlier.
+Tests use the [Catch](https://github.com/philsquared/Catch) test framework, and CMake will automatically fetch the latest version of Catch for you at build time. To build the tests you will also need to have either unixODBC or iODBC installed and discoverable by CMake. This is easy on OS X where you can use [Homebrew](http://brew.sh/) to install unixODBC with `brew install unixodbc`, or use the system provided iODBC if you have OS X 10.9 or earlier.
 
-The unit tests attempt to connect to a [SQLite](https://www.sqlite.org/) database, so you will have to have that and a SQLite ODBC driver installed. At the time of this writing, there happens to be a nice [SQLite ODBC driver](http://www.ch-werner.de/sqliteodbc/) available from Christian Werner's website, also available via Homebrew as `sqliteobdc`! The tests expect to find a data source named `sqlite` on *nix systems and `SQLite3 ODBC Driver` on Windows systems. For example, your `odbcinst.ini` file on OS X must have a section like the following.
+The tests attempt to connect to a [SQLite](https://www.sqlite.org/) database, so you will have to have that and a SQLite ODBC driver installed. At the time of this writing, there happens to be a nice [SQLite ODBC driver](http://www.ch-werner.de/sqliteodbc/) available from Christian Werner's website, also available via Homebrew as `sqliteobdc`! The tests expect to find a data source named `sqlite` on *nix systems and `SQLite3 ODBC Driver` on Windows systems. For example, your `odbcinst.ini` file on OS X must have a section like the following.
 
 ```
 [sqlite]
@@ -36,9 +38,9 @@ Threading               = 2
 
 ## Example Build Process
 
-It's most convenient to create a build directory for an out of source build, but this isn't required. After you've used cmake to generate your Makefiles, `make nanodbc` will build your shared object. `make check` will build and run the unit tests. You can also install nanodbc to your system using `make install`.
+It's most convenient to create a build directory for an out of source build, but this isn't required. After you've used cmake to generate your Makefiles, `make nanodbc` will build your shared object. `make check` will build and run the tests. You can also install nanodbc to your system using `make install`.
 
-If the unit tests fail, please don't hesitate to [**report it**](https://github.com/lexicalunit/nanodbc/issues/new) by creating an issue with your detailed test log (prepend your `make` command with `env CTEST_OUTPUT_ON_FAILURE=1 ` to enable verbose output please).
+If the tests fail, please don't hesitate to [**report it**](https://github.com/lexicalunit/nanodbc/issues/new) by creating an issue with your detailed test log (prepend your `make` command with `env CTEST_OUTPUT_ON_FAILURE=1 ` to enable verbose output please).
 
 ```shell
 cd path/to/nanodbc/repository
@@ -47,29 +49,29 @@ cd build
 cmake [Build Options] ..
 make # creates shared library
 make nanodbc # creates shared library
-make tests # builds the unit tests
-make test # runs the unit tests
-make check # builds and then runs unit tests
+make tests # builds the tests
+make test # runs the tests
+make check # builds and then runs tests
 make examples # builds all the example programs
 make install # installs nanodbc.h and shared library
 ```
 
 ## Build Options
 
-The following build options are available via CMake. If you are not using CMake to build nanodbc, you will need to set the corresponding `-D` compile define flags yourself. You will need to configure your build to use [boost](http://www.boost.org/) if you want to use the `NANODBC_USE_BOOST_CONVERT` option.
+The following build options are available via [CMake command-line option](https://cmake.org/cmake/help/latest/manual/cmake.1.html) `-D`. If you are not using CMake to build nanodbc, you will need to set the corresponding `-D` compile define flags yourself. You will need to configure your build to use [boost](http://www.boost.org/) if you want to use the `NANODBC_USE_BOOST_CONVERT` option.
 
 | CMake&nbsp;Option                     | Possible&nbsp;Values  | Default       | Details |
 | ------------------------------------- | --------------------- | ------------- | ------- |
-| `-D NANODBC_DISABLE_ASYNC=...`        | `OFF` or `ON`         | `OFF`         | Disables all async features. Can resolve build issues in older ODBC versions. |
-| `-D NANODBC_ENABLE_LIBCXX=...`        | `OFF` or `ON`         | `ON`          | Enables usage of libc++ if found on the system. |
-| `-D NANODBC_EXAMPLES=...`             | `OFF` or `ON`         | `ON`          | Enables building of examples. |
-| `-D NANODBC_HANDLE_NODATA_BUG=...`    | `OFF` or `ON`         | `OFF`         | Provided to resolve issue [#33](https://github.com/lexicalunit/nanodbc/issues/33), details [in this commit](https://github.com/lexicalunit/nanodbc/commit/918d73cdf12d5903098381344eecde8e7d5d896e). |
-| `-D NANODBC_INSTALL=...`              | `OFF` or `ON`         | `ON`          | Enables install target. |
-| `-D NANODBC_ODBC_VERSION=...`         | `SQL_OV_ODBC3[...]`   | See Details   | **[Optional]** Sets the ODBC version macro for nanodbc to use. Default is `SQL_OV_ODBC3_80` if available, otherwise `SQL_OV_ODBC3`. |
-| `-D NANODBC_STATIC=...`               | `OFF` or `ON`         | `OFF`         | Enables building a static library, otherwise the build process produces a shared library. |
-| `-D NANODBC_TEST=...`                 | `OFF` or `ON`         | `ON`          | Enables tests target (alias `check`). |
-| `-D NANODBC_USE_BOOST_CONVERT=...`    | `OFF` or `ON`         | `OFF`         | Provided as workaround to issue [#44](https://github.com/lexicalunit/nanodbc/issues/44). |
-| `-D NANODBC_USE_UNICODE=...`          | `OFF` or `ON`         | `OFF`         | Enables full unicode support. `nanodbc::string` becomes `std::u16string` or `std::u32string`. |
+| `NANODBC_DISABLE_ASYNC`        | `OFF` or `ON`         | `OFF`         | Disables all async features. Can resolve build issues in older ODBC versions. |
+| `NANODBC_ENABLE_LIBCXX`        | `OFF` or `ON`         | `ON`          | Enables usage of libc++ if found on the system. |
+| `NANODBC_EXAMPLES`             | `OFF` or `ON`         | `ON`          | Enables building of examples. |
+| `NANODBC_HANDLE_NODATA_BUG`    | `OFF` or `ON`         | `OFF`         | Provided to resolve issue [#33](https://github.com/lexicalunit/nanodbc/issues/33), details [in this commit](https://github.com/lexicalunit/nanodbc/commit/918d73cdf12d5903098381344eecde8e7d5d896e). |
+| `NANODBC_INSTALL`              | `OFF` or `ON`         | `ON`          | Enables install target. |
+| `NANODBC_ODBC_VERSION`         | `SQL_OV_ODBC3[...]`   | See Details   | **[Optional]** Sets the ODBC version macro for nanodbc to use. Default is `SQL_OV_ODBC3_80` if available, otherwise `SQL_OV_ODBC3`. |
+| `NANODBC_STATIC`               | `OFF` or `ON`         | `OFF`         | Enables building a static library, otherwise the build process produces a shared library. |
+| `NANODBC_TEST`                 | `OFF` or `ON`         | `ON`          | Enables tests target (alias `check`). |
+| `NANODBC_USE_BOOST_CONVERT`    | `OFF` or `ON`         | `OFF`         | Provided as workaround to issue [#44](https://github.com/lexicalunit/nanodbc/issues/44). |
+| `NANODBC_USE_UNICODE`          | `OFF` or `ON`         | `OFF`         | Enables full unicode support. `nanodbc::string` becomes `std::u16string` or `std::u32string`. |
 
 ## Note About iODBC
 
@@ -141,7 +143,7 @@ vagrant@vagrant-ubuntu-precise-64:~$ make nanodbc
 
 ### Good to Have / Want Someday
 
-- Refactor unit tests to follow BDD pattern.
+- Refactor tests to follow BDD pattern.
 - Update codebase to use more C++14 idioms and patterns.
 - Write more tests with the goal to have much higher code coverage.
 - More tests for a large variety of drivers. Include performance tests.
