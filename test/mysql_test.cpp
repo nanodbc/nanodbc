@@ -114,6 +114,11 @@ TEST_CASE_METHOD(mysql_fixture, "nullptr_nulls_test", "[mysql][null]")
     nullptr_nulls_test();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "rowset_iterator_test", "[mysql][iterator]")
+{
+    rowset_iterator_test();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "simple_test", "[mysql]")
 {
     simple_test();
