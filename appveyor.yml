@@ -12,64 +12,68 @@ branches:
     - latest
     - release
 
+shallow_clone: true
+clone_depth: 5
+
 matrix:
   fast_finish: false # set this flag to immediately finish build once one of the jobs fails.
 
 environment:
   matrix:
-    - DB: MySQL
-      USE_UNICODE: OFF
-      USE_BOOST_CONVERT: OFF
-      USE_NODATA_BUG: OFF
-    - DB: PostgreSQL
-      USE_UNICODE: OFF
-      USE_BOOST_CONVERT: OFF
-      USE_NODATA_BUG: OFF
     - DB: MSSQL
       USE_UNICODE: OFF
       USE_BOOST_CONVERT: OFF
-      USE_NODATA_BUG: OFF
-
-shallow_clone: true
-clone_depth: 5
-
-# If you need to debug AppVeyor session (https://www.appveyor.com/docs/how-to/rdp-to-build-worker), then:
-# 1. Uncomment the on_finish section below:
-#on_finish:
-#  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
-# 2. Add this line to the init section below
-#- ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+    - DB: MySQL
+      USE_UNICODE: OFF
+      USE_BOOST_CONVERT: OFF
+    - DB: PostgreSQL
+      USE_UNICODE: OFF
+      USE_BOOST_CONVERT: OFF
+    - DB: SQLite
+      USE_UNICODE: OFF
+      USE_BOOST_CONVERT: OFF
 
 init:
-  - ps: 'Get-ChildItem Env: | %{"{0}={1}" -f $_.Name,$_.Value}'
-  - ps: 'Get-OdbcDriver -Platform 64-bit | Select-Object -ExpandProperty Name'
+  - ps: |
+      Write-Host "Build worker environment variables:" -ForegroundColor Magenta
+      Get-ChildItem Env: | %{"{0}={1}" -f $_.Name,$_.Value}
 
 services:
   - mssql2014   # start SQL Server 2014 Express
   - mysql       # start MySQL 5.x service
   - postgresql  # start PostgreSQL 9.x service
 
-before_build:
+install:
+  - ps: 'Write-Host "Installing SQLite ODBC Driver:" -ForegroundColor Magenta'
   - ps: |
-      if ($env:DB -Match "MSSQL") {
-        ;
-      }
-      elseif ($env:DB -Match "MySQL") {
+      $sqliteodbcPath = "$($env:TEMP)\sqliteodbc_w64.exe"
+      (New-Object Net.WebClient).DownloadFile('http://www.ch-werner.de/sqliteodbc/sqliteodbc_w64.exe', $sqliteodbcPath)
+      cmd /c start /wait $sqliteodbcPath /S
+      if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
+  - ps: |
+      Write-Host "Installed ODBC drivers:" -ForegroundColor Magenta
+      Get-OdbcDriver -Platform 64-bit | Select-Object -ExpandProperty Name
+
+before_build:
+  - ps: 'Write-Host "Running CMake:" -ForegroundColor Magenta'
+  - ps: |
+      if ($env:DB -Match "MySQL") {
         $env:MYSQL_PWD="Password12!"
         $cmd = '"C:\Program Files\MySQL\MySQL Server 5.7\bin\mysql" -e "create database nanodbc_test;" --user=root'
         iex "& $cmd"
-      }
-      elseif ($env:DB -Match "PostgreSQL") {
+      } elseif ($env:DB -Match "PostgreSQL") {
         $env:PGUSER="postgres"
         $env:PGPASSWORD="Password12!"
         $cmd = '"C:\Program Files\PostgreSQL\9.3\bin\createdb" nanodbc_test'
         iex "& $cmd"
-      }
-      else {
-        throw 'TODO: ' + $env:DB + ' not configured yet'
+      } else {
+        if (-not $env:DB -Match "MSSQL" -and -not $env:DB -Match "SQLite") {
+          throw 'TODO: ' + $env:DB + ' not configured yet'
+        }
       }
       if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
-  - cmd: call .\scripts\appveyor\configure.bat
+  - cmake.exe -G "Visual Studio 14 2015 Win64" -DNANODBC_USE_BOOST_CONVERT=%USE_BOOST_CONVERT% -DNANODBC_USE_UNICODE=%USE_UNICODE% -DNANODBC_STATIC=ON -DNANODBC_HANDLE_NODATA_BUG=OFF -DNANODBC_INSTALL=OFF %APPVEYOR_BUILD_FOLDER%
+  - ps: 'Write-Host "Running MSBuild:" -ForegroundColor Magenta'
 
 build:
   parallel: true
@@ -81,21 +85,27 @@ test_script:
       if ($env:DB -Match "MSSQL") {
         $env:NANODBC_TEST_CONNSTR="Driver={ODBC Driver 11 for SQL Server};Server=(local)\SQL2014;Database=master;UID=sa;PWD=Password12!;"
         $test_name = "mssql_test"
-      }
-      elseif ($env:DB -Match "MySQL") {
+      } elseif ($env:DB -Match "MySQL") {
         $env:NANODBC_TEST_CONNSTR="Driver={MySQL ODBC 5.3 ANSI Driver};Server=127.0.0.1;Database=nanodbc_test;User=root;Password=Password12!;"
         $test_name = "mysql_test"
-      }
-      elseif ($env:DB -Match "PostgreSQL") {
+      } elseif ($env:DB -Match "PostgreSQL") {
         $env:NANODBC_TEST_CONNSTR="Driver={PostgreSQL ANSI(x64)};Server=127.0.0.1;Port=5432;Database=nanodbc_test;Uid=postgres;Pwd=Password12!;"
         $test_name = "postgresql_test"
-      }
-      else {
+      } elseif ($env:DB -Match "SQLite") {
+        $test_name = "sqlite_test"
+      } else {
         throw 'TODO: ' + $env:DB + ' not configured yet'
       }
-      Write-Host Running $Env:CONFIGURATION build test: $test_name
-      Write-Host NANODBC_TEST_CONNSTR=$env:NANODBC_TEST_CONNSTR
+      Write-Host Running $Env:CONFIGURATION build test: $test_name -ForegroundColor Magenta
+      Write-Host NANODBC_TEST_CONNSTR=$env:NANODBC_TEST_CONNSTR -ForegroundColor Magenta
   - ps: |
       $cmd = 'ctest -V --output-on-failure -C ' + $Env:CONFIGURATION + ' -R ' + $test_name
       iex "& $cmd"
       if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
+
+# If you need to debug AppVeyor session (https://www.appveyor.com/docs/how-to/rdp-to-build-worker), then:
+# 1. Uncomment the on_finish section below:
+#on_finish:
+#  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+# 2. Add this line to the init section below
+#- ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
