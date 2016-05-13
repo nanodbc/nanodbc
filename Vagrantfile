@@ -5,6 +5,7 @@ Vagrant.configure(2) do |config|
   config.vm.box = "ubuntu/trusty64"
   config.vm.provider "virtualbox" do |vb|
     vb.memory = "1024"
+	vb.cpus = 2
   end
   config.vm.network "private_network", type: "dhcp"
   config.vm.provision "shell", inline: <<-SHELL
@@ -37,6 +38,7 @@ Vagrant.configure(2) do |config|
       unixodbc \
       unixodbc-dev \
       vim
+    sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 60 --slave /usr/bin/g++ g++ /usr/bin/g++-5
     ############################################################################
     # MySQL
     echo "MySQL: updating /etc/mysql/my.cnf"
