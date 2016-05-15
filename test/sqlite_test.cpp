@@ -39,6 +39,61 @@ namespace
 
 // NOTE: No catlog_* tests; not supported by SQLite.
 
+
+// Unicode build on Ubuntu 12.04 with unixODBC 2.2.14p2 and libsqliteodbc 0.91-3 throws:
+// test/sqlite_test.cpp:42: FAILED:
+// due to a fatal error condition:
+//   SIGSEGV - Segmentation violation signal
+// See discussions at
+// https://github.com/lexicalunit/nanodbc/pull/154
+// https://groups.google.com/forum/#!msg/catch-forum/7tIpgm8SvDA/1QZZESIuCQAJ
+// TODO: Uncomment as soon as the SIGSEGV issue has been fixed.
+#ifndef NANODBC_USE_UNICODE
+TEST_CASE_METHOD(sqlite_fixture, "affected_rows_test", "[sqlite][affected_rows]")
+{
+    nanodbc::connection conn = connect();
+
+    // CREATE TABLE  (CREATE DATABASE not supported)
+    {
+        auto result = execute(conn, NANODBC_TEXT("CREATE TABLE nanodbc_test_temp_table (i int)"));
+        REQUIRE(result.affected_rows() == 0);
+    }
+    // INSERT
+    {
+        nanodbc::result result;
+        result = execute(conn, NANODBC_TEXT("INSERT INTO nanodbc_test_temp_table VALUES (1)"));
+        REQUIRE(result.affected_rows() == 1);
+        result = execute(conn, NANODBC_TEXT("INSERT INTO nanodbc_test_temp_table VALUES (2)"));
+        REQUIRE(result.affected_rows() == 1);
+    }
+    // SELECT
+    {
+        //auto result = execute(conn, NANODBC_TEXT("SELECT i FROM nanodbc_test_temp_table"));
+        //REQUIRE(result.affected_rows() == 0);
+    }
+    // DELETE
+    {
+        auto result = execute(conn, NANODBC_TEXT("DELETE FROM nanodbc_test_temp_table"));
+        REQUIRE(result.affected_rows() == 2);
+        // then DROP TABLE
+        {
+            auto result2 = execute(conn, NANODBC_TEXT("DROP TABLE nanodbc_test_temp_table"));
+            REQUIRE(result2.affected_rows() == 2);
+        }
+    }
+
+    // DROP TABLE, without prior DELETE
+    {
+        execute(conn, NANODBC_TEXT("CREATE TABLE nanodbc_test_temp_table (i int)"));
+        execute(conn, NANODBC_TEXT("INSERT INTO nanodbc_test_temp_table VALUES (1)"));
+        execute(conn, NANODBC_TEXT("INSERT INTO nanodbc_test_temp_table VALUES (2)"));
+
+        auto result = execute(conn, NANODBC_TEXT("DROP TABLE nanodbc_test_temp_table"));
+        REQUIRE(result.affected_rows() == 1);
+    }
+}
+#endif
+
 TEST_CASE_METHOD(sqlite_fixture, "blob_test", "[sqlite][blob]")
 {
     blob_test();
