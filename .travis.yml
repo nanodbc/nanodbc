@@ -25,7 +25,7 @@ before_script:
 script:
   - mkdir build
   - cd build
-  - cmake -D NANODBC_USE_UNICODE=${USE_UNICODE} -D NANODBC_USE_BOOST_CONVERT=${USE_BOOST_CONVERT} -D NANODBC_HANDLE_NODATA_BUG=${USE_NODATA_BUG} -D NANODBC_ENABLE_LIBCXX=NO ..
+  - cmake -DNANODBC_USE_UNICODE=${USE_UNICODE} -DNANODBC_USE_BOOST_CONVERT=${USE_BOOST_CONVERT} -DNANODBC_HANDLE_NODATA_BUG=${USE_NODATA_BUG} -DNANODBC_ENABLE_LIBCXX=NO ..
   - make
   - if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then make VERBOSE=1 mysql_check; fi
   - if [[ "$DB" == "postgresql" ]]; then make VERBOSE=1 postgresql_check; fi
