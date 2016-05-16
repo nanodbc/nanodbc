@@ -8,8 +8,8 @@ branches:
     - coverity_scan
 
 before_script:
-  - if [[ -f /etc/odbcinst.ini ]]; then export ODBCSYSINI=/etc; fi
-  - if [[ -f /etc/odbc.ini ]]; then export ODBCINI=/etc/odbc.ini; fi
+  - if [[ -n "$DB" && -f /etc/odbcinst.ini ]]; then export ODBCSYSINI=/etc; fi
+  - if [[ -n "$DB" && -f /etc/odbc.ini ]]; then export ODBCINI=/etc/odbc.ini; fi
   - if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then sudo odbcinst -i -d -f /usr/share/libmyodbc/odbcinst.ini; fi
   - if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then mysql -e "DROP DATABASE IF EXISTS nanodbc_tests; CREATE DATABASE IF NOT EXISTS nanodbc_tests;" -uroot; fi
   - if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost';" -uroot; fi
@@ -19,8 +19,8 @@ before_script:
   - if [[ "$DB" == "postgresql" ]]; then export NANODBC_TEST_CONNSTR="DRIVER={PostgreSQL ANSI};Server=localhost;Port=5432;Database=nanodbc_tests;UID=postgres;"; fi
   - if [[ "$DB" == "sqlite" ]]; then sudo odbcinst -i -d -f /usr/share/sqliteodbc/unixodbc.ini; fi
   - odbcinst -j
-  - if [[ -f "$ODBCSYSINI/odbcinst.ini" ]]; then odbcinst -q -d; fi
-  - if [[ -s "$ODBCINI" ]]; then odbcinst -q -s; fi
+  - if [[ -n "$DB" && -f "$ODBCSYSINI/odbcinst.ini" ]]; then odbcinst -q -d; fi
+  - if [[ -n "$DB" && -s "$ODBCINI" ]]; then odbcinst -q -s; fi
   - export CXX="g++-5"
 
 script:
