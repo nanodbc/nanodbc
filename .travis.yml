@@ -5,6 +5,7 @@ branches:
     - master
     - latest
     - release
+    - coverity_scan
 
 before_script:
   - if [[ -f /etc/odbcinst.ini ]]; then export ODBCSYSINI=/etc; fi
