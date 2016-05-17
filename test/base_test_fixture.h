@@ -48,7 +48,7 @@ struct base_test_fixture
         > integral_test_types;
 
     base_test_fixture()
-    : connection_string_(get_connection_string_from_env())
+    : connection_string_(get_connection_string_from_env("NANODBC_TEST_CONNSTR"))
     {
     }
 
@@ -85,21 +85,20 @@ struct base_test_fixture
         return ss.str();
     }
 
-    nanodbc::string_type get_connection_string_from_env() const
+    nanodbc::string_type get_connection_string_from_env(const char* var) const
     {
-        const char* env_name = "NANODBC_TEST_CONNSTR";
         char* env_value = nullptr;
         std::string connection_string;
         #ifdef _MSC_VER
             std::size_t env_len(0);
-            errno_t err = _dupenv_s(&env_value, &env_len, env_name);
+            errno_t err = _dupenv_s(&env_value, &env_len, var);
             if(!err && env_value)
             {
                 connection_string = env_value;
                 std::free(env_value);
             }
         #else
-            env_value = std::getenv(env_name);
+            env_value = std::getenv(var);
             if(!env_value) return nanodbc::string_type();
             connection_string = env_value;
         #endif

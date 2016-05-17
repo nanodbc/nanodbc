@@ -83,13 +83,13 @@ build:
 test_script:
   - ps: |
       if ($env:DB -Match "MSSQL") {
-        $env:NANODBC_TEST_CONNSTR="Driver={ODBC Driver 11 for SQL Server};Server=(local)\SQL2014;Database=master;UID=sa;PWD=Password12!;"
+        $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 11 for SQL Server};Server=(local)\SQL2014;Database=master;UID=sa;PWD=Password12!;"
         $test_name = "mssql_test"
       } elseif ($env:DB -Match "MySQL") {
-        $env:NANODBC_TEST_CONNSTR="Driver={MySQL ODBC 5.3 ANSI Driver};Server=127.0.0.1;Database=nanodbc_test;User=root;Password=Password12!;"
+        $env:NANODBC_TEST_CONNSTR_MYSQL="Driver={MySQL ODBC 5.3 ANSI Driver};Server=127.0.0.1;Database=nanodbc_test;User=root;Password=Password12!;"
         $test_name = "mysql_test"
       } elseif ($env:DB -Match "PostgreSQL") {
-        $env:NANODBC_TEST_CONNSTR="Driver={PostgreSQL ANSI(x64)};Server=127.0.0.1;Port=5432;Database=nanodbc_test;Uid=postgres;Pwd=Password12!;"
+        $env:NANODBC_TEST_CONNSTR_PGSQL="Driver={PostgreSQL ANSI(x64)};Server=127.0.0.1;Port=5432;Database=nanodbc_test;Uid=postgres;Pwd=Password12!;"
         $test_name = "postgresql_test"
       } elseif ($env:DB -Match "SQLite") {
         $test_name = "sqlite_test"
@@ -97,7 +97,6 @@ test_script:
         throw 'TODO: ' + $env:DB + ' not configured yet'
       }
       Write-Host Running $Env:CONFIGURATION build test: $test_name -ForegroundColor Magenta
-      Write-Host NANODBC_TEST_CONNSTR=$env:NANODBC_TEST_CONNSTR -ForegroundColor Magenta
   - ps: |
       $cmd = 'ctest -V --output-on-failure -C ' + $Env:CONFIGURATION + ' -R ' + $test_name
       iex "& $cmd"
