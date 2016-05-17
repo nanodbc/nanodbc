@@ -2063,7 +2063,7 @@ public:
         return static_cast<unsigned long>(pos) + rowset_position_;
     }
 
-    bool end() const NANODBC_NOEXCEPT
+    bool at_end() const NANODBC_NOEXCEPT
     {
         if(at_end_)
             return true;
@@ -3850,9 +3850,9 @@ unsigned long result::position() const
     return impl_->position();
 }
 
-bool result::end() const NANODBC_NOEXCEPT
+bool result::at_end() const NANODBC_NOEXCEPT
 {
-    return impl_->end();
+    return impl_->at_end();
 }
 
 bool result::is_null(short column) const

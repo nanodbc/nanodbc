@@ -173,6 +173,11 @@ TEST_CASE_METHOD(sqlite_fixture, "nullptr_nulls_test", "[sqlite][null]")
     nullptr_nulls_test();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "rowset_iterator_test", "[sqlite][iterator]")
+{
+    rowset_iterator_test();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "simple_test", "[sqlite]")
 {
     simple_test();

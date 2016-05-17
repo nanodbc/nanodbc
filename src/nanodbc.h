@@ -74,6 +74,7 @@
 #ifndef NANODBC_H
 #define NANODBC_H
 
+#include <cstddef>
 #include <functional>
 #include <memory>
 #include <stdexcept>
@@ -1006,7 +1007,7 @@ public:
     unsigned long position() const;
 
     //! \brief Returns true if there are no more results in the current result set.
-    bool end() const NANODBC_NOEXCEPT;
+    bool at_end() const NANODBC_NOEXCEPT;
 
     //! \brief Gets data from the given column of the current rowset.
     //!
@@ -1153,6 +1154,77 @@ private:
     std::shared_ptr<result_impl> impl_;
 };
 
+
+//! \brief Single pass input iterator that accesses successive rows in the attached result set.
+class result_iterator
+{
+public:
+    typedef std::input_iterator_tag iterator_category;
+    typedef result   value_type;
+    typedef result* pointer;
+    typedef result& reference;
+    typedef std::ptrdiff_t difference_type;
+
+    result_iterator() = default;
+    result_iterator(result& r) : result_(r) { ++(*this); }
+
+    reference operator*() { return result_; }
+
+    pointer operator->()
+    {
+        if (!result_) throw std::runtime_error("result is empty");
+        return &(operator*());
+    }
+
+    result_iterator& operator++()
+    {
+        try
+        {
+            if (!result_.next())
+                result_ = result();
+        }
+        catch (...)
+        {
+            result_ = result();
+        }
+        return *this;
+    }
+
+    result_iterator operator++(int)
+    {
+        result_iterator tmp(*this);
+        ++(*this);
+        return tmp;
+    }
+
+    bool operator==(result_iterator const & rhs) const
+    {
+        // TODO: add row counter and compare
+        if (result_ && rhs.result_)
+            return result_.native_statement_handle() == rhs.result_.native_statement_handle();
+        else
+            return !result_ && !rhs.result_;
+    }
+
+    bool operator!=(result_iterator const& rhs) const
+    {
+        return !(*this == rhs);
+    }
+
+private:
+    result result_;
+};
+
+//! \brief Returns an iterator to the beginning of the given result set.
+inline auto begin(result& r) { return result_iterator(r); }
+
+//! \brief Returns an iterator to the end of a result set.
+//!
+//! The default-constructed `nanodbc::result_iterator` is known as the end-of-result iterator.
+//! When a valid `nanodbc::result_iterator` reaches the end of the underlying result set,
+//! it becomes equal to the end-of-result iterator.
+//! Dereferencing or incrementing it further is undefined.
+inline auto end(result& /*r*/) { return result_iterator(); }
 
 //
 //  .d8888b.           888             888

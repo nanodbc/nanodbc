@@ -763,6 +763,45 @@ struct base_test_fixture
         }
     }
 
+    void rowset_iterator_test()
+    {
+        nanodbc::connection connection = connect();
+        drop_table(connection, NANODBC_TEXT("rowset_iterator_test"));
+        execute(connection, NANODBC_TEXT("create table rowset_iterator_test (i int, s varchar(10));"));
+        execute(connection, NANODBC_TEXT("insert into rowset_iterator_test values (1, 'one');"));
+        execute(connection, NANODBC_TEXT("insert into rowset_iterator_test values (2, 'two');"));
+        execute(connection, NANODBC_TEXT("insert into rowset_iterator_test values (3, 'tri');"));
+        
+        // Test standard algorithm
+        {
+            nanodbc::result results = execute(connection, NANODBC_TEXT("select i, s from rowset_iterator_test;"));
+            REQUIRE(std::distance(begin(results), end(results)) == 3);
+        }
+
+        // Test classic for loop iteration
+        {
+            nanodbc::result results = execute(connection, NANODBC_TEXT("select i, s from rowset_iterator_test;"));
+            for (auto it = begin(results); it != end(results); ++it)
+            {
+                REQUIRE(it->get<int>(0) > 0);
+                REQUIRE(it->get<nanodbc::string_type>(1).size() == 3);
+            }
+            REQUIRE(std::distance(begin(results), end(results)) == 0); // InputIterators only guarantee validity for single pass algorithms
+        }
+
+        // Test range-based for loop iteration
+        {
+            nanodbc::result results = execute(connection, NANODBC_TEXT("select i, s from rowset_iterator_test;"));
+            for (auto& row : results)
+            {
+                REQUIRE(row.get<int>(0) > 0);
+                REQUIRE(row.get<nanodbc::string_type>(1).size() == 3);
+            }
+            REQUIRE(std::distance(begin(results), end(results)) == 0); // InputIterators only guarantee validity for single pass algorithms
+        }
+
+    }
+
     void simple_test()
     {
         nanodbc::connection connection = connect();
@@ -867,7 +906,7 @@ struct base_test_fixture
             REQUIRE(results.get<nanodbc::string_type>(NANODBC_TEXT("b")) == NANODBC_TEXT("tri"));
 
             REQUIRE(!results.next());
-            REQUIRE(results.end());
+            REQUIRE(results.at_end());
         }
 
         nanodbc::connection connection_copy(connection);
@@ -976,7 +1015,7 @@ struct base_test_fixture
         execute(connection, NANODBC_TEXT("insert into while_not_end_iteration_test values (3);"));
         nanodbc::result results = execute(connection, NANODBC_TEXT("select * from while_not_end_iteration_test order by 1 desc;"));
         int i = 3;
-        while(!results.end())
+        while(!results.at_end())
         {
             results.next();
             REQUIRE(results.get<int>(0) == i--);
