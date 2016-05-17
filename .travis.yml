@@ -26,7 +26,7 @@ before_script:
 script:
   - mkdir build
   - cd build
-  - cmake -DNANODBC_USE_UNICODE=${USE_UNICODE} -DNANODBC_USE_BOOST_CONVERT=${USE_BOOST_CONVERT} -DNANODBC_HANDLE_NODATA_BUG=${USE_NODATA_BUG} -DNANODBC_ENABLE_LIBCXX=NO ..
+  - cmake -DCMAKE_BUILD_TYPE=${CBT} -DNANODBC_USE_UNICODE=${USE_UNICODE} -DNANODBC_USE_BOOST_CONVERT=${USE_BOOST_CONVERT} -DNANODBC_ENABLE_LIBCXX=NO ..
   - make
   - if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then make VERBOSE=1 mysql_check; fi
   - if [[ "$DB" == "postgresql" ]]; then make VERBOSE=1 postgresql_check; fi
@@ -34,10 +34,9 @@ script:
 
 matrix:
   include:
-    - env: DB=mysql USE_UNICODE=OFF USE_BOOST_CONVERT=OFF USE_NODATA_BUG=OFF
+    - env: DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=OFF CBT=Debug
       compiler: gcc
-      addons: &mysql
-        mysql: "5.5"
+      addons: &sqlite
         apt:
           sources: &sources
             - ubuntu-toolchain-r-test
@@ -47,18 +46,33 @@ matrix:
             - libboost-locale1.55-dev
             - unixodbc
             - unixodbc-dev
+            - libsqliteodbc
+    - env: DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=ON CBT=Release
+      compiler: gcc
+      addons: *sqlite
+    - env: DB=mysql USE_UNICODE=OFF USE_BOOST_CONVERT=OFF CBT=Release
+      compiler: gcc
+      addons: &mysql
+        mysql: "5.5"
+        apt:
+          sources: *sources
+          packages:
+            - g++-5
+            - libboost-locale1.55-dev
+            - unixodbc
+            - unixodbc-dev
             - libmyodbc
             - mysql-client
-    - env: DB=mysql USE_UNICODE=OFF USE_BOOST_CONVERT=ON USE_NODATA_BUG=OFF
+    - env: DB=mysql USE_UNICODE=OFF USE_BOOST_CONVERT=ON CBT=Release
       compiler: gcc
       addons: *mysql
-    - env: DB=mysql USE_UNICODE=ON USE_BOOST_CONVERT=OFF USE_NODATA_BUG=OFF
+    - env: DB=mysql USE_UNICODE=ON USE_BOOST_CONVERT=OFF CBT=Release
       compiler: gcc
       addons: *mysql
-    - env: DB=mysql USE_UNICODE=ON USE_BOOST_CONVERT=ON USE_NODATA_BUG=OFF
+    - env: DB=mysql USE_UNICODE=ON USE_BOOST_CONVERT=ON CBT=Release
       compiler: gcc
       addons: *mysql
-    - env: DB=postgresql USE_UNICODE=OFF USE_BOOST_CONVERT=OFF USE_NODATA_BUG=OFF
+    - env: DB=postgresql USE_UNICODE=OFF USE_BOOST_CONVERT=OFF CBT=Release
       compiler: gcc
       addons: &postgresql
         postgresql: "9.1"
@@ -70,27 +84,7 @@ matrix:
             - unixodbc
             - unixodbc-dev
             - odbc-postgresql
-    - env: DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=OFF USE_NODATA_BUG=OFF
-      compiler: gcc
-      addons: &sqlite
-        apt:
-          sources: *sources
-          packages:
-            - g++-5
-            - libboost-locale1.55-dev
-            - unixodbc
-            - unixodbc-dev
-            - libsqliteodbc
-    - env: DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=ON USE_NODATA_BUG=OFF
-      compiler: gcc
-      addons: *sqlite
-    - env: DB=sqlite USE_UNICODE=ON USE_BOOST_CONVERT=OFF USE_NODATA_BUG=ON
-      compiler: gcc
-      addons: *sqlite
-    - env: DB=sqlite USE_UNICODE=ON USE_BOOST_CONVERT=ON USE_NODATA_BUG=ON
-      compiler: gcc
-      addons: *sqlite
-    - env: DB=mariadb USE_UNICODE=OFF USE_BOOST_CONVERT=OFF USE_NODATA_BUG=OFF
+    - env: DB=mariadb USE_UNICODE=OFF USE_BOOST_CONVERT=OFF CBT=Release
       compiler: gcc
       addons:
         mariadb: "10.0"
@@ -103,4 +97,4 @@ matrix:
             - unixodbc-dev
             - libmyodbc
   allow_failures:
-    - env: DB=mariadb USE_UNICODE=OFF USE_BOOST_CONVERT=OFF USE_NODATA_BUG=OFF
+    - env: DB=mariadb USE_UNICODE=OFF USE_BOOST_CONVERT=OFF CBT=Release
