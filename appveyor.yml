@@ -46,10 +46,12 @@ services:
 install:
   - ps: 'Write-Host "Installing SQLite ODBC Driver:" -ForegroundColor Magenta'
   - ps: |
-      $sqliteodbcPath = "$($env:TEMP)\sqliteodbc_w64.exe"
-      (New-Object Net.WebClient).DownloadFile('http://www.ch-werner.de/sqliteodbc/sqliteodbc_w64.exe', $sqliteodbcPath)
-      cmd /c start /wait $sqliteodbcPath /S
-      if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
+      if ($env:DB -Match "SQLite") {
+        $sqliteodbcPath = "$($env:TEMP)\sqliteodbc_w64.exe"
+        (New-Object Net.WebClient).DownloadFile('http://www.ch-werner.de/sqliteodbc/sqliteodbc_w64.exe', $sqliteodbcPath)
+        cmd /c start /wait $sqliteodbcPath /S
+        if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
+       }
   - ps: |
       Write-Host "Installed ODBC drivers:" -ForegroundColor Magenta
       Get-OdbcDriver -Platform 64-bit | Select-Object -ExpandProperty Name
