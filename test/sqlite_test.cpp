@@ -32,7 +32,9 @@ namespace
 
         void sqlite_cleanup() NANODBC_NOEXCEPT
         {
-            std::remove("nanodbc.db");
+            int success = std::remove("nanodbc.db");
+            (void)success;
+
         }
     };
 }
