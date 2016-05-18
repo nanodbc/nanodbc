@@ -1,3 +1,5 @@
+sudo: required
+
 language: cpp
 
 branches:
@@ -9,32 +11,110 @@ branches:
 
 env:
   global:
-   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
-   #  via the "travis encrypt" command using the project repo's public key
-   - secure: "o08nQFKhuSrBTX4FJO22YZ4h+igFq+Hgtz1bUW8wjKVNo83GTqJ2Z/gZfxSlxXBypJtz24Z14NsgCrb3XYrXwuMpTTsKK1SCzTHzmaf8BqZ1qJ9hYFtuX/Q8YInL1c27g5FUfvAWO1SlBAMOLuk+OqrX3lYb/yzf+3O1Ndvn2JRMx5QaONUd7jTWs04VXZzvBpNfZOPU0ypKm6NEIvN/Wjak979iSLnW7O/HjpsOgdXEAzpIqb/xRaoDtrKPIkPwoDbi2kbrZcw+/ile3iZ2m1l9MP4s79WDn/v1FtFBv+C4GI7ikXPG6qQ8J6yWyrOcnt1HZ9u+gdJ9E8rsZpMDSaR2rSB70rJMCGXzeG14dRUCzZsnumJ55+aY6rr/TDljOCOHQdHYofg0v6p82aojhtUo35EmedYbwkrIc7E2QzfGuKL2qpBjsXFnXrTRRuwtY+XQI/YF6nGECHSD/3JQTEZv14ICPh6IiWF2fMqLvsxEBIk5sZahyBCyY1peQqb7CvxG4v1nNy3M9hS+k3L7Si541UpborI03sWgEUKWl9dBOxAwdYBaI6o4o+NvfpRbBY8rZLaEy+hKn+UuglQBeunMB54dvZxpS7zbPkWgBrnhIWMz89Rx6DT97OsHJdgDNcUOPv1b6xRAQqs+Zd3+nZ2vQIkvZJU5FwljLRWCfdg="
+    # COVERITY_SCAN_TOKEN
+    - secure: "o08nQFKhuSrBTX4FJO22YZ4h+igFq+Hgtz1bUW8wjKVNo83GTqJ2Z/gZfxSlxXBypJtz24Z14NsgCrb3XYrXwuMpTTsKK1SCzTHzmaf8BqZ1qJ9hYFtuX/Q8YInL1c27g5FUfvAWO1SlBAMOLuk+OqrX3lYb/yzf+3O1Ndvn2JRMx5QaONUd7jTWs04VXZzvBpNfZOPU0ypKm6NEIvN/Wjak979iSLnW7O/HjpsOgdXEAzpIqb/xRaoDtrKPIkPwoDbi2kbrZcw+/ile3iZ2m1l9MP4s79WDn/v1FtFBv+C4GI7ikXPG6qQ8J6yWyrOcnt1HZ9u+gdJ9E8rsZpMDSaR2rSB70rJMCGXzeG14dRUCzZsnumJ55+aY6rr/TDljOCOHQdHYofg0v6p82aojhtUo35EmedYbwkrIc7E2QzfGuKL2qpBjsXFnXrTRRuwtY+XQI/YF6nGECHSD/3JQTEZv14ICPh6IiWF2fMqLvsxEBIk5sZahyBCyY1peQqb7CvxG4v1nNy3M9hS+k3L7Si541UpborI03sWgEUKWl9dBOxAwdYBaI6o4o+NvfpRbBY8rZLaEy+hKn+UuglQBeunMB54dvZxpS7zbPkWgBrnhIWMz89Rx6DT97OsHJdgDNcUOPv1b6xRAQqs+Zd3+nZ2vQIkvZJU5FwljLRWCfdg="
 
-addons:
-  coverity_scan:
-    project:
-      name: "lexicalunit/nanodbc"
-      description: "A small C++ wrapper for ODBC"
-    notification_email: mateusz@loskot.net
-    build_command_prepend: mkdir build && pushd build && cmake .. && popd
-    build_command: make
-    # must match TRAVIS_BRANCH check below
-    branch_pattern: coverity_scan
+matrix:
+  include:
+    - env: DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=OFF COVERITY=ON
+      compiler: gcc
+      addons: &sqlite
+        apt:
+          sources: &sources
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+            - unixodbc
+            - unixodbc-dev
+            - libsqliteodbc
+        # The single build job that submits the Coverity Scan file 
+        coverity_scan:
+          project:
+            name: "lexicalunit/nanodbc"
+            description: "A small C++ wrapper for ODBC"
+          notification_email: mateusz@loskot.net
+          build_command_prepend: mkdir -p build.coverity && pushd build.coverity && cmake -DCMAKE_BUILD_TYPE=Debug .. && popd
+          build_command: cmake --build ./build.coverity
+          branch_pattern: coverity_scan
+    - env: DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=ON
+      compiler: gcc
+      addons:
+        apt:
+          sources: &sources-boost
+            - ubuntu-toolchain-r-test
+            - boost-latest
+          packages:
+            - g++-5
+            - libboost-locale1.55-dev
+            - unixodbc
+            - unixodbc-dev
+            - libsqliteodbc
+    - env: DB=mysql USE_UNICODE=OFF USE_BOOST_CONVERT=OFF
+      compiler: gcc
+      addons: &mysql
+        mysql: "5.5"
+        apt:
+          sources: *sources
+          packages:
+            - g++-5
+            - unixodbc
+            - unixodbc-dev
+            - libmyodbc
+            - mysql-client
+    - env: DB=mysql USE_UNICODE=OFF USE_BOOST_CONVERT=ON
+      compiler: gcc
+      addons: &mysql-boost
+        mysql: "5.5"
+        apt:
+          sources: *sources-boost
+          packages:
+            - g++-5
+            - unixodbc
+            - unixodbc-dev
+            - libboost-locale1.55-dev
+            - libmyodbc
+            - mysql-client
+    - env: DB=mysql USE_UNICODE=ON USE_BOOST_CONVERT=OFF
+      compiler: gcc
+      addons: *mysql
+    - env: DB=mysql USE_UNICODE=ON USE_BOOST_CONVERT=ON
+      compiler: gcc
+      addons: *mysql-boost
+    - env: DB=postgresql USE_UNICODE=OFF USE_BOOST_CONVERT=OFF
+      compiler: gcc
+      addons: &postgresql
+        postgresql: "9.1"
+        apt:
+          sources: *sources
+          packages:
+            - g++-5
+            - unixodbc
+            - unixodbc-dev
+            - odbc-postgresql
+    - env: DB=mariadb USE_UNICODE=OFF USE_BOOST_CONVERT=OFF
+      compiler: gcc
+      addons:
+        mariadb: "10.0"
+        apt:
+          sources: *sources
+          packages:
+            - g++-5
+            - unixodbc
+            - unixodbc-dev
+            - libmyodbc
+  allow_failures:
+    - env: DB=mariadb USE_UNICODE=OFF USE_BOOST_CONVERT=OFF
 
+# before_install runs after matrix.addons.apt installation targets in the matrix
 before_install:
-    # ugly hack; if running a coverity scan abort all except the 1st build
-    # see note re gcc compiler above needing to be 1st
-    # also note that branch_pattern & the TRAVIS_BRANCH check must match
-    # unfortunately COVERITY_SCAN_BRANCH isn't defined until later in the
-    # build process
-    - if ([[ "${TRAVIS_JOB_NUMBER##*.}" != "1" ]] && [[ "${TRAVIS_BRANCH}" == "coverity_scan" ]]); then false ; fi
+  - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 20
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 20
+  - sudo update-alternatives --config gcc
+  - sudo update-alternatives --config g++
 
 before_script:
-  - if [[ -n "$DB" && -f /etc/odbcinst.ini ]]; then export ODBCSYSINI=/etc; fi
-  - if [[ -n "$DB" && -f /etc/odbc.ini ]]; then export ODBCINI=/etc/odbc.ini; fi
+  - if [[ -f /etc/odbcinst.ini ]]; then export ODBCSYSINI=/etc; fi
+  - if [[ -f /etc/odbc.ini ]]; then export ODBCINI=/etc/odbc.ini; fi
   - if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then sudo odbcinst -i -d -f /usr/share/libmyodbc/odbcinst.ini; fi
   - if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then mysql -e "DROP DATABASE IF EXISTS nanodbc_tests; CREATE DATABASE IF NOT EXISTS nanodbc_tests;" -uroot; fi
   - if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost';" -uroot; fi
@@ -44,83 +124,13 @@ before_script:
   - if [[ "$DB" == "postgresql" ]]; then export NANODBC_TEST_CONNSTR_PGSQL="DRIVER={PostgreSQL ANSI};Server=localhost;Port=5432;Database=nanodbc_tests;UID=postgres;"; fi
   - if [[ "$DB" == "sqlite" ]]; then sudo odbcinst -i -d -f /usr/share/sqliteodbc/unixodbc.ini; fi
   - odbcinst -j
-  - if [[ -n "$DB" && -f "$ODBCSYSINI/odbcinst.ini" ]]; then odbcinst -q -d; fi
-  - if [[ -n "$DB" && -s "$ODBCINI" ]]; then odbcinst -q -s; fi
-  - export CXX="g++-5"
+  - if [[ -f "$ODBCSYSINI/odbcinst.ini" ]]; then odbcinst -q -d; fi
+  - if [[ -s "$ODBCINI" ]]; then odbcinst -q -s; fi
 
 script:
-  - mkdir build
-  - cd build
-  - cmake -DCMAKE_BUILD_TYPE=${CBT} -DNANODBC_USE_UNICODE=${USE_UNICODE} -DNANODBC_USE_BOOST_CONVERT=${USE_BOOST_CONVERT} -DNANODBC_ENABLE_LIBCXX=NO ..
+  - mkdir -p build && cd build
+  - cmake -DCMAKE_BUILD_TYPE=Release -DNANODBC_USE_UNICODE=${USE_UNICODE} -DNANODBC_USE_BOOST_CONVERT=${USE_BOOST_CONVERT} -DNANODBC_ENABLE_LIBCXX=NO ..
   - make
   - if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then make VERBOSE=1 mysql_check; fi
   - if [[ "$DB" == "postgresql" ]]; then make VERBOSE=1 postgresql_check; fi
   - if [[ "$DB" == "sqlite" ]]; then make VERBOSE=1 sqlite_check; fi
-
-matrix:
-  include:
-    # note that gcc Debug MUST be 1st for Coverity
-    - env: DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=OFF CBT=Debug
-      compiler: gcc
-      addons: &sqlite
-        apt:
-          sources: &sources
-            - ubuntu-toolchain-r-test
-            - boost-latest
-          packages:
-            - g++-5
-            - libboost-locale1.55-dev
-            - unixodbc
-            - unixodbc-dev
-            - libsqliteodbc
-    - env: DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=ON CBT=Release
-      compiler: gcc
-      addons: *sqlite
-    - env: DB=mysql USE_UNICODE=OFF USE_BOOST_CONVERT=OFF CBT=Release
-      compiler: gcc
-      addons: &mysql
-        mysql: "5.5"
-        apt:
-          sources: *sources
-          packages:
-            - g++-5
-            - libboost-locale1.55-dev
-            - unixodbc
-            - unixodbc-dev
-            - libmyodbc
-            - mysql-client
-    - env: DB=mysql USE_UNICODE=OFF USE_BOOST_CONVERT=ON CBT=Release
-      compiler: gcc
-      addons: *mysql
-    - env: DB=mysql USE_UNICODE=ON USE_BOOST_CONVERT=OFF CBT=Release
-      compiler: gcc
-      addons: *mysql
-    - env: DB=mysql USE_UNICODE=ON USE_BOOST_CONVERT=ON CBT=Release
-      compiler: gcc
-      addons: *mysql
-    - env: DB=postgresql USE_UNICODE=OFF USE_BOOST_CONVERT=OFF CBT=Release
-      compiler: gcc
-      addons: &postgresql
-        postgresql: "9.1"
-        apt:
-          sources: *sources
-          packages:
-            - g++-5
-            - libboost-locale1.55-dev
-            - unixodbc
-            - unixodbc-dev
-            - odbc-postgresql
-    - env: DB=mariadb USE_UNICODE=OFF USE_BOOST_CONVERT=OFF CBT=Release
-      compiler: gcc
-      addons:
-        mariadb: "10.0"
-        apt:
-          sources: *sources
-          packages:
-            - g++-5
-            - libboost-locale1.55-dev
-            - unixodbc
-            - unixodbc-dev
-            - libmyodbc
-  allow_failures:
-    - env: DB=mariadb USE_UNICODE=OFF USE_BOOST_CONVERT=OFF CBT=Release
