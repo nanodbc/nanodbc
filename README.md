@@ -11,7 +11,7 @@ A small C++ wrapper for the native C ODBC API. Please see the [online documentat
 | `master`  | Contains the latest development code, not yet ready for a published version. |
 | `v2.x.x`  | Targets C++14+. All future development will build upon this version. |
 | `v1.x.x`  | Supports C++03 and optionally C++11. *There is no longer any support for this version.* |
-
+ 
 ## Build Status
 
 | Branch | Travis CI | AppVeyor | Coverity |
@@ -19,6 +19,8 @@ A small C++ wrapper for the native C ODBC API. Please see the [online documentat
 | `master`  | [![master](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=master)](https://travis-ci.org/lexicalunit/nanodbc) | [![master](https://ci.appveyor.com/api/projects/status/71nb7l794n3i8vdj/branch/master?svg=true)](https://ci.appveyor.com/project/lexicalunit/nanodbc?branch=master) | [![coverity_scan](https://scan.coverity.com/projects/7437/badge.svg)](https://scan.coverity.com/projects/lexicalunit-nanodbc) |
 | `latest` | [![latest](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=latest)](https://travis-ci.org/lexicalunit/nanodbc) |  [![latest](https://ci.appveyor.com/api/projects/status/71nb7l794n3i8vdj/branch/latest?svg=true)](https://ci.appveyor.com/project/lexicalunit/nanodbc?branch=latest) | |
 | `release` | [![release](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=release)](https://travis-ci.org/lexicalunit/nanodbc) |  [![recent](https://ci.appveyor.com/api/projects/status/71nb7l794n3i8vdj/branch/release?svg=true)](https://ci.appveyor.com/project/lexicalunit/nanodbc?branch=release) | |
+
+Note, the Coverity status is based on the [coverity_scan](https://github.com/lexicalunit/nanodbc/tree/coverity_scan) branch, so every time substantial work is pushed to `master`, it also needs to be merged and pushed to `coverity_scan`, in oder to keep the status up to date.
 
 # Building
 
