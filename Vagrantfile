@@ -72,6 +72,7 @@ Vagrant.configure(2) do |config|
     echo "Cloning nanodbc into /home/vagrant"
     cd /home/vagrant
     git clone https://github.com/lexicalunit/nanodbc.git
+    sudo chown -R vagrant:vagrant /home/vagrant/nanodbc 
     ############################################################################
     echo "Guest IP address:"
     /sbin/ifconfig | grep 'inet addr:'
