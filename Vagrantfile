@@ -2,10 +2,10 @@
 # vi: set ft=ruby :
 
 Vagrant.configure(2) do |config|
-  config.vm.box = "ubuntu/trusty64"
+  config.vm.box = "ubuntu/wily64"
   config.vm.provider "virtualbox" do |vb|
     vb.memory = "1024"
-	vb.cpus = 2
+    vb.cpus = 2
   end
   config.vm.network "private_network", type: "dhcp"
   config.vm.provision "shell", inline: <<-SHELL
@@ -20,17 +20,20 @@ Vagrant.configure(2) do |config|
     export DEBIAN_FRONTEND="noninteractive"
     sudo debconf-set-selections <<< "mysql-server mysql-server/root_password password ${DB_PASS}"
     sudo debconf-set-selections <<< "mysql-server mysql-server/root_password_again password ${DB_PASS}"
-    sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
     sudo apt-get update -y -q
-    sudo apt-get -o Dpkg::Options::='--force-confnew' -y -q install \
+    sudo apt-get -yq --no-install-suggests --no-install-recommends --force-yes -o Dpkg::Options::='--force-confnew' install \
       cmake \
+      e2fsprogs \
       g++-5 \
       git \
+      libc6 \
+      libkrb5-3 \
       libmyodbc \
       libsqliteodbc \
       mysql-client \
       mysql-server \
       odbc-postgresql \
+      openssl \
       postgresql \
       postgresql-client \
       postgresql-contrib \
@@ -56,10 +59,10 @@ Vagrant.configure(2) do |config|
     sudo service mysql restart
     ############################################################################
     # PostgreSQL
-    echo "PostgreSQL: updating /etc/postgresql/9.3/main/postgresql.conf"
-    sudo sed -i "s/#listen_address.*/listen_addresses '*'/" /etc/postgresql/9.3/main/postgresql.conf
-    echo "PostgreSQL: updating /etc/postgresql/9.3/main/pg_hba.conf"
-    sudo sh -c 'echo "host  all  all  0.0.0.0/0  md5" >> /etc/postgresql/9.3/main/pg_hba.conf'
+    echo "PostgreSQL: updating /etc/postgresql/9.4/main/postgresql.conf"
+    sudo sed -i "s/#listen_address.*/listen_addresses '*'/" /etc/postgresql/9.4/main/postgresql.conf
+    echo "PostgreSQL: updating /etc/postgresql/9.4/main/pg_hba.conf"
+    sudo sh -c 'echo "host  all  all  0.0.0.0/0  md5" >> /etc/postgresql/9.4/main/pg_hba.conf'
     echo "PostgreSQL: creating user ${DB_USER}"
     sudo -u postgres psql -c "CREATE ROLE ${DB_USER} WITH LOGIN SUPERUSER CREATEDB ENCRYPTED PASSWORD '${DB_PASS}'"
     echo "PostgreSQL: creating database ${DB_USER}"
@@ -67,6 +70,27 @@ Vagrant.configure(2) do |config|
     sudo -u postgres createdb ${DB_USER} --owner=${DB_USER}
     echo "PostgreSQL: restarting"
     sudo service postgresql restart
+    ############################################################################
+    # SQL Server
+    echo "SQLServer: downloading msodbcsql-11.0.2270.0.tar.gz"
+    wget http://download.microsoft.com/download/B/C/D/BCDD264C-7517-4B7D-8159-C99FC5535680/RedHat6/msodbcsql-11.0.2270.0.tar.gz
+    tar -zxvf msodbcsql-11.0.2270.0.tar.gz
+    cd msodbcsql-11.0.2270.0
+    rm install.sh build_dm.sh
+    echo "SQLServer: downloading https://raw.githubusercontent.com/tax/mssqldriver/master/install.sh"
+    wget https://raw.githubusercontent.com/tax/mssqldriver/master/install.sh
+    echo "SQLServer: installing msodbcsql-11.0.2270.0.tar.gz"
+    sudo bash install.sh install --accept-license --force
+    # in case install.sh fails to create these two symlinks
+    sudo ln -s /lib/x86_64-linux-gnu/libcrypto.so.1.0.0 /usr/lib/x86_64-linux-gnu/libcrypto.so.10
+    sudo ln -s /lib/x86_64-linux-gnu/libssl.so.1.0.0 /usr/lib/x86_64-linux-gnu/libssl.so.10
+    cd
+    rm -R msodbcsql-11.0.2270.0
+    echo "SQLServer: try 'sqlcmd -S my.sql.server.com -U username -P password'"
+    ############################################################################
+    # ODBC
+    echo "ODBC: Installed drivers:" 
+    odbcinst -q -d
     ############################################################################
     # Build in /home/vagrant, but not in the shared /vagrant where CMake will fail)  
     echo "Cloning nanodbc into /home/vagrant"
