@@ -41,10 +41,6 @@ init:
       Write-Host "Build worker environment variables:" -ForegroundColor Magenta
       Get-ChildItem Env: | %{"{0}={1}" -f $_.Name,$_.Value}
 
-services:
-  - mysql       # start MySQL 5.x service
-  - postgresql  # start PostgreSQL 9.x service
-
 install:
   - ps: |
       if ($env:DB -Match "SQLite") {
@@ -72,16 +68,16 @@ before_test:
   - ps: 'Write-Host Configuring $env:DB service -ForegroundColor Magenta'
   - ps: |
       if ($env:DB -Match "MSSQL2008") {
-        net start 'MSSQL$SQL2008R2SP2'
+        Start-Service 'MSSQL$SQL2008R2SP2'
       } elseif ($env:DB -Match "MSSQL2014") {
-        net start 'MSSQL$SQL2014'
+        Start-Service 'MSSQL$SQL2014'
       } elseif ($env:DB -Match "MySQL") {
-        #TODO: net start mysql
+        Start-Service MySQL57
         $env:MYSQL_PWD="Password12!"
         $cmd = '"C:\Program Files\MySQL\MySQL Server 5.7\bin\mysql" -e "create database nanodbc_test;" --user=root'
         iex "& $cmd"
       } elseif ($env:DB -Match "PostgreSQL") {
-        #TODO: net start postgresql
+        Start-Service postgresql-x64-9.5
         $env:PGUSER="postgres"
         $env:PGPASSWORD="Password12!"
         $cmd = '"C:\Program Files\PostgreSQL\9.3\bin\createdb" nanodbc_test'
