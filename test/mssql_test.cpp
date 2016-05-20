@@ -22,8 +22,6 @@ namespace
     };
 }
 
-// TODO: catlog_* tests
-
 TEST_CASE_METHOD(mssql_fixture, "affected_rows_test", "[mssql][affected_rows]")
 {
     // Enable MARS required?
