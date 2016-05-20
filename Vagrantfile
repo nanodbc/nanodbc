@@ -84,8 +84,8 @@ Vagrant.configure(2) do |config|
     # in case install.sh fails to create these two symlinks
     sudo ln -s /lib/x86_64-linux-gnu/libcrypto.so.1.0.0 /usr/lib/x86_64-linux-gnu/libcrypto.so.10
     sudo ln -s /lib/x86_64-linux-gnu/libssl.so.1.0.0 /usr/lib/x86_64-linux-gnu/libssl.so.10
-    cd
-    rm -R msodbcsql-11.0.2270.0
+    cd /home/vagrant
+    rm -rf /home/vagrant/msodbcsql-11.0.2270.0
     echo "SQLServer: try 'sqlcmd -S my.sql.server.com -U username -P password'"
     ############################################################################
     # ODBC
