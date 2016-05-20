@@ -116,6 +116,21 @@ TEST_CASE_METHOD(mssql_fixture, "blob_test_with_varchar", "[mssql][blob][binary]
     REQUIRE(results.get<nanodbc::string_type>(0) == s);
 }
 
+TEST_CASE_METHOD(mssql_fixture, "catalog_columns_test", "[mssql][catalog][columns]")
+{
+    catalog_columns_test();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "catalog_primary_keys_test", "[mssql][catalog][primary_keys]")
+{
+    catalog_primary_keys_test();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "catalog_tables_test", "[mssql][catalog][tables]")
+{
+    catalog_tables_test();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "dbms_info_test", "[mssql][dmbs][metadata][info]")
 {
     dbms_info_test();
