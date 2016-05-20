@@ -79,9 +79,9 @@ TEST_CASE_METHOD(postgresql_fixture, "null_test", "[postgresql][null]")
     null_test();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "rowset_iterator_test", "[postgresql][iterator]")
+TEST_CASE_METHOD(postgresql_fixture, "result_iterator_test", "[postgresql][iterator]")
 {
-    rowset_iterator_test();
+    result_iterator_test();
 }
 
 TEST_CASE_METHOD(postgresql_fixture, "simple_test", "[postgresql]")

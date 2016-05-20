@@ -87,9 +87,9 @@ TEST_CASE_METHOD(odbc_fixture, "nullptr_nulls_test", "[odbc][null]")
     nullptr_nulls_test();
 }
 
-TEST_CASE_METHOD(odbc_fixture, "rowset_iterator_test", "[odbc][iterator]")
+TEST_CASE_METHOD(odbc_fixture, "result_iterator_test", "[odbc][iterator]")
 {
-    rowset_iterator_test();
+    result_iterator_test();
 }
 
 TEST_CASE_METHOD(odbc_fixture, "simple_test", "[odbc]")

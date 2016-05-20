@@ -762,24 +762,24 @@ struct base_test_fixture
         }
     }
 
-    void rowset_iterator_test()
+    void result_iterator_test()
     {
         nanodbc::connection connection = connect();
-        drop_table(connection, NANODBC_TEXT("rowset_iterator_test"));
-        execute(connection, NANODBC_TEXT("create table rowset_iterator_test (i int, s varchar(10));"));
-        execute(connection, NANODBC_TEXT("insert into rowset_iterator_test values (1, 'one');"));
-        execute(connection, NANODBC_TEXT("insert into rowset_iterator_test values (2, 'two');"));
-        execute(connection, NANODBC_TEXT("insert into rowset_iterator_test values (3, 'tri');"));
+        drop_table(connection, NANODBC_TEXT("result_iterator_test"));
+        execute(connection, NANODBC_TEXT("create table result_iterator_test (i int, s varchar(10));"));
+        execute(connection, NANODBC_TEXT("insert into result_iterator_test values (1, 'one');"));
+        execute(connection, NANODBC_TEXT("insert into result_iterator_test values (2, 'two');"));
+        execute(connection, NANODBC_TEXT("insert into result_iterator_test values (3, 'tri');"));
         
         // Test standard algorithm
         {
-            nanodbc::result results = execute(connection, NANODBC_TEXT("select i, s from rowset_iterator_test;"));
+            nanodbc::result results = execute(connection, NANODBC_TEXT("select i, s from result_iterator_test;"));
             REQUIRE(std::distance(begin(results), end(results)) == 3);
         }
 
         // Test classic for loop iteration
         {
-            nanodbc::result results = execute(connection, NANODBC_TEXT("select i, s from rowset_iterator_test;"));
+            nanodbc::result results = execute(connection, NANODBC_TEXT("select i, s from result_iterator_test;"));
             for (auto it = begin(results); it != end(results); ++it)
             {
                 REQUIRE(it->get<int>(0) > 0);
@@ -790,7 +790,7 @@ struct base_test_fixture
 
         // Test range-based for loop iteration
         {
-            nanodbc::result results = execute(connection, NANODBC_TEXT("select i, s from rowset_iterator_test;"));
+            nanodbc::result results = execute(connection, NANODBC_TEXT("select i, s from result_iterator_test;"));
             for (auto& row : results)
             {
                 REQUIRE(row.get<int>(0) > 0);
