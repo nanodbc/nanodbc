@@ -20,7 +20,10 @@ matrix:
 
 environment:
   matrix:
-    - DB: MSSQL
+    - DB: MSSQL2008
+      USE_UNICODE: OFF
+      USE_BOOST_CONVERT: OFF
+    - DB: MSSQL2014
       USE_UNICODE: OFF
       USE_BOOST_CONVERT: OFF
     - DB: MySQL
@@ -39,14 +42,13 @@ init:
       Get-ChildItem Env: | %{"{0}={1}" -f $_.Name,$_.Value}
 
 services:
-  - mssql2014   # start SQL Server 2014 Express
   - mysql       # start MySQL 5.x service
   - postgresql  # start PostgreSQL 9.x service
 
 install:
-  - ps: 'Write-Host "Installing SQLite ODBC Driver:" -ForegroundColor Magenta'
   - ps: |
       if ($env:DB -Match "SQLite") {
+        Write-Host "Installing SQLite ODBC Driver:" -ForegroundColor Magenta
         $sqliteodbcPath = "$($env:TEMP)\sqliteodbc_w64.exe"
         (New-Object Net.WebClient).DownloadFile('http://www.ch-werner.de/sqliteodbc/sqliteodbc_w64.exe', $sqliteodbcPath)
         cmd /c start /wait $sqliteodbcPath /S
@@ -58,22 +60,6 @@ install:
 
 before_build:
   - ps: 'Write-Host "Running CMake:" -ForegroundColor Magenta'
-  - ps: |
-      if ($env:DB -Match "MySQL") {
-        $env:MYSQL_PWD="Password12!"
-        $cmd = '"C:\Program Files\MySQL\MySQL Server 5.7\bin\mysql" -e "create database nanodbc_test;" --user=root'
-        iex "& $cmd"
-      } elseif ($env:DB -Match "PostgreSQL") {
-        $env:PGUSER="postgres"
-        $env:PGPASSWORD="Password12!"
-        $cmd = '"C:\Program Files\PostgreSQL\9.3\bin\createdb" nanodbc_test'
-        iex "& $cmd"
-      } else {
-        if (-not $env:DB -Match "MSSQL" -and -not $env:DB -Match "SQLite") {
-          throw 'TODO: ' + $env:DB + ' not configured yet'
-        }
-      }
-      if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
   - cmake.exe -G "Visual Studio 14 2015 Win64" -DNANODBC_USE_BOOST_CONVERT=%USE_BOOST_CONVERT% -DNANODBC_USE_UNICODE=%USE_UNICODE% -DNANODBC_STATIC=ON -DNANODBC_HANDLE_NODATA_BUG=OFF -DNANODBC_INSTALL=OFF %APPVEYOR_BUILD_FOLDER%
   - ps: 'Write-Host "Running MSBuild:" -ForegroundColor Magenta'
 
@@ -82,9 +68,33 @@ build:
   project: nanodbc.sln
   verbosity: minimal
 
+before_test:
+  - ps: 'Write-Host Configuring $env:DB service -ForegroundColor Magenta'
+  - ps: |
+      if ($env:DB -Match "MSSQL2008") {
+        net start 'MSSQL$SQL2008R2SP2'
+      } elseif ($env:DB -Match "MSSQL2014") {
+        net start 'MSSQL$SQL2014'
+      } elseif ($env:DB -Match "MySQL") {
+        #TODO: net start mysql
+        $env:MYSQL_PWD="Password12!"
+        $cmd = '"C:\Program Files\MySQL\MySQL Server 5.7\bin\mysql" -e "create database nanodbc_test;" --user=root'
+        iex "& $cmd"
+      } elseif ($env:DB -Match "PostgreSQL") {
+        #TODO: net start postgresql
+        $env:PGUSER="postgres"
+        $env:PGPASSWORD="Password12!"
+        $cmd = '"C:\Program Files\PostgreSQL\9.3\bin\createdb" nanodbc_test'
+        iex "& $cmd"
+      }
+      if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
+
 test_script:
   - ps: |
-      if ($env:DB -Match "MSSQL") {
+      if ($env:DB -Match "MSSQL2008") {
+        $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 11 for SQL Server};Server=(local)\SQL2008R2SP2;Database=master;UID=sa;PWD=Password12!;"
+        $test_name = "mssql_test"
+      } elseif ($env:DB -Match "MSSQL2014") {
         $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 11 for SQL Server};Server=(local)\SQL2014;Database=master;UID=sa;PWD=Password12!;"
         $test_name = "mssql_test"
       } elseif ($env:DB -Match "MySQL") {
