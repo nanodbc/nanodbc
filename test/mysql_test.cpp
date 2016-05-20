@@ -71,6 +71,21 @@ TEST_CASE_METHOD(mysql_fixture, "blob_test", "[mysql][blob]")
     blob_test();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "catalog_columns_test", "[mysql][catalog][columns]")
+{
+    catalog_columns_test();
+}
+
+TEST_CASE_METHOD(mysql_fixture, "catalog_primary_keys_test", "[mysql][catalog][primary_keys]")
+{
+    catalog_primary_keys_test();
+}
+
+TEST_CASE_METHOD(mysql_fixture, "catalog_tables_test", "[mysql][catalog][tables]")
+{
+    catalog_tables_test();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "dbms_info_test", "[mysql][dmbs][metadata][info]")
 {
     dbms_info_test();
