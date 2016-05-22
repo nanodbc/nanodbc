@@ -486,33 +486,90 @@ public:
     //! \see open(), prepare(), execute(), result, transaction
     class result execute_direct(class connection& conn, const string_type& query, long batch_operations = 1, long timeout = 0);
 
+    //! \brief Prepare the given statement, in asynchronous mode.
+    //! If the statement is not open throws programming_error.
+    //!
+    //! This method will only be available if nanodbc is built against ODBC headers and library that supports asynchronous mode.
+    //! Such that the identifiers `SQL_ATTR_ASYNC_STMT_EVENT` and `SQLCompleteAsync` are extant. Otherwise
+    //! this method will be defined, but not implemented.
+    //!
+    //! Asynchronous features can be disabled entirely by defining `NANODBC_DISABLE_ASYNC` when building nanodbc.
+    //!
+    //! \param event_handle The event handle for which the caller will wait before calling complete_prepare.
+    //! \param query The SQL query that will be prepared.
+    //! \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
+    //! \throws database_error
+    //! \return Boolean: true if the event handle needs to be awaited, false if the result is ready immediately
+    //! \see complete_prepare()
+    bool async_prepare(const string_type& query, void* event_handle, long timeout = 0);
+
+    //! \brief Completes a previously initiated asynchronous query preparation.
+    //!
+    //! This method will only be available if nanodbc is built against ODBC headers and library that supports asynchronous mode.
+    //! Such that the identifiers `SQL_ATTR_ASYNC_STMT_EVENT` and `SQLCompleteAsync` are extant. Otherwise
+    //! this method will be defined, but not implemented.
+    //!
+    //! Asynchronous features can be disabled entirely by defining `NANODBC_DISABLE_ASYNC` when building nanodbc.
+    //!
+    //! \throws database_error
+    //! \see async_prepare()
+    void complete_prepare();
+
     //! \brief Immediately opens, prepares, and executes the given query directly on the given connection, in asynchronous mode.
     //!
     //! This method will only be available if nanodbc is built against ODBC headers and library that supports asynchronous mode.
     //! Such that the identifiers `SQL_ATTR_ASYNC_STMT_EVENT` and `SQLCompleteAsync` are extant. Otherwise
     //! this method will be defined, but not implemented.
     //!
-    //! Asynchronous features can be disabled entierly by defining `NANODBC_DISABLE_ASYNC` when building nanodbc.
+    //! Asynchronous features can be disabled entirely by defining `NANODBC_DISABLE_ASYNC` when building nanodbc.
     //!
     //! \param conn The connection where the statement will be executed.
-    //! \param event_handle The event handle for which the caller will wait before calling async_complete.
+    //! \param event_handle The event handle for which the caller will wait before calling complete_execute.
     //! \param query The SQL query that will be executed.
     //! \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
     //! \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
+    //! \throws database_error
+    //! \return Boolean: true if the event handle needs to be awaited, false if the result is ready immediately
     //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
-    //! \see open(), prepare(), execute(), result, transaction
-    void async_execute_direct(class connection& conn, void* event_handle, const string_type& query, long batch_operations = 1, long timeout = 0);
+    //! \see complete_execute(), open(), prepare(), execute(), result, transaction
+    bool async_execute_direct(class connection& conn, void* event_handle, const string_type& query, long batch_operations = 1, long timeout = 0);
 
-    //! \brief Completes a previously initiated asynchronous query operation, returning the result.
+    //! \brief Execute the previously prepared query now, in asynchronous mode.
     //!
     //! This method will only be available if nanodbc is built against ODBC headers and library that supports asynchronous mode.
     //! Such that the identifiers `SQL_ATTR_ASYNC_STMT_EVENT` and `SQLCompleteAsync` are extant. Otherwise
     //! this method will be defined, but not implemented.
     //!
-    //! Asynchronous features can be disabled entierly by defining `NANODBC_DISABLE_ASYNC` when building nanodbc.
+    //! Asynchronous features can be disabled entirely by defining `NANODBC_DISABLE_ASYNC` when building nanodbc.
     //!
+    //! \param event_handle The event handle for which the caller will wait before calling complete_execute.
     //! \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
-    class result async_complete(long batch_operations = 1);
+    //! \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
+    //! \throws database_error
+    //! \return Boolean: true if the event handle needs to be awaited, false if the result is ready immediately
+    //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
+    //! \see complete_execute(), open(), prepare(), result, transaction
+    bool async_execute(void* event_handle, long batch_operations = 1, long timeout = 0);
+
+    //! \brief Completes a previously initiated asynchronous query execution, returning the result.
+    //!
+    //! This method will only be available if nanodbc is built against ODBC headers and library that supports asynchronous mode.
+    //! Such that the identifiers `SQL_ATTR_ASYNC_STMT_EVENT` and `SQLCompleteAsync` are extant. Otherwise
+    //! this method will be defined, but not implemented.
+    //!
+    //! Asynchronous features can be disabled entirely by defining `NANODBC_DISABLE_ASYNC` when building nanodbc.
+    //!
+    //! \throws database_error
+    //! \return A result set object.
+    //! \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
+    //! \see async_execute(), async_execute_direct()
+    class result complete_execute(long batch_operations = 1);
+
+    class result async_complete(long batch_operations = 1); // left for backwards compatibility
+
+    void enable_async(void* event_handle); // undocumented - for internal use only (used from result_impl)
+
+    void disable_async() const; // undocumented - for internal use only (used from result_impl)
 
     //! \brief Execute the previously prepared query now without constructing result object.
     //! \param conn The connection where the statement will be executed.
@@ -838,8 +895,9 @@ public:
     //! \param event_handle The event handle for which the caller will wait before calling async_complete.
     //! \param timeout The number in seconds before connection timeout. Default is 0 indicating no timeout.
     //! \throws database_error
+    //! \return Boolean: true if the event handle needs to be awaited, false if the connection is ready immediately
     //! \see connected()
-    void async_connect(
+    bool async_connect(
         const string_type& dsn
         , const string_type& user
         , const string_type& pass
@@ -858,8 +916,9 @@ public:
     //! \param event_handle The event handle for which the caller will wait before calling async_complete.
     //! \param timeout The number in seconds before connection timeout. Default is 0 indicating no timeout.
     //! \throws database_error
+    //! \return Boolean: true if the event handle needs to be awaited, false if the connection is ready immediately
     //! \see connected()
-    void async_connect(const string_type& connection_string, void* event_handle, long timeout = 0);
+    bool async_connect(const string_type& connection_string, void* event_handle, long timeout = 0);
 
     //! \brief Completes a previously initiated asynchronous connection operation.
     //!
@@ -987,6 +1046,16 @@ public:
     //! \return true if there are more results or false otherwise.
     //! \throws database_error
     bool next();
+
+    //! \brief Initiates an asynchronous fetch of the next row in the current result set.
+    //! \return true if the caller needs to wait for the event to be signalled, false if complete_next() can be called immediately.
+    //! \throws database_error
+    bool async_next(void* event_handle);
+
+    //! \brief Completes a previously-initiated asynchronous fetch of the next row in the current result set.
+    //! \return true if there are more results or false otherwise.
+    //! \throws database_error
+    bool complete_next();
 
     //! \brief Fetches the prior row in the current result set.
     //! \return true if there are more results or false otherwise.
