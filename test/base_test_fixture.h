@@ -174,9 +174,6 @@ struct base_test_fixture
         REQUIRE(connection.connected());
         nanodbc::catalog catalog(connection);
 
-        // Successfully tested against SQL Server and PostgreSQL (9.x) only.
-        // TODO: It needs to be tested against MySQL, Oracle and other DBMS. -- mloskot
-
         // Check we can iterate over any columns
         {
             nanodbc::catalog::columns columns = catalog.find_columns();
@@ -199,7 +196,7 @@ struct base_test_fixture
             {
                 nanodbc::string_type const dbms = connection.dbms_name();
                 REQUIRE(!dbms.empty());
-                if (contains_string(dbms, NANODBC_TEXT("SQLite")))
+                if (contains_string(dbms, NANODBC_TEXT("SQLite")) || contains_string(dbms, NANODBC_TEXT("MySQL")))
                 {
                     binary_type_name = NANODBC_TEXT("blob");
                 }
@@ -254,8 +251,14 @@ struct base_test_fixture
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c2"));
-            REQUIRE(columns.sql_data_type() == SQL_FLOAT);
-            if (columns.numeric_precision_radix() == 10)
+            REQUIRE((columns.sql_data_type() == SQL_FLOAT ||
+                     columns.sql_data_type() == SQL_REAL ||
+                     columns.sql_data_type() == SQL_DOUBLE));
+            if (columns.numeric_precision_radix() == 2)
+            {
+                REQUIRE(columns.column_size() == 53); // total number of bits allowed
+            }
+            else if (columns.numeric_precision_radix() == 10)
             {
                 // total number of digits allowed
 
@@ -268,7 +271,7 @@ struct base_test_fixture
             }
             else
             {
-                REQUIRE(columns.column_size() == 53); // total number of bits allowed
+                ; // driver says, not applicable
             }
             REQUIRE(columns.nullable() == SQL_NULLABLE);
             if (!columns.is_nullable().empty()) // nullability determined
@@ -302,12 +305,14 @@ struct base_test_fixture
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c7"));
             REQUIRE((columns.sql_data_type() == SQL_LONGVARCHAR || columns.sql_data_type() == SQL_WLONGVARCHAR));
-            // PostgreSQL uses MaxLongVarcharSize=8190, which is configurable in odbc.ini
-            REQUIRE((columns.column_size() == 2147483647 || columns.column_size() == 8190)); // TODO: confirm "text" max length
+            REQUIRE((columns.column_size() == 2147483647 ||
+                     columns.column_size() == 65535 || // MySQL
+                     columns.column_size() == 8190)); // PostgreSQL uses MaxLongVarcharSize=8190, which is configurable in odbc.ini
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c8"));
-            REQUIRE(columns.sql_data_type() == SQL_VARBINARY);
+            REQUIRE((columns.sql_data_type() == SQL_VARBINARY ||
+                     columns.sql_data_type() == SQL_LONGVARBINARY)); // MySQL reports SQL_LONGVARBINARY
             // SQL Server: if n is not specified in [var]binary(n), the default length is 1
             // PostgreSQL: bytea default length is reported as 255,
             // unless ByteaAsLongVarBinary=1 option is specified in connection string.
@@ -324,8 +329,8 @@ struct base_test_fixture
         REQUIRE(connection.connected());
         nanodbc::catalog catalog(connection);
 
-        // Successfully tested against SQL Server and PostgreSQL (9.x) only.
-        // TODO: It needs to be tested against MySQL, Oracle and other DBMS. -- mloskot
+        nanodbc::string_type const dbms = connection.dbms_name();
+        REQUIRE(!dbms.empty());
 
         // Find a single-column primary key for table with known name
         {
@@ -339,7 +344,11 @@ struct base_test_fixture
             REQUIRE(keys.table_name() == table_name);
             REQUIRE(keys.column_name() == NANODBC_TEXT("i"));
             REQUIRE(keys.column_number() == 1);
-            REQUIRE(keys.primary_key_name() == NANODBC_TEXT("pk_simple_test"));
+            // MySQL: The name of a PRIMARY KEY is always PRIMARY,
+            if (contains_string(dbms, NANODBC_TEXT("MySQL")))
+                REQUIRE(keys.primary_key_name() == NANODBC_TEXT("PRIMARY"));
+            else
+                REQUIRE(keys.primary_key_name() == NANODBC_TEXT("pk_simple_test"));
             // expect no more records
             REQUIRE(!keys.next());
         }
@@ -356,13 +365,21 @@ struct base_test_fixture
             REQUIRE(keys.table_name() == table_name);
             REQUIRE(keys.column_name() == NANODBC_TEXT("a"));
             REQUIRE(keys.column_number() == 1);
-            REQUIRE(keys.primary_key_name() == NANODBC_TEXT("pk_composite_test"));
+            // MySQL: The name of a PRIMARY KEY is always PRIMARY,
+            if (contains_string(dbms, NANODBC_TEXT("MySQL")))
+                REQUIRE(keys.primary_key_name() == NANODBC_TEXT("PRIMARY"));
+            else
+                REQUIRE(keys.primary_key_name() == NANODBC_TEXT("pk_composite_test"));
 
             REQUIRE(keys.next());
             REQUIRE(keys.table_name() == table_name);
             REQUIRE(keys.column_name() == NANODBC_TEXT("b"));
             REQUIRE(keys.column_number() == 2);
-            REQUIRE(keys.primary_key_name() == NANODBC_TEXT("pk_composite_test"));
+            // MySQL: The name of a PRIMARY KEY is always PRIMARY,
+            if (contains_string(dbms, NANODBC_TEXT("MySQL")))
+                REQUIRE(keys.primary_key_name() == NANODBC_TEXT("PRIMARY"));
+            else
+                REQUIRE(keys.primary_key_name() == NANODBC_TEXT("pk_composite_test"));
 
             // expect no more records
             REQUIRE(!keys.next());
@@ -374,9 +391,6 @@ struct base_test_fixture
         nanodbc::connection connection = connect();
         REQUIRE(connection.connected());
         nanodbc::catalog catalog(connection);
-
-        // Successfully tested against SQL Server and PostgreSQL (9.x) only.
-        // TODO: It needs to be tested against MySQL, Oracle and other DBMS. -- mloskot
 
         // Check we can iterate over any tables
         {
