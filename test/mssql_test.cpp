@@ -24,16 +24,12 @@ struct mssql_fixture : public base_test_fixture
 
 TEST_CASE_METHOD(mssql_fixture, "affected_rows_test", "[mssql][affected_rows]")
 {
-    // Skip on SQL Server 2008, see
-    // See details at
+    // Skip on SQL Server 2008, see details at
     // http://help.appveyor.com/discussions/problems/4704-database-cannot-be-autostarted-during-server-shutdown-or-startup
+    if (get_env("DB") == NANODBC_TEXT("MSSQL2008"))
     {
-        auto const db = get_env("DB");
-        if (db == NANODBC_TEXT("MSSQL2008"))
-        {
-            WARN("affected_rows_test skipped on AppVeyor with SQL Server 2008");
-            return;
-        }
+        WARN("affected_rows_test skipped on AppVeyor with SQL Server 2008");
+        return;
     }
 
     // Enable MARS required?
