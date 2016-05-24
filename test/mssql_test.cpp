@@ -1,4 +1,3 @@
-#define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
 #include "test/base_test_fixture.h"
@@ -10,7 +9,7 @@ namespace
 struct mssql_fixture : public base_test_fixture
 {
     mssql_fixture()
-        : base_test_fixture(/* connecting string from NANODBC_TEST_CONNSTR environment variable)*/)
+        : base_test_fixture(/* connecting string from command line or NANODBC_TEST_CONNSTR environment variable)*/)
     {
         if (connection_string_.empty())
             connection_string_ = get_env("NANODBC_TEST_CONNSTR_MSSQL");
