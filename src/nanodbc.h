@@ -1199,7 +1199,6 @@ public:
 
     bool operator==(result_iterator const & rhs) const
     {
-        // TODO: add row counter and compare
         if (result_ && rhs.result_)
             return result_.native_statement_handle() == rhs.result_.native_statement_handle();
         else
