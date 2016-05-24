@@ -7,23 +7,35 @@
 
 namespace
 {
-    struct mssql_fixture : public base_test_fixture
-    {
-        mssql_fixture()
+struct mssql_fixture : public base_test_fixture
+{
+    mssql_fixture()
         : base_test_fixture(/* connecting string from NANODBC_TEST_CONNSTR environment variable)*/)
-        {
-            if (connection_string_.empty())
-                connection_string_ = get_connection_string_from_env("NANODBC_TEST_CONNSTR_MSSQL");
-        }
+    {
+        if (connection_string_.empty())
+            connection_string_ = get_env("NANODBC_TEST_CONNSTR_MSSQL");
+    }
 
-        virtual ~mssql_fixture() NANODBC_NOEXCEPT
-        {
-        }
-    };
+    virtual ~mssql_fixture() NANODBC_NOEXCEPT
+    {
+    }
+};
 }
 
 TEST_CASE_METHOD(mssql_fixture, "affected_rows_test", "[mssql][affected_rows]")
 {
+    // Skip on SQL Server 2008, see
+    // See details at
+    // http://help.appveyor.com/discussions/problems/4704-database-cannot-be-autostarted-during-server-shutdown-or-startup
+    {
+        auto const db = get_env("DB");
+        if (db == NANODBC_TEXT("MSSQL2008"))
+        {
+            WARN("affected_rows_test skipped on AppVeyor with SQL Server 2008");
+            return;
+        }
+    }
+
     // Enable MARS required?
 #if 0
     enum { SQL_COPT_SS_MARS_ENABLED = 1224, SQL_MARS_ENABLED_YES = 1 }; // sqlext.h
