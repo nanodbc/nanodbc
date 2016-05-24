@@ -31,6 +31,35 @@
 #include <sql.h>
 #include <sqlext.h>
 
+struct TestConfig
+{
+    nanodbc::string_type get_connection_string() const
+    {
+#ifdef NANODBC_USE_UNICODE
+#ifdef NANODBC_USE_BOOST_CONVERT
+        using boost::locale::conv::utf_to_utf;
+        return utf_to_utf<char16_t>(connection_string_.c_str()
+            , connection_string_.c_str() + connection_string_.size());
+#elif defined(_MSC_VER) && (_MSC_VER == 1900)
+        // Workaround for confirmed bug in VS2015.
+        // See: https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error
+        auto s = std::wstring_convert<
+            std::codecvt_utf8_utf16<int16_t>, int16_t>().from_bytes(connection_string_);
+        auto p = reinterpret_cast<char16_t const*>(s.data());
+        return nanodbc::string_type(p, p + s.size());
+#else
+        return std::wstring_convert<
+            std::codecvt_utf8_utf16<char16_t>, char16_t>().from_bytes(connection_string_);
+#endif
+#else
+        return connection_string_;
+#endif
+    }
+
+    std::string connection_string_;
+};
+extern TestConfig cfg;
+
 struct base_test_fixture
 {
     // To invoke a unit test over all integral types, use:
@@ -48,8 +77,11 @@ struct base_test_fixture
         > integral_test_types;
 
     base_test_fixture()
-    : connection_string_(get_env("NANODBC_TEST_CONNSTR"))
+    : connection_string_(cfg.get_connection_string())
     {
+        // Connection string not specified in command line, try environment variable
+        if (connection_string_.empty())
+            connection_string_ = get_env("NANODBC_TEST_CONNSTR");
     }
 
     base_test_fixture(const nanodbc::string_type& connection_string)
@@ -784,7 +816,7 @@ struct base_test_fixture
         execute(connection, NANODBC_TEXT("insert into result_iterator_test values (1, 'one');"));
         execute(connection, NANODBC_TEXT("insert into result_iterator_test values (2, 'two');"));
         execute(connection, NANODBC_TEXT("insert into result_iterator_test values (3, 'tri');"));
-        
+
         // Test standard algorithm
         {
             nanodbc::result results = execute(connection, NANODBC_TEXT("select i, s from result_iterator_test;"));
