@@ -210,3 +210,30 @@ TEST_CASE_METHOD(mssql_fixture, "while_next_iteration_test", "[mssql][looping]")
 {
     while_next_iteration_test();
 }
+
+#ifdef WIN32
+TEST_CASE_METHOD(mssql_fixture, "async_test", "[mssql][async]")
+{
+    HANDLE event_handle = CreateEvent(NULL, FALSE, FALSE, NULL);
+
+    nanodbc::connection conn;
+    if ( conn.async_connect(connection_string_, event_handle) )
+        WaitForSingleObject(event_handle, INFINITE);
+    conn.async_complete();
+
+    nanodbc::statement stmt(conn);
+    if ( stmt.async_prepare(NANODBC_TEXT("select count(*) from sys.tables;"), event_handle) )
+        WaitForSingleObject(event_handle, INFINITE);
+    stmt.complete_prepare();
+
+    if ( stmt.async_execute(event_handle) )
+        WaitForSingleObject(event_handle, INFINITE);
+    nanodbc::result row = stmt.complete_execute();
+
+    if ( row.async_next(event_handle) )
+        WaitForSingleObject(event_handle, INFINITE);
+    REQUIRE(row.complete_next());
+
+    REQUIRE(row.get<int>(0) >= 0);
+}
+#endif //WIN32
