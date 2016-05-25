@@ -221,6 +221,72 @@ TEST_CASE_METHOD(sqlite_fixture, "integral_test", "[sqlite][integral]")
     integral_test<sqlite_fixture>();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "integral_boundary_test", "[sqlite][integral]")
+{
+    nanodbc::connection connection = connect();
+    drop_table(connection, NANODBC_TEXT("integral_boundary_test"));
+
+    // SQLite3 uses single storage class INTEGER for all integral SQL types 
+    execute(connection, NANODBC_TEXT("create table integral_boundary_test(i1 integer,i2 integer,i4 integer,i8 integer);"));
+
+    auto const sql = NANODBC_TEXT("insert into integral_boundary_test(i1,i2,i4,i8) values (?,?,?,?);");
+
+    std::int16_t const i1min = std::numeric_limits<std::int8_t>::min();
+    auto const i2min = std::numeric_limits<std::int16_t>::min();
+    auto const i4min = std::numeric_limits<std::int32_t>::min();
+    auto const i8min = std::numeric_limits<std::int64_t>::min();
+    std::int16_t const i1max = std::numeric_limits<std::int8_t>::max();
+    auto const i2max = std::numeric_limits<std::int16_t>::max();
+    auto const i4max = std::numeric_limits<std::int32_t>::max();
+    auto const i8max = std::numeric_limits<std::int64_t>::max();
+
+    // min
+    {
+        nanodbc::statement statement(connection);
+        prepare(statement, sql);
+        statement.bind(0, &i1min);
+        statement.bind(1, &i2min);
+        statement.bind(2, &i4min);
+        statement.bind(3, &i8min);
+        REQUIRE(statement.connected());
+        execute(statement);
+    }
+
+    // max
+    {
+        nanodbc::statement statement(connection);
+        prepare(statement, sql);
+        statement.bind(0, &i1max);
+        statement.bind(1, &i2max);
+        statement.bind(2, &i4max);
+        statement.bind(3, &i8max);
+        REQUIRE(statement.connected());
+        execute(statement);
+    }
+
+    // query
+    nanodbc::result result = execute(connection, NANODBC_TEXT("select i1,i2,i4,i8 from integral_boundary_test order by i1 asc;"));
+    // min
+    REQUIRE(result.next());
+    // All of string converted values are incorrect
+    //auto si1min = result.get<nanodbc::string_type>(0);
+    //auto si2min = result.get<nanodbc::string_type>(1);
+    //auto si4min = result.get<nanodbc::string_type>(2);
+    //auto si8min = result.get<nanodbc::string_type>(3);
+    REQUIRE(result.get<std::int16_t>(0) == static_cast<std::int16_t>(i1min));
+    REQUIRE(result.get<std::int16_t>(1) == i2min);
+    REQUIRE(result.get<std::int32_t>(2) == i4min);
+    REQUIRE(result.get<std::int64_t>(3) == i8min);
+    // max
+    REQUIRE(result.next());
+    REQUIRE(result.get<std::int16_t>(0) == static_cast<std::int16_t>(i1max));
+    REQUIRE(result.get<std::int16_t>(1) == i2max);
+    REQUIRE(result.get<std::int32_t>(2) == i4max);
+    REQUIRE(result.get<std::int64_t>(3) == i8max);
+    // query end
+    REQUIRE(!result.next());
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "integral_to_string_conversion_test", "[sqlite][integral]")
 {
     // TODO: Move to common tests
