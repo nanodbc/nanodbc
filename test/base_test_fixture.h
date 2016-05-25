@@ -662,7 +662,7 @@ struct base_test_fixture
         nanodbc::result results = execute(connection, NANODBC_TEXT("select * from integral_test;"));
         REQUIRE(results.next());
 
-        // NOTE: Parentheses around REQURE() expressions are to silence error:
+        // NOTE: Parentheses around REQIURE() expressions are to silence error:
         //       suggest parentheses around comparison in operand of ‘==’ [-Werror=parentheses]
         T ref;
         p = 0;
