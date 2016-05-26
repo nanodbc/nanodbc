@@ -44,7 +44,9 @@
 
 #ifdef _WIN32
     // needs to be included above sql.h for windows
-    #define NOMINMAX
+    #ifndef __MINGW32__
+        #define NOMINMAX
+    #endif
     #include <windows.h>
 #endif
 

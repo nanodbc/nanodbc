@@ -4,7 +4,7 @@ project(nanodbc)
 option(NANODBC_USE_UNICODE "build with unicode support turned on" OFF)
 option(NANODBC_USE_BOOST_CONVERT "build using Boost.Locale for string convert" OFF)
 option(NANODBC_HANDLE_NODATA_BUG "enable special handling for SQL_NO_DATA (required for vertica)" OFF)
-option(NANODBC_DISABLE_ASYNC "disable async features entierly (may help resolve issues in VS2015 builds)" OFF)
+option(NANODBC_DISABLE_ASYNC "disable async features entirely (may help resolve issues in VS2015 builds)" OFF)
 option(NANODBC_STATIC "build static instead of shared library" OFF)
 option(NANODBC_EXAMPLES "build examples" ON)
 option(NANODBC_TEST "build tests" ON)
@@ -186,6 +186,8 @@ if(UNIX)
 	set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${ODBC_LINK_FLAGS}")
 elseif(MSVC)
 	set(ODBC_LIBRARIES odbc32.lib odbccp32.lib Ws2_32.lib)
+elseif(MINGW)
+	set(ODBC_LIBRARIES odbc32 odbccp32)
 endif()
 
 ########################################
@@ -209,9 +211,14 @@ endif()
 if(NANODBC_INSTALL)
 	install(FILES src/nanodbc.h DESTINATION include)
 	if(NANODBC_STATIC)
-		install(TARGETS nanodbc ARCHIVE DESTINATION lib)
+		install(TARGETS nanodbc
+                ARCHIVE DESTINATION lib
+                LIBRARY DESTINATION lib)
 	else()
-		install(TARGETS nanodbc LIBRARY DESTINATION lib)
+		install(TARGETS nanodbc 
+                RUNTIME DESTINATION bin
+                LIBRARY DESTINATION lib
+                ARCHIVE DESTINATION lib)
 	endif()
 	message(STATUS "Target install: Turned on")
 else()
