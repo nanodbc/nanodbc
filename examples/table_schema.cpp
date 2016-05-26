@@ -11,7 +11,9 @@
 #include <string>
 
 #ifdef _WIN32
+#ifndef __MINGW32__
 #define NOMINMAX
+#endif
 #include <windows.h> // SQLLEN, SQLULEN, SQLHWND
 #endif
 #include <sql.h>
