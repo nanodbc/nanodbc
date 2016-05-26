@@ -212,13 +212,13 @@ if(NANODBC_INSTALL)
 	install(FILES src/nanodbc.h DESTINATION include)
 	if(NANODBC_STATIC)
 		install(TARGETS nanodbc
-                ARCHIVE DESTINATION lib
-                LIBRARY DESTINATION lib)
+				ARCHIVE DESTINATION lib
+				LIBRARY DESTINATION lib)
 	else()
-		install(TARGETS nanodbc 
-                RUNTIME DESTINATION bin
-                LIBRARY DESTINATION lib
-                ARCHIVE DESTINATION lib)
+		install(TARGETS nanodbc
+				RUNTIME DESTINATION bin
+				LIBRARY DESTINATION lib
+				ARCHIVE DESTINATION lib)
 	endif()
 	message(STATUS "Target install: Turned on")
 else()
