@@ -2783,7 +2783,7 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
                         , buffer_size       // BufferLength
                         , &ValueLenOrInd);  // StrLen_or_IndPtr
                     if(ValueLenOrInd > 0)
-                        out.append(buffer, std::min<std::size_t>(ValueLenOrInd, buffer_size - 1));
+                        out.append(buffer, std::min<std::size_t>(ValueLenOrInd / sizeof(wide_char_t), (buffer_size / sizeof(wide_char_t)) - 1));
                     else if(ValueLenOrInd == SQL_NULL_DATA)
                         *col.cbdata_ = (SQLINTEGER) SQL_NULL_DATA;
                     // Sequence of successful calls is:
