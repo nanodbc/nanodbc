@@ -286,6 +286,14 @@ struct date
     std::int16_t day; //!< Day of the month [1-31].
 };
 
+//! \brief A type for representing time data.
+struct time
+{
+  std::int16_t hour;   //!< Hours since midnight [0-23].
+  std::int16_t min;    //!< Minutes after the hour [0-59].
+  std::int16_t sec;    //!< Seconds after the minute.
+};
+
 //! \brief A type for representing timestamp data.
 struct timestamp
 {

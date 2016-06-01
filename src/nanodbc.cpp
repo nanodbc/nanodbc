@@ -505,6 +505,12 @@ namespace
     };
 
     template<>
+    struct sql_ctype<nanodbc::time>
+    {
+        static const SQLSMALLINT value = SQL_C_TIME;
+    };
+
+    template<>
     struct sql_ctype<nanodbc::timestamp>
     {
         static const SQLSMALLINT value = SQL_C_TIMESTAMP;
@@ -2012,6 +2018,14 @@ bool statement::statement_impl::equals(const date& lhs, const date& rhs)
 }
 
 template<>
+bool statement::statement_impl::equals(const time& lhs, const time& rhs)
+{
+    return lhs.hour == rhs.hour
+        && lhs.min == rhs.min
+        && lhs.sec == rhs.sec;
+}
+
+template<>
 bool statement::statement_impl::equals(const timestamp& lhs, const timestamp& rhs)
 {
     return lhs.year == rhs.year
@@ -2559,6 +2573,11 @@ private:
                     col.ctype_ = SQL_C_DATE;
                     col.clen_ = sizeof(date);
                     break;
+                case SQL_TIME:
+                case SQL_TYPE_TIME:
+                    col.ctype_ = SQL_C_TIME;
+                    col.clen_ = sizeof(time);
+                    break;
                 case SQL_TIMESTAMP:
                 case SQL_TYPE_TIMESTAMP:
                     col.ctype_ = SQL_C_TIMESTAMP;
@@ -2666,6 +2685,26 @@ inline void result::result_impl::get_ref_impl<date>(short column, date& result) 
             timestamp stamp = *reinterpret_cast<timestamp*>(col.pdata_ + rowset_position_ * col.clen_ );
             date d = { stamp.year, stamp.month, stamp.day };
             result = d;
+            return;
+        }
+    }
+    throw type_incompatible_error();
+}
+
+template<>
+inline void result::result_impl::get_ref_impl<time>(short column, time& result) const
+{
+    bound_column& col = bound_columns_[column];
+    switch(col.ctype_)
+    {
+        case SQL_C_TIME:
+            result = *reinterpret_cast<time*>(col.pdata_ + rowset_position_ * col.clen_);
+            return;
+        case SQL_C_TIMESTAMP:
+        {
+            timestamp stamp = *reinterpret_cast<timestamp*>(col.pdata_ + rowset_position_ * col.clen_ );
+            time t = { stamp.hour, stamp.min, stamp.sec };
+            result = t;
             return;
         }
     }
@@ -2907,6 +2946,22 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
             std::setlocale(LC_TIME, "");
             char date_str[512];
             std::strftime(date_str, sizeof(date_str), "%Y-%m-%d", &st);
+            std::setlocale(LC_TIME, old_lc_time);
+            convert(date_str, result);
+            return;
+        }
+
+        case SQL_C_TIME:
+        {
+            const time t = *reinterpret_cast<time*>(col.pdata_ + rowset_position_ * col.clen_);
+            std::tm st = { 0 };
+            st.tm_hour = t.hour;
+            st.tm_min = t.min;
+            st.tm_sec = t.sec;
+            char* old_lc_time = std::setlocale(LC_TIME, nullptr);
+            std::setlocale(LC_TIME, "");
+            char date_str[512];
+            std::strftime(date_str, sizeof(date_str), "%H:%M:%S", &st);
             std::setlocale(LC_TIME, old_lc_time);
             convert(date_str, result);
             return;
@@ -3579,6 +3634,7 @@ NANODBC_INSTANTIATE_BINDS(uint64_t);
 NANODBC_INSTANTIATE_BINDS(float);
 NANODBC_INSTANTIATE_BINDS(double);
 NANODBC_INSTANTIATE_BINDS(date);
+NANODBC_INSTANTIATE_BINDS(time);
 NANODBC_INSTANTIATE_BINDS(timestamp);
 
 #undef NANODBC_INSTANTIATE_BINDS
@@ -4207,6 +4263,7 @@ template void result::get_ref(short, float&) const;
 template void result::get_ref(short, double&) const;
 template void result::get_ref(short, string_type&) const;
 template void result::get_ref(short, date&) const;
+template void result::get_ref(short, time&) const;
 template void result::get_ref(short, timestamp&) const;
 template void result::get_ref(short, std::vector<std::uint8_t>&) const;
 
@@ -4221,6 +4278,7 @@ template void result::get_ref(const string_type&, float&) const;
 template void result::get_ref(const string_type&, double&) const;
 template void result::get_ref(const string_type&, string_type&) const;
 template void result::get_ref(const string_type&, date&) const;
+template void result::get_ref(const string_type&, time&) const;
 template void result::get_ref(const string_type&, timestamp&) const;
 template void result::get_ref(const string_type&, std::vector<std::uint8_t>&) const;
 
@@ -4236,6 +4294,7 @@ template void result::get_ref(short, const float&, float&) const;
 template void result::get_ref(short, const double&, double&) const;
 template void result::get_ref(short, const string_type&, string_type&) const;
 template void result::get_ref(short, const date&, date&) const;
+template void result::get_ref(short, const time&, time&) const;
 template void result::get_ref(short, const timestamp&, timestamp&) const;
 template void result::get_ref(short, const std::vector<std::uint8_t>&, std::vector<std::uint8_t>&) const;
 
@@ -4250,6 +4309,7 @@ template void result::get_ref(const string_type&, const float&, float&) const;
 template void result::get_ref(const string_type&, const double&, double&) const;
 template void result::get_ref(const string_type&, const string_type&, string_type&) const;
 template void result::get_ref(const string_type&, const date&, date&) const;
+template void result::get_ref(const string_type&, const time&, time&) const;
 template void result::get_ref(const string_type&, const timestamp&, timestamp&) const;
 template void result::get_ref(const string_type&, const std::vector<std::uint8_t>&, std::vector<std::uint8_t>&) const;
 
@@ -4265,6 +4325,7 @@ template float result::get(short) const;
 template double result::get(short) const;
 template string_type result::get(short) const;
 template date result::get(short) const;
+template time result::get(short) const;
 template timestamp result::get(short) const;
 template std::vector<std::uint8_t> result::get(short) const;
 
@@ -4279,6 +4340,7 @@ template float result::get(const string_type&) const;
 template double result::get(const string_type&) const;
 template string_type result::get(const string_type&) const;
 template date result::get(const string_type&) const;
+template time result::get(const string_type&) const;
 template timestamp result::get(const string_type&) const;
 template std::vector<std::uint8_t> result::get(const string_type&) const;
 
@@ -4294,6 +4356,7 @@ template float result::get(short, const float&) const;
 template double result::get(short, const double&) const;
 template string_type result::get(short, const string_type&) const;
 template date result::get(short, const date&) const;
+template time result::get(short, const time&) const;
 template timestamp result::get(short, const timestamp&) const;
 template std::vector<std::uint8_t> result::get(short, const std::vector<std::uint8_t>&) const;
 
@@ -4308,6 +4371,7 @@ template float result::get(const string_type&, const float&) const;
 template double result::get(const string_type&, const double&) const;
 template string_type result::get(const string_type&, const string_type&) const;
 template date result::get(const string_type&, const date&) const;
+template time result::get(const string_type&, const time&) const;
 template timestamp result::get(const string_type&, const timestamp&) const;
 template std::vector<std::uint8_t> result::get(const string_type&, const std::vector<std::uint8_t>&) const;
 
