@@ -118,8 +118,7 @@ TEST_CASE_METHOD(sqlite_fixture, "decimal_conversion_test", "[sqlite][decimal][c
     nanodbc::connection connection = connect();
     nanodbc::result results;
 
-    drop_table(connection, NANODBC_TEXT("decimal_conversion_test"));
-    execute(connection, NANODBC_TEXT("create table decimal_conversion_test (d decimal(9, 3));"));
+    create_table(connection, NANODBC_TEXT("decimal_conversion_test"), NANODBC_TEXT("(d decimal(9, 3))"));
     execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (12345.987);"));
     execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (5.6);"));
     execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (1);"));
