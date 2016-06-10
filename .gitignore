@@ -13,11 +13,14 @@
 *.a
 
 /.vagrant
-/doc
+/_build/
+/_build32/
+/_build64/
 /build/
-/docker_build/
 /build32/
 /build64/
+/doc
+/docker_build/
 example
 example.dSYM/
 /examples/empty.cpp
