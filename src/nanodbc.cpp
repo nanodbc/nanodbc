@@ -2733,7 +2733,7 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
                     if(ValueLenOrInd > 0)
                         out.append(buffer, std::min<std::size_t>(ValueLenOrInd, col.ctype_ == SQL_C_BINARY ? buffer_size : buffer_size - 1));
                     else if(ValueLenOrInd == SQL_NULL_DATA)
-                        *col.cbdata_ = (SQLINTEGER) SQL_NULL_DATA;
+                        col.cbdata_[rowset_position_] = (SQLINTEGER) SQL_NULL_DATA;
                     // Sequence of successful calls is:
                     // SQL_NO_DATA or SQL_SUCCESS_WITH_INFO followed by SQL_SUCCESS.
                 } while(rc == SQL_SUCCESS_WITH_INFO);
@@ -2785,7 +2785,7 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
                     if(ValueLenOrInd > 0)
                         out.append(buffer, std::min<std::size_t>(ValueLenOrInd / sizeof(wide_char_t), (buffer_size / sizeof(wide_char_t)) - 1));
                     else if(ValueLenOrInd == SQL_NULL_DATA)
-                        *col.cbdata_ = (SQLINTEGER) SQL_NULL_DATA;
+                        col.cbdata_[rowset_position_] = (SQLINTEGER) SQL_NULL_DATA;
                     // Sequence of successful calls is:
                     // SQL_NO_DATA or SQL_SUCCESS_WITH_INFO followed by SQL_SUCCESS.
                 } while(rc == SQL_SUCCESS_WITH_INFO);
@@ -2799,7 +2799,7 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
             {
                 // Type is unicode in the database, convert if necessary
                 const SQLWCHAR* s = reinterpret_cast<SQLWCHAR*>(col.pdata_ + rowset_position_ * col.clen_);
-                const string_type::size_type str_size = *col.cbdata_ / sizeof(SQLWCHAR);
+                const string_type::size_type str_size = col.cbdata_[rowset_position_] / sizeof(SQLWCHAR);
                 wide_string_type temp(s, s + str_size);
                 convert(temp, result);
             }
@@ -2978,7 +2978,7 @@ inline void result::result_impl::get_ref_impl<std::vector<std::uint8_t>>(short c
                         out.insert(std::end(out), buffer, buffer + buffer_size_filled);
                     }
                     else if(ValueLenOrInd == SQL_NULL_DATA)
-                        *col.cbdata_ = (SQLINTEGER) SQL_NULL_DATA;
+                        col.cbdata_[rowset_position_] = (SQLINTEGER) SQL_NULL_DATA;
                     // Sequence of successful calls is:
                     // SQL_NO_DATA or SQL_SUCCESS_WITH_INFO followed by SQL_SUCCESS.
                 } while(rc == SQL_SUCCESS_WITH_INFO);
