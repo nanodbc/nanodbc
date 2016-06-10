@@ -121,6 +121,63 @@ TEST_CASE_METHOD(mssql_fixture, "blob_test_with_varchar", "[mssql][blob][binary]
     REQUIRE(results.get<nanodbc::string_type>(0) == s);
 }
 
+TEST_CASE_METHOD(mssql_fixture, "block_cursor_with_nvarchar_test", "[mssql][nvarchar][block][rowset]")
+{
+    nanodbc::connection conn = connect();
+
+    // BLock Cursors: https://technet.microsoft.com/en-us/library/aa172590.aspx
+    std::size_t const rowset_size = 2;
+
+    drop_table(conn, NANODBC_TEXT("variable_string_test"));
+    execute(conn, NANODBC_TEXT("create table variable_string_test (i int, s nvarchar(256));"));
+    execute(conn, NANODBC_TEXT("insert into variable_string_test (i, s) values (1, 'this is a shorter text');"));
+    execute(conn, NANODBC_TEXT("insert into variable_string_test (i, s) values (2, 'this is a longer text of the two texts in the table');"));
+    nanodbc::result results = nanodbc::execute(conn, NANODBC_TEXT("select i, s from variable_string_test order by i;"), rowset_size);
+    REQUIRE(results.next());
+    REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("this is a shorter text"));
+    REQUIRE(results.next());
+    REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("this is a longer text of the two texts in the table"));
+    REQUIRE(!results.next());
+}
+
+TEST_CASE_METHOD(mssql_fixture, "block_cursor_with_nvarchar_and_first_row_null_test", "[mssql][nvarchar][block][rowset]")
+{
+    nanodbc::connection conn = connect();
+    std::size_t const rowset_size = 2;
+
+    drop_table(conn, NANODBC_TEXT("variable_string_test"));
+    execute(conn, NANODBC_TEXT("create table variable_string_test (i int, s nvarchar(256));"));
+    execute(conn, NANODBC_TEXT("insert into variable_string_test (i, s) values (1, NULL);"));
+    execute(conn, NANODBC_TEXT("insert into variable_string_test (i, s) values (2, 'this is a longer text of the two texts in the table');"));
+    nanodbc::result results = nanodbc::execute(conn, NANODBC_TEXT("select i, s from variable_string_test order by i;"), rowset_size);
+    REQUIRE(results.next());
+    REQUIRE(results.is_null(1));
+    REQUIRE(results.get<nanodbc::string_type>(1, NANODBC_TEXT("nothing")) == NANODBC_TEXT("nothing"));
+    REQUIRE(results.next());
+    REQUIRE(!results.is_null(1));
+    REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("this is a longer text of the two texts in the table"));
+    REQUIRE(!results.next());
+}
+
+TEST_CASE_METHOD(mssql_fixture, "block_cursor_with_nvarchar_and_second_row_null_test", "[mssql][nvarchar][block][rowset]")
+{
+    nanodbc::connection conn = connect();
+    std::size_t const rowset_size = 2;
+
+    drop_table(conn, NANODBC_TEXT("variable_string_test"));
+    execute(conn, NANODBC_TEXT("create table variable_string_test (i int, s nvarchar(256));"));
+    execute(conn, NANODBC_TEXT("insert into variable_string_test (i, s) values (1, 'this is a shorter text');"));
+    execute(conn, NANODBC_TEXT("insert into variable_string_test (i, s) values (2, NULL);"));
+    nanodbc::result results = nanodbc::execute(conn, NANODBC_TEXT("select i, s from variable_string_test order by i;"), rowset_size);
+    REQUIRE(results.next());
+    REQUIRE(!results.is_null(1));
+    REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("this is a shorter text"));
+    REQUIRE(results.next());
+    REQUIRE(results.is_null(1));
+    REQUIRE(results.get<nanodbc::string_type>(1, NANODBC_TEXT("nothing")) == NANODBC_TEXT("nothing"));
+    REQUIRE(!results.next());
+}
+
 TEST_CASE_METHOD(mssql_fixture, "catalog_columns_test", "[mssql][catalog][columns]")
 {
     catalog_columns_test();
