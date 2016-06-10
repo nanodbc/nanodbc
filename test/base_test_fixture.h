@@ -171,9 +171,9 @@ struct base_test_fixture
 
         nanodbc::string_type sql(NANODBC_TEXT("CREATE TABLE "));
         sql += name;
-        sql += L" ";
+        sql += NANODBC_TEXT(" ");
         sql += def;
-        sql += L';';
+        sql += NANODBC_TEXT(';');
 
         drop_table(connection, name);
         execute(connection, sql);
