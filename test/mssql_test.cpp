@@ -85,8 +85,7 @@ TEST_CASE_METHOD(mssql_fixture, "blob_test", "[mssql][blob][binary][varbinary]")
     nanodbc::connection connection = connect();
     // Test data size less than the default size of the internal buffer (1024)
     {
-        drop_table(connection, NANODBC_TEXT("blob_test"));
-        execute(connection, NANODBC_TEXT("create table blob_test (data varbinary(max));"));
+        create_table(connection, NANODBC_TEXT("blob_test"), NANODBC_TEXT("(data varbinary(max))"));
         execute(connection, NANODBC_TEXT("insert into blob_test values (CONVERT(varbinary(max), '0x010100000000000000000059400000000000005940', 1));"));
         nanodbc::result results = nanodbc::execute(connection, NANODBC_TEXT("select data from blob_test;"));
         REQUIRE(results.next());
@@ -98,8 +97,7 @@ TEST_CASE_METHOD(mssql_fixture, "blob_test", "[mssql][blob][binary][varbinary]")
 
     // Test data size greater than, but not multiple of, the default size of the internal buffer (1024)
     {
-        drop_table(connection, NANODBC_TEXT("blob_test"));
-        execute(connection, NANODBC_TEXT("create table blob_test (data varbinary(max));"));
+        create_table(connection, NANODBC_TEXT("blob_test"), NANODBC_TEXT("(data varbinary(max))"));
         execute(connection, NANODBC_TEXT("insert into blob_test values (CRYPT_GEN_RANDOM(1579));"));
         nanodbc::result results = nanodbc::execute(connection, NANODBC_TEXT("select data from blob_test;"));
         REQUIRE(results.next());
@@ -112,8 +110,7 @@ TEST_CASE_METHOD(mssql_fixture, "blob_test_with_varchar", "[mssql][blob][binary]
     nanodbc::string_type s = NANODBC_TEXT("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
 
     nanodbc::connection connection = connect();
-    drop_table(connection, NANODBC_TEXT("blob_test_with_varchar"));
-    execute(connection, NANODBC_TEXT("create table blob_test_with_varchar (data varbinary(max));"));
+    create_table(connection, NANODBC_TEXT("blob_test_with_varchar"), NANODBC_TEXT("(data varbinary(max))"));
     execute(connection, NANODBC_TEXT("insert into blob_test_with_varchar values (CONVERT(varbinary(max), '") + s + NANODBC_TEXT("'));"));
 
     nanodbc::result results = nanodbc::execute(connection, NANODBC_TEXT("select data from blob_test_with_varchar;"));
@@ -128,8 +125,7 @@ TEST_CASE_METHOD(mssql_fixture, "block_cursor_with_nvarchar_test", "[mssql][nvar
     // BLock Cursors: https://technet.microsoft.com/en-us/library/aa172590.aspx
     std::size_t const rowset_size = 2;
 
-    drop_table(conn, NANODBC_TEXT("variable_string_test"));
-    execute(conn, NANODBC_TEXT("create table variable_string_test (i int, s nvarchar(256));"));
+    create_table(conn, NANODBC_TEXT("variable_string_test"), NANODBC_TEXT("(i int, s nvarchar(256))"));
     execute(conn, NANODBC_TEXT("insert into variable_string_test (i, s) values (1, 'this is a shorter text');"));
     execute(conn, NANODBC_TEXT("insert into variable_string_test (i, s) values (2, 'this is a longer text of the two texts in the table');"));
     nanodbc::result results = nanodbc::execute(conn, NANODBC_TEXT("select i, s from variable_string_test order by i;"), rowset_size);
@@ -145,8 +141,7 @@ TEST_CASE_METHOD(mssql_fixture, "block_cursor_with_nvarchar_and_first_row_null_t
     nanodbc::connection conn = connect();
     std::size_t const rowset_size = 2;
 
-    drop_table(conn, NANODBC_TEXT("variable_string_test"));
-    execute(conn, NANODBC_TEXT("create table variable_string_test (i int, s nvarchar(256));"));
+    create_table(conn, NANODBC_TEXT("variable_string_test"), NANODBC_TEXT("(i int, s nvarchar(256))"));
     execute(conn, NANODBC_TEXT("insert into variable_string_test (i, s) values (1, NULL);"));
     execute(conn, NANODBC_TEXT("insert into variable_string_test (i, s) values (2, 'this is a longer text of the two texts in the table');"));
     nanodbc::result results = nanodbc::execute(conn, NANODBC_TEXT("select i, s from variable_string_test order by i;"), rowset_size);
@@ -164,8 +159,7 @@ TEST_CASE_METHOD(mssql_fixture, "block_cursor_with_nvarchar_and_second_row_null_
     nanodbc::connection conn = connect();
     std::size_t const rowset_size = 2;
 
-    drop_table(conn, NANODBC_TEXT("variable_string_test"));
-    execute(conn, NANODBC_TEXT("create table variable_string_test (i int, s nvarchar(256));"));
+    create_table(conn, NANODBC_TEXT("variable_string_test"), NANODBC_TEXT("(i int, s nvarchar(256))"));
     execute(conn, NANODBC_TEXT("insert into variable_string_test (i, s) values (1, 'this is a shorter text');"));
     execute(conn, NANODBC_TEXT("insert into variable_string_test (i, s) values (2, NULL);"));
     nanodbc::result results = nanodbc::execute(conn, NANODBC_TEXT("select i, s from variable_string_test order by i;"), rowset_size);
