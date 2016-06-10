@@ -28,10 +28,10 @@ set GENERATOR="Visual Studio 14 2015 Win64"
 goto :Build
 
 :Build
-set BUILDDIR=build%NANOP%
+set BUILDDIR=_build%NANOP%
 mkdir %BUILDDIR%
 pushd %BUILDDIR%
-"C:\Program Files (x86)\CMake\bin\cmake.exe" ^
+"C:\Program Files\CMake\bin\cmake.exe" ^
 	-G %GENERATOR% ^
 	-DNANODBC_STATIC=%NANODBC_STATIC% ^
 	-DNANODBC_USE_UNICODE=ON ^
