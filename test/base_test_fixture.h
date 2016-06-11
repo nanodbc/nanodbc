@@ -207,7 +207,6 @@ struct base_test_fixture
 
         nanodbc::connection connection = connect();
         create_table(connection, NANODBC_TEXT("blob_test"), NANODBC_TEXT("(data BLOB)"));
-        execute(connection, NANODBC_TEXT("create table blob_test ;"));
         execute(connection, NANODBC_TEXT("insert into blob_test values ('") + s + NANODBC_TEXT("');"));
 
         nanodbc::result results = nanodbc::execute(connection, NANODBC_TEXT("select data from blob_test;"));
