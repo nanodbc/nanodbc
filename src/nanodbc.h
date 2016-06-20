@@ -163,7 +163,7 @@ namespace nanodbc
     //! \brief Maps generic text to string literal with characters of type corresponding to `nanodbc::string_type`.
     //!
     //! By default, the macro maps to an unprefixed string literal.
-    //! If building with options NANODBC_USE_UNICODE=ON and 
+    //! If building with options NANODBC_USE_UNICODE=ON and
     //! NANODBC_USE_IODBC_WIDE_STRINGS=ON specified, then it prefixes a literal with U"...".
     //! If only NANODBC_USE_UNICODE=ON is specified, then:
     //!   * If building with Visual Studio, then the macro prefixes a literal with L"...".

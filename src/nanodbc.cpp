@@ -1174,7 +1174,7 @@ public:
 #if defined(SQL_ATTR_ASYNC_STMT_EVENT) && defined(SQL_API_SQLCOMPLETEASYNC) && !defined(NANODBC_DISABLE_ASYNC)
     , async_(false)
     , async_enabled_(false)
-    , async_event_(NULL)
+    , async_event_(nullptr)
 #endif
     {
 
@@ -1188,7 +1188,7 @@ public:
 #if defined(SQL_ATTR_ASYNC_STMT_EVENT) && defined(SQL_API_SQLCOMPLETEASYNC) && !defined(NANODBC_DISABLE_ASYNC)
     , async_(false)
     , async_enabled_(false)
-    , async_event_(NULL)
+    , async_event_(nullptr)
 #endif
     {
         open(conn);
@@ -1202,7 +1202,7 @@ public:
 #if defined(SQL_ATTR_ASYNC_STMT_EVENT) && defined(SQL_API_SQLCOMPLETEASYNC) && !defined(NANODBC_DISABLE_ASYNC)
     , async_(false)
     , async_enabled_(false)
-    , async_event_(NULL)
+    , async_event_(nullptr)
 #endif
     {
         prepare(conn, query, timeout);
@@ -1483,7 +1483,7 @@ public:
     {
         call_complete_async();
     }
-    
+
 #endif // SQL_ATTR_ASYNC_STMT_EVENT && SQL_API_SQLCOMPLETEASYNC && !NANODBC_DISABLE_ASYNC
 
     result execute_direct(
@@ -1878,9 +1878,12 @@ private:
     bool open_;
     class connection conn_;
     std::map<short, std::vector<null_type> > bind_len_or_null_;
-    bool async_;                  // true if statement is currently in SQL_STILL_EXECUTING mode 
+
+#if defined(SQL_ATTR_ASYNC_STMT_EVENT) && defined(SQL_API_SQLCOMPLETEASYNC) && !defined(NANODBC_DISABLE_ASYNC)
+    bool async_;                  // true if statement is currently in SQL_STILL_EXECUTING mode
     mutable bool async_enabled_;  // true if statement currently has SQL_ATTR_ASYNC_ENABLE = SQL_ASYNC_ENABLE_ON
     void* async_event_;           // currently active event handle for async notifications
+#endif
 };
 
 // Supports code like: query.bind(0, std_string.c_str())
@@ -2649,7 +2652,7 @@ private:
     long rowset_position_;
     std::map<string_type, bound_column*> bound_columns_by_name_;
     bool at_end_;
-    bool async_;  // true if statement is currently in SQL_STILL_EXECUTING mode 
+    bool async_;  // true if statement is currently in SQL_STILL_EXECUTING mode
 };
 
 template<>
