@@ -849,17 +849,15 @@ public:
                 enable_async(event_handle);
         #endif
 
-        NANODBC_SQLCHAR dsn[1024];
-        SQLSMALLINT dsn_size = 0;
         NANODBC_CALL_RC(
             NANODBC_FUNC(SQLDriverConnect)
             , rc
             , conn_
             , 0
             , (NANODBC_SQLCHAR*)connection_string.c_str(), SQL_NTS
-            , dsn
-            , sizeof(dsn) / sizeof(NANODBC_SQLCHAR)
-            , &dsn_size
+            , NULL
+            , 0
+            , NULL
             , SQL_DRIVER_NOPROMPT);
         if(!success(rc) && (event_handle == NULL || rc != SQL_STILL_EXECUTING))
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
