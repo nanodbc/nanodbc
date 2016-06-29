@@ -2540,9 +2540,6 @@ private:
                 case SQL_TINYINT:
                 case SQL_SMALLINT:
                 case SQL_INTEGER:
-                    col.ctype_ = SQL_C_LONG;
-                    col.clen_ = sizeof(int32_t);
-                    break;
                 case SQL_BIGINT:
                     col.ctype_ = SQL_C_SBIGINT;
                     col.clen_ = sizeof(int64_t);
@@ -2821,8 +2818,8 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
             buffer.resize(buffer.capacity());
             using std::fill;
             fill(buffer.begin(), buffer.end(), '\0');
-            const wide_char_t data = *reinterpret_cast<wide_char_t*>(col.pdata_ + rowset_position_ * col.clen_);
-            const int bytes = std::snprintf(const_cast<char*>(buffer.data()), column_size, "%d", data);
+            const int32_t data = *reinterpret_cast<int32_t*>(col.pdata_ + rowset_position_ * col.clen_);
+            const int bytes = std::snprintf(const_cast<char*>(buffer.data()), column_size + 1, "%d", data);
             if(bytes == -1)
                 throw type_incompatible_error();
             else if((SQLULEN)bytes < column_size)
@@ -2842,7 +2839,7 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
             using std::fill;
             fill(buffer.begin(), buffer.end(), '\0');
             const intmax_t data = (intmax_t)*reinterpret_cast<int64_t*>(col.pdata_ + rowset_position_ * col.clen_);
-            const int bytes = std::snprintf(const_cast<char*>(buffer.data()), column_size, "%jd", data);
+            const int bytes = std::snprintf(const_cast<char*>(buffer.data()), column_size + 1, "%jd", data);
             if(bytes == -1)
                 throw type_incompatible_error();
             else if((SQLULEN)bytes < column_size)
@@ -2861,7 +2858,7 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
             using std::fill;
             fill(buffer.begin(), buffer.end(), '\0');
             const float data = *reinterpret_cast<float*>(col.pdata_ + rowset_position_ * col.clen_);
-            const int bytes = std::snprintf(const_cast<char*>(buffer.data()), column_size, "%f", data);
+            const int bytes = std::snprintf(const_cast<char*>(buffer.data()), column_size + 1, "%f", data);
             if(bytes == -1)
                 throw type_incompatible_error();
             else if((SQLULEN)bytes < column_size)
@@ -2883,7 +2880,7 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
             const double data = *reinterpret_cast<double*>(col.pdata_ + rowset_position_ * col.clen_);
             const int bytes = std::snprintf(
                 const_cast<char*>(buffer.data())
-                , width
+                , width + 1
                 , "%.*lf"                       // restrict the number of digits
                 , col.scale_                    // number of digits after the decimal point
                 , data);
