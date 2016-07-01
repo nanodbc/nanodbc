@@ -21,6 +21,11 @@ struct mssql_fixture : public base_test_fixture
 };
 }
 
+TEST_CASE_METHOD(mssql_fixture, "driver_test", "[mssql][driver]")
+{
+    driver_test();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "affected_rows_test", "[mssql][affected_rows]")
 {
     // Skip on SQL Server 2008, see details at

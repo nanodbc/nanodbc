@@ -552,7 +552,7 @@ namespace
     };
 
     // Allocates the native ODBC handles.
-    inline void allocate_handle(SQLHENV& env, SQLHDBC& conn)
+    inline void allocate_environment_handle(SQLHENV& env)
     {
         RETCODE rc;
         NANODBC_CALL_RC(
@@ -575,7 +575,25 @@ namespace
                 , SQL_IS_UINTEGER);
             if(!success(rc))
                 NANODBC_THROW_DATABASE_ERROR(env, SQL_HANDLE_ENV);
+        }
+        catch(...)
+        {
+            NANODBC_CALL(
+                SQLFreeHandle
+                , SQL_HANDLE_ENV
+                , env);
+            throw;
+        }
+    }
 
+    inline void allocate_handle(SQLHENV& env, SQLHDBC& conn)
+    {
+        allocate_environment_handle(env);
+
+        try
+        {
+            NANODBC_ASSERT(env);
+            RETCODE rc;
             NANODBC_CALL_RC(
                 SQLAllocHandle
                 , rc
@@ -3034,6 +3052,72 @@ void result::result_impl::get_ref_impl(short column, T& result) const
 
 namespace nanodbc
 {
+
+std::list<driver> list_drivers()
+{
+    NANODBC_SQLCHAR  descr[1024] = {0};
+    NANODBC_SQLCHAR  attrs[1024] = {0};
+    SQLSMALLINT descr_len_ret{0};
+    SQLSMALLINT attrs_len_ret{0};
+    SQLUSMALLINT direction{SQL_FETCH_FIRST};
+
+    HENV env{0};
+    allocate_environment_handle(env);
+
+    std::list<driver> drivers;
+    RETCODE rc{SQL_SUCCESS};
+    do
+    {
+        NANODBC_ASSERT(env);
+        NANODBC_CALL_RC(
+            NANODBC_FUNC(SQLDrivers)
+            , rc
+            , env
+            , direction                       // EnvironmentHandle
+            , descr                           // DriverDescription
+            , sizeof(descr) / sizeof(NANODBC_SQLCHAR) // BufferLength1
+            , &descr_len_ret                  // DescriptionLengthPtr
+            , attrs                           // DriverAttributes
+            , sizeof(attrs) / sizeof(NANODBC_SQLCHAR) // BufferLength2
+            , &attrs_len_ret);                // AttributesLengthPtr
+
+        if (rc == SQL_SUCCESS)
+        {
+            using char_type = string_type::value_type;
+            static_assert(sizeof(NANODBC_SQLCHAR) == sizeof(char_type),
+                "incompatible SQLCHAR and string_type::value_type");
+
+            driver drv;
+            drv.name = string_type(&descr[0], &descr[strarrlen(descr)]);
+            
+            // Split "Key1=Value1\0Key2=Value2\0\0" into list of key-value pairs
+            auto beg{&attrs[0]};
+            auto const end{&attrs[attrs_len_ret]};
+            auto pair_end{end};
+            while ((pair_end = std::find(beg, end, NANODBC_TEXT('\0'))) != end)
+            {
+                auto const eq_pos = std::find(beg, pair_end, NANODBC_TEXT('='));
+                if (eq_pos == end)
+                    break;
+
+                driver::attribute attr{{beg, eq_pos}, {eq_pos + 1, pair_end}};
+                drv.attributes.push_back(std::move(attr));
+                beg = pair_end + 1;
+            }
+
+            drivers.push_back(std::move(drv));
+
+            direction = SQL_FETCH_NEXT;
+        }
+        else
+        {
+            if (rc != SQL_NO_DATA)
+                NANODBC_THROW_DATABASE_ERROR(env, SQL_HANDLE_ENV);
+        }
+    } while (success(rc));
+
+    return drivers;
+}
 
 result execute(connection& conn, const string_type& query, long batch_operations, long timeout)
 {

@@ -95,6 +95,11 @@ TEST_CASE_METHOD(sqlite_fixture, "affected_rows_test", "[sqlite][affected_rows]"
 }
 #endif
 
+TEST_CASE_METHOD(sqlite_fixture, "driver_test", "[sqlite][driver]")
+{
+    driver_test();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "blob_test", "[sqlite][blob]")
 {
     blob_test();

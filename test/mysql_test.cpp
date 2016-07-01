@@ -23,6 +23,11 @@ namespace
 
 // FIXME: No catlog_* tests for MySQL. Not supported?
 
+TEST_CASE_METHOD(mysql_fixture, "driver_test", "[mysql][driver]")
+{
+    driver_test();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "affected_rows_test", "[mysql][affected_rows]")
 {
     nanodbc::connection conn = connect();

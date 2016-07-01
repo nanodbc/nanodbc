@@ -103,6 +103,39 @@ struct base_test_fixture
         return nanodbc::connection(connection_string_);
     }
 
+    nanodbc::string_type connection_string_parameter(nanodbc::string_type const& keyword)
+    {
+        // Find given keyword in the semi-colon-separated keyword=value pairs
+        // of connection string and return its value, strippng `{` and `}` wrappers.
+        if (connection_string_.empty())
+            return nanodbc::string_type();
+
+        auto beg{connection_string_.begin()};
+        auto const end{connection_string_.end()};
+        auto pair_end{end};
+        while ((pair_end = std::find(beg, end, NANODBC_TEXT(';'))) != end)
+        {
+            auto const eq_pos = std::find(beg, pair_end, NANODBC_TEXT('='));
+            if (eq_pos == end)
+                break;
+
+            if (iequals_string(keyword, {beg, eq_pos}))
+            {
+                auto beg_value = eq_pos + 1;
+                if (*beg_value == NANODBC_TEXT('{'))
+                    beg_value++;
+                auto end_value = pair_end;
+                if (*(end_value - 1) == NANODBC_TEXT('}'))
+                    end_value--;
+
+                return {beg_value, end_value};
+            }
+
+            beg = pair_end + 1;
+        }
+        return nanodbc::string_type();
+    }
+
     static void check_rows_equal(nanodbc::result results, int rows)
     {
         REQUIRE(results.next());
@@ -163,6 +196,35 @@ struct base_test_fixture
             return false;
 
         return str.find(sub) != nanodbc::string_type::npos;
+    }
+
+    bool iequals_string(nanodbc::string_type const& lhs, nanodbc::string_type const& rhs, std::locale const& loc = std::locale())
+    {
+        struct is_iequal
+        {
+            using char_type = typename nanodbc::string_type::value_type;
+
+            is_iequal(std::locale const& loc) : loc_(loc) {}
+
+            bool operator()(char_type const& lhs, char_type const& rhs)
+            {
+                // FIXME: This is ugly, but ctype<char16_t> and ctype<char32_t> specializations
+                // are not mandatory according to the C++11, only for char and wchar_t are.
+                // So, use the one with bigger capacity of the two.
+                return std::toupper<wchar_t>(lhs, loc_) == std::toupper<wchar_t>(rhs, loc_);
+            }
+        private:
+            std::locale loc_;
+        };
+
+        if (lhs.length() == rhs.length())
+        {
+            return std::equal(rhs.cbegin(), rhs.cend(), lhs.begin(), is_iequal(loc));
+        }
+        else
+        {
+            return false;
+        }
     }
 
     void create_table(nanodbc::connection& connection, nanodbc::string_type const& name, nanodbc::string_type const& def) const
@@ -578,6 +640,19 @@ struct base_test_fixture
 
         REQUIRE(results.next());
         REQUIRE(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("-1.333"));
+    }
+
+    void driver_test()
+    {
+        auto const driver_name = connection_string_parameter(NANODBC_TEXT("DRIVER"));
+
+        // Verify given driver, by name, is available - that is,
+        // it is registered with the ODBC Driver Manager in the host environment.
+        REQUIRE(!driver_name.empty());
+        auto const drivers = nanodbc::list_drivers();
+        bool found = std::any_of(drivers.cbegin(), drivers.cend(),
+            [&driver_name](nanodbc::driver const& drv) { return driver_name == drv.name; });
+        REQUIRE(found);
     }
 
     void exception_test()
