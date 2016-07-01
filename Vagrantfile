@@ -45,14 +45,14 @@ Vagrant.configure(2) do |config|
     sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 60 --slave /usr/bin/g++ g++ /usr/bin/g++-5
     ############################################################################
     # MySQL
-    echo "MySQL: updating /etc/mysql/my.cnf"
+    echo "MySQL: updating /etc/mysql/mysql.conf.d/mysqld.cnf"
     sudo sed -i "s/bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/my.cnf
     echo "MySQL: setting root password to ${DB_PASS}"
     mysql -uroot -p${DB_PASS} -e \
       "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '${DB_PASS}' WITH GRANT OPTION; FLUSH PRIVILEGES;"
     echo "MySQL: creating user ${DB_USER}"
     mysql -uroot -p${DB_PASS} -e \
-      "GRANT ALL PRIVILEGES ON ${DB_USER}.* TO '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASS}' WITH GRANT OPTION"
+      "GRANT ALL PRIVILEGES ON *.* TO '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASS}' WITH GRANT OPTION"
     mysql -uroot -p${DB_PASS} -e "DROP DATABASE IF EXISTS ${DB_USER}"
     echo "MySQL: creating database ${DB_USER}"
     mysql -uroot -p${DB_PASS} -e "CREATE DATABASE ${DB_USER}"
