@@ -77,6 +77,7 @@
 #include <cstddef>
 #include <functional>
 #include <memory>
+#include <list>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -1465,6 +1466,18 @@ private:
 
 //! @}
 
+struct driver
+{
+    struct attribute
+    {
+        nanodbc::string_type keyword;
+        nanodbc::string_type value;
+    };
+
+    nanodbc::string_type name;
+    std::list<attribute> attributes;
+};
+
 // 8888888888                            8888888888                         888    d8b
 // 888                                   888                                888    Y8P
 // 888                                   888                                888
@@ -1479,6 +1492,8 @@ private:
 //! \brief Convenience functions.
 //!
 //! @{
+
+std::list<driver> list_drivers();
 
 //! \brief Immediately opens, prepares, and executes the given query directly on the given connection.
 //! \param conn The connection where the statement will be executed.

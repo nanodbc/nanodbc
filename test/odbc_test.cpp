@@ -21,6 +21,11 @@ namespace
     };
 }
 
+TEST_CASE_METHOD(odbc_fixture, "driver_test", "[odbc][driver]")
+{
+    driver_test();
+}
+
 TEST_CASE_METHOD(odbc_fixture, "blob_test", "[odbc][blob]")
 {
     blob_test();

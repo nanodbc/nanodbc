@@ -23,6 +23,11 @@ namespace
 
 // TODO: add blob (bytea) test
 
+TEST_CASE_METHOD(postgresql_fixture, "driver_test", "[postgresql][driver]")
+{
+    driver_test();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "catalog_columns_test", "[postgresql][catalog][columns]")
 {
     catalog_columns_test();
