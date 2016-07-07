@@ -1309,10 +1309,16 @@ inline auto end(result& /*r*/) { return result_iterator(); }
 //                                                  "Y88P"
 // MARK: Catalog -
 
+//! \brief A resource for get catalog information from connected data source.
+//!
+//! Queries are performed using the Catalog Functions in ODBC.
+//! All provided operations are convenient wrappers around the ODBC API
+//! The original ODBC behaviour should not be affected by any added processing.
 class catalog
 {
 public:
 
+    //! \brief Result set for a list of tables in the data source.
     class tables
     {
     public:
@@ -1329,6 +1335,7 @@ public:
         result result_;
     };
 
+    //! \brief Result set for a list of columns in one or more tables.
     class columns
     {
     public:
@@ -1399,6 +1406,7 @@ public:
         result result_;
     };
 
+    //! \brief Result set for a list of columns that compose the primary key of a single table.
     class primary_keys
     {
     public:
@@ -1426,11 +1434,10 @@ public:
     //! \brief Creates catalog operating on database accessible through the specified connection.
     catalog(connection& conn);
 
-    //! \brief Creates result set with tables information.
-    //!
-    //! Tables information is obtained by executing SQLTable function within
+    //! \brief Creates result set with catalogs, schemas, tables, or table types.
+    //! Tables information is obtained by executing `SQLTable` function within
     //! scope of the connected database accessible with the specified connection.
-    //! Since this function is implemented in terms of the SQLTables, it returns
+    //! Since this function is implemented in terms of the `SQLTable`s, it returns
     //! result set ordered by TABLE_TYPE, TABLE_CAT, TABLE_SCHEM, and TABLE_NAME.
     //!
     //! All arguments are treated as the Pattern Value Arguments.
@@ -1441,11 +1448,11 @@ public:
       , const string_type& schema = string_type()
       , const string_type& catalog = string_type());
 
-    //! \brief Creates result set with columns information in specified tables.
+    //! \brief Creates result set with columns in one or more tables.
     //!
-    //! Columns information is obtained by executing SQLColumns function within
+    //! Columns information is obtained by executing `SQLColumns` function within
     //! scope of the connected database accessible with the specified connection.
-    //! Since this function is implemented in terms of the SQLColumns, it returns
+    //! Since this function is implemented in terms of the `SQLColumns`, it returns
     //! result set ordered by TABLE_CAT, TABLE_SCHEM, TABLE_NAME, and ORDINAL_POSITION.
     //!
     //! All arguments are treated as the Pattern Value Arguments.
@@ -1456,10 +1463,10 @@ public:
       , const string_type& schema = string_type()
       , const string_type& catalog = string_type());
 
-    //! \brief Creates result set with primary key information.
+    //! \brief Creates result set with columns that compose the primary key of a single table.
     //!
     //! Returns result set with column names that make up the primary key for a table.
-    //! The primary key information is obtained by executing SQLPrimaryKey function within
+    //! The primary key information is obtained by executing `SQLPrimaryKey` function within
     //! scope of the connected database accessible with the specified connection.
     //!
     //! All arguments are treated as the Pattern Value Arguments.
@@ -1468,6 +1475,16 @@ public:
         const string_type& table
       , const string_type& schema = string_type()
       , const string_type& catalog = string_type());
+
+    //! \brief Returns names of all catalogs (or databases) available in connected data source.
+    //!
+    //! Executes `SQLTable` function with `SQL_ALL_CATALOG` as catalog search pattern.
+    std::list<string_type> list_catalogs();
+
+    //! \brief Returns names of all schemas available in connected data source.
+    //!
+    //! Executes `SQLTable` function with `SQL_ALL_SCHEMAS` as schema search pattern.
+    std::list<string_type> list_schemas();
 
 private:
     connection conn_;

@@ -276,6 +276,26 @@ struct base_test_fixture
         REQUIRE(results.get<nanodbc::string_type>(0) == s);
     }
 
+    void catalog_list_catalogs_test()
+    {
+        nanodbc::connection connection = connect();
+        REQUIRE(connection.connected());
+        nanodbc::catalog catalog(connection);
+
+        auto names = catalog.list_catalogs();
+        REQUIRE(!names.empty());
+    }
+
+    void catalog_list_schemas_test()
+    {
+        nanodbc::connection connection = connect();
+        REQUIRE(connection.connected());
+        nanodbc::catalog catalog(connection);
+
+        auto names = catalog.list_schemas();
+        REQUIRE(!names.empty());
+    }
+
     void catalog_columns_test()
     {
         nanodbc::connection connection = connect();

@@ -75,6 +75,16 @@ TEST_CASE_METHOD(mysql_fixture, "blob_test", "[mysql][blob]")
     blob_test();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "catalog_list_catalogs_test", "[mysql][catalog][catalogs]")
+{
+    catalog_list_catalogs_test();
+}
+
+TEST_CASE_METHOD(mysql_fixture, "catalog_list_schemas_test", "[mysql][catalog][catalogs]")
+{
+    catalog_list_schemas_test();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "catalog_columns_test", "[mysql][catalog][columns]")
 {
     catalog_columns_test();

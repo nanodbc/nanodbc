@@ -4046,6 +4046,64 @@ catalog::primary_keys catalog::find_primary_keys(
     return catalog::primary_keys(find_result);
 }
 
+std::list<string_type> catalog::list_catalogs()
+{
+    // Special case for list of catalogs only:
+    // all the other arguments must match empty string (""),
+    // otherwise pattern-based lookup is performed returning
+    // Cartesian product of catalogs, tables and schemas.
+    statement stmt(conn_);
+    RETCODE rc;
+    NANODBC_CALL_RC(
+        NANODBC_FUNC(SQLTables)
+        , rc
+        , stmt.native_statement_handle()
+        , (NANODBC_SQLCHAR*)SQL_ALL_CATALOGS, 1
+        , (NANODBC_SQLCHAR*)NANODBC_TEXT(""), 0
+        , (NANODBC_SQLCHAR*)NANODBC_TEXT(""), 0
+        , (NANODBC_SQLCHAR*)NANODBC_TEXT(""), 0);
+    if(!success(rc))
+        NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
+
+    result find_result(stmt, 1);
+    catalog::tables catalogs(find_result);
+
+    std::list<string_type> names;
+    while (catalogs.next())
+        names.push_back(catalogs.table_catalog());
+    return names;
+}
+
+std::list<string_type> catalog::list_schemas()
+{
+    // TODO: Possible to restrict list of schemas from a specified catalog?
+
+    // Special case for list of schemas:
+    // all the other arguments must match empty string (""),
+    // otherwise pattern-based lookup is performed returning
+    // Cartesian product of catalogs, tables and schemas.
+    statement stmt(conn_);
+    RETCODE rc;
+    NANODBC_CALL_RC(
+        NANODBC_FUNC(SQLTables)
+        , rc
+        , stmt.native_statement_handle()
+        , (NANODBC_SQLCHAR*)NANODBC_TEXT(""), 0
+        , (NANODBC_SQLCHAR*)SQL_ALL_SCHEMAS, 1
+        , (NANODBC_SQLCHAR*)NANODBC_TEXT(""), 0
+        , (NANODBC_SQLCHAR*)NANODBC_TEXT(""), 0);
+    if(!success(rc))
+        NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
+
+    result find_result(stmt, 1);
+    catalog::tables schemas(find_result);
+
+    std::list<string_type> names;
+    while (schemas.next())
+        names.push_back(schemas.table_schema());
+    return names;
+}
+
 } // namespace nanodbc
 
 // 8888888b.                            888 888              8888888888                 888
