@@ -3089,7 +3089,7 @@ std::list<driver> list_drivers()
 
             driver drv;
             drv.name = string_type(&descr[0], &descr[strarrlen(descr)]);
-            
+
             // Split "Key1=Value1\0Key2=Value2\0\0" into list of key-value pairs
             auto beg{&attrs[0]};
             auto const end{&attrs[attrs_len_ret]};
@@ -3967,6 +3967,13 @@ catalog::tables catalog::find_tables(
   , const string_type& schema
   , const string_type& catalog)
 {
+    // Passing a null pointer to a search pattern argument does not
+    // constrain the search for that argument; that is, a null pointer and
+    // the search pattern % (any characters) are equivalent.
+    // However, a zero-length search pattern - that is, a valid pointer to
+    // a string of length zero - matches only the empty string ("").
+    // See https://msdn.microsoft.com/en-us/library/ms710171.aspx
+
     statement stmt(conn_);
     RETCODE rc;
     NANODBC_CALL_RC(

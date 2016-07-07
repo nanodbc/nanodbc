@@ -1432,6 +1432,9 @@ public:
     //! scope of the connected database accessible with the specified connection.
     //! Since this function is implemented in terms of the SQLTables, it returns
     //! result set ordered by TABLE_TYPE, TABLE_CAT, TABLE_SCHEM, and TABLE_NAME.
+    //!
+    //! All arguments are treated as the Pattern Value Arguments.
+    //! Empty string argument is equivalent to passing the search pattern '%'.
     catalog::tables find_tables(
         const string_type& table = string_type()
       , const string_type& type = string_type()
@@ -1444,6 +1447,9 @@ public:
     //! scope of the connected database accessible with the specified connection.
     //! Since this function is implemented in terms of the SQLColumns, it returns
     //! result set ordered by TABLE_CAT, TABLE_SCHEM, TABLE_NAME, and ORDINAL_POSITION.
+    //!
+    //! All arguments are treated as the Pattern Value Arguments.
+    //! Empty string argument is equivalent to passing the search pattern '%'.
     catalog::columns find_columns(
         const string_type& column = string_type()
       , const string_type& table = string_type()
@@ -1455,6 +1461,9 @@ public:
     //! Returns result set with column names that make up the primary key for a table.
     //! The primary key information is obtained by executing SQLPrimaryKey function within
     //! scope of the connected database accessible with the specified connection.
+    //!
+    //! All arguments are treated as the Pattern Value Arguments.
+    //! Empty string argument is equivalent to passing the search pattern '%'.
     catalog::primary_keys find_primary_keys(
         const string_type& table
       , const string_type& schema = string_type()
