@@ -429,10 +429,11 @@ struct base_test_fixture
             {
 #ifdef _WIN32
                 REQUIRE(columns.sql_data_type() == -9); // FIXME: What is this type?
+                REQUIRE(columns.column_size() == 3); // FIXME: SQLite ODBC mis-reports decimal digits?
 #else
                 REQUIRE(columns.sql_data_type() == SQL_VARCHAR);
+                REQUIRE(columns.column_size() == 9);
 #endif
-                REQUIRE(columns.column_size() == 3); // FIXME: SQLite ODBC mis-reports decimal digits?
             }
             else
             {
@@ -457,7 +458,8 @@ struct base_test_fixture
             {
                 REQUIRE(columns.sql_data_type() == SQL_DATE);
                 REQUIRE(columns.column_size() == 10); // total number of characters required to display the value when it is converted to characters
-                REQUIRE(contains_string(columns.column_default(), NANODBC_TEXT("\'sample value\'")));
+                if (!contains_string(columns.column_default(), NANODBC_TEXT("\'sample value\'")))
+                    REQUIRE(columns.column_default() == NANODBC_TEXT("\'sample value\'"));
             }
 
             REQUIRE(columns.next());
