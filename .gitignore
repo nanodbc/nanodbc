@@ -19,6 +19,7 @@
 /build/
 /build32/
 /build64/
+/build.local.bat
 /doc
 /docker_build/
 example
