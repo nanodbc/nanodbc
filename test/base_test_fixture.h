@@ -452,20 +452,21 @@ struct base_test_fixture
                 // NOTE: SQLite ODBC reports values inconsistent with table definition
                 REQUIRE(columns.sql_data_type() == 91); // FIXME: What is this type?
                 REQUIRE(columns.column_size() == 0); // DATE has size Zero?
-                REQUIRE(contains_string(columns.column_default(), NANODBC_TEXT("NULL")));
             }
             else
             {
                 REQUIRE(columns.sql_data_type() == SQL_DATE);
                 REQUIRE(columns.column_size() == 10); // total number of characters required to display the value when it is converted to characters
-                if (!contains_string(columns.column_default(), NANODBC_TEXT("\'sample value\'")))
-                    REQUIRE(columns.column_default() == NANODBC_TEXT("\'sample value\'"));
             }
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c5"));
             REQUIRE((columns.sql_data_type() == SQL_VARCHAR || columns.sql_data_type() == SQL_WVARCHAR));
             REQUIRE(columns.column_size() == 60);
+            if (contains_string(dbms, NANODBC_TEXT("SQLite")))
+                REQUIRE(columns.column_default() == NANODBC_TEXT("sample value"));
+            else
+                REQUIRE(columns.column_default() == NANODBC_TEXT("\'sample value\'"));
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c6"));
