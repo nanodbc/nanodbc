@@ -177,6 +177,16 @@ TEST_CASE_METHOD(mssql_fixture, "block_cursor_with_nvarchar_and_second_row_null_
     REQUIRE(!results.next());
 }
 
+TEST_CASE_METHOD(mssql_fixture, "catalog_list_catalogs_test", "[mssql][catalog][catalogs]")
+{
+    catalog_list_catalogs_test();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "catalog_list_schemas_test", "[mssql][catalog][catalogs]")
+{
+    catalog_list_schemas_test();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "catalog_columns_test", "[mssql][catalog][columns]")
 {
     catalog_columns_test();
