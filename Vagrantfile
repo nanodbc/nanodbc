@@ -16,8 +16,8 @@ Vagrant.configure(2) do |config|
     ## 'vagrant' is database user name and database name
     export DB_USER=vagrant
     export DB_PASS=vagrant
-    export MYSQL_CONNSTR="Driver={MySQL};Server=localhost;Database=${DB_USER};User=${DB_USER};Password=${DB_PASS};Option=3;"
-    export PGSQL_CONNSTR="DRIVER={PostgreSQL ANSI};Server=localhost;Database=${DB_USER};UID=${DB_USER};PWD=${DB_PASS};"
+    export NANODBC_TEST_CONNSTR_MYSQL="Driver={MySQL};Server=localhost;Database=${DB_USER};User=${DB_USER};Password=${DB_PASS};Option=3;"
+    export NANODBC_TEST_CONNSTR_PGSQL="DRIVER={PostgreSQL ANSI};Server=localhost;Database=${DB_USER};UID=${DB_USER};PWD=${DB_PASS};"
     ############################################################################
     # Packages
     export DEBIAN_FRONTEND="noninteractive"
