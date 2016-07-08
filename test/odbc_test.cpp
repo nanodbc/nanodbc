@@ -31,6 +31,16 @@ TEST_CASE_METHOD(odbc_fixture, "blob_test", "[odbc][blob]")
     blob_test();
 }
 
+TEST_CASE_METHOD(odbc_fixture, "catalog_list_catalogs_test", "[odbc][catalog][catalogs]")
+{
+    catalog_list_catalogs_test();
+}
+
+TEST_CASE_METHOD(odbc_fixture, "catalog_list_schemas_test", "[odbc][catalog][schemas]")
+{
+    catalog_list_schemas_test();
+}
+
 TEST_CASE_METHOD(odbc_fixture, "catalog_columns_test", "[odbc][catalog][columns]")
 {
     catalog_columns_test();
