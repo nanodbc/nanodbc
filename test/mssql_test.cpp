@@ -182,7 +182,7 @@ TEST_CASE_METHOD(mssql_fixture, "catalog_list_catalogs_test", "[mssql][catalog][
     catalog_list_catalogs_test();
 }
 
-TEST_CASE_METHOD(mssql_fixture, "catalog_list_schemas_test", "[mssql][catalog][catalogs]")
+TEST_CASE_METHOD(mssql_fixture, "catalog_list_schemas_test", "[mssql][catalog][schemas]")
 {
     catalog_list_schemas_test();
 }

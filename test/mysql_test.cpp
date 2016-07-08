@@ -80,7 +80,7 @@ TEST_CASE_METHOD(mysql_fixture, "catalog_list_catalogs_test", "[mysql][catalog][
     catalog_list_catalogs_test();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "catalog_list_schemas_test", "[mysql][catalog][catalogs]")
+TEST_CASE_METHOD(mysql_fixture, "catalog_list_schemas_test", "[mysql][catalog][schemas]")
 {
     catalog_list_schemas_test();
 }
