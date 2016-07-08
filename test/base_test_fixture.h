@@ -227,9 +227,15 @@ struct base_test_fixture
         }
     }
 
-    void create_table(nanodbc::connection& connection, nanodbc::string_type const& name, nanodbc::string_type const& def) const
+    // `name` is a table name.
+    // `def` is a comma separated column definitions, trailing '(' and ')' are optional.
+    void create_table(nanodbc::connection& connection, nanodbc::string_type const& name, nanodbc::string_type def) const
     {
-        assert(def.front() == NANODBC_TEXT('(') && def.back() == NANODBC_TEXT(')'));
+        if (def.front() != NANODBC_TEXT('('))
+            def.insert(0, 1, NANODBC_TEXT('('));
+
+        if (def.back() != NANODBC_TEXT(')'))
+            def.push_back(NANODBC_TEXT(')'));
 
         nanodbc::string_type sql(NANODBC_TEXT("CREATE TABLE "));
         sql += name;
@@ -278,9 +284,9 @@ struct base_test_fixture
 
     void catalog_list_catalogs_test()
     {
-        nanodbc::connection connection = connect();
-        REQUIRE(connection.connected());
-        nanodbc::catalog catalog(connection);
+        auto conn = connect();
+        REQUIRE(conn.connected());
+        nanodbc::catalog catalog(conn);
 
         auto names = catalog.list_catalogs();
         REQUIRE(!names.empty());
@@ -288,9 +294,9 @@ struct base_test_fixture
 
     void catalog_list_schemas_test()
     {
-        nanodbc::connection connection = connect();
-        REQUIRE(connection.connected());
-        nanodbc::catalog catalog(connection);
+        auto conn = connect();
+        REQUIRE(conn.connected());
+        nanodbc::catalog catalog(conn);
 
         auto names = catalog.list_schemas();
         REQUIRE(!names.empty());
@@ -301,6 +307,8 @@ struct base_test_fixture
         nanodbc::connection connection = connect();
         REQUIRE(connection.connected());
         nanodbc::catalog catalog(connection);
+        nanodbc::string_type const dbms = connection.dbms_name();
+        REQUIRE(!dbms.empty());
 
         // Check we can iterate over any columns
         {
@@ -321,21 +329,17 @@ struct base_test_fixture
             // NOTE: If handling DBMS-specific features become overly complicated,
             //       we may decided to remove such features from the tests.
             nanodbc::string_type binary_type_name;
+            if (contains_string(dbms, NANODBC_TEXT("SQLite")) || contains_string(dbms, NANODBC_TEXT("MySQL")))
             {
-                nanodbc::string_type const dbms = connection.dbms_name();
-                REQUIRE(!dbms.empty());
-                if (contains_string(dbms, NANODBC_TEXT("SQLite")) || contains_string(dbms, NANODBC_TEXT("MySQL")))
-                {
-                    binary_type_name = NANODBC_TEXT("blob");
-                }
-                else if (contains_string(dbms, NANODBC_TEXT("PostgreSQL")))
-                {
-                    binary_type_name = NANODBC_TEXT("bytea");
-                }
-                else
-                {
-                    binary_type_name = NANODBC_TEXT("varbinary"); // Oracle, MySQL, SQL Server,...standard type?
-                }
+                binary_type_name = NANODBC_TEXT("blob");
+            }
+            else if (contains_string(dbms, NANODBC_TEXT("PostgreSQL")))
+            {
+                binary_type_name = NANODBC_TEXT("bytea");
+            }
+            else
+            {
+                binary_type_name = NANODBC_TEXT("varbinary"); // Oracle, MySQL, SQL Server,...standard type?
             }
             REQUIRE(!binary_type_name.empty());
 
@@ -352,7 +356,7 @@ struct base_test_fixture
                 + NANODBC_TEXT("c7 text,")
                 + NANODBC_TEXT("c8 ") + binary_type_name
                 + NANODBC_TEXT(");")
-                );
+            );
 
             // Check only SQL/ODBC standard properties, skip those which are driver-specific.
             nanodbc::catalog::columns columns = catalog.find_columns(NANODBC_TEXT("%"), table_name);
@@ -360,19 +364,33 @@ struct base_test_fixture
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c0"));
             REQUIRE(columns.sql_data_type() == SQL_INTEGER);
-            REQUIRE(columns.column_size() == 10);
-            REQUIRE(columns.decimal_digits() == 0);
-            REQUIRE(columns.nullable() == SQL_NO_NULLS);
+            if (contains_string(dbms, NANODBC_TEXT("SQLite")))
+            {
+                // NOTE: SQLite ODBC reports values inconsistent with table definition
+                REQUIRE(columns.column_size() == 9); // INT size is different
+                REQUIRE(columns.decimal_digits() == 10); // INT can have decimal digits
+                REQUIRE(columns.nullable() == SQL_NULLABLE); // PRIMARY KEY can be NULL
+                REQUIRE(columns.is_nullable() == NANODBC_TEXT("YES"));
+            }
+            else
+            {
+                REQUIRE(columns.column_size() == 10);
+                REQUIRE(columns.decimal_digits() == 0);
+                REQUIRE(columns.nullable() == SQL_NO_NULLS);
+                if (!columns.is_nullable().empty()) // nullability determined
+                    REQUIRE(columns.is_nullable() == NANODBC_TEXT("NO"));
+            }
             REQUIRE(columns.table_name() == table_name); // assume common for the whole result set, check once
             REQUIRE(!columns.type_name().empty()); // data source dependant name, check once
-            if (!columns.is_nullable().empty()) // nullability determined
-                REQUIRE(columns.is_nullable() == NANODBC_TEXT("NO"));
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c1"));
             REQUIRE(columns.sql_data_type() == SQL_SMALLINT);
             REQUIRE(columns.column_size() == 5);
-            REQUIRE(columns.decimal_digits() == 0);
+            if (contains_string(dbms, NANODBC_TEXT("SQLite")))
+                REQUIRE(columns.decimal_digits() == 10);
+            else
+                REQUIRE(columns.decimal_digits() == 0);
             REQUIRE(columns.nullable() == SQL_NO_NULLS);
             if (!columns.is_nullable().empty()) // nullability determined
                 REQUIRE(columns.is_nullable() == NANODBC_TEXT("NO"));
@@ -380,8 +398,8 @@ struct base_test_fixture
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c2"));
             REQUIRE((columns.sql_data_type() == SQL_FLOAT ||
-                     columns.sql_data_type() == SQL_REAL ||
-                     columns.sql_data_type() == SQL_DOUBLE));
+                columns.sql_data_type() == SQL_REAL ||
+                columns.sql_data_type() == SQL_DOUBLE));
             if (columns.numeric_precision_radix() == 2)
             {
                 REQUIRE(columns.column_size() == 53); // total number of bits allowed
@@ -407,23 +425,41 @@ struct base_test_fixture
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c3"));
-            REQUIRE((columns.sql_data_type() == SQL_DECIMAL || columns.sql_data_type() == SQL_NUMERIC));
-            REQUIRE(columns.column_size() == 9);
-            REQUIRE(columns.decimal_digits() == 3);
+            if (contains_string(dbms, NANODBC_TEXT("SQLite")))
+            {
+                REQUIRE(columns.sql_data_type() == -9); // FIXME: What is this type?
+                REQUIRE(columns.column_size() == 3); // FIXME: SQLite ODBC mis-reports decimal digits?
+            }
+            else
+            {
+                REQUIRE((columns.sql_data_type() == SQL_DECIMAL || columns.sql_data_type() == SQL_NUMERIC));
+                REQUIRE(columns.column_size() == 9);
+                REQUIRE(columns.decimal_digits() == 3);
+            }
             REQUIRE(columns.nullable() == SQL_NULLABLE);
             if (!columns.is_nullable().empty()) // nullability determined
                 REQUIRE(columns.is_nullable() == NANODBC_TEXT("YES"));
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c4"));
-            REQUIRE(columns.sql_data_type() == SQL_DATE);
-            REQUIRE(columns.column_size() == 10); // total number of characters required to display the value when it is converted to characters
+            if (contains_string(dbms, NANODBC_TEXT("SQLite")))
+            {
+                // NOTE: SQLite ODBC reports values inconsistent with table definition
+                REQUIRE(columns.sql_data_type() == 91); // FIXME: What is this type?
+                REQUIRE(columns.column_size() == 0); // DATE has size Zero?
+                REQUIRE(contains_string(columns.column_default(), NANODBC_TEXT("NULL")));
+            }
+            else
+            {
+                REQUIRE(columns.sql_data_type() == SQL_DATE);
+                REQUIRE(columns.column_size() == 10); // total number of characters required to display the value when it is converted to characters
+                REQUIRE(contains_string(columns.column_default(), NANODBC_TEXT("\'sample value\'")));
+            }
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c5"));
             REQUIRE((columns.sql_data_type() == SQL_VARCHAR || columns.sql_data_type() == SQL_WVARCHAR));
             REQUIRE(columns.column_size() == 60);
-            REQUIRE(contains_string(columns.column_default(), NANODBC_TEXT("\'sample value\'")));
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c6"));
@@ -435,16 +471,20 @@ struct base_test_fixture
             REQUIRE((columns.sql_data_type() == SQL_LONGVARCHAR || columns.sql_data_type() == SQL_WLONGVARCHAR));
             REQUIRE((columns.column_size() == 2147483647 ||
                      columns.column_size() == 65535 || // MySQL
-                     columns.column_size() == 8190)); // PostgreSQL uses MaxLongVarcharSize=8190, which is configurable in odbc.ini
-
+                     columns.column_size() == 8190 || // PostgreSQL uses MaxLongVarcharSize=8190, which is configurable in odbc.ini
+                     columns.column_size() == 0)); // SQLite
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c8"));
             REQUIRE((columns.sql_data_type() == SQL_VARBINARY ||
-                     columns.sql_data_type() == SQL_LONGVARBINARY)); // MySQL reports SQL_LONGVARBINARY
+                     columns.sql_data_type() == SQL_LONGVARBINARY || // MySQL reports SQL_LONGVARBINARY
+                     columns.sql_data_type() == SQL_BINARY)); // SQLite
             // SQL Server: if n is not specified in [var]binary(n), the default length is 1
             // PostgreSQL: bytea default length is reported as 255,
             // unless ByteaAsLongVarBinary=1 option is specified in connection string.
-            REQUIRE(columns.column_size() > 0); // no need to test exact value
+            if (contains_string(dbms, NANODBC_TEXT("SQLite")))
+                REQUIRE(columns.column_size() == 0);
+            else
+                REQUIRE(columns.column_size() > 0); // no need to test exact value
 
             // expect no more records
             REQUIRE(!columns.next());
@@ -464,9 +504,15 @@ struct base_test_fixture
         {
             nanodbc::string_type const table_name(NANODBC_TEXT("catalog_primary_keys_simple_test"));
             drop_table(connection, table_name);
-            execute(connection, NANODBC_TEXT("create table ") + table_name
-                + NANODBC_TEXT("(i int NOT NULL, CONSTRAINT pk_simple_test PRIMARY KEY (i));"));
-
+            if (contains_string(dbms, NANODBC_TEXT("SQLite")))
+            {
+                create_table(connection, table_name, NANODBC_TEXT("i int PRIMARY KEY"));
+            }
+            else
+            {
+                execute(connection, NANODBC_TEXT("create table ") + table_name
+                    + NANODBC_TEXT("(i int NOT NULL, CONSTRAINT pk_simple_test PRIMARY KEY (i));"));
+            }
             nanodbc::catalog::primary_keys keys =  catalog.find_primary_keys(table_name);
             REQUIRE(keys.next());
             REQUIRE(keys.table_name() == table_name);
@@ -475,6 +521,8 @@ struct base_test_fixture
             // MySQL: The name of a PRIMARY KEY is always PRIMARY,
             if (contains_string(dbms, NANODBC_TEXT("MySQL")))
                 REQUIRE(keys.primary_key_name() == NANODBC_TEXT("PRIMARY"));
+            else if (contains_string(dbms, NANODBC_TEXT("SQLite")))
+                ; // NOTE: SQLite seem to have no support for named PK constraint
             else
                 REQUIRE(keys.primary_key_name() == NANODBC_TEXT("pk_simple_test"));
             // expect no more records
@@ -496,6 +544,8 @@ struct base_test_fixture
             // MySQL: The name of a PRIMARY KEY is always PRIMARY,
             if (contains_string(dbms, NANODBC_TEXT("MySQL")))
                 REQUIRE(keys.primary_key_name() == NANODBC_TEXT("PRIMARY"));
+            else if (contains_string(dbms, NANODBC_TEXT("SQLite")))
+                ; // NOTE: SQLite seem to have no support for named PK constraint
             else
                 REQUIRE(keys.primary_key_name() == NANODBC_TEXT("pk_composite_test"));
 
@@ -506,6 +556,8 @@ struct base_test_fixture
             // MySQL: The name of a PRIMARY KEY is always PRIMARY,
             if (contains_string(dbms, NANODBC_TEXT("MySQL")))
                 REQUIRE(keys.primary_key_name() == NANODBC_TEXT("PRIMARY"));
+            else if (contains_string(dbms, NANODBC_TEXT("SQLite")))
+                ; // NOTE: SQLite seem to have no support for named PK constraint
             else
                 REQUIRE(keys.primary_key_name() == NANODBC_TEXT("pk_composite_test"));
 

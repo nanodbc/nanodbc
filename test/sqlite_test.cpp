@@ -33,13 +33,18 @@ namespace
         {
             int success = std::remove("nanodbc.db");
             (void)success;
+        }
 
+        void before_catalog_test()
+        {
+            // Since SQLite does not have metadata tables,
+            // we need to ensure, there is at least one table to search for.
+            auto conn = connect();
+            create_table(conn, NANODBC_TEXT("catalog_tables_test")
+                       , NANODBC_TEXT("(a int PRIMARY KEY, b text)"));
         }
     };
 }
-
-// NOTE: No catlog_* tests; not supported by SQLite.
-
 
 // Unicode build on Ubuntu 12.04 with unixODBC 2.2.14p2 and libsqliteodbc 0.91-3 throws:
 // test/sqlite_test.cpp:42: FAILED:
@@ -103,6 +108,54 @@ TEST_CASE_METHOD(sqlite_fixture, "driver_test", "[sqlite][driver]")
 TEST_CASE_METHOD(sqlite_fixture, "blob_test", "[sqlite][blob]")
 {
     blob_test();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "catalog_list_catalogs_test", "[sqlite][catalog][catalogs]")
+{
+    before_catalog_test();
+
+    auto conn = connect();
+    REQUIRE(conn.connected());
+    nanodbc::catalog catalog(conn);
+
+    auto names = catalog.list_catalogs();
+    // NOTE: SQLite ODBC behaviour tested below has been revealed with run-time experiments,
+    //       and no documentation to confirm it has been found.
+    REQUIRE(names.size() == 1);
+    REQUIRE(names.front().empty());
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "catalog_list_schemas_test", "[sqlite][catalog][schemas]")
+{
+    before_catalog_test();
+
+    auto conn = connect();
+    REQUIRE(conn.connected());
+    nanodbc::catalog catalog(conn);
+
+    auto names = catalog.list_catalogs();
+    // NOTE: SQLite ODBC behaviour tested below has been revealed with run-time experiments,
+    //       and no documentation to confirm it has been found.
+    REQUIRE(names.size() == 1);
+    REQUIRE(names.front().empty());
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "catalog_columns_test", "[sqlite][catalog][columns]")
+{
+    before_catalog_test();
+    catalog_columns_test();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "catalog_primary_keys_test", "[sqlite][catalog][primary_keys]")
+{
+    before_catalog_test();
+    catalog_primary_keys_test();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "catalog_tables_test", "[sqlite][catalog][tables]")
+{
+    before_catalog_test();
+    catalog_tables_test();
 }
 
 TEST_CASE_METHOD(sqlite_fixture, "dbms_info_test", "[sqlite][dmbs][metadata][info]")
