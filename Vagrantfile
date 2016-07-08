@@ -3,7 +3,8 @@
 
 Vagrant.configure(2) do |config|
   config.vm.box = "ubuntu/wily64"
-  config.vm.network :forwarded_port, guest: 3306, host: 3306
+  config.vm.network :forwarded_port, guest: 3306, host: 3306, auto_correct: true
+  config.vm.network :forwarded_port, guest: 5432, host: 5432, auto_correct: true
   config.vm.provider "virtualbox" do |vb|
     vb.memory = "1024"
     vb.cpus = 2
@@ -12,7 +13,8 @@ Vagrant.configure(2) do |config|
   config.vm.provision "shell", inline: <<-SHELL
     ############################################################################
     # Environment
-    export DB_USER=vagrant # used as database user name and database name
+    ## 'vagrant' is database user name and database name
+    export DB_USER=vagrant
     export DB_PASS=vagrant
     export MYSQL_CONNSTR="Driver={MySQL};Server=localhost;Database=${DB_USER};User=${DB_USER};Password=${DB_PASS};Option=3;"
     export PGSQL_CONNSTR="DRIVER={PostgreSQL ANSI};Server=localhost;Database=${DB_USER};UID=${DB_USER};PWD=${DB_PASS};"
@@ -46,7 +48,7 @@ Vagrant.configure(2) do |config|
     ############################################################################
     # MySQL
     echo "MySQL: updating /etc/mysql/mysql.conf.d/mysqld.cnf"
-    sudo sed -i "s/bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/my.cnf
+    sudo sed -i "s/bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/mysql.conf.d/mysqld.cnf
     echo "MySQL: setting root password to ${DB_PASS}"
     mysql -uroot -p${DB_PASS} -e \
       "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '${DB_PASS}' WITH GRANT OPTION; FLUSH PRIVILEGES;"
@@ -90,14 +92,14 @@ Vagrant.configure(2) do |config|
     echo "SQLServer: try 'sqlcmd -S my.sql.server.com -U username -P password'"
     ############################################################################
     # ODBC
-    echo "ODBC: Installed drivers:" 
+    echo "ODBC: Installed drivers:"
     odbcinst -q -d
     ############################################################################
-    # Build in /home/vagrant, but not in the shared /vagrant where CMake will fail)  
+    # Build in /home/vagrant, but not in the shared /vagrant where CMake will fail)
     echo "Cloning nanodbc into /home/vagrant"
     cd /home/vagrant
     git clone https://github.com/lexicalunit/nanodbc.git
-    sudo chown -R vagrant:vagrant /home/vagrant/nanodbc 
+    sudo chown -R vagrant:vagrant /home/vagrant/nanodbc
     ############################################################################
     echo "Guest IP address:"
     /sbin/ifconfig | grep 'inet addr:'
