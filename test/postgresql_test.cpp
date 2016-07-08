@@ -28,6 +28,16 @@ TEST_CASE_METHOD(postgresql_fixture, "driver_test", "[postgresql][driver]")
     driver_test();
 }
 
+TEST_CASE_METHOD(postgresql_fixture, "catalog_list_catalogs_test", "[postgresql][catalog][catalogs]")
+{
+    catalog_list_catalogs_test();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "catalog_list_schemas_test", "[postgresql][catalog][schemas]")
+{
+    catalog_list_schemas_test();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "catalog_columns_test", "[postgresql][catalog][columns]")
 {
     catalog_columns_test();
