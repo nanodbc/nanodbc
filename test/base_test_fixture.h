@@ -427,7 +427,11 @@ struct base_test_fixture
             REQUIRE(columns.column_name() == NANODBC_TEXT("c3"));
             if (contains_string(dbms, NANODBC_TEXT("SQLite")))
             {
+#ifdef _WIN32
                 REQUIRE(columns.sql_data_type() == -9); // FIXME: What is this type?
+#else
+                REQUIRE(columns.sql_data_type() == SQL_VARCHAR);
+#endif
                 REQUIRE(columns.column_size() == 3); // FIXME: SQLite ODBC mis-reports decimal digits?
             }
             else
