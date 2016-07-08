@@ -465,6 +465,10 @@ struct base_test_fixture
             REQUIRE(columns.column_size() == 60);
             if (contains_string(dbms, NANODBC_TEXT("SQLite")))
                 REQUIRE(columns.column_default() == NANODBC_TEXT("sample value"));
+            else if (contains_string(dbms, NANODBC_TEXT("PostgreSQL")))
+                REQUIRE(columns.column_default() == NANODBC_TEXT("\'sample value\'::character varying"));
+            else if(contains_string(dbms, NANODBC_TEXT("SQL Server")))
+                REQUIRE(columns.column_default() == NANODBC_TEXT("(\'sample value\')"));
             else
                 REQUIRE(columns.column_default() == NANODBC_TEXT("\'sample value\'"));
 
