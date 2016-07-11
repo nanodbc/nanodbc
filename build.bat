@@ -11,19 +11,16 @@ rem    so it will pick up environment variables (e.g. NANODBC_TEST_CONNSTR)
 rem    This will allow to run tests conveniently, without editing projects.
 
 rem ### CONFIGURATION #####################################
-setlocal
-set NANODBC_STATIC=ON
-set NANODBC_INSTALL=OFF
-set BOOST_ROOT=C:/local/boost_1_59_0
-endlocal
 rem ### Connection strings for tests (alternatively, use command line-c option)
 rem ### For example, SQL Server LocalDB instance, MySQL and PostgreSQL on the nanodbc Vagrant VM.
 set NANODBC_TEST_CONNSTR_MSSQL=Driver={ODBC Driver 11 for SQL Server};Server=(localdb)\MSSQL13DEV;Integrated Security=True;Database=nanodbc;MARS_Connection=Yes;
 set NANODBC_TEST_CONNSTR_MYSQL=Driver={MySQL ODBC 5.3 Unicode Driver};Database=vagrant;Server=localhost;User=vagrant;Password=vagrant;Option=3;
 set NANODBC_TEST_CONNSTR_PGSQL=Driver={PostgreSQL Unicode(x64)};Server=localhost;Database=vagrant;UID=vagrant;PWD=vagrant;
-rem #######################################################
-
 setlocal
+set NANODBC_STATIC=ON
+set NANODBC_INSTALL=OFF
+set BOOST_ROOT=C:/local/boost_1_59_0
+rem #######################################################
 
 if not defined VS140COMNTOOLS goto :NoVS
 if [%1]==[] goto :Usage
