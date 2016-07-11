@@ -26,6 +26,9 @@ environment:
     - DB: MSSQL2014
       USE_UNICODE: OFF
       USE_BOOST_CONVERT: OFF
+    - DB: MSSQL2016
+      USE_UNICODE: OFF
+      USE_BOOST_CONVERT: OFF
     - DB: MySQL
       USE_UNICODE: OFF
       USE_BOOST_CONVERT: OFF
@@ -71,6 +74,8 @@ before_test:
         Start-Service 'MSSQL$SQL2008R2SP2'
       } elseif ($env:DB -Match "MSSQL2014") {
         Start-Service 'MSSQL$SQL2014'
+      } elseif ($env:DB -Match "MSSQL2016") {
+        Start-Service 'MSSQL$SQL2016'
       } elseif ($env:DB -Match "MySQL") {
         Start-Service MySQL57
         $env:MYSQL_PWD="Password12!"
@@ -92,6 +97,9 @@ test_script:
         $test_name = "mssql_test"
       } elseif ($env:DB -Match "MSSQL2014") {
         $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 11 for SQL Server};Server=(local)\SQL2014;Database=master;UID=sa;PWD=Password12!;"
+        $test_name = "mssql_test"
+      } elseif ($env:DB -Match "MSSQL2016") {
+        $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 11 for SQL Server};Server=(local)\SQL2016;Database=master;UID=sa;PWD=Password12!;"
         $test_name = "mssql_test"
       } elseif ($env:DB -Match "MySQL") {
         $env:NANODBC_TEST_CONNSTR_MYSQL="Driver={MySQL ODBC 5.3 ANSI Driver};Server=127.0.0.1;Database=nanodbc_test;User=root;Password=Password12!;"
