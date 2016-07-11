@@ -778,7 +778,7 @@ public:
         , const string_type& user
         , const string_type& pass
         , long timeout
-        , void* event_handle = NULL)
+        , void* event_handle = nullptr)
     {
         disconnect();
 
@@ -811,7 +811,7 @@ public:
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
 
         #if defined(SQL_ATTR_ASYNC_DBC_EVENT) && !defined(NANODBC_DISABLE_ASYNC)
-            if(event_handle != NULL)
+            if(event_handle != nullptr)
                 enable_async(event_handle);
         #endif
 
@@ -822,7 +822,7 @@ public:
             , (NANODBC_SQLCHAR*)dsn.c_str(), SQL_NTS
             , !user.empty() ? (NANODBC_SQLCHAR*)user.c_str() : 0, SQL_NTS
             , !pass.empty() ? (NANODBC_SQLCHAR*)pass.c_str() : 0, SQL_NTS);
-        if(!success(rc) && (event_handle == NULL || rc != SQL_STILL_EXECUTING))
+        if(!success(rc) && (event_handle == nullptr || rc != SQL_STILL_EXECUTING))
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
 
         connected_ = success(rc);
@@ -830,7 +830,7 @@ public:
         return rc;
     }
 
-    RETCODE connect(const string_type& connection_string, long timeout, void* event_handle = NULL)
+    RETCODE connect(const string_type& connection_string, long timeout, void* event_handle = nullptr)
     {
         disconnect();
 
@@ -863,7 +863,7 @@ public:
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
 
         #if defined(SQL_ATTR_ASYNC_DBC_EVENT) && !defined(NANODBC_DISABLE_ASYNC)
-            if(event_handle != NULL)
+            if(event_handle != nullptr)
                 enable_async(event_handle);
         #endif
 
@@ -873,11 +873,11 @@ public:
             , conn_
             , 0
             , (NANODBC_SQLCHAR*)connection_string.c_str(), SQL_NTS
-            , NULL
+            , nullptr
             , 0
-            , NULL
+            , nullptr
             , SQL_DRIVER_NOPROMPT);
-        if(!success(rc) && (event_handle == NULL || rc != SQL_STILL_EXECUTING))
+        if(!success(rc) && (event_handle == nullptr || rc != SQL_STILL_EXECUTING))
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
 
         connected_ = success(rc);
@@ -1324,13 +1324,13 @@ public:
         prepare(query, timeout);
     }
 
-    RETCODE prepare(const string_type& query, long timeout, void* event_handle = NULL)
+    RETCODE prepare(const string_type& query, long timeout, void* event_handle = nullptr)
     {
         if(!open())
             throw programming_error("statement has no associated open connection");
 
 #if defined(SQL_ATTR_ASYNC_STMT_EVENT) && defined(SQL_API_SQLCOMPLETEASYNC) && !defined(NANODBC_DISABLE_ASYNC)
-        if(event_handle == NULL)
+        if(event_handle == nullptr)
             disable_async();
         else
             enable_async(event_handle);
@@ -1525,12 +1525,12 @@ public:
         , long batch_operations
         , long timeout
         , statement& /*statement*/
-        , void* event_handle = NULL)
+        , void* event_handle = nullptr)
     {
         open(conn);
 
         #if defined(SQL_ATTR_ASYNC_STMT_EVENT) && defined(SQL_API_SQLCOMPLETEASYNC) && !defined(NANODBC_DISABLE_ASYNC)
-            if(event_handle == NULL)
+            if(event_handle == nullptr)
                 disable_async();
             else
                 enable_async(event_handle);
@@ -1573,7 +1573,7 @@ public:
         return result(statement, batch_operations);
     }
 
-    RETCODE just_execute(long batch_operations, long timeout, statement& /*statement*/, void* event_handle = NULL)
+    RETCODE just_execute(long batch_operations, long timeout, statement& /*statement*/, void* event_handle = nullptr)
     {
         RETCODE rc;
 
@@ -1596,7 +1596,7 @@ public:
         }
 
 #if defined(SQL_ATTR_ASYNC_STMT_EVENT) && defined(SQL_API_SQLCOMPLETEASYNC) && !defined(NANODBC_DISABLE_ASYNC)
-        if(event_handle == NULL)
+        if(event_handle == nullptr)
             disable_async();
         else
             enable_async(event_handle);
@@ -1643,13 +1643,13 @@ public:
             NANODBC_FUNC(SQLProcedureColumns)
             , rc
             , stmt_
-            , (NANODBC_SQLCHAR*)(catalog.empty() ? NULL : catalog.c_str())
+            , (NANODBC_SQLCHAR*)(catalog.empty() ? nullptr : catalog.c_str())
             , (catalog.empty() ? 0 : SQL_NTS)
-            , (NANODBC_SQLCHAR*)(schema.empty() ? NULL : schema.c_str())
+            , (NANODBC_SQLCHAR*)(schema.empty() ? nullptr : schema.c_str())
             , (schema.empty() ? 0 : SQL_NTS)
             , (NANODBC_SQLCHAR*)procedure.c_str()
             , SQL_NTS
-            , (NANODBC_SQLCHAR*)(column.empty() ? NULL : column.c_str())
+            , (NANODBC_SQLCHAR*)(column.empty() ? nullptr : column.c_str())
             , (column.empty() ? 0 : SQL_NTS));
 
         if(!success(rc))
@@ -1903,7 +1903,7 @@ private:
 };
 
 // Supports code like: query.bind(0, std_string.c_str())
-// In this case, we need to pass NULL to the final parameter of SQLBindParameter().
+// In this case, we need to pass nullptr to the final parameter of SQLBindParameter().
 template<>
 void statement::statement_impl::bind_parameter<string_type::value_type>(
     short param
@@ -1927,7 +1927,7 @@ void statement::statement_impl::bind_parameter<string_type::value_type>(
         , scale // decimal digits
         , (SQLPOINTER)data // parameter value
         , parameter_size // buffer length
-        , (elements <= 1 ? NULL : bind_len_or_null_[param].data()));
+        , (elements <= 1 ? nullptr : bind_len_or_null_[param].data()));
 
     if(!success(rc))
         NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
@@ -2144,7 +2144,7 @@ public:
         return fetch(0, SQL_FETCH_LAST);
     }
 
-    bool next(void* event_handle = NULL)
+    bool next(void* event_handle = nullptr)
     {
         if(rows() && ++rowset_position_ < rowset_size_)
             return rowset_position_ < rows();
@@ -2449,18 +2449,18 @@ private:
     {
         before_move();
         delete[] bound_columns_;
-        bound_columns_ = NULL;
+        bound_columns_ = nullptr;
         bound_columns_size_ = 0;
         bound_columns_by_name_.clear();
     }
 
     // If event_handle is specified, fetch returns true iff the statement is still executing
-    bool fetch(long rows, SQLUSMALLINT orientation, void* event_handle = NULL)
+    bool fetch(long rows, SQLUSMALLINT orientation, void* event_handle = nullptr)
     {
         before_move();
 
 #if defined(SQL_ATTR_ASYNC_STMT_EVENT) && defined(SQL_API_SQLCOMPLETEASYNC) && !defined(NANODBC_DISABLE_ASYNC)
-        if(event_handle == NULL)
+        if(event_handle == nullptr)
             stmt_.disable_async();
         else
             stmt_.enable_async(event_handle);
@@ -2479,7 +2479,7 @@ private:
             return false;
         }
 #if defined(SQL_ATTR_ASYNC_STMT_EVENT) && defined(SQL_API_SQLCOMPLETEASYNC) && !defined(NANODBC_DISABLE_ASYNC)
-        if(event_handle != NULL)
+        if(event_handle != nullptr)
             return rc == SQL_STILL_EXECUTING;
 #endif
         if(!success(rc))
@@ -2919,7 +2919,7 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
             st.tm_year = d.year - 1900;
             st.tm_mon = d.month - 1;
             st.tm_mday = d.day;
-            char* old_lc_time = std::setlocale(LC_TIME, NULL);
+            char* old_lc_time = std::setlocale(LC_TIME, nullptr);
             std::setlocale(LC_TIME, "");
             char date_str[512];
             std::strftime(date_str, sizeof(date_str), "%Y-%m-%d", &st);
@@ -2938,7 +2938,7 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
             st.tm_hour = stamp.hour;
             st.tm_min = stamp.min;
             st.tm_sec = stamp.sec;
-            char* old_lc_time = std::setlocale(LC_TIME, NULL);
+            char* old_lc_time = std::setlocale(LC_TIME, nullptr);
             std::setlocale(LC_TIME, "");
             char date_str[512];
             std::strftime(date_str, sizeof(date_str), "%Y-%m-%d %H:%M:%S %z", &st);
@@ -3980,13 +3980,13 @@ catalog::tables catalog::find_tables(
         NANODBC_FUNC(SQLTables)
         , rc
         , stmt.native_statement_handle()
-        , (NANODBC_SQLCHAR*)(catalog.empty() ? NULL : catalog.c_str())
+        , (NANODBC_SQLCHAR*)(catalog.empty() ? nullptr : catalog.c_str())
         , (catalog.empty() ? 0 : SQL_NTS)
-        , (NANODBC_SQLCHAR*)(schema.empty() ? NULL : schema.c_str())
+        , (NANODBC_SQLCHAR*)(schema.empty() ? nullptr : schema.c_str())
         , (schema.empty() ? 0 : SQL_NTS)
-        , (NANODBC_SQLCHAR*)(table.empty() ? NULL : table.c_str())
+        , (NANODBC_SQLCHAR*)(table.empty() ? nullptr : table.c_str())
         , (table.empty() ? 0 : SQL_NTS)
-        , (NANODBC_SQLCHAR*)(type.empty() ? NULL : type.c_str())
+        , (NANODBC_SQLCHAR*)(type.empty() ? nullptr : type.c_str())
         , (type.empty() ? 0 : SQL_NTS));
     if(!success(rc))
         NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
@@ -4007,13 +4007,13 @@ catalog::columns catalog::find_columns(
         NANODBC_FUNC(SQLColumns)
         , rc
         , stmt.native_statement_handle()
-        , (NANODBC_SQLCHAR*)(catalog.empty() ? NULL : catalog.c_str())
+        , (NANODBC_SQLCHAR*)(catalog.empty() ? nullptr : catalog.c_str())
         , (catalog.empty() ? 0 : SQL_NTS)
-        , (NANODBC_SQLCHAR*)(schema.empty() ? NULL : schema.c_str())
+        , (NANODBC_SQLCHAR*)(schema.empty() ? nullptr : schema.c_str())
         , (schema.empty() ? 0 : SQL_NTS)
-        , (NANODBC_SQLCHAR*)(table.empty() ? NULL : table.c_str())
+        , (NANODBC_SQLCHAR*)(table.empty() ? nullptr : table.c_str())
         , (table.empty() ? 0 : SQL_NTS)
-        , (NANODBC_SQLCHAR*)(column.empty() ? NULL : column.c_str())
+        , (NANODBC_SQLCHAR*)(column.empty() ? nullptr : column.c_str())
         , (column.empty() ? 0 : SQL_NTS));
     if(!success(rc))
         NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
@@ -4033,11 +4033,11 @@ catalog::primary_keys catalog::find_primary_keys(
         NANODBC_FUNC(SQLPrimaryKeys)
         , rc
         , stmt.native_statement_handle()
-        , (NANODBC_SQLCHAR*)(catalog.empty() ? NULL : catalog.c_str())
+        , (NANODBC_SQLCHAR*)(catalog.empty() ? nullptr : catalog.c_str())
         , (catalog.empty() ? 0 : SQL_NTS)
-        , (NANODBC_SQLCHAR*)(schema.empty() ? NULL : schema.c_str())
+        , (NANODBC_SQLCHAR*)(schema.empty() ? nullptr : schema.c_str())
         , (schema.empty() ? 0 : SQL_NTS)
-        , (NANODBC_SQLCHAR*)(table.empty() ? NULL : table.c_str())
+        , (NANODBC_SQLCHAR*)(table.empty() ? nullptr : table.c_str())
         , (table.empty() ? 0 : SQL_NTS));
     if(!success(rc))
         NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);

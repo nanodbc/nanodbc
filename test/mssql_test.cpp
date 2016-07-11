@@ -280,7 +280,7 @@ TEST_CASE_METHOD(mssql_fixture, "while_next_iteration_test", "[mssql][looping]")
 #ifdef WIN32
 TEST_CASE_METHOD(mssql_fixture, "async_test", "[mssql][async]")
 {
-    HANDLE event_handle = CreateEvent(NULL, FALSE, FALSE, NULL);
+    HANDLE event_handle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 
     nanodbc::connection conn;
     if ( conn.async_connect(connection_string_, event_handle) )
