@@ -158,6 +158,11 @@ TEST_CASE_METHOD(sqlite_fixture, "catalog_tables_test", "[sqlite][catalog][table
     catalog_tables_test();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "date_test", "[sqlite][date]")
+{
+    date_test();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "dbms_info_test", "[sqlite][dmbs][metadata][info]")
 {
     dbms_info_test();

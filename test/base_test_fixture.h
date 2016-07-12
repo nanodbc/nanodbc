@@ -690,6 +690,32 @@ struct base_test_fixture
         }
     }
 
+    void date_test()
+    {
+        auto connection = connect();
+        create_table(connection, NANODBC_TEXT("date_test"), NANODBC_TEXT("d date"));
+
+        // insert
+        {
+            nanodbc::statement statement(connection);
+            prepare(statement, NANODBC_TEXT("insert into date_test(d) values (?);"));
+
+            nanodbc::date d{2016, 7, 12};
+            statement.bind(0, &d);
+            execute(statement);
+        }
+
+        // select
+        {
+            auto result = execute(connection, NANODBC_TEXT("select d from date_test;"));
+            REQUIRE(result.next());
+            auto d = result.get<nanodbc::date>(0);
+            REQUIRE(d.year == 2016);
+            REQUIRE(d.month == 7);
+            REQUIRE(d.day == 12);
+        }
+    }
+
     void dbms_info_test()
     {
         // A generic test to exercise the DBMS info API is callable.
