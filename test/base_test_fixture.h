@@ -1186,6 +1186,32 @@ struct base_test_fixture
         REQUIRE(ref == name);
     }
 
+    void time_test()
+    {
+        auto connection = connect();
+        create_table(connection, NANODBC_TEXT("time_test"), NANODBC_TEXT("t time"));
+
+        // insert
+        {
+            nanodbc::statement statement(connection);
+            prepare(statement, NANODBC_TEXT("insert into time_test(t) values (?);"));
+
+            nanodbc::time t{11, 45, 59};
+            statement.bind(0, &t);
+            execute(statement);
+        }
+
+        // select
+        {
+            auto result = execute(connection, NANODBC_TEXT("select t from time_test;"));
+            REQUIRE(result.next());
+            auto t = result.get<nanodbc::time>(0);
+            REQUIRE(t.hour == 11);
+            REQUIRE(t.min == 45);
+            REQUIRE(t.sec == 59);
+        }
+    }
+
     void transaction_test()
     {
         nanodbc::connection connection = connect();
