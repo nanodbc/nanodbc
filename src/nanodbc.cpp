@@ -1608,7 +1608,7 @@ public:
             disable_async();
         else
             enable_async(event_handle);
-#endif
+#endif // !NANODBC_DISABLE_ASYNC && SQL_ATTR_ASYNC_STMT_EVENT && SQL_API_SQLCOMPLETEASYNC
 
         NANODBC_CALL_RC(
             SQLSetStmtAttr
@@ -2197,7 +2197,7 @@ public:
         }
         return !at_end_;
     }
-#endif
+#endif // !NANODBC_DISABLE_ASYNC && SQL_ATTR_ASYNC_STMT_EVENT && SQL_API_SQLCOMPLETEASYNC
 
     bool prior()
     {
@@ -2480,7 +2480,7 @@ private:
             stmt_.disable_async();
         else
             stmt_.enable_async(event_handle);
-#endif
+#endif // !NANODBC_DISABLE_ASYNC && SQL_ATTR_ASYNC_STMT_EVENT && SQL_API_SQLCOMPLETEASYNC
 
         RETCODE rc;
         NANODBC_CALL_RC(

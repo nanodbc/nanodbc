@@ -495,6 +495,7 @@ public:
     //! \see open(), prepare(), execute(), result, transaction
     class result execute_direct(class connection& conn, const string_type& query, long batch_operations = 1, long timeout = 0);
 
+#if !defined(NANODBC_DISABLE_ASYNC)
     //! \brief Prepare the given statement, in asynchronous mode.
     //! If the statement is not open throws programming_error.
     //!
@@ -579,6 +580,7 @@ public:
     void enable_async(void* event_handle); // undocumented - for internal use only (used from result_impl)
 
     void disable_async() const; // undocumented - for internal use only (used from result_impl)
+#endif // !NANODBC_DISABLE_ASYNC
 
     //! \brief Execute the previously prepared query now without constructing result object.
     //! \param conn The connection where the statement will be executed.
@@ -890,6 +892,7 @@ public:
     //! \see connected()
     void connect(const string_type& connection_string, long timeout = 0);
 
+#if !defined(NANODBC_DISABLE_ASYNC)
     //! \brief Initiate an asynchronous connection operation to the given data source.
     //!
     //! This method will only be available if nanodbc is built against ODBC headers and library that supports asynchronous mode.
@@ -933,6 +936,7 @@ public:
     //!
     //! Asynchronous features can be disabled entierly by defining `NANODBC_DISABLE_ASYNC` when building nanodbc.
     void async_complete();
+#endif // !NANODBC_DISABLE_ASYNC
 
     //! \brief Returns true if connected to the database.
     bool connected() const;
@@ -1056,6 +1060,7 @@ public:
     //! \throws database_error
     bool next();
 
+#if !defined(NANODBC_DISABLE_ASYNC)
     //! \brief Initiates an asynchronous fetch of the next row in the current result set.
     //! \return true if the caller needs to wait for the event to be signalled, false if complete_next() can be called immediately.
     //! \throws database_error
@@ -1065,6 +1070,7 @@ public:
     //! \return true if there are more results or false otherwise.
     //! \throws database_error
     bool complete_next();
+#endif // !NANODBC_DISABLE_ASYNC
 
     //! \brief Fetches the prior row in the current result set.
     //! \return true if there are more results or false otherwise.
