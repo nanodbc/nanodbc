@@ -57,6 +57,7 @@ environment:
 matrix:
   allow_failures:
     - GENERATOR: "MinGW Makefiles"
+      PLATFORM: x86-32
 
 init:
   # For MinGW make to work correctly sh.exe must NOT be in your path.
