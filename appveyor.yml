@@ -15,31 +15,50 @@ branches:
 shallow_clone: true
 clone_depth: 5
 
-matrix:
-  fast_finish: false # set this flag to immediately finish build once one of the jobs fails.
-
 environment:
   matrix:
     - DB: MSSQL2008
       USE_UNICODE: OFF
       USE_BOOST_CONVERT: OFF
+      GENERATOR: "Visual Studio 14 2015 Win64"
     - DB: MSSQL2014
       USE_UNICODE: OFF
       USE_BOOST_CONVERT: OFF
+      GENERATOR: "Visual Studio 14 2015 Win64"
     - DB: MSSQL2016
       USE_UNICODE: OFF
       USE_BOOST_CONVERT: OFF
+      GENERATOR: "Visual Studio 14 2015 Win64"
     - DB: MySQL
       USE_UNICODE: OFF
       USE_BOOST_CONVERT: OFF
+      GENERATOR: "Visual Studio 14 2015 Win64"
     - DB: PostgreSQL
       USE_UNICODE: OFF
       USE_BOOST_CONVERT: OFF
+      GENERATOR: "Visual Studio 14 2015 Win64"
     - DB: SQLite
       USE_UNICODE: OFF
       USE_BOOST_CONVERT: OFF
+      GENERATOR: "Visual Studio 14 2015 Win64"
+    - DB: SQLite
+      USE_UNICODE: OFF
+      USE_BOOST_CONVERT: OFF
+      GENERATOR: "MinGW Makefiles"
+      PLATFORM: x86-32
+    - DB: SQLite
+      USE_UNICODE: OFF
+      USE_BOOST_CONVERT: OFF
+      GENERATOR: "MinGW Makefiles"
+      PLATFORM: x86-64
+
+matrix:
+  allow_failures:
+    - GENERATOR: "MinGW Makefiles"
 
 init:
+  # For MinGW make to work correctly sh.exe must NOT be in your path.
+  - set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
   - ps: |
       Write-Host "Build worker environment variables:" -ForegroundColor Magenta
       Get-ChildItem Env: | %{"{0}={1}" -f $_.Name,$_.Value}
@@ -48,24 +67,35 @@ install:
   - ps: |
       if ($env:DB -Match "SQLite") {
         Write-Host "Installing SQLite ODBC Driver:" -ForegroundColor Magenta
-        $sqliteodbcPath = "$($env:TEMP)\sqliteodbc_w64.exe"
-        (New-Object Net.WebClient).DownloadFile('http://www.ch-werner.de/sqliteodbc/sqliteodbc_w64.exe', $sqliteodbcPath)
-        cmd /c start /wait $sqliteodbcPath /S
+        $sqliteodbc64Path = "$($env:TEMP)\sqliteodbc_w64.exe"
+        $sqliteodbc32Path = "$($env:TEMP)\sqliteodbc.exe"
+        (New-Object Net.WebClient).DownloadFile('http://www.ch-werner.de/sqliteodbc/sqliteodbc_w64.exe', $sqliteodbc64Path)
+        (New-Object Net.WebClient).DownloadFile('http://www.ch-werner.de/sqliteodbc/sqliteodbc.exe', $sqliteodbc32Path)
+        cmd /c start /wait $sqliteodbc64Path /S
+        if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
+        cmd /c start /wait $sqliteodbc32Path /S
         if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
        }
   - ps: |
       Write-Host "Installed ODBC drivers:" -ForegroundColor Magenta
       Get-OdbcDriver -Platform 64-bit | Select-Object -ExpandProperty Name
+  - ps: |
+      if ($env:GENERATOR -Match "MinGW") {
+        if ($env:PLATFORM -Match "x86-32") {
+          $env:Path += ";C:\MinGW\bin"
+        } else {
+          $env:Path += ";C:\mingw-w64\i686-5.3.0-posix-dwarf-rt_v4-rev0\mingw32\bin"
+        }
+        g++ --version
+      }
 
 before_build:
-  - ps: 'Write-Host "Running CMake:" -ForegroundColor Magenta'
-  - cmake.exe -G "Visual Studio 14 2015 Win64" -DNANODBC_USE_BOOST_CONVERT=%USE_BOOST_CONVERT% -DNANODBC_USE_UNICODE=%USE_UNICODE% -DNANODBC_STATIC=ON -DNANODBC_HANDLE_NODATA_BUG=OFF -DNANODBC_INSTALL=OFF %APPVEYOR_BUILD_FOLDER%
-  - ps: 'Write-Host "Running MSBuild:" -ForegroundColor Magenta'
+  - ps: 'Write-Host "Running cmake:" -ForegroundColor Magenta'
+  - cmake.exe -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=Release -DNANODBC_USE_BOOST_CONVERT=%USE_BOOST_CONVERT% -DNANODBC_USE_UNICODE=%USE_UNICODE% -DNANODBC_STATIC=ON -DNANODBC_HANDLE_NODATA_BUG=OFF -DNANODBC_INSTALL=OFF %APPVEYOR_BUILD_FOLDER%
 
-build:
-  parallel: true
-  project: nanodbc.sln
-  verbosity: minimal
+build_script:
+  - ps: 'Write-Host "Running cmake --build:" -ForegroundColor Magenta'
+  - cmake --build . --config Release
 
 before_test:
   - ps: 'Write-Host Configuring $env:DB service -ForegroundColor Magenta'
