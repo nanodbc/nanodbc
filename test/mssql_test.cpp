@@ -277,7 +277,7 @@ TEST_CASE_METHOD(mssql_fixture, "while_next_iteration_test", "[mssql][looping]")
     while_next_iteration_test();
 }
 
-#if defined(WIN32) && !defined(NANODBC_DISABLE_ASYNC)
+#if !defined(NANODBC_DISABLE_ASYNC) && defined(WIN32)
 TEST_CASE_METHOD(mssql_fixture, "async_test", "[mssql][async]")
 {
     HANDLE event_handle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
@@ -302,4 +302,4 @@ TEST_CASE_METHOD(mssql_fixture, "async_test", "[mssql][async]")
 
     REQUIRE(row.get<int>(0) >= 0);
 }
-#endif //defined(WIN32) && !defined(NANODBC_DISABLE_ASYNC)
+#endif // !defined(NANODBC_DISABLE_ASYNC) && defined(WIN32)
