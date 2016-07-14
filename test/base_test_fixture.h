@@ -122,7 +122,7 @@ struct base_test_fixture
         if (contains_string(dbms, NANODBC_TEXT("Oracle")))
             return Oracle;
         else if (contains_string(dbms, NANODBC_TEXT("SQLite")))
-            return Oracle;
+            return SQLite;
         else if (contains_string(dbms, NANODBC_TEXT("PostgreSQL")))
             return PostgreSQL;
         else if (contains_string(dbms, NANODBC_TEXT("MySQL")))
@@ -186,9 +186,10 @@ struct base_test_fixture
         }
         else if (name == NANODBC_TEXT("text"))
         {
-            // MySQL: 65535
-            // PostgreSQL uses MaxLongVarcharSize=8190, which is configurable in odbc.ini
-            REQUIRE((column_size == 2147483647 || column_size == 65535 || column_size == 8190));
+            REQUIRE((column_size == 2147483647 ||
+                     column_size == 65535 || // MySQL
+                     column_size == 8190 || // PostgreSQL uses MaxLongVarcharSize=8190, which is configurable in odbc.ini
+                     column_size == 0)); // SQLite
         }
     }
 
