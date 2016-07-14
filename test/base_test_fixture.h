@@ -65,6 +65,20 @@ extern TestConfig cfg;
 
 struct base_test_fixture
 {
+    // Database vendor
+    // Determine DBMS-specific features, properties and values
+    // NOTE: If handling DBMS-specific features become overly complicated,
+    //       we may decided to remove such features from the tests.
+    enum DBVendor
+    {
+        unknown,
+        Oracle,
+        SQLite,
+        PostgreSQL,
+        MySQL,
+        SQLServer
+    };
+
     // To invoke a unit test over all integral types, use:
     //
     typedef std::tuple<
@@ -100,9 +114,90 @@ struct base_test_fixture
 
     nanodbc::string_type connection_string_;
 
+    DBVendor vendor_;
+
+    DBVendor get_vendor(const nanodbc::string_type &dbms)
+    {
+        REQUIRE(!dbms.empty());
+        if (contains_string(dbms, NANODBC_TEXT("Oracle")))
+            return Oracle;
+        else if (contains_string(dbms, NANODBC_TEXT("SQLite")))
+            return Oracle;
+        else if (contains_string(dbms, NANODBC_TEXT("PostgreSQL")))
+            return PostgreSQL;
+        else if (contains_string(dbms, NANODBC_TEXT("MySQL")))
+            return MySQL;
+        else if (contains_string(dbms, NANODBC_TEXT("SQLServer")))
+            return SQLServer;
+        else
+            return unknown;
+    }
+
+    nanodbc::string_type get_binary_type_name()
+    {
+        switch (vendor_)
+        {
+        case SQLite:
+        case MySQL:
+            return NANODBC_TEXT("blob");
+        case PostgreSQL:
+            return NANODBC_TEXT("bytea");
+        default:
+            return NANODBC_TEXT("varbinary"); // Oracle, MySQL, SQL Server,...standard type?
+        }
+    }
+
+    nanodbc::string_type get_primary_key_name(const nanodbc::string_type &assumed)
+    {
+        switch (vendor_)
+        {
+        case MySQL:
+            return NANODBC_TEXT("PRIMARY"); // MySQL: The name of a PRIMARY KEY is always PRIMARY
+        case SQLite:
+            return NANODBC_TEXT(""); // NOTE: SQLite seem to have no support for named PK constraint
+        default:
+            return assumed;
+        }
+    }
+
+    void check_data_type_size(const nanodbc::string_type &name, int column_size, short radix = -1)
+    {
+        if (name == NANODBC_TEXT("float"))
+        {
+            if (radix == 2)
+            {
+                REQUIRE(column_size == 53); // total number of bits allowed
+            }
+            else if (radix == 10)
+            {
+                // total number of digits allowed
+
+                // NOTE: Some variations have been observed:
+                // Windows 64-bit + nanodbc 64-bit build + psqlODBC 9.?.? x64 connected to PostgreSQL 9.3 on Windows x64 (AppVeyor)
+                REQUIRE(column_size >= 15);
+                // Windows x64      + nanodbc 64-bit build + psqlODBC 9.3.5 x64 connected to PostgreSQL 9.5 on Ubuntu 15.10 x64 (Vagrant)
+                // Ubuntu 12.04 x64 + nanodbc 64-bit build + psqlODBC 9.3.5 x64 connected to PostgreSQL 9.1 on Ubuntu 12.04 x64 (Travsi CI)
+                REQUIRE(column_size <= 17);
+            }
+            else
+            {
+                ; // driver says, not applicable
+            }
+        }
+        else if (name == NANODBC_TEXT("text"))
+        {
+            // MySQL: 65535
+            // PostgreSQL uses MaxLongVarcharSize=8190, which is configurable in odbc.ini
+            REQUIRE((column_size == 2147483647 || column_size == 65535 || column_size == 8190));
+        }
+    }
+
     nanodbc::connection connect()
     {
-        return nanodbc::connection(connection_string_);
+        nanodbc::connection connection(connection_string_);
+        REQUIRE(connection.connected());
+        vendor_ = get_vendor(connection.dbms_name());
+        return connection;
     }
 
     nanodbc::string_type connection_string_parameter(nanodbc::string_type const& keyword)
@@ -307,7 +402,6 @@ struct base_test_fixture
     void catalog_columns_test()
     {
         nanodbc::connection connection = connect();
-        REQUIRE(connection.connected());
         nanodbc::catalog catalog(connection);
         nanodbc::string_type const dbms = connection.dbms_name();
         REQUIRE(!dbms.empty());
@@ -327,22 +421,7 @@ struct base_test_fixture
 
         // Find a table with known name and verify its known columns
         {
-            // Determine DBMS-specific features, properties and values
-            // NOTE: If handling DBMS-specific features become overly complicated,
-            //       we may decided to remove such features from the tests.
-            nanodbc::string_type binary_type_name;
-            if (contains_string(dbms, NANODBC_TEXT("SQLite")) || contains_string(dbms, NANODBC_TEXT("MySQL")))
-            {
-                binary_type_name = NANODBC_TEXT("blob");
-            }
-            else if (contains_string(dbms, NANODBC_TEXT("PostgreSQL")))
-            {
-                binary_type_name = NANODBC_TEXT("bytea");
-            }
-            else
-            {
-                binary_type_name = NANODBC_TEXT("varbinary"); // Oracle, MySQL, SQL Server,...standard type?
-            }
+            nanodbc::string_type binary_type_name = get_binary_type_name();
             REQUIRE(!binary_type_name.empty());
 
             nanodbc::string_type const table_name(NANODBC_TEXT("catalog_columns_test"));
@@ -400,27 +479,10 @@ struct base_test_fixture
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c2"));
             REQUIRE((columns.sql_data_type() == SQL_FLOAT ||
-                columns.sql_data_type() == SQL_REAL ||
-                columns.sql_data_type() == SQL_DOUBLE));
-            if (columns.numeric_precision_radix() == 2)
-            {
-                REQUIRE(columns.column_size() == 53); // total number of bits allowed
-            }
-            else if (columns.numeric_precision_radix() == 10)
-            {
-                // total number of digits allowed
-
-                // NOTE: Some variations have been observed:
-                // Windows 64-bit + nanodbc 64-bit build + psqlODBC 9.?.? x64 connected to PostgreSQL 9.3 on Windows x64 (AppVeyor)
-                REQUIRE(columns.column_size() >= 15);
-                // Windows x64      + nanodbc 64-bit build + psqlODBC 9.3.5 x64 connected to PostgreSQL 9.5 on Ubuntu 15.10 x64 (Vagrant)
-                // Ubuntu 12.04 x64 + nanodbc 64-bit build + psqlODBC 9.3.5 x64 connected to PostgreSQL 9.1 on Ubuntu 12.04 x64 (Travsi CI)
-                REQUIRE(columns.column_size() <= 17);
-            }
-            else
-            {
-                ; // driver says, not applicable
-            }
+                     columns.sql_data_type() == SQL_REAL ||
+                     columns.sql_data_type() == SQL_DOUBLE));
+            check_data_type_size(NANODBC_TEXT("float"), columns.column_size(),
+                                 columns.numeric_precision_radix());
             REQUIRE(columns.nullable() == SQL_NULLABLE);
             if (!columns.is_nullable().empty()) // nullability determined
                 REQUIRE(columns.is_nullable() == NANODBC_TEXT("YES"));
@@ -486,6 +548,8 @@ struct base_test_fixture
                      columns.column_size() == 65535 || // MySQL
                      columns.column_size() == 8190 || // PostgreSQL uses MaxLongVarcharSize=8190, which is configurable in odbc.ini
                      columns.column_size() == 0)); // SQLite
+            check_data_type_size(NANODBC_TEXT("text"), columns.column_size());
+
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c8"));
             REQUIRE((columns.sql_data_type() == SQL_VARBINARY ||
@@ -507,7 +571,6 @@ struct base_test_fixture
     void catalog_primary_keys_test()
     {
         nanodbc::connection connection = connect();
-        REQUIRE(connection.connected());
         nanodbc::catalog catalog(connection);
 
         nanodbc::string_type const dbms = connection.dbms_name();
@@ -531,13 +594,9 @@ struct base_test_fixture
             REQUIRE(keys.table_name() == table_name);
             REQUIRE(keys.column_name() == NANODBC_TEXT("i"));
             REQUIRE(keys.column_number() == 1);
-            // MySQL: The name of a PRIMARY KEY is always PRIMARY,
-            if (contains_string(dbms, NANODBC_TEXT("MySQL")))
-                REQUIRE(keys.primary_key_name() == NANODBC_TEXT("PRIMARY"));
-            else if (contains_string(dbms, NANODBC_TEXT("SQLite")))
-                ; // NOTE: SQLite seem to have no support for named PK constraint
-            else
-                REQUIRE(keys.primary_key_name() == NANODBC_TEXT("pk_simple_test"));
+            auto const pk_simple = get_primary_key_name(NANODBC_TEXT("pk_simple_test"));
+            if (!pk_simple.empty()) // constraint relevant
+                REQUIRE(keys.primary_key_name() == pk_simple);
             // expect no more records
             REQUIRE(!keys.next());
         }
@@ -554,25 +613,17 @@ struct base_test_fixture
             REQUIRE(keys.table_name() == table_name);
             REQUIRE(keys.column_name() == NANODBC_TEXT("a"));
             REQUIRE(keys.column_number() == 1);
-            // MySQL: The name of a PRIMARY KEY is always PRIMARY,
-            if (contains_string(dbms, NANODBC_TEXT("MySQL")))
-                REQUIRE(keys.primary_key_name() == NANODBC_TEXT("PRIMARY"));
-            else if (contains_string(dbms, NANODBC_TEXT("SQLite")))
-                ; // NOTE: SQLite seem to have no support for named PK constraint
-            else
-                REQUIRE(keys.primary_key_name() == NANODBC_TEXT("pk_composite_test"));
+            auto const pk_composite1 = get_primary_key_name(NANODBC_TEXT("pk_composite_test"));
+            if (!pk_composite1.empty()) // constraint relevant
+                REQUIRE(keys.primary_key_name() == pk_composite1);
 
             REQUIRE(keys.next());
             REQUIRE(keys.table_name() == table_name);
             REQUIRE(keys.column_name() == NANODBC_TEXT("b"));
             REQUIRE(keys.column_number() == 2);
-            // MySQL: The name of a PRIMARY KEY is always PRIMARY,
-            if (contains_string(dbms, NANODBC_TEXT("MySQL")))
-                REQUIRE(keys.primary_key_name() == NANODBC_TEXT("PRIMARY"));
-            else if (contains_string(dbms, NANODBC_TEXT("SQLite")))
-                ; // NOTE: SQLite seem to have no support for named PK constraint
-            else
-                REQUIRE(keys.primary_key_name() == NANODBC_TEXT("pk_composite_test"));
+            auto const pk_composite2 = get_primary_key_name(NANODBC_TEXT("pk_composite_test"));
+            if (!pk_composite2.empty()) // constraint relevant
+                REQUIRE(keys.primary_key_name() == pk_composite2);
 
             // expect no more records
             REQUIRE(!keys.next());
@@ -582,7 +633,6 @@ struct base_test_fixture
     void catalog_tables_test()
     {
         nanodbc::connection connection = connect();
-        REQUIRE(connection.connected());
         nanodbc::catalog catalog(connection);
 
         // Check we can iterate over any tables
@@ -931,7 +981,6 @@ struct base_test_fixture
     void null_test()
     {
         nanodbc::connection connection = connect();
-        REQUIRE(connection.connected());
 
         drop_table(connection, NANODBC_TEXT("null_test"));
         execute(connection, NANODBC_TEXT("create table null_test (a int, b varchar(10));"));
@@ -1050,7 +1099,6 @@ struct base_test_fixture
     void simple_test()
     {
         nanodbc::connection connection = connect();
-        REQUIRE(connection.connected());
         REQUIRE(connection.native_dbc_handle() != nullptr);
         REQUIRE(connection.native_env_handle() != nullptr);
         REQUIRE(connection.transactions() == std::size_t(0));
@@ -1164,7 +1212,6 @@ struct base_test_fixture
     void string_test()
     {
         nanodbc::connection connection = connect();
-        REQUIRE(connection.connected());
         REQUIRE(connection.native_dbc_handle() != nullptr);
         REQUIRE(connection.native_env_handle() != nullptr);
         REQUIRE(connection.transactions() == std::size_t(0));
@@ -1217,9 +1264,11 @@ struct base_test_fixture
     void transaction_test()
     {
         nanodbc::connection connection = connect();
-        REQUIRE(connection.connected());
 
         drop_table(connection, NANODBC_TEXT("transaction_test"));
+        if (vendor_ == MySQL)
+            execute(connection, NANODBC_TEXT("create table transaction_test (i int) ENGINE = INNODB;"));
+        else
         execute(connection, NANODBC_TEXT("create table transaction_test (i int);"));
 
         nanodbc::statement statement(connection);
