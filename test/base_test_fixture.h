@@ -69,14 +69,14 @@ struct base_test_fixture
     // Determine DBMS-specific features, properties and values
     // NOTE: If handling DBMS-specific features become overly complicated,
     //       we may decided to remove such features from the tests.
-    enum DBVendor
+    enum class database_vendor
     {
         unknown,
-        Oracle,
-        SQLite,
-        PostgreSQL,
-        MySQL,
-        SQLServer
+        oracle,
+        sqlite,
+        postgresql,
+        mysql,
+        sqlserver
     };
 
     // To invoke a unit test over all integral types, use:
@@ -114,33 +114,33 @@ struct base_test_fixture
 
     nanodbc::string_type connection_string_;
 
-    DBVendor vendor_;
+    database_vendor vendor_;
 
-    DBVendor get_vendor(const nanodbc::string_type &dbms)
+    database_vendor get_vendor(const nanodbc::string_type &dbms)
     {
         REQUIRE(!dbms.empty());
         if (contains_string(dbms, NANODBC_TEXT("Oracle")))
-            return Oracle;
+            return database_vendor::oracle;
         else if (contains_string(dbms, NANODBC_TEXT("SQLite")))
-            return SQLite;
+            return database_vendor::sqlite;
         else if (contains_string(dbms, NANODBC_TEXT("PostgreSQL")))
-            return PostgreSQL;
+            return database_vendor::postgresql;
         else if (contains_string(dbms, NANODBC_TEXT("MySQL")))
-            return MySQL;
+            return database_vendor::mysql;
         else if (contains_string(dbms, NANODBC_TEXT("SQLServer")))
-            return SQLServer;
+            return database_vendor::sqlserver;
         else
-            return unknown;
+            return database_vendor::unknown;
     }
 
     nanodbc::string_type get_binary_type_name()
     {
         switch (vendor_)
         {
-        case SQLite:
-        case MySQL:
+        case database_vendor::sqlite:
+        case database_vendor::mysql:
             return NANODBC_TEXT("blob");
-        case PostgreSQL:
+        case database_vendor::postgresql:
             return NANODBC_TEXT("bytea");
         default:
             return NANODBC_TEXT("varbinary"); // Oracle, MySQL, SQL Server,...standard type?
@@ -151,9 +151,9 @@ struct base_test_fixture
     {
         switch (vendor_)
         {
-        case MySQL:
+        case database_vendor::mysql:
             return NANODBC_TEXT("PRIMARY"); // MySQL: The name of a PRIMARY KEY is always PRIMARY
-        case SQLite:
+        case database_vendor::sqlite:
             return NANODBC_TEXT(""); // NOTE: SQLite seem to have no support for named PK constraint
         default:
             return assumed;
@@ -1267,10 +1267,10 @@ struct base_test_fixture
         nanodbc::connection connection = connect();
 
         drop_table(connection, NANODBC_TEXT("transaction_test"));
-        if (vendor_ == MySQL)
+        if (vendor_ == database_vendor::mysql)
             execute(connection, NANODBC_TEXT("create table transaction_test (i int) ENGINE = INNODB;"));
         else
-        execute(connection, NANODBC_TEXT("create table transaction_test (i int);"));
+            execute(connection, NANODBC_TEXT("create table transaction_test (i int);"));
 
         nanodbc::statement statement(connection);
         prepare(statement, NANODBC_TEXT("insert into transaction_test (i) values (?);"));
