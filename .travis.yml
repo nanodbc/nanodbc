@@ -27,7 +27,7 @@ matrix:
             - unixodbc
             - unixodbc-dev
             - libsqliteodbc
-        # The single build job that submits the Coverity Scan file 
+        # The single build job that submits the Coverity Scan file
         coverity_scan:
           project:
             name: "lexicalunit/nanodbc"
@@ -102,6 +102,15 @@ matrix:
             - unixodbc
             - unixodbc-dev
             - libmyodbc
+    - env: DB=vertica USE_UNICODE=OFF USE_BOOST_CONVERT=OFF
+      compiler: gcc
+      addons: &vertica
+        apt:
+          sources: *sources
+          packages:
+            - g++-5
+            - unixodbc
+            - unixodbc-dev
   allow_failures:
     - env: DB=mariadb USE_UNICODE=OFF USE_BOOST_CONVERT=OFF
 
@@ -111,6 +120,15 @@ before_install:
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 20
   - sudo update-alternatives --config gcc
   - sudo update-alternatives --config g++
+  - if [[ "$DB" == "vertica" ]]; then sudo wget -nv https://s3.amazonaws.com/circle-support-bucket/vertica_7.0.1-0_amd64.deb; fi
+  - if [[ "$DB" == "vertica" ]]; then sudo dpkg -i vertica_7.0.1-0_amd64.deb; fi
+  - if [[ "$DB" == "vertica" ]]; then sudo /opt/vertica/sbin/install_vertica --failure-threshold HALT --accept-eula --dba-user-password dbadmin --license CE -s localhost; fi
+  - if [[ "$DB" == "vertica" ]]; then sudo -u dbadmin /opt/vertica/bin/adminTools -t create_db --database ci -s localhost -p dbadmin; fi
+  - if [[ "$DB" == "vertica" ]]; then sudo -u dbadmin openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /home/dbadmin/ci/v_ci_node0001_catalog/server.key -out /home/dbadmin/ci/v_ci_node0001_catalog/server.crt -batch; fi
+  - if [[ "$DB" == "vertica" ]]; then sudo -u dbadmin chmod 600 /home/dbadmin/ci/v_ci_node0001_catalog/server.key /home/dbadmin/ci/v_ci_node0001_catalog/server.crt; fi
+  - if [[ "$DB" == "vertica" ]]; then sudo -u dbadmin /opt/vertica/bin/adminTools -t stop_db --database ci -p dbadmin; fi
+  - if [[ "$DB" == "vertica" ]]; then sudo -u dbadmin sh -c 'echo "EnableSSL = 1" > /home/dbadmin/ci/v_ci_node0001_catalog/vertica.conf'; fi
+  - if [[ "$DB" == "vertica" ]]; then sudo -u dbadmin /opt/vertica/bin/adminTools -t start_db --database ci -p dbadmin; fi
 
 before_script:
   - if [[ -f /etc/odbcinst.ini ]]; then export ODBCSYSINI=/etc; fi
@@ -123,6 +141,10 @@ before_script:
   - if [[ "$DB" == "postgresql" ]]; then psql -c "CREATE DATABASE nanodbc_tests;" -U postgres; fi
   - if [[ "$DB" == "postgresql" ]]; then export NANODBC_TEST_CONNSTR_PGSQL="DRIVER={PostgreSQL ANSI};Server=localhost;Port=5432;Database=nanodbc_tests;UID=postgres;"; fi
   - if [[ "$DB" == "sqlite" ]]; then sudo odbcinst -i -d -f /usr/share/sqliteodbc/unixodbc.ini; fi
+  - if [[ "$DB" == "vertica" ]]; then sudo cp ${TRAVIS_BUILD_DIR}/scripts/ci/odbcinst.ini.vertica /etc/odbcinst.ini; fi
+  - if [[ "$DB" == "vertica" ]]; then sudo cp ${TRAVIS_BUILD_DIR}/scripts/ci/vertica.ini.vertica /etc/vertica.ini; fi
+  - if [[ "$DB" == "vertica" ]]; then export NANODBC_TEST_CONNSTR_VERTICA="DRIVER={Vertica};ServerName=localhost;Port=5433;Database=ci;UID=dbadmin;PWD=dbadmin;"; fi
+  - if [[ -f /etc/vertica.ini ]]; then export VERTICAINI=/etc/vertica.ini; fi
   - odbcinst -j
   - if [[ -f "$ODBCSYSINI/odbcinst.ini" ]]; then odbcinst -q -d; fi
   - if [[ -s "$ODBCINI" ]]; then odbcinst -q -s; fi
@@ -134,3 +156,4 @@ script:
   - if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then make VERBOSE=1 mysql_check; fi
   - if [[ "$DB" == "postgresql" ]]; then make VERBOSE=1 postgresql_check; fi
   - if [[ "$DB" == "sqlite" ]]; then make VERBOSE=1 sqlite_check; fi
+  - if [[ "$DB" == "vertica" ]]; then make VERBOSE=1 vertica_check; fi

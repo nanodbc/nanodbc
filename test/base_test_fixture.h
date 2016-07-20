@@ -76,7 +76,8 @@ struct base_test_fixture
         sqlite,
         postgresql,
         mysql,
-        sqlserver
+        sqlserver,
+        vertica
     };
 
     // To invoke a unit test over all integral types, use:
@@ -129,6 +130,8 @@ struct base_test_fixture
             return database_vendor::mysql;
         else if (contains_string(dbms, NANODBC_TEXT("SQLServer")))
             return database_vendor::sqlserver;
+        else if (contains_string(dbms, NANODBC_TEXT("Vertica")))
+            return database_vendor::vertica;
         else
             return database_vendor::unknown;
     }
@@ -146,6 +149,18 @@ struct base_test_fixture
             return NANODBC_TEXT("varbinary"); // Oracle, MySQL, SQL Server,...standard type?
         }
     }
+
+    nanodbc::string_type get_text_type_name()
+    {
+        switch (vendor_)
+        {
+        case database_vendor::vertica:
+            return NANODBC_TEXT("long varchar");
+        default:
+            return NANODBC_TEXT("text"); // Oracle, MySQL, SQL Server,...standard type?
+        }
+    }
+
 
     nanodbc::string_type get_primary_key_name(const nanodbc::string_type &assumed)
     {
@@ -190,6 +205,10 @@ struct base_test_fixture
                      column_size == 65535 || // MySQL
                      column_size == 8190 || // PostgreSQL uses MaxLongVarcharSize=8190, which is configurable in odbc.ini
                      column_size == 0)); // SQLite
+        }
+        else if (name == NANODBC_TEXT("long varchar"))
+        {
+            REQUIRE(column_size > 0); // Vertica
         }
     }
 
@@ -422,8 +441,10 @@ struct base_test_fixture
 
         // Find a table with known name and verify its known columns
         {
-            nanodbc::string_type binary_type_name = get_binary_type_name();
+            nanodbc::string_type const binary_type_name = get_binary_type_name();
             REQUIRE(!binary_type_name.empty());
+            nanodbc::string_type const text_type_name = get_text_type_name();
+            REQUIRE(!text_type_name.empty());
 
             nanodbc::string_type const table_name(NANODBC_TEXT("catalog_columns_test"));
             drop_table(connection, table_name);
@@ -435,7 +456,7 @@ struct base_test_fixture
                 + NANODBC_TEXT("c4 date,") // seems more portable than datetime (SQL Server), timestamp (PostgreSQL, MySQL)
                 + NANODBC_TEXT("c5 varchar(60) DEFAULT \'sample value\',")
                 + NANODBC_TEXT("c6 varchar(120),")
-                + NANODBC_TEXT("c7 text,")
+                + NANODBC_TEXT("c7 ") + text_type_name + NANODBC_TEXT(",")
                 + NANODBC_TEXT("c8 ") + binary_type_name
                 + NANODBC_TEXT(");")
             );
@@ -445,10 +466,10 @@ struct base_test_fixture
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c0"));
-            REQUIRE(columns.sql_data_type() == SQL_INTEGER);
-            if (contains_string(dbms, NANODBC_TEXT("SQLite")))
+            if (vendor_ == database_vendor::sqlite)
             {
                 // NOTE: SQLite ODBC reports values inconsistent with table definition
+                REQUIRE(columns.sql_data_type() == SQL_INTEGER);
                 REQUIRE(columns.column_size() == 9); // INT size is different
                 REQUIRE(columns.decimal_digits() == 10); // INT can have decimal digits
                 REQUIRE(columns.nullable() == SQL_NULLABLE); // PRIMARY KEY can be NULL
@@ -456,7 +477,16 @@ struct base_test_fixture
             }
             else
             {
-                REQUIRE(columns.column_size() == 10);
+                if (vendor_ == database_vendor::vertica)
+                {
+                    REQUIRE(columns.sql_data_type() == SQL_BIGINT);
+                    REQUIRE(columns.column_size() == 19);
+                }
+                else
+                {
+                    REQUIRE(columns.sql_data_type() == SQL_INTEGER);
+                    REQUIRE(columns.column_size() == 10);
+                }
                 REQUIRE(columns.decimal_digits() == 0);
                 REQUIRE(columns.nullable() == SQL_NO_NULLS);
                 if (!columns.is_nullable().empty()) // nullability determined
@@ -467,9 +497,17 @@ struct base_test_fixture
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c1"));
-            REQUIRE(columns.sql_data_type() == SQL_SMALLINT);
-            REQUIRE(columns.column_size() == 5);
-            if (contains_string(dbms, NANODBC_TEXT("SQLite")))
+            if (vendor_ == database_vendor::vertica)
+            {
+                REQUIRE(columns.sql_data_type() == SQL_BIGINT);
+                REQUIRE(columns.column_size() == 19);
+            }
+            else
+            {
+                REQUIRE(columns.sql_data_type() == SQL_SMALLINT);
+                REQUIRE(columns.column_size() == 5);
+            }
+            if (vendor_ == database_vendor::sqlite)
                 REQUIRE(columns.decimal_digits() == 10);
             else
                 REQUIRE(columns.decimal_digits() == 0);
@@ -490,7 +528,7 @@ struct base_test_fixture
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c3"));
-            if (contains_string(dbms, NANODBC_TEXT("SQLite")))
+            if (vendor_ == database_vendor::sqlite)
             {
 #ifdef _WIN32
                 REQUIRE(columns.sql_data_type() == -9); // FIXME: What is this type?
@@ -546,10 +584,11 @@ struct base_test_fixture
             REQUIRE(columns.column_name() == NANODBC_TEXT("c7"));
             REQUIRE((columns.sql_data_type() == SQL_LONGVARCHAR || columns.sql_data_type() == SQL_WLONGVARCHAR));
             REQUIRE((columns.column_size() == 2147483647 ||
+                     columns.column_size() == 1048576 || // Vertica
                      columns.column_size() == 65535 || // MySQL
                      columns.column_size() == 8190 || // PostgreSQL uses MaxLongVarcharSize=8190, which is configurable in odbc.ini
                      columns.column_size() == 0)); // SQLite
-            check_data_type_size(NANODBC_TEXT("text"), columns.column_size());
+            check_data_type_size(text_type_name, columns.column_size());
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c8"));
@@ -559,6 +598,7 @@ struct base_test_fixture
             // SQL Server: if n is not specified in [var]binary(n), the default length is 1
             // PostgreSQL: bytea default length is reported as 255,
             // unless ByteaAsLongVarBinary=1 option is specified in connection string.
+            // Vertica: column size is 80
             if (contains_string(dbms, NANODBC_TEXT("SQLite")))
                 REQUIRE(columns.column_size() == 0);
             else
