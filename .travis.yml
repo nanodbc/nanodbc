@@ -153,7 +153,6 @@ script:
   - mkdir -p build && cd build
   - cmake -DCMAKE_BUILD_TYPE=Release -DNANODBC_USE_UNICODE=${USE_UNICODE} -DNANODBC_USE_BOOST_CONVERT=${USE_BOOST_CONVERT} -DNANODBC_ENABLE_LIBCXX=NO ..
   - make
-  - if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then make VERBOSE=1 mysql_check; fi
-  - if [[ "$DB" == "postgresql" ]]; then make VERBOSE=1 postgresql_check; fi
-  - if [[ "$DB" == "sqlite" ]]; then make VERBOSE=1 sqlite_check; fi
-  - if [[ "$DB" == "vertica" ]]; then make VERBOSE=1 vertica_check; fi
+  - cd test
+  - make ${DB}_tests
+  - ctest -VV --output-on-failure -R ${DB}_tests
