@@ -1,0 +1,3 @@
+[Vertica]
+Description = Vertica ODBC Driver
+Driver = /opt/vertica/lib64/libverticaodbc.so
