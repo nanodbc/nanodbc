@@ -19,6 +19,28 @@ include_directories(${CMAKE_SOURCE_DIR} ${ODBC_INCLUDE_DIR})
 link_directories(${CMAKE_BINARY_DIR}/lib)
 file(GLOB headers *.h *.hpp)
 add_custom_target(tests DEPENDS tests catch)
+
+# Common utilities tests
+add_executable(utility_tests utility_test.cpp)
+target_include_directories(utility_tests PRIVATE ${CMAKE_SOURCE_DIR}/nanodbc)
+if (BUILD_SHARED_LIBS)
+  target_link_libraries(utility_tests nanodbc Catch "${ODBC_LINK_FLAGS}")
+else()
+  target_link_libraries(utility_tests nanodbc Catch ${ODBC_LIBRARIES})
+endif()
+set_target_properties(utility_tests PROPERTIES VERSION ${NANODBC_VERSION})
+add_test(NAME utility_tests COMMAND utility_tests)
+if(NOT CMAKE_GENERATOR MATCHES "^Visual Studio")
+  add_custom_target(utility_test
+    COMMAND ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure -R utility_tests)
+  add_custom_target(${test_item}_check
+    COMMAND ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure -R utility_tests
+    DEPENDS utility_tests)
+endif()
+add_dependencies(tests utility_tests)
+
+
+# Database-specific tests
 set(test_list mssql mysql postgresql sqlite vertica) # odbc_test.cpp is a dummy
 
 # Travis CI and AppVeyor set common environment variable CI
