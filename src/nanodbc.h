@@ -83,7 +83,7 @@
 #include <vector>
 
 #ifndef __clang__
-    #include <cstdint>
+#include <cstdint>
 #endif
 
 //! \brief The entirety of nanodbc can be found within this one namespace.
@@ -110,55 +110,55 @@ namespace nanodbc
 //! @{
 
 #ifdef DOXYGEN
-    //! \def NANODBC_ASSERT(expression)
-    //! \brief Assertion.
-    //!
-    //! By default, nanodbc uses C \c assert() for internal assertions.
-    //! User can override it by defining \c NANODBC_ASSERT(expr) macro
-    //! in the nanodbc.h file and customizing it as desired,
-    //! before building the library.
-    //!
-    //! \code{.cpp}
-    //! #ifdef _DEBUG
-    //!     #include <crtdbg.h>
-    //!     #define NANODBC_ASSERT _ASSERTE
-    //! #endif
-    //! \endcode
-    #define NANODBC_ASSERT(expression) assert(expression)
+//! \def NANODBC_ASSERT(expression)
+//! \brief Assertion.
+//!
+//! By default, nanodbc uses C \c assert() for internal assertions.
+//! User can override it by defining \c NANODBC_ASSERT(expr) macro
+//! in the nanodbc.h file and customizing it as desired,
+//! before building the library.
+//!
+//! \code{.cpp}
+//! #ifdef _DEBUG
+//!     #include <crtdbg.h>
+//!     #define NANODBC_ASSERT _ASSERTE
+//! #endif
+//! \endcode
+#define NANODBC_ASSERT(expression) assert(expression)
 #endif
 
 //! @}
 
 // You must explicitly request Unicode support by defining NANODBC_USE_UNICODE at compile time.
 #ifndef DOXYGEN
-    #ifdef NANODBC_USE_UNICODE
-        #ifdef NANODBC_USE_IODBC_WIDE_STRINGS
-            #define NANODBC_TEXT(s) U ## s
-            typedef std::u32string string_type;
-        #else
-            #ifdef _MSC_VER
-                typedef std::wstring string_type;
-                #define NANODBC_TEXT(s) L ## s
-            #else
-                typedef std::u16string string_type;
-                #define NANODBC_TEXT(s) u ## s
-            #endif
-        #endif
-    #else
-        typedef std::string string_type;
-        #define NANODBC_TEXT(s) s
-    #endif // NANODBC_USE_UNICODE
+#ifdef NANODBC_USE_UNICODE
+#ifdef NANODBC_USE_IODBC_WIDE_STRINGS
+#define NANODBC_TEXT(s) U ## s
+typedef std::u32string string_type;
+#else
+#ifdef _MSC_VER
+typedef std::wstring string_type;
+#define NANODBC_TEXT(s) L ## s
+#else
+typedef std::u16string string_type;
+#define NANODBC_TEXT(s) u ## s
+#endif
+#endif
+#else
+typedef std::string string_type;
+#define NANODBC_TEXT(s) s
+#endif // NANODBC_USE_UNICODE
 
-    #if defined(_WIN64)
-        // LLP64 machine: Windows
-        typedef std::int64_t null_type;
-    #elif !defined(_WIN64) && defined(__LP64__)
-        // LP64 machine: OS X or Linux
-        typedef long null_type;
-    #else
-        // 32-bit machine
-        typedef long null_type;
-    #endif
+#if defined(_WIN64)
+// LLP64 machine: Windows
+typedef std::int64_t null_type;
+#elif !defined(_WIN64) && defined(__LP64__)
+// LP64 machine: OS X or Linux
+typedef long null_type;
+#else
+// 32-bit machine
+typedef long null_type;
+#endif
 #else
     //! \def NANODBC_TEXT(s)
     //! \brief Maps generic text to string literal with characters of type corresponding to `nanodbc::string_type`.
@@ -178,11 +178,11 @@ namespace nanodbc
 #endif // DOXYGEN
 
 #if defined(_MSC_VER) && _MSC_VER <= 1800
-    // These versions of Visual C++ do not yet support \c noexcept or \c std::move.
-    #define NANODBC_NOEXCEPT
-    #define NANODBC_NO_MOVE_CTOR
+// These versions of Visual C++ do not yet support \c noexcept or \c std::move.
+#define NANODBC_NOEXCEPT
+#define NANODBC_NO_MOVE_CTOR
 #else
-    #define NANODBC_NOEXCEPT noexcept
+#define NANODBC_NOEXCEPT noexcept
 #endif
 
 // 8888888888                                      888    888                        888 888 d8b
@@ -338,10 +338,10 @@ public:
     //! Copy constructor.
     transaction(const transaction& rhs);
 
-    #ifndef NANODBC_NO_MOVE_CTOR
-        //! Move constructor.
-        transaction(transaction&& rhs) NANODBC_NOEXCEPT;
-    #endif
+#ifndef NANODBC_NO_MOVE_CTOR
+    //! Move constructor.
+    transaction(transaction&& rhs) NANODBC_NOEXCEPT;
+#endif
 
     //! Assignment.
     transaction& operator=(transaction rhs);
@@ -423,10 +423,10 @@ public:
     //! Copy constructor.
     statement(const statement& rhs);
 
-    #ifndef NANODBC_NO_MOVE_CTOR
-        //! Move constructor.
-        statement(statement&& rhs) NANODBC_NOEXCEPT;
-    #endif
+#ifndef NANODBC_NO_MOVE_CTOR
+    //! Move constructor.
+    statement(statement&& rhs) NANODBC_NOEXCEPT;
+#endif
 
     //! Assignment.
     statement& operator=(statement rhs);
@@ -835,10 +835,10 @@ public:
     //! Copy constructor.
     connection(const connection& rhs);
 
-    #ifndef NANODBC_NO_MOVE_CTOR
-        //! Move constructor.
-        connection(connection&& rhs) NANODBC_NOEXCEPT;
-    #endif
+#ifndef NANODBC_NO_MOVE_CTOR
+    //! Move constructor.
+    connection(connection&& rhs) NANODBC_NOEXCEPT;
+#endif
 
     //! Assignment.
     connection& operator=(connection rhs);
@@ -1017,10 +1017,10 @@ public:
     //! Copy constructor.
     result(const result& rhs);
 
-    #ifndef NANODBC_NO_MOVE_CTOR
-        //! Move constructor.
-        result(result&& rhs) NANODBC_NOEXCEPT;
-    #endif
+#ifndef NANODBC_NO_MOVE_CTOR
+    //! Move constructor.
+    result(result&& rhs) NANODBC_NOEXCEPT;
+#endif
 
     //! Assignment.
     result& operator=(result rhs);

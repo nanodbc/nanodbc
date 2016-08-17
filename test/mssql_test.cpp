@@ -36,7 +36,7 @@ TEST_CASE_METHOD(mssql_fixture, "affected_rows_test", "[mssql][affected_rows]")
         return;
     }
 
-    // Enable MARS required?
+// Enable MARS required?
 #if 0
     enum { SQL_COPT_SS_MARS_ENABLED = 1224, SQL_MARS_ENABLED_YES = 1 }; // sqlext.h
     int rc = ::SQLSetConnectAttr(conn.native_dbc_handle(), SQL_COPT_SS_MARS_ENABLED, (SQLPOINTER)SQL_MARS_ENABLED_YES, SQL_IS_UINTEGER);

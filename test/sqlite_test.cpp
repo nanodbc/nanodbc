@@ -5,13 +5,13 @@
 
 namespace
 {
-    // According to the sqliteodbc documentation,
-    // driver name is different on Windows and Unix.
-    #ifdef _WIN32
-        const nanodbc::string_type driver_name(NANODBC_TEXT("SQLite3 ODBC Driver"));
-    #else
-        const nanodbc::string_type driver_name(NANODBC_TEXT("SQLite3"));
-    #endif
+// According to the sqliteodbc documentation,
+// driver name is different on Windows and Unix.
+#ifdef _WIN32
+    const nanodbc::string_type driver_name(NANODBC_TEXT("SQLite3 ODBC Driver"));
+#else
+    const nanodbc::string_type driver_name(NANODBC_TEXT("SQLite3"));
+#endif
     const nanodbc::string_type connection_string
         = NANODBC_TEXT("Driver=") + driver_name
         + NANODBC_TEXT(";Database=nanodbc.db;");

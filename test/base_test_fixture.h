@@ -10,24 +10,24 @@
 #endif
 
 #if defined(_MSC_VER) && _MSC_VER <= 1800
-    // These versions of Visual C++ do not yet support noexcept or override.
-    #define NANODBC_NOEXCEPT
-    #define NANODBC_OVERRIDE
+// These versions of Visual C++ do not yet support noexcept or override.
+#define NANODBC_NOEXCEPT
+#define NANODBC_OVERRIDE
 #else
-    #define NANODBC_NOEXCEPT noexcept
-    #define NANODBC_OVERRIDE override
+#define NANODBC_NOEXCEPT noexcept
+#define NANODBC_OVERRIDE override
 #endif
 
 #ifdef NANODBC_USE_BOOST_CONVERT
-    #include <boost/locale/encoding_utf.hpp>
+#include <boost/locale/encoding_utf.hpp>
 #else
-    #include <codecvt>
+#include <codecvt>
 #endif
 
 #ifdef _WIN32
 // needs to be included above sql.h for windows
 #ifndef __MINGW32__
-    #define NOMINMAX
+#define NOMINMAX
 #endif
 #include <windows.h>
 #endif
@@ -43,9 +43,9 @@ struct TestConfig
         using boost::locale::conv::utf_to_utf;
         return utf_to_utf<char16_t>(connection_string_.c_str()
             , connection_string_.c_str() + connection_string_.size());
+// Workaround for confirmed bug in VS2015.
+// See: https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481
 #elif defined(_MSC_VER) && (_MSC_VER == 1900)
-        // Workaround for confirmed bug in VS2015.
-        // See: https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error
         auto s = std::wstring_convert<
             std::codecvt_utf8_utf16<int16_t>, int16_t>().from_bytes(connection_string_);
         auto p = reinterpret_cast<char16_t const*>(s.data());
@@ -272,39 +272,39 @@ struct base_test_fixture
     {
         char* env_value = nullptr;
         std::string value;
-        #ifdef _MSC_VER
-            std::size_t env_len(0);
-            errno_t err = _dupenv_s(&env_value, &env_len, var);
-            if(!err && env_value)
-            {
-                value = env_value;
-                std::free(env_value);
-            }
-        #else
-            env_value = std::getenv(var);
-            if(!env_value) return nanodbc::string_type();
+#ifdef _MSC_VER
+        std::size_t env_len(0);
+        errno_t err = _dupenv_s(&env_value, &env_len, var);
+        if(!err && env_value)
+        {
             value = env_value;
-        #endif
+            std::free(env_value);
+        }
+#else
+        env_value = std::getenv(var);
+        if(!env_value) return nanodbc::string_type();
+        value = env_value;
+#endif
 
-        #ifdef NANODBC_USE_UNICODE
-            #ifdef NANODBC_USE_BOOST_CONVERT
-                using boost::locale::conv::utf_to_utf;
-                return utf_to_utf<char16_t>(value.c_str()
-                    , value.c_str() + value.size());
-            #elif defined(_MSC_VER) && (_MSC_VER == 1900)
-                // Workaround for confirmed bug in VS2015.
-                // See: https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error
-                auto s = std::wstring_convert<
-                    std::codecvt_utf8_utf16<int16_t>, int16_t>().from_bytes(value);
-                auto p = reinterpret_cast<char16_t const*>(s.data());
-                return nanodbc::string_type(p, p + s.size());
-            #else
-                return std::wstring_convert<
-                    std::codecvt_utf8_utf16<char16_t>, char16_t>().from_bytes(value);
-            #endif
-        #else
-                return value;
-        #endif
+#ifdef NANODBC_USE_UNICODE
+#ifdef NANODBC_USE_BOOST_CONVERT
+        using boost::locale::conv::utf_to_utf;
+        return utf_to_utf<char16_t>(value.c_str()
+            , value.c_str() + value.size());
+// Workaround for confirmed bug in VS2015.
+// See: https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481
+#elif defined(_MSC_VER) && (_MSC_VER == 1900)
+        auto s = std::wstring_convert<
+            std::codecvt_utf8_utf16<int16_t>, int16_t>().from_bytes(value);
+        auto p = reinterpret_cast<char16_t const*>(s.data());
+        return nanodbc::string_type(p, p + s.size());
+#else
+        return std::wstring_convert<
+            std::codecvt_utf8_utf16<char16_t>, char16_t>().from_bytes(value);
+#endif
+#else
+        return value;
+#endif
     }
 
     bool contains_string(nanodbc::string_type const& str, nanodbc::string_type const& sub)
