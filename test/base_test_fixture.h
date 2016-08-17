@@ -115,7 +115,7 @@ struct base_test_fixture
 
     nanodbc::string_type connection_string_;
 
-    database_vendor vendor_;
+    database_vendor vendor_ = database_vendor::unknown;
 
     database_vendor get_vendor(const nanodbc::string_type &dbms)
     {
