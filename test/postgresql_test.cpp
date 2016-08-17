@@ -6,19 +6,16 @@
 
 namespace
 {
-    struct postgresql_fixture : public base_test_fixture
+struct postgresql_fixture : public base_test_fixture
+{
+    postgresql_fixture() : base_test_fixture(/* connecting string from NANODBC_TEST_CONNSTR environment variable)*/)
     {
-        postgresql_fixture()
-        : base_test_fixture(/* connecting string from NANODBC_TEST_CONNSTR environment variable)*/)
-        {
-            if (connection_string_.empty())
-                connection_string_ = get_env("NANODBC_TEST_CONNSTR_PGSQL");
-        }
+        if (connection_string_.empty())
+            connection_string_ = get_env("NANODBC_TEST_CONNSTR_PGSQL");
+    }
 
-        virtual ~postgresql_fixture() NANODBC_NOEXCEPT
-        {
-        }
-    };
+    virtual ~postgresql_fixture() NANODBC_NOEXCEPT {}
+};
 }
 
 // TODO: add blob (bytea) test

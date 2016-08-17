@@ -8,42 +8,36 @@ namespace
 // According to the sqliteodbc documentation,
 // driver name is different on Windows and Unix.
 #ifdef _WIN32
-    const nanodbc::string_type driver_name(NANODBC_TEXT("SQLite3 ODBC Driver"));
+const nanodbc::string_type driver_name(NANODBC_TEXT("SQLite3 ODBC Driver"));
 #else
-    const nanodbc::string_type driver_name(NANODBC_TEXT("SQLite3"));
+const nanodbc::string_type driver_name(NANODBC_TEXT("SQLite3"));
 #endif
-    const nanodbc::string_type connection_string
-        = NANODBC_TEXT("Driver=") + driver_name
-        + NANODBC_TEXT(";Database=nanodbc.db;");
+const nanodbc::string_type connection_string =
+    NANODBC_TEXT("Driver=") + driver_name + NANODBC_TEXT(";Database=nanodbc.db;");
 
-    struct sqlite_fixture : public base_test_fixture
+struct sqlite_fixture : public base_test_fixture
+{
+    sqlite_fixture() : base_test_fixture(connection_string)
     {
-        sqlite_fixture()
-        : base_test_fixture(connection_string)
-        {
-            sqlite_cleanup(); // in case prior test exited without proper cleanup
-        }
+        sqlite_cleanup(); // in case prior test exited without proper cleanup
+    }
 
-        virtual ~sqlite_fixture() NANODBC_NOEXCEPT
-        {
-            sqlite_cleanup();
-        }
+    virtual ~sqlite_fixture() NANODBC_NOEXCEPT { sqlite_cleanup(); }
 
-        void sqlite_cleanup() NANODBC_NOEXCEPT
-        {
-            int success = std::remove("nanodbc.db");
-            (void)success;
-        }
+    void sqlite_cleanup() NANODBC_NOEXCEPT
+    {
+        int success = std::remove("nanodbc.db");
+        (void)success;
+    }
 
-        void before_catalog_test()
-        {
-            // Since SQLite does not have metadata tables,
-            // we need to ensure, there is at least one table to search for.
-            auto conn = connect();
-            create_table(conn, NANODBC_TEXT("catalog_tables_test")
-                       , NANODBC_TEXT("(a int PRIMARY KEY, b text)"));
-        }
-    };
+    void before_catalog_test()
+    {
+        // Since SQLite does not have metadata tables,
+        // we need to ensure, there is at least one table to search for.
+        auto conn = connect();
+        create_table(conn, NANODBC_TEXT("catalog_tables_test"), NANODBC_TEXT("(a int PRIMARY KEY, b text)"));
+    }
+};
 }
 
 // Unicode build on Ubuntu 12.04 with unixODBC 2.2.14p2 and libsqliteodbc 0.91-3 throws:
@@ -74,10 +68,9 @@ TEST_CASE_METHOD(sqlite_fixture, "affected_rows_test", "[sqlite][affected_rows]"
     }
     // SELECT
     {
-        //auto result = execute(conn, NANODBC_TEXT("SELECT i FROM nanodbc_test_temp_table"));
-        //REQUIRE(result.affected_rows() == 0);
-    }
-    // DELETE
+        // auto result = execute(conn, NANODBC_TEXT("SELECT i FROM nanodbc_test_temp_table"));
+        // REQUIRE(result.affected_rows() == 0);
+    } // DELETE
     {
         auto result = execute(conn, NANODBC_TEXT("DELETE FROM nanodbc_test_temp_table"));
         REQUIRE(result.affected_rows() == 2);
@@ -232,7 +225,8 @@ TEST_CASE_METHOD(sqlite_fixture, "integral_boundary_test", "[sqlite][integral]")
     drop_table(connection, NANODBC_TEXT("integral_boundary_test"));
 
     // SQLite3 uses single storage class INTEGER for all integral SQL types
-    execute(connection, NANODBC_TEXT("create table integral_boundary_test(i1 integer,i2 integer,i4 integer,i8 integer);"));
+    execute(
+        connection, NANODBC_TEXT("create table integral_boundary_test(i1 integer,i2 integer,i4 integer,i8 integer);"));
 
     auto const sql = NANODBC_TEXT("insert into integral_boundary_test(i1,i2,i4,i8) values (?,?,?,?);");
 
@@ -270,14 +264,15 @@ TEST_CASE_METHOD(sqlite_fixture, "integral_boundary_test", "[sqlite][integral]")
     }
 
     // query
-    nanodbc::result result = execute(connection, NANODBC_TEXT("select i1,i2,i4,i8 from integral_boundary_test order by i1 asc;"));
+    nanodbc::result result =
+        execute(connection, NANODBC_TEXT("select i1,i2,i4,i8 from integral_boundary_test order by i1 asc;"));
     // min
     REQUIRE(result.next());
     // All of string converted values are incorrect
-    //auto si1min = result.get<nanodbc::string_type>(0);
-    //auto si2min = result.get<nanodbc::string_type>(1);
-    //auto si4min = result.get<nanodbc::string_type>(2);
-    //auto si8min = result.get<nanodbc::string_type>(3);
+    // auto si1min = result.get<nanodbc::string_type>(0);
+    // auto si2min = result.get<nanodbc::string_type>(1);
+    // auto si4min = result.get<nanodbc::string_type>(2);
+    // auto si8min = result.get<nanodbc::string_type>(3);
     REQUIRE(result.get<std::int16_t>(0) == static_cast<std::int16_t>(i1min));
     REQUIRE(result.get<std::int16_t>(1) == i2min);
     REQUIRE(result.get<std::int32_t>(2) == i4min);
@@ -305,7 +300,8 @@ TEST_CASE_METHOD(sqlite_fixture, "integral_to_string_conversion_test", "[sqlite]
     execute(connection, NANODBC_TEXT("insert into integral_to_string_conversion_test values (6, 32767);"));
     execute(connection, NANODBC_TEXT("insert into integral_to_string_conversion_test values (7, -2147483648);"));
     execute(connection, NANODBC_TEXT("insert into integral_to_string_conversion_test values (8, 2147483647);"));
-    auto results = execute(connection, NANODBC_TEXT("select * from integral_to_string_conversion_test order by i asc;"));
+    auto results =
+        execute(connection, NANODBC_TEXT("select * from integral_to_string_conversion_test order by i asc;"));
 
     REQUIRE(results.next());
     REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("0"));
@@ -323,7 +319,7 @@ TEST_CASE_METHOD(sqlite_fixture, "integral_to_string_conversion_test", "[sqlite]
     // FIXME: SQLite ODBC driver reports column size of 10 leading to truncation
     // "-214748364" == "-2147483648"
     // The driver bug?
-    //REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("-2147483648"));
+    // REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("-2147483648"));
     REQUIRE(results.next());
     REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("2147483647"));
 }

@@ -2,7 +2,10 @@
 #include "catch.hpp"
 #include "external/clara.h"
 #include <string>
-#include "base_test_fixture.h"
+
+// clang-format off
+#include "base_test_fixture.h" // Must be included last!
+// clang-format on
 
 TestConfig cfg;
 
@@ -15,8 +18,8 @@ int main(int argc, char* argv[])
         Clara::CommandLine<TestConfig> cli;
         cli["-c"]["--connection-string"]
             .describe("connection string to test database; if not specified, "
-                "an attempt will be made to read it from environment variables: "
-                "NANODBC_TEST_CONNSTR or NANODBC_TEST_CONNSTR_<DB>")
+                      "an attempt will be made to read it from environment variables: "
+                      "NANODBC_TEST_CONNSTR or NANODBC_TEST_CONNSTR_<DB>")
             .bind(&TestConfig::connection_string_, "string");
         cli.parseInto(args, cfg);
 

@@ -37,7 +37,7 @@ inline std::string convert(nanodbc::string_type const& in)
 #if defined(_MSC_VER) && (_MSC_VER == 1900)
     using wide_char_t = nanodbc::string_type::value_type;
     std::wstring_convert<std::codecvt_utf8_utf16<wide_char_t>, wide_char_t> convert;
-    auto p = reinterpret_cast<const wide_char_t *>(in.data());
+    auto p = reinterpret_cast<const wide_char_t*>(in.data());
     out = convert.to_bytes(p, p + in.size());
 #else
     out = std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>().to_bytes(in);
@@ -63,4 +63,4 @@ inline std::string any_to_string<nanodbc::string_type>(nanodbc::string_type cons
     return convert(t);
 }
 
-#endif // NANODBC_UNICODE_UTILS_H
+#endif

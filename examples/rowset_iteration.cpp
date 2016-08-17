@@ -1,5 +1,5 @@
-#include "nanodbc.h"
 #include "example_unicode_utils.h"
+#include "nanodbc.h"
 
 #include <algorithm>
 #include <array>
@@ -19,11 +19,11 @@ void usage(ostream& out, string const& binary_name)
 
 int main(int argc, char* argv[])
 {
-    if(argc != 2)
+    if (argc != 2)
     {
         char* app_name = strrchr(argv[0], '/');
         app_name = app_name ? app_name + 1 : argv[0];
-        if(0 == strncmp(app_name, "lt-", 3))
+        if (0 == strncmp(app_name, "lt-", 3))
             app_name += 3; // remove libtool prefix
         usage(cerr, app_name);
         return EXIT_FAILURE;
@@ -42,7 +42,10 @@ int main(int argc, char* argv[])
             {
                 // XXX: SQL Server <=2014 does not support "if exists"
                 execute(conn, NANODBC_TEXT("drop table rowset_iteration;"));
-            } catch (runtime_error const&) {}
+            }
+            catch (runtime_error const&)
+            {
+            }
 
             execute(conn, NANODBC_TEXT("create table rowset_iteration (i int);"));
         }
@@ -51,25 +54,17 @@ int main(int argc, char* argv[])
         {
             statement stmt(conn);
             prepare(stmt, NANODBC_TEXT("insert into rowset_iteration (i) values (?);"));
-            array<int, 5> const numbers {{ 100, 80, 60, 40, 20 }};
+            array<int, 5> const numbers{{100, 80, 60, 40, 20}};
             stmt.bind(0, numbers.data(), numbers.size());
             transact(stmt, static_cast<long>(numbers.size()));
         }
 
         // Select and fetch
         long batch_size = 1; // tweak to play with number of ODBC fetch calls
-        result result = execute(
-            conn
-            , NANODBC_TEXT("SELECT i FROM rowset_iteration ORDER BY i DESC;")
-            , batch_size);
+        result result = execute(conn, NANODBC_TEXT("SELECT i FROM rowset_iteration ORDER BY i DESC;"), batch_size);
         for (int i = 1; result.next(); ++i)
         {
-            cout << i
-                << "(" << result.rows()
-                << "/" << result.rowset_size()
-                << ":"
-                << result.get<int>(0)
-                << endl;
+            cout << i << "(" << result.rows() << "/" << result.rowset_size() << ":" << result.get<int>(0) << endl;
         }
     }
     catch (runtime_error const& e)

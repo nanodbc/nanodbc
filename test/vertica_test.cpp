@@ -6,19 +6,16 @@
 
 namespace
 {
-    struct vertica_fixture : public base_test_fixture
+struct vertica_fixture : public base_test_fixture
+{
+    vertica_fixture() : base_test_fixture(/* connecting string from NANODBC_TEST_CONNSTR environment variable)*/)
     {
-        vertica_fixture()
-        : base_test_fixture(/* connecting string from NANODBC_TEST_CONNSTR environment variable)*/)
-        {
-            if (connection_string_.empty())
-                connection_string_ = get_env("NANODBC_TEST_CONNSTR_VERTICA");
-        }
+        if (connection_string_.empty())
+            connection_string_ = get_env("NANODBC_TEST_CONNSTR_VERTICA");
+    }
 
-        virtual ~vertica_fixture() NANODBC_NOEXCEPT
-        {
-        }
-    };
+    virtual ~vertica_fixture() NANODBC_NOEXCEPT {}
+};
 }
 
 // TODO: add blob (bytea) test
