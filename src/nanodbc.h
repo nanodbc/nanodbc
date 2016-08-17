@@ -1187,6 +1187,13 @@ public:
     //! \throws database_error, index_range_error
     bool is_null(const string_type& column_name) const;
 
+    //! \brief Returns the column number of the specified column name.
+    //!
+    //! Columns are numbered from left to right and 0-indexed.
+    //! \param column_name column's name.
+    //! \throws index_range_error
+    short column(const string_type& column_name) const;
+
     //! \brief Returns the name of the specified column.
     //!
     //! Columns are numbered from left to right and 0-indexed.
@@ -1201,12 +1208,21 @@ public:
     //! \throws index_range_error
     long column_size(short column) const;
 
-    //! \brief Returns the column number of the specified column name.
+    //! \brief Returns the size of the specified column by name.
+    long column_size(const string_type& column_name) const;
+
+    //! \brief Returns the number of decimal digits of the specified column.
+    //!
+    //! Applies to exact numeric types (scale), datetime and interval types (prcision).
+    //! If the number cannot be determined or is not applicable, drivers typically return 0.
     //!
     //! Columns are numbered from left to right and 0-indexed.
-    //! \param column_name column's name.
+    //! \param column position.
     //! \throws index_range_error
-    short column(const string_type& column_name) const;
+    int column_decimal_digits(short column) const;
+
+    //! \brief Returns the number of decimal digits of the specified column by name.
+    int column_decimal_digits(const string_type& column_name) const;
 
     //! Returns a identifying integer value representing the SQL type of this column.
     int column_datatype(short column) const;

@@ -100,6 +100,11 @@ TEST_CASE_METHOD(mysql_fixture, "catalog_tables_test", "[mysql][catalog][tables]
     catalog_tables_test();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "column_descriptor_test", "[mysql][columns]")
+{
+    column_descriptor_test();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "dbms_info_test", "[mysql][dmbs][metadata][info]")
 {
     dbms_info_test();

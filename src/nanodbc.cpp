@@ -2285,6 +2285,15 @@ public:
         return is_null(column);
     }
 
+    short column(const string_type& column_name) const
+    {
+        typedef std::map<string_type, bound_column*>::const_iterator iter;
+        iter i = bound_columns_by_name_.find(column_name);
+        if(i == bound_columns_by_name_.end())
+            throw index_range_error();
+        return i->second->column_;
+    }
+
     string_type column_name(short column) const
     {
         if(column >= bound_columns_size_)
@@ -2301,13 +2310,25 @@ public:
         return static_cast<long>(col.sqlsize_);
     }
 
-    short column(const string_type& column_name) const
+    int column_size(const string_type& column_name) const
     {
-        typedef std::map<string_type, bound_column*>::const_iterator iter;
-        iter i = bound_columns_by_name_.find(column_name);
-        if(i == bound_columns_by_name_.end())
+        const short column = this->column(column_name);
+        return column_size(column);
+    }
+
+    int column_decimal_digits(short column) const
+    {
+        if(column >= bound_columns_size_)
             throw index_range_error();
-        return i->second->column_;
+        bound_column& col = bound_columns_[column];
+        return col.scale_;
+    }
+
+    int column_decimal_digits(const string_type& column_name) const
+    {
+        const short column = this->column(column_name);
+        bound_column& col = bound_columns_[column];
+        return col.scale_;
     }
 
     int column_datatype(short column) const
@@ -4307,6 +4328,11 @@ bool result::is_null(const string_type& column_name) const
     return impl_->is_null(column_name);
 }
 
+short result::column(const string_type& column_name) const
+{
+    return impl_->column(column_name);
+}
+
 string_type result::column_name(short column) const
 {
     return impl_->column_name(column);
@@ -4317,9 +4343,19 @@ long result::column_size(short column) const
     return impl_->column_size(column);
 }
 
-short result::column(const string_type& column_name) const
+long result::column_size(const string_type& column_name) const
 {
-    return impl_->column(column_name);
+    return impl_->column_size(column_name);
+}
+
+int result::column_decimal_digits(short column) const
+{
+    return impl_->column_decimal_digits(column);
+}
+
+int result::column_decimal_digits(const string_type& column_name) const
+{
+    return impl_->column_decimal_digits(column_name);
 }
 
 int result::column_datatype(short column) const

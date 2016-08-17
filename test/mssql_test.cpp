@@ -202,6 +202,11 @@ TEST_CASE_METHOD(mssql_fixture, "catalog_tables_test", "[mssql][catalog][tables]
     catalog_tables_test();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "column_descriptor_test", "[mssql][columns]")
+{
+    column_descriptor_test();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "dbms_info_test", "[mssql][dmbs][metadata][info]")
 {
     dbms_info_test();
