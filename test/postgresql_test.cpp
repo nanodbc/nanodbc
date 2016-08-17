@@ -53,6 +53,11 @@ TEST_CASE_METHOD(postgresql_fixture, "catalog_tables_test", "[postgresql][catalo
     catalog_tables_test();
 }
 
+TEST_CASE_METHOD(postgresql_fixture, "column_descriptor_test", "[postgresql][columns]")
+{
+    column_descriptor_test();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "dbms_info_test", "[postgresql][dmbs][metadata][info]")
 {
     dbms_info_test();

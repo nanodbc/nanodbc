@@ -783,6 +783,61 @@ struct base_test_fixture
         }
     }
 
+    void column_descriptor_test()
+    {
+        auto connection = connect();
+        create_table(connection, NANODBC_TEXT("column_descriptor_test"),
+            NANODBC_TEXT("(i int, d decimal(7,3), n numeric(7,3), f float, s varchar(60), dt date, t timestamp)"));
+
+        auto result = execute(connection, NANODBC_TEXT("select i,d,n,f,s,dt,t from column_descriptor_test;"));
+        REQUIRE(result.columns() == 7);
+
+        // i int
+        REQUIRE(result.column_name(0) == NANODBC_TEXT("i"));
+        REQUIRE(result.column_datatype(0) == SQL_INTEGER);
+        if (vendor_ == database_vendor::sqlserver)
+            REQUIRE(result.column_c_datatype(0) == SQL_C_SBIGINT);
+        else if (vendor_ == database_vendor::sqlite)
+            REQUIRE(result.column_c_datatype(0) == SQL_C_SBIGINT);
+        REQUIRE(result.column_size(0) == 10);
+        REQUIRE(result.column_decimal_digits(0) == 0);
+        // d decimal(7,3)
+        REQUIRE(result.column_name(1) == NANODBC_TEXT("d"));
+        if (vendor_ == database_vendor::sqlite)
+        {
+#ifdef _WIN32
+            REQUIRE(result.column_datatype(1) == -9); // FIXME: What is this type?
+            REQUIRE(result.column_c_datatype(1) == -8); // FIXME: What is this type
+            REQUIRE(result.column_size(1) == 7); // FIXME: SQLite ODBC mis-reports decimal digits?
+#else
+            REQUIRE(result.column_datatype(1) == SQL_VARCHAR);
+            REQUIRE(result.column_c_datatype(1) == SQL_C_CHAR);
+            REQUIRE(result.column_size(1) == 7);
+#endif
+            REQUIRE(result.column_decimal_digits(2) == 0); // FIXME: SQLite ODBC mis-reports decimal digits?
+        }
+        else
+        {
+            REQUIRE((result.column_datatype(1) == SQL_DECIMAL || result.column_datatype(1) == SQL_NUMERIC));
+            REQUIRE(result.column_c_datatype(1) == SQL_C_DOUBLE);
+        }
+        REQUIRE(result.column_size(1) == 7);
+        // n numeric(7,3)
+        REQUIRE(result.column_name(2) == NANODBC_TEXT("n"));
+        REQUIRE(result.column_c_datatype(2) == SQL_C_DOUBLE);
+        REQUIRE(result.column_size(2) == 7);
+        if (vendor_ == database_vendor::sqlite)
+        {
+            REQUIRE(result.column_datatype(2) == 8); // FIXME: What is this type?
+            REQUIRE(result.column_decimal_digits(2) == 0); // FIXME: SQLite ODBC mis-reports decimal digits?
+        }
+        else
+        {
+            REQUIRE((result.column_datatype(2) == SQL_DECIMAL || result.column_datatype(2) == SQL_NUMERIC));
+            REQUIRE(result.column_decimal_digits(2) == 3);
+        }
+    }
+
     void date_test()
     {
         auto connection = connect();

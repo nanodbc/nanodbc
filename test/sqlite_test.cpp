@@ -158,6 +158,11 @@ TEST_CASE_METHOD(sqlite_fixture, "catalog_tables_test", "[sqlite][catalog][table
     catalog_tables_test();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "column_descriptor_test", "[sqlite][columns]")
+{
+    column_descriptor_test();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "date_test", "[sqlite][date]")
 {
     date_test();
@@ -226,7 +231,7 @@ TEST_CASE_METHOD(sqlite_fixture, "integral_boundary_test", "[sqlite][integral]")
     nanodbc::connection connection = connect();
     drop_table(connection, NANODBC_TEXT("integral_boundary_test"));
 
-    // SQLite3 uses single storage class INTEGER for all integral SQL types 
+    // SQLite3 uses single storage class INTEGER for all integral SQL types
     execute(connection, NANODBC_TEXT("create table integral_boundary_test(i1 integer,i2 integer,i4 integer,i8 integer);"));
 
     auto const sql = NANODBC_TEXT("insert into integral_boundary_test(i1,i2,i4,i8) values (?,?,?,?);");
