@@ -85,6 +85,16 @@ Continuous integration tests run on [Travis-CI](https://travis-ci.org/). The bui
 
 # Contributing
 
+## Code Style
+
+[`clang-format`](http://clang.llvm.org/docs/ClangFormat.html) handles all C++ code formatting for nanodbc. This utility is [brew-installable](http://brew.sh/) on OS X (`brew install clang-format`) and is available on all major platforms. See our `.clang-format` configuration file for details on the style. The script `scripts/style.sh` formats all code in the repository automatically. To run `clang-format` on a single file use the following.
+
+```shell
+$ clang-format -i /path/to/file
+```
+
+**Please auto-format all code submitted in Pull Requests.**
+
 ## Publish and Release Process
 
 Once your local `master` branch is ready for publishing (i.e. [semantic versioning](http://semver.org/)), use the `scripts/publish.sh` script. This script bumps the major, minor, or patch version, then updates the repository's `VERSION` file, adds a "Preparing" commit, and creates git tags appropriately. For example to make a minor update you would run `./scripts/publish.sh minor`.
