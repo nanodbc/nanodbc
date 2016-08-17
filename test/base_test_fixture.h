@@ -185,16 +185,14 @@ struct base_test_fixture
                 // total number of digits allowed
 
                 // NOTE: Some variations have been observed:
-                // Windows 64-bit + nanodbc 64-bit build + psqlODBC 9.?.? x64 connected to
-                // PostgreSQL 9.3 on Windows x64
-                // (AppVeyor)
+                //
+                // - Windows 64-bit + nanodbc 64-bit build + psqlODBC 9.?.? x64 connected to
+                //   PostgreSQL 9.3 on Windows x64 (AppVeyor)
                 REQUIRE(column_size >= 15);
-                // Windows x64      + nanodbc 64-bit build + psqlODBC 9.3.5 x64 connected to
-                // PostgreSQL 9.5 on Ubuntu
-                // 15.10 x64 (Vagrant)
-                // Ubuntu 12.04 x64 + nanodbc 64-bit build + psqlODBC 9.3.5 x64 connected to
-                // PostgreSQL 9.1 on Ubuntu
-                // 12.04 x64 (Travsi CI)
+                // - Windows x64 + nanodbc 64-bit build + psqlODBC 9.3.5 x64 connected to
+                //   PostgreSQL 9.5 on Ubuntu 15.10 x64 (Vagrant)
+                // - Ubuntu 12.04 x64 + nanodbc 64-bit build + psqlODBC 9.3.5 x64 connected to
+                //   PostgreSQL 9.1 on Ubuntu 12.04 x64 (Travsi CI)
                 REQUIRE(column_size <= 17);
             }
             else
@@ -205,10 +203,12 @@ struct base_test_fixture
         else if (name == NANODBC_TEXT("text"))
         {
             REQUIRE(
-                (column_size == 2147483647 || column_size == 65535 || // MySQL
-                 column_size == 8190 || // PostgreSQL uses MaxLongVarcharSize=8190, which is
-                                        // configurable in odbc.ini
-                 column_size == 0));    // SQLite
+                // MySQL
+                (column_size == 2147483647 || column_size == 65535 ||
+                 // PostgreSQL uses MaxLongVarcharSize=8190, which is configurable in odbc.ini
+                 column_size == 8190 ||
+                 // SQLite
+                 column_size == 0));
         }
         else if (name == NANODBC_TEXT("long varchar"))
         {
@@ -402,56 +402,37 @@ struct base_test_fixture
 
     void blob_test()
     {
-        nanodbc::string_type s =
-            NANODBC_TEXT("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-                         "AAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBB"
-                         "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
-                         "BBBBBBBBBBBBBBBBBBBCCCCCCCCCCCCCC"
-                         "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"
-                         "CCCCCCCCCCCCDDDDDDDDDDDDDDDDDDDDD"
-                         "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"
-                         "DDDDEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"
-                         "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEFFF"
-                         "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
-                         "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFGGGGGGGGGG"
-                         "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG"
-                         "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGHHHHHHHHHHHHHHHHHH"
-                         "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
-                         "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHIIIIIIIIIIIIIIIIIIIIIIIII"
-                         "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII"
-                         "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ"
-                         "JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ"
-                         "JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK"
-                         "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK"
-                         "KKKKKKKKKKKKKKKKKKKKKKKKKKLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL"
-                         "LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL"
-                         "LLLLLLLLLLLLLLLLLLLMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM"
-                         "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM"
-                         "MMMMMMMMMMMNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN"
-                         "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN"
-                         "NNNNOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
-                         "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOPPP"
-                         "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP"
-                         "PPPPPPPPPPPPPPPPPPPPPPQQQQQQQQQQQ"
-                         "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ"
-                         "QQQQQQQQQQQQQQQRRRRRRRRRRRRRRRRRR"
-                         "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR"
-                         "RRRRRRRRSSSSSSSSSSSSSSSSSSSSSSSSS"
-                         "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
-                         "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT"
-                         "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTUUUUUUU"
-                         "UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU"
-                         "UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUVVVVVVVVVVVVVV"
-                         "VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV"
-                         "VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWWWWWWWWW"
-                         "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
-                         "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-                         "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-                         "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY"
-                         "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY"
-                         "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
-                         "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
-                         "ZZZZZZZZZZZZZZZZZZZZZZ");
+        nanodbc::string_type s = NANODBC_TEXT(
+            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+            "AAAAAAAAAAAAABBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+            "BBBBBBBBBBBBBBBBBBBBBBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"
+            "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"
+            "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"
+            "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEFFFFFFFFFFFFFFFFFFFFFF"
+            "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFGGGGGGGGG"
+            "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG"
+            "GGGHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
+            "HHHHHHHHHHHHHHHHIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII"
+            "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ"
+            "JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK"
+            "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL"
+            "LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLMMMMMMMMMMMMMMMMMMM"
+            "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNNNNNNN"
+            "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN"
+            "NNNNNNOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
+            "OOOOOOOOOOOOOOOOOOOPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP"
+            "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ"
+            "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR"
+            "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+            "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSTTTTTTTTTTTTTTTTT"
+            "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTUUUU"
+            "UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU"
+            "UUUUUUUUUVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV"
+            "VVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+            "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+            "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY"
+            "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYZZZZZZZZZZZZZZZZZZZZZZZZZZ"
+            "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
 
         nanodbc::connection connection = connect();
         create_table(connection, NANODBC_TEXT("blob_test"), NANODBC_TEXT("(data BLOB)"));
@@ -663,11 +644,14 @@ struct base_test_fixture
                  columns.sql_data_type() == SQL_WLONGVARCHAR));
             REQUIRE(
                 (columns.column_size() == 2147483647 ||
-                 columns.column_size() == 1048576 || // Vertica
-                 columns.column_size() == 65535 ||   // MySQL
-                 columns.column_size() == 8190 || // PostgreSQL uses MaxLongVarcharSize=8190, which
-                                                  // is configurable in odbc.ini
-                 columns.column_size() == 0));    // SQLite
+                 // Vertica
+                 columns.column_size() == 1048576 ||
+                 // MySQL
+                 columns.column_size() == 65535 ||
+                 // PostgreSQL uses MaxLongVarcharSize=8190, which is configurable in odbc.ini
+                 columns.column_size() == 8190 ||
+                 // SQLite
+                 columns.column_size() == 0));
             check_data_type_size(text_type_name, columns.column_size());
 
             REQUIRE(columns.next());
@@ -915,9 +899,8 @@ struct base_test_fixture
             REQUIRE(result.column_c_datatype(1) == SQL_C_CHAR);
             REQUIRE(result.column_size(1) == 7);
 #endif
-            REQUIRE(
-                result.column_decimal_digits(2) ==
-                0); // FIXME: SQLite ODBC mis-reports decimal digits?
+            // FIXME: SQLite ODBC mis-reports decimal digits?
+            REQUIRE(result.column_decimal_digits(2) == 0);
         }
         else
         {
@@ -934,9 +917,8 @@ struct base_test_fixture
         if (vendor_ == database_vendor::sqlite)
         {
             REQUIRE(result.column_datatype(2) == 8); // FIXME: What is this type?
-            REQUIRE(
-                result.column_decimal_digits(2) ==
-                0); // FIXME: SQLite ODBC mis-reports decimal digits?
+            // FIXME: SQLite ODBC mis-reports decimal digits?
+            REQUIRE(result.column_decimal_digits(2) == 0);
         }
         else
         {
@@ -977,7 +959,6 @@ struct base_test_fixture
     {
         // A generic test to exercise the DBMS info API is callable.
         // DBMS-specific test (MySQL, SQLite, etc.) may perform extended checks.
-
         nanodbc::connection connection = connect();
         REQUIRE(!connection.dbms_name().empty());
         REQUIRE(!connection.dbms_version().empty());
