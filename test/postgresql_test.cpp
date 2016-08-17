@@ -8,7 +8,8 @@ namespace
 {
 struct postgresql_fixture : public base_test_fixture
 {
-    postgresql_fixture() : base_test_fixture(/* connecting string from NANODBC_TEST_CONNSTR environment variable)*/)
+    postgresql_fixture()
+        : base_test_fixture(/* connecting string from NANODBC_TEST_CONNSTR environment variable)*/)
     {
         if (connection_string_.empty())
             connection_string_ = get_env("NANODBC_TEST_CONNSTR_PGSQL");
@@ -25,7 +26,10 @@ TEST_CASE_METHOD(postgresql_fixture, "driver_test", "[postgresql][driver]")
     driver_test();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "catalog_list_catalogs_test", "[postgresql][catalog][catalogs]")
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "catalog_list_catalogs_test",
+    "[postgresql][catalog][catalogs]")
 {
     catalog_list_catalogs_test();
 }
@@ -40,7 +44,10 @@ TEST_CASE_METHOD(postgresql_fixture, "catalog_columns_test", "[postgresql][catal
     catalog_columns_test();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "catalog_primary_keys_test", "[postgresql][catalog][primary_keys]")
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "catalog_primary_keys_test",
+    "[postgresql][catalog][primary_keys]")
 {
     catalog_primary_keys_test();
 }
@@ -70,7 +77,10 @@ TEST_CASE_METHOD(postgresql_fixture, "exception_test", "[postgresql][exception]"
     exception_test();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "execute_multiple_transaction_test", "[postgresql][execute][transaction]")
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "execute_multiple_transaction_test",
+    "[postgresql][execute][transaction]")
 {
     execute_multiple_transaction_test();
 }

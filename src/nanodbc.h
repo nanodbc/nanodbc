@@ -3,10 +3,11 @@
 /// \mainpage
 ///
 /// \section synopsis Synopsis
-/// This library provides a wrapper API for the native ODBC API. It aims to do everything ODBC does, but with a \b much
-/// nicer interface. Anything it doesn't (yet) do can be done by retrieving the native ODBC handles and dropping down to
-/// straight ODBC C API code.
-/// For more propaganda, please see the <a href="http://lexicalunit.github.com/nanodbc/">project homepage</a>.
+/// This library provides a wrapper API for the native ODBC API. It aims to do everything ODBC does,
+/// but with a \b much nicer interface. Anything it doesn't (yet) do can be done by retrieving the
+/// native ODBC handles and dropping down to straight ODBC C API code.
+/// For more propaganda, please see the <a href="http://lexicalunit.github.com/nanodbc/">project
+/// homepage</a>.
 ///
 /// \section toc Table of Contents
 /// - \ref license "License"
@@ -88,12 +89,15 @@
 #endif
 
 /// \brief The entirety of nanodbc can be found within this one namespace.
-/// \note This library does not make any exception safety guarantees, but should work just fine with a threading enabled
-///       ODBC driver. If you want to use nanodbc objects in threads I recommend each thread keep their own connection
-///       to the database. Otherwise you must synchronize any access to nanodbc objects.
+///
+/// \note This library does not make any exception safety guarantees, but should work just fine with
+///       a threading enabled ODBC driver. If you want to use nanodbc objects in threads I recommend
+///       each thread keep their own connection to the database. Otherwise you must synchronize any
+///       access to nanodbc objects.
 namespace nanodbc
 {
 
+// clang-format off
 //  .d8888b.                     .d888 d8b                                   888    d8b
 // d88P  Y88b                   d88P"  Y8P                                   888    Y8P
 // 888    888                   888                                          888
@@ -106,6 +110,7 @@ namespace nanodbc
 //                                         Y8b d88P
 //                                          "Y88P"
 // MARK: Configuration -
+// clang-format on
 
 /// \addtogroup macros Macros
 /// \brief Macros that nanodbc uses, can be overriden by users.
@@ -164,7 +169,8 @@ typedef long null_type;
 #endif
 #else
 /// \def NANODBC_TEXT(s)
-/// \brief Maps generic text to string literal with characters of type corresponding to `nanodbc::string_type`.
+/// \brief Maps generic text to string literal with characters of type corresponding to
+/// `nanodbc::string_type`.
 ///
 /// By default, the macro maps to an unprefixed string literal.
 /// If building with options NANODBC_USE_UNICODE=ON and
@@ -174,7 +180,8 @@ typedef long null_type;
 ///   * Otherwise, it prefixes a literal with u"...".
 #define NANODBC_TEXT(s) s
 
-/// \c string_type will be \c std::u16string or \c std::32string if \c NANODBC_USE_UNICODE is defined, otherwise \c
+/// \c string_type will be \c std::u16string or \c std::32string if \c NANODBC_USE_UNICODE is
+/// defined, otherwise \c
 /// std::string.
 typedef unspecified - type string_type;
 /// \c null_type will be \c int64_t for 64-bit compilations, otherwise \c long.
@@ -189,6 +196,7 @@ typedef unspecified - type null_type;
 #define NANODBC_NOEXCEPT noexcept
 #endif
 
+// clang-format off
 // 8888888888                                      888    888                        888 888 d8b
 // 888                                             888    888                        888 888 Y8P
 // 888                                             888    888                        888 888
@@ -201,13 +209,17 @@ typedef unspecified - type null_type;
 //                                                                                                        Y8b d88P
 //                                                                                                         "Y88P"
 // MARK: Error Handling -
+// clang-format on
 
 /// \addtogroup exceptions Exception types
 /// \brief Possible error conditions.
 ///
-/// Specific errors such as \c type_incompatible_error, \c null_access_error, and \c index_range_error can arise
-/// from improper use of the nanodbc library. The general \c database_error is for all other situations
-/// in which the ODBC driver or C API reports an error condition. The explanatory string for database_error
+/// Specific errors such as \c type_incompatible_error, \c null_access_error, and \c
+/// index_range_error can arise
+/// from improper use of the nanodbc library. The general \c database_error is for all other
+/// situations
+/// in which the ODBC driver or C API reports an error condition. The explanatory string for
+/// database_error
 /// will, if possible, contain a diagnostic message obtained from \c SQLGetDiagRec().
 /// @{
 
@@ -252,11 +264,13 @@ public:
 class database_error : public std::runtime_error
 {
 public:
-    /// \brief Creates a runtime_error with a message describing the last ODBC error generated for the given handle and
+    /// \brief Creates a runtime_error with a message describing the last ODBC error generated for
+    /// the given handle and
     /// handle_type.
     /// \param handle The native ODBC statement or connection handle.
     /// \param handle_type The native ODBC handle type code for the given handle.
-    /// \param info Additional information that will be appended to the beginning of the error message.
+    /// \param info Additional information that will be appended to the beginning of the error
+    /// message.
     database_error(void* handle, short handle_type, const std::string& info = "");
     const char* what() const NANODBC_NOEXCEPT;
     const long native() const NANODBC_NOEXCEPT;
@@ -270,6 +284,7 @@ private:
 
 /// @}
 
+// clang-format off
 // 888     888 888    d8b 888 d8b 888    d8b
 // 888     888 888    Y8P 888 Y8P 888    Y8P
 // 888     888 888        888     888
@@ -279,6 +294,7 @@ private:
 // Y88b. .d88P Y88b.  888 888 888 Y88b.  888 Y8b.          X88
 //  "Y88888P"   "Y888 888 888 888  "Y888 888  "Y8888   88888P'
 // MARK: Utilities -
+// clang-format on
 
 /// \addtogroup utility Utilities
 /// \brief Additional nanodbc utility classes and functions.
@@ -343,6 +359,7 @@ struct timestamp
 ///
 /// @{
 
+// clang-format off
 // 88888888888                                                  888    d8b
 //     888                                                      888    Y8P
 //     888                                                      888
@@ -352,10 +369,12 @@ struct timestamp
 //     888  888    888  888 888  888      X88 888  888 Y88b.    Y88b.  888 Y88..88P 888  888
 //     888  888    "Y888888 888  888  88888P' "Y888888  "Y8888P  "Y888 888  "Y88P"  888  888
 // MARK: Transaction -
+// clang-format on
 
 /// \brief A resource for managing transaction commits and rollbacks.
 ///
-/// \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits
+/// \attention You will want to use transactions if you are doing batch operations because it will
+/// prevent auto commits
 ///            from occurring after each individual operation is executed.
 class transaction
 {
@@ -379,7 +398,8 @@ public:
     /// Member swap.
     void swap(transaction& rhs) NANODBC_NOEXCEPT;
 
-    /// \brief If this transaction has not been committed, will will rollback any modifying operations.
+    /// \brief If this transaction has not been committed, will will rollback any modifying
+    /// operations.
     ~transaction() NANODBC_NOEXCEPT;
 
     /// \brief Commits transaction immediately.
@@ -409,6 +429,7 @@ private:
     std::shared_ptr<transaction_impl> impl_;
 };
 
+// clang-format off
 //  .d8888b.  888             888                                            888
 // d88P  Y88b 888             888                                            888
 // Y88b.      888             888                                            888
@@ -418,6 +439,7 @@ private:
 // Y88b  d88P Y88b.  888  888 Y88b. Y8b.     888  888  888 Y8b.     888  888 Y88b.
 //  "Y8888P"   "Y888 "Y888888  "Y888 "Y8888  888  888  888  "Y8888  888  888  "Y888
 // MARK: Statement -
+// clang-format on
 
 /// \brief Represents a statement on the database.
 class statement
@@ -453,7 +475,8 @@ public:
     /// \brief Constructs and prepares a statement using the given connection and query.
     /// \param conn The connection to use.
     /// \param query The SQL query statement.
-    /// \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
+    /// \param timeout The number in seconds before query timeout. Default is 0 indicating no
+    /// timeout.
     /// \see execute(), just_execute(), execute_direct(), just_execute_direct(), open(), prepare()
     statement(class connection& conn, const string_type& query, long timeout = 0);
 
@@ -505,7 +528,8 @@ public:
     /// \brief Opens and prepares the given statement to execute on the given connection.
     /// \param conn The connection where the statement will be executed.
     /// \param query The SQL query that will be executed.
-    /// \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
+    /// \param timeout The number in seconds before query timeout. Default is 0 indicating no
+    /// timeout.
     /// \see open()
     /// \throws database_error
     void prepare(class connection& conn, const string_type& query, long timeout = 0);
@@ -513,7 +537,8 @@ public:
     /// \brief Prepares the given statement to execute its associated connection.
     /// If the statement is not open throws programming_error.
     /// \param query The SQL query that will be executed.
-    /// \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
+    /// \param timeout The number in seconds before query timeout. Default is 0 indicating no
+    /// timeout.
     /// \see open()
     /// \throws database_error, programming_error
     void prepare(const string_type& query, long timeout = 0);
@@ -522,68 +547,93 @@ public:
     /// \throws database_error
     void timeout(long timeout = 0);
 
-    /// \brief Immediately opens, prepares, and executes the given query directly on the given connection.
+    /// \brief Immediately opens, prepares, and executes the given query directly on the given
+    /// connection.
     /// \param conn The connection where the statement will be executed.
     /// \param query The SQL query that will be executed.
-    /// \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
-    /// \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
+    /// \param batch_operations Numbers of rows to fetch per rowset, or the number of batch
+    /// parameters to process.
+    /// \param timeout The number in seconds before query timeout. Default is 0 indicating no
+    /// timeout.
     /// \return A result set object.
-    /// \attention You will want to use transactions if you are doing batch operations because it will prevent auto
+    /// \attention You will want to use transactions if you are doing batch operations because it
+    /// will prevent auto
     ///            commits from occurring after each individual operation is executed.
     /// \see open(), prepare(), execute(), result, transaction
-    class result
-    execute_direct(class connection& conn, const string_type& query, long batch_operations = 1, long timeout = 0);
+    class result execute_direct(
+        class connection& conn,
+        const string_type& query,
+        long batch_operations = 1,
+        long timeout = 0);
 
 #if !defined(NANODBC_DISABLE_ASYNC)
     /// \brief Prepare the given statement, in asynchronous mode.
     /// If the statement is not open throws programming_error.
     ///
-    /// This method will only be available if nanodbc is built against ODBC headers and library that supports
+    /// This method will only be available if nanodbc is built against ODBC headers and library that
+    /// supports
     /// asynchronous mode.
-    /// Such that the identifiers `SQL_ATTR_ASYNC_STMT_EVENT` and `SQLCompleteAsync` are extant. Otherwise
+    /// Such that the identifiers `SQL_ATTR_ASYNC_STMT_EVENT` and `SQLCompleteAsync` are extant.
+    /// Otherwise
     /// this method will be defined, but not implemented.
     ///
-    /// Asynchronous features can be disabled entirely by defining `NANODBC_DISABLE_ASYNC` when building nanodbc.
+    /// Asynchronous features can be disabled entirely by defining `NANODBC_DISABLE_ASYNC` when
+    /// building nanodbc.
     ///
-    /// \param event_handle The event handle for which the caller will wait before calling complete_prepare.
+    /// \param event_handle The event handle for which the caller will wait before calling
+    /// complete_prepare.
     /// \param query The SQL query that will be prepared.
-    /// \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
+    /// \param timeout The number in seconds before query timeout. Default is 0 indicating no
+    /// timeout.
     /// \throws database_error
-    /// \return Boolean: true if the event handle needs to be awaited, false if the result is ready immediately
+    /// \return Boolean: true if the event handle needs to be awaited, false if the result is ready
+    /// immediately
     /// \see complete_prepare()
     bool async_prepare(const string_type& query, void* event_handle, long timeout = 0);
 
     /// \brief Completes a previously initiated asynchronous query preparation.
     ///
-    /// This method will only be available if nanodbc is built against ODBC headers and library that supports
+    /// This method will only be available if nanodbc is built against ODBC headers and library that
+    /// supports
     /// asynchronous mode.
-    /// Such that the identifiers `SQL_ATTR_ASYNC_STMT_EVENT` and `SQLCompleteAsync` are extant. Otherwise
+    /// Such that the identifiers `SQL_ATTR_ASYNC_STMT_EVENT` and `SQLCompleteAsync` are extant.
+    /// Otherwise
     /// this method will be defined, but not implemented.
     ///
-    /// Asynchronous features can be disabled entirely by defining `NANODBC_DISABLE_ASYNC` when building nanodbc.
+    /// Asynchronous features can be disabled entirely by defining `NANODBC_DISABLE_ASYNC` when
+    /// building nanodbc.
     ///
     /// \throws database_error
     /// \see async_prepare()
     void complete_prepare();
 
-    /// \brief Immediately opens, prepares, and executes the given query directly on the given connection, in
+    /// \brief Immediately opens, prepares, and executes the given query directly on the given
+    /// connection, in
     /// asynchronous mode.
     ///
-    /// This method will only be available if nanodbc is built against ODBC headers and library that supports
+    /// This method will only be available if nanodbc is built against ODBC headers and library that
+    /// supports
     /// asynchronous mode.
-    /// Such that the identifiers `SQL_ATTR_ASYNC_STMT_EVENT` and `SQLCompleteAsync` are extant. Otherwise
+    /// Such that the identifiers `SQL_ATTR_ASYNC_STMT_EVENT` and `SQLCompleteAsync` are extant.
+    /// Otherwise
     /// this method will be defined, but not implemented.
     ///
-    /// Asynchronous features can be disabled entirely by defining `NANODBC_DISABLE_ASYNC` when building nanodbc.
+    /// Asynchronous features can be disabled entirely by defining `NANODBC_DISABLE_ASYNC` when
+    /// building nanodbc.
     ///
     /// \param conn The connection where the statement will be executed.
-    /// \param event_handle The event handle for which the caller will wait before calling complete_execute.
+    /// \param event_handle The event handle for which the caller will wait before calling
+    /// complete_execute.
     /// \param query The SQL query that will be executed.
-    /// \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
-    /// \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
+    /// \param batch_operations Numbers of rows to fetch per rowset, or the number of batch
+    /// parameters to process.
+    /// \param timeout The number in seconds before query timeout. Default is 0 indicating no
+    /// timeout.
     /// \throws database_error
-    /// \return Boolean: true if the event handle needs to be awaited, false if the result is ready immediately
-    /// \attention You will want to use transactions if you are doing batch operations because it will prevent auto
+    /// \return Boolean: true if the event handle needs to be awaited, false if the result is ready
+    /// immediately
+    /// \attention You will want to use transactions if you are doing batch operations because it
+    /// will prevent auto
     ///            commits from occurring after each individual operation is executed.
     /// \see complete_execute(), open(), prepare(), execute(), result, transaction
     bool async_execute_direct(
@@ -595,41 +645,54 @@ public:
 
     /// \brief Execute the previously prepared query now, in asynchronous mode.
     ///
-    /// This method will only be available if nanodbc is built against ODBC headers and library that supports
+    /// This method will only be available if nanodbc is built against ODBC headers and library that
+    /// supports
     /// asynchronous mode.
-    /// Such that the identifiers `SQL_ATTR_ASYNC_STMT_EVENT` and `SQLCompleteAsync` are extant. Otherwise
+    /// Such that the identifiers `SQL_ATTR_ASYNC_STMT_EVENT` and `SQLCompleteAsync` are extant.
+    /// Otherwise
     /// this method will be defined, but not implemented.
     ///
-    /// Asynchronous features can be disabled entirely by defining `NANODBC_DISABLE_ASYNC` when building nanodbc.
+    /// Asynchronous features can be disabled entirely by defining `NANODBC_DISABLE_ASYNC` when
+    /// building nanodbc.
     ///
-    /// \param event_handle The event handle for which the caller will wait before calling complete_execute.
-    /// \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
-    /// \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
+    /// \param event_handle The event handle for which the caller will wait before calling
+    /// complete_execute.
+    /// \param batch_operations Numbers of rows to fetch per rowset, or the number of batch
+    /// parameters to process.
+    /// \param timeout The number in seconds before query timeout. Default is 0 indicating no
+    /// timeout.
     /// \throws database_error
-    /// \return Boolean: true if the event handle needs to be awaited, false if the result is ready immediately
-    /// \attention You will want to use transactions if you are doing batch operations because it will prevent auto
+    /// \return Boolean: true if the event handle needs to be awaited, false if the result is ready
+    /// immediately
+    /// \attention You will want to use transactions if you are doing batch operations because it
+    /// will prevent auto
     ///            commits from occurring after each individual operation is executed.
     /// \see complete_execute(), open(), prepare(), result, transaction
     bool async_execute(void* event_handle, long batch_operations = 1, long timeout = 0);
 
     /// \brief Completes a previously initiated asynchronous query execution, returning the result.
     ///
-    /// This method will only be available if nanodbc is built against ODBC headers and library that supports
+    /// This method will only be available if nanodbc is built against ODBC headers and library that
+    /// supports
     /// asynchronous mode.
-    /// Such that the identifiers `SQL_ATTR_ASYNC_STMT_EVENT` and `SQLCompleteAsync` are extant. Otherwise
+    /// Such that the identifiers `SQL_ATTR_ASYNC_STMT_EVENT` and `SQLCompleteAsync` are extant.
+    /// Otherwise
     /// this method will be defined, but not implemented.
     ///
-    /// Asynchronous features can be disabled entirely by defining `NANODBC_DISABLE_ASYNC` when building nanodbc.
+    /// Asynchronous features can be disabled entirely by defining `NANODBC_DISABLE_ASYNC` when
+    /// building nanodbc.
     ///
     /// \throws database_error
     /// \return A result set object.
-    /// \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
+    /// \param batch_operations Numbers of rows to fetch per rowset, or the number of batch
+    /// parameters to process.
     /// \see async_execute(), async_execute_direct()
     class result complete_execute(long batch_operations = 1);
 
     class result async_complete(long batch_operations = 1); // left for backwards compatibility
 
-    void enable_async(void* event_handle); // undocumented - for internal use only (used from result_impl)
+    void enable_async(
+        void* event_handle); // undocumented - for internal use only (used from result_impl)
 
     void disable_async() const; // undocumented - for internal use only (used from result_impl)
 #endif
@@ -637,32 +700,44 @@ public:
     /// \brief Execute the previously prepared query now without constructing result object.
     /// \param conn The connection where the statement will be executed.
     /// \param query The SQL query that will be executed.
-    /// \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
-    /// \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
+    /// \param batch_operations Numbers of rows to fetch per rowset, or the number of batch
+    /// parameters to process.
+    /// \param timeout The number in seconds before query timeout. Default is 0 indicating no
+    /// timeout.
     /// \throws database_error
     /// \return A result set object.
-    /// \attention You will want to use transactions if you are doing batch operations because it will prevent auto
+    /// \attention You will want to use transactions if you are doing batch operations because it
+    /// will prevent auto
     ///            commits from occurring after each individual operation is executed.
     /// \see open(), prepare(), execute(), execute_direct(), result, transaction
-    void
-    just_execute_direct(class connection& conn, const string_type& query, long batch_operations = 1, long timeout = 0);
+    void just_execute_direct(
+        class connection& conn,
+        const string_type& query,
+        long batch_operations = 1,
+        long timeout = 0);
 
     /// \brief Execute the previously prepared query now.
-    /// \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
-    /// \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
+    /// \param batch_operations Numbers of rows to fetch per rowset, or the number of batch
+    /// parameters to process.
+    /// \param timeout The number in seconds before query timeout. Default is 0 indicating no
+    /// timeout.
     /// \throws database_error
     /// \return A result set object.
-    /// \attention You will want to use transactions if you are doing batch operations because it will prevent auto
+    /// \attention You will want to use transactions if you are doing batch operations because it
+    /// will prevent auto
     ///            commits from occurring after each individual operation is executed.
     /// \see open(), prepare(), result, transaction
     class result execute(long batch_operations = 1, long timeout = 0);
 
     /// \brief Execute the previously prepared query now without constructing result object.
-    /// \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
-    /// \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
+    /// \param batch_operations Numbers of rows to fetch per rowset, or the number of batch
+    /// parameters to process.
+    /// \param timeout The number in seconds before query timeout. Default is 0 indicating no
+    /// timeout.
     /// \throws database_error
     /// \return A result set object.
-    /// \attention You will want to use transactions if you are doing batch operations because it will prevent auto
+    /// \attention You will want to use transactions if you are doing batch operations because it
+    /// will prevent auto
     ///            commits from occurring after each individual operation is executed.
     /// \see open(), prepare(), execute(), result, transaction
     void just_execute(long batch_operations = 1, long timeout = 0);
@@ -680,7 +755,8 @@ public:
         const string_type& procedure,
         const string_type& column);
 
-    /// \brief Returns the number of rows affected by the request or -1 if the number of affected rows is not available.
+    /// \brief Returns the number of rows affected by the request or -1 if the number of affected
+    /// rows is not available.
     /// \throws database_error
     long affected_rows() const;
 
@@ -691,7 +767,8 @@ public:
     /// \brief Resets all currently bound parameters.
     void reset_parameters() NANODBC_NOEXCEPT;
 
-    /// \brief Returns the parameter size for the indicated parameter placeholder within a prepared statement.
+    /// \brief Returns the parameter size for the indicated parameter placeholder within a prepared
+    /// statement.
     unsigned long parameter_size(short param) const;
 
     /// \addtogroup binding Binding parameters
@@ -699,12 +776,14 @@ public:
     ///
     /// @{
 
-    /// \brief Binds the given value to the given parameter placeholder number in the prepared statement.
+    /// \brief Binds the given value to the given parameter placeholder number in the prepared
+    /// statement.
     ///
     /// If your prepared SQL query has any ? placeholders, this is how you bind values to them.
     /// Placeholder numbers count from left to right and are 0-indexed.
     ///
-    /// It is NOT possible to use these functions for bulk operations as number of elements is not specified here.
+    /// It is NOT possible to use these functions for bulk operations as number of elements is not
+    /// specified here.
     ///
     /// \param param Placeholder position.
     /// \param value Value to substitute into placeholder.
@@ -714,7 +793,8 @@ public:
     void bind(short param, const T* value, param_direction direction = PARAM_IN);
 
     /// \addtogroup bind_multi Binding multiple non-string values
-    /// \brief Binds the given values to the given parameter placeholder number in the prepared statement.
+    /// \brief Binds the given values to the given parameter placeholder number in the prepared
+    /// statement.
     ///
     /// If your prepared SQL query has any ? placeholders, this is how you bind values to them.
     /// Placeholder numbers count from left to right and are 0-indexed.
@@ -734,7 +814,8 @@ public:
     /// \brief Binds multiple values.
     /// \see bind_multi
     template <class T>
-    void bind(short param, const T* values, std::size_t elements, param_direction direction = PARAM_IN);
+    void
+    bind(short param, const T* values, std::size_t elements, param_direction direction = PARAM_IN);
 
     /// \brief Binds multiple values.
     /// \see bind_multi
@@ -749,13 +830,18 @@ public:
     /// \brief Binds multiple values.
     /// \see bind_multi
     template <class T>
-    void
-    bind(short param, const T* values, std::size_t elements, const bool* nulls, param_direction direction = PARAM_IN);
+    void bind(
+        short param,
+        const T* values,
+        std::size_t elements,
+        const bool* nulls,
+        param_direction direction = PARAM_IN);
 
     /// @}
 
     /// \addtogroup bind_strings Binding multiple string values
-    /// \brief Binds the given string values to the given parameter placeholder number in the prepared statement.
+    /// \brief Binds the given string values to the given parameter placeholder number in the
+    /// prepared statement.
     ///
     /// If your prepared SQL query has any ? placeholders, this is how you bind values to them.
     /// Placeholder numbers count from left to right and are 0-indexed.
@@ -765,7 +851,8 @@ public:
     /// \param param Placeholder position.
     /// \param values Values to substitute into placeholder.
     /// \param length Maximum length of string elements.
-    /// \param elements The number of elements being bound. Otherwise the value N is taken as the number of elements.
+    /// \param elements The number of elements being bound. Otherwise the value N is taken as the
+    /// number of elements.
     /// \param null_sentry Value which should represent a null value.
     /// \param nulls Flags for values that should be set to a null value.
     /// \param param_direciton ODBC parameter direction.
@@ -785,9 +872,13 @@ public:
     /// \brief Binds multiple string values.
     /// \see bind_strings
     template <std::size_t N, std::size_t M>
-    void bind_strings(short param, const string_type::value_type (&values)[N][M], param_direction direction = PARAM_IN)
+    void bind_strings(
+        short param,
+        const string_type::value_type (&values)[N][M],
+        param_direction direction = PARAM_IN)
     {
-        bind_strings(param, reinterpret_cast<const string_type::value_type*>(values), M, N, direction);
+        bind_strings(
+            param, reinterpret_cast<const string_type::value_type*>(values), M, N, direction);
     }
 
     /// \brief Binds multiple string values.
@@ -809,7 +900,13 @@ public:
         const string_type::value_type* null_sentry,
         param_direction direction = PARAM_IN)
     {
-        bind_strings(param, reinterpret_cast<const string_type::value_type*>(values), M, N, null_sentry, direction);
+        bind_strings(
+            param,
+            reinterpret_cast<const string_type::value_type*>(values),
+            M,
+            N,
+            null_sentry,
+            direction);
     }
 
     /// \brief Binds multiple string values.
@@ -831,12 +928,19 @@ public:
         const bool* nulls,
         param_direction direction = PARAM_IN)
     {
-        bind_strings(param, reinterpret_cast<const string_type::value_type*>(values), M, N, nulls, direction);
+        bind_strings(
+            param,
+            reinterpret_cast<const string_type::value_type*>(values),
+            M,
+            N,
+            nulls,
+            direction);
     }
 
     /// @}
 
-    /// \brief Binds null values to the given parameter placeholder number in the prepared statement.
+    /// \brief Binds null values to the given parameter placeholder number in the prepared
+    /// statement.
     ///
     /// If your prepared SQL query has any ? placeholders, this is how you bind values to them.
     /// Placeholder numbers count from left to right and are 0-indexed.
@@ -861,6 +965,7 @@ private:
     std::shared_ptr<statement_impl> impl_;
 };
 
+// clang-format off
 //  .d8888b.                                               888    d8b
 // d88P  Y88b                                              888    Y8P
 // 888    888                                              888
@@ -870,6 +975,7 @@ private:
 // Y88b  d88P Y88..88P 888  888 888  888 Y8b.     Y88b.    Y88b.  888 Y88..88P 888  888
 //  "Y8888P"   "Y88P"  888  888 888  888  "Y8888   "Y8888P  "Y888 888  "Y88P"  888  888
 // MARK: Connection -
+// clang-format on
 
 /// \brief Manages and encapsulates ODBC resources such as the connection and environment handles.
 class connection
@@ -896,14 +1002,21 @@ public:
     /// \param dsn The name of the data source.
     /// \param user The username for authenticating to the data source.
     /// \param pass The password for authenticating to the data source.
-    /// \param timeout The number in seconds before connection timeout. Default is 0 indicating no timeout.
+    /// \param timeout The number in seconds before connection timeout. Default is 0 indicating no
+    /// timeout.
     /// \throws database_error
     /// \see connected(), connect()
-    connection(const string_type& dsn, const string_type& user, const string_type& pass, long timeout = 0);
+    connection(
+        const string_type& dsn,
+        const string_type& user,
+        const string_type& pass,
+        long timeout = 0);
 
-    /// \brief Create new connection object and immediately connect using the given connection string.
+    /// \brief Create new connection object and immediately connect using the given connection
+    /// string.
     /// \param connection_string The connection string for establishing a connection.
-    /// \param timeout The number in seconds before connection timeout. Default is 0 indicating no timeout.
+    /// \param timeout The number in seconds before connection timeout. Default is 0 indicating no
+    /// timeout.
     /// \throws database_error
     /// \see connected(), connect()
     connection(const string_type& connection_string, long timeout = 0);
@@ -918,14 +1031,20 @@ public:
     /// \param dsn The name of the data source.
     /// \param user The username for authenticating to the data source.
     /// \param pass The password for authenticating to the data source.
-    /// \param timeout The number in seconds before connection timeout. Default is 0 indicating no timeout.
+    /// \param timeout The number in seconds before connection timeout. Default is 0 indicating no
+    /// timeout.
     /// \throws database_error
     /// \see connected()
-    void connect(const string_type& dsn, const string_type& user, const string_type& pass, long timeout = 0);
+    void connect(
+        const string_type& dsn,
+        const string_type& user,
+        const string_type& pass,
+        long timeout = 0);
 
     /// \brief Connect using the given connection string.
     /// \param connection_string The connection string for establishing a connection.
-    /// \param timeout The number in seconds before connection timeout. Default is 0 indicating no timeout.
+    /// \param timeout The number in seconds before connection timeout. Default is 0 indicating no
+    /// timeout.
     /// \throws database_error
     /// \see connected()
     void connect(const string_type& connection_string, long timeout = 0);
@@ -933,20 +1052,26 @@ public:
 #if !defined(NANODBC_DISABLE_ASYNC)
     /// \brief Initiate an asynchronous connection operation to the given data source.
     ///
-    /// This method will only be available if nanodbc is built against ODBC headers and library that supports
+    /// This method will only be available if nanodbc is built against ODBC headers and library that
+    /// supports
     /// asynchronous mode.
-    /// Such that the identifiers `SQL_ATTR_ASYNC_DBC_EVENT` and `SQLCompleteAsync` are extant. Otherwise
+    /// Such that the identifiers `SQL_ATTR_ASYNC_DBC_EVENT` and `SQLCompleteAsync` are extant.
+    /// Otherwise
     /// this method will be defined, but not implemented.
     ///
-    /// Asynchronous features can be disabled entierly by defining `NANODBC_DISABLE_ASYNC` when building nanodbc.
+    /// Asynchronous features can be disabled entierly by defining `NANODBC_DISABLE_ASYNC` when
+    /// building nanodbc.
     ///
     /// \param dsn The name of the data source.
     /// \param user The username for authenticating to the data source.
     /// \param pass The password for authenticating to the data source.
-    /// \param event_handle The event handle for which the caller will wait before calling async_complete.
-    /// \param timeout The number in seconds before connection timeout. Default is 0 indicating no timeout.
+    /// \param event_handle The event handle for which the caller will wait before calling
+    /// async_complete.
+    /// \param timeout The number in seconds before connection timeout. Default is 0 indicating no
+    /// timeout.
     /// \throws database_error
-    /// \return Boolean: true if the event handle needs to be awaited, false if the connection is ready immediately
+    /// \return Boolean: true if the event handle needs to be awaited, false if the connection is
+    /// ready immediately
     /// \see connected()
     bool async_connect(
         const string_type& dsn,
@@ -957,24 +1082,31 @@ public:
 
     /// \brief Initiate an asynchronous connection operation using the given connection string.
     ///
-    /// This method will only be available if nanodbc is built against ODBC headers and library that supports
+    /// This method will only be available if nanodbc is built against ODBC headers and library that
+    /// supports
     /// asynchronous mode.
-    /// Such that the identifiers `SQL_ATTR_ASYNC_DBC_EVENT` and `SQLCompleteAsync` are extant. Otherwise
+    /// Such that the identifiers `SQL_ATTR_ASYNC_DBC_EVENT` and `SQLCompleteAsync` are extant.
+    /// Otherwise
     /// this method will be defined, but not implemented.
     ///
-    /// Asynchronous features can be disabled entierly by defining `NANODBC_DISABLE_ASYNC` when building nanodbc.
+    /// Asynchronous features can be disabled entierly by defining `NANODBC_DISABLE_ASYNC` when
+    /// building nanodbc.
     ///
     /// \param connection_string The connection string for establishing a connection.
-    /// \param event_handle The event handle for which the caller will wait before calling async_complete.
-    /// \param timeout The number in seconds before connection timeout. Default is 0 indicating no timeout.
+    /// \param event_handle The event handle for which the caller will wait before calling
+    /// async_complete.
+    /// \param timeout The number in seconds before connection timeout. Default is 0 indicating no
+    /// timeout.
     /// \throws database_error
-    /// \return Boolean: true if the event handle needs to be awaited, false if the connection is ready immediately
+    /// \return Boolean: true if the event handle needs to be awaited, false if the connection is
+    /// ready immediately
     /// \see connected()
     bool async_connect(const string_type& connection_string, void* event_handle, long timeout = 0);
 
     /// \brief Completes a previously initiated asynchronous connection operation.
     ///
-    /// Asynchronous features can be disabled entierly by defining `NANODBC_DISABLE_ASYNC` when building nanodbc.
+    /// Asynchronous features can be disabled entierly by defining `NANODBC_DISABLE_ASYNC` when
+    /// building nanodbc.
     void async_complete();
 #endif
 
@@ -1029,6 +1161,7 @@ private:
     std::shared_ptr<connection_impl> impl_;
 };
 
+// clang-format off
 // 8888888b.                            888 888
 // 888   Y88b                           888 888
 // 888    888                           888 888
@@ -1038,13 +1171,15 @@ private:
 // 888  T88b Y8b.          X88 Y88b 888 888 Y88b.
 // 888   T88b "Y8888   88888P'  "Y88888 888  "Y888
 // MARK: Result -
+// clang-format on
 
 class catalog;
 
 /// \brief A resource for managing result sets from statement execution.
 ///
 /// \see statement::execute(), statement::execute_direct()
-/// \note result objects may be copied, however all copies will refer to the same underlying ODBC result set.
+/// \note result objects may be copied, however all copies will refer to the same underlying ODBC
+/// result set.
 class result
 {
 public:
@@ -1074,11 +1209,13 @@ public:
     /// \brief The rowset size for this result set.
     long rowset_size() const NANODBC_NOEXCEPT;
 
-    /// \brief Returns the number of rows affected by the request or -1 if the number of affected rows is not available.
+    /// \brief Returns the number of rows affected by the request or -1 if the number of affected
+    /// rows is not available.
     /// \throws database_error
     long affected_rows() const;
 
-    /// \brief Returns the number of rows in the current rowset or 0 if the number of rows is not available.
+    /// \brief Returns the number of rows in the current rowset or 0 if the number of rows is not
+    /// available.
     long rows() const NANODBC_NOEXCEPT;
 
     /// \brief Returns the number of columns in a result set.
@@ -1102,12 +1239,14 @@ public:
 
 #if !defined(NANODBC_DISABLE_ASYNC)
     /// \brief Initiates an asynchronous fetch of the next row in the current result set.
-    /// \return true if the caller needs to wait for the event to be signalled, false if complete_next() can be called
+    /// \return true if the caller needs to wait for the event to be signalled, false if
+    /// complete_next() can be called
     ///         immediately.
     /// \throws database_error
     bool async_next(void* event_handle);
 
-    /// \brief Completes a previously-initiated asynchronous fetch of the next row in the current result set.
+    /// \brief Completes a previously-initiated asynchronous fetch of the next row in the current
+    /// result set.
     /// \return true if there are more results or false otherwise.
     /// \throws database_error
     bool complete_next();
@@ -1306,7 +1445,11 @@ public:
     typedef std::ptrdiff_t difference_type;
 
     result_iterator() = default;
-    result_iterator(result& r) : result_(r) { ++(*this); }
+    result_iterator(result& r)
+        : result_(r)
+    {
+        ++(*this);
+    }
 
     reference operator*() { return result_; }
 
@@ -1369,6 +1512,7 @@ inline auto end(result& /*r*/)
     return result_iterator();
 }
 
+// clang-format off
 //
 //  .d8888b.           888             888
 // d88P  Y88b          888             888
@@ -1382,6 +1526,7 @@ inline auto end(result& /*r*/)
 //                                                 Y8b d88P
 //                                                  "Y88P"
 // MARK: Catalog -
+// clang-format on
 
 /// \brief A resource for get catalog information from connected data source.
 ///
@@ -1576,6 +1721,7 @@ struct driver
     std::list<attribute> attributes;
 };
 
+// clang-format off
 // 8888888888                            8888888888                         888    d8b
 // 888                                   888                                888    Y8P
 // 888                                   888                                888
@@ -1585,6 +1731,7 @@ struct driver
 // 888     888    Y8b.     Y8b.          888     Y88b 888 888  888 Y88b.    Y88b.  888 Y88..88P 888  888      X88
 // 888     888     "Y8888   "Y8888       888      "Y88888 888  888  "Y8888P  "Y888 888  "Y88P"  888  888  88888P'
 // MARK: Free Functions -
+// clang-format on
 
 /// \addtogroup mainf Free Functions
 /// \brief Convenience functions.
@@ -1593,62 +1740,81 @@ struct driver
 
 std::list<driver> list_drivers();
 
-/// \brief Immediately opens, prepares, and executes the given query directly on the given connection.
+/// \brief Immediately opens, prepares, and executes the given query directly on the given
+/// connection.
 /// \param conn The connection where the statement will be executed.
 /// \param query The SQL query that will be executed.
-/// \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
+/// \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters
+/// to process.
 /// \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
 /// \return A result set object.
-/// \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits
+/// \attention You will want to use transactions if you are doing batch operations because it will
+/// prevent auto commits
 ///            from occurring after each individual operation is executed.
 /// \see open(), prepare(), execute(), result, transaction
-result execute(connection& conn, const string_type& query, long batch_operations = 1, long timeout = 0);
+result
+execute(connection& conn, const string_type& query, long batch_operations = 1, long timeout = 0);
 
-/// \brief Immediately opens, prepares, and executes the given query directly on the given connection without creating
+/// \brief Immediately opens, prepares, and executes the given query directly on the given
+/// connection without creating
 ///        result object.
 /// \param conn The connection where the statement will be executed.
 /// \param query The SQL query that will be executed.
-/// \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
+/// \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters
+/// to process.
 /// \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
 /// \return A result set object.
-/// \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits
+/// \attention You will want to use transactions if you are doing batch operations because it will
+/// prevent auto commits
 ///            from occurring after each individual operation is executed.
 /// \see open(), prepare(), execute(), result, transaction
-void just_execute(connection& conn, const string_type& query, long batch_operations = 1, long timeout = 0);
+void just_execute(
+    connection& conn,
+    const string_type& query,
+    long batch_operations = 1,
+    long timeout = 0);
 
 /// \brief Execute the previously prepared query now.
 /// \param stmt The prepared statement that will be executed.
-/// \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
+/// \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters
+/// to process.
 /// \throws database_error
 /// \return A result set object.
-/// \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits
+/// \attention You will want to use transactions if you are doing batch operations because it will
+/// prevent auto commits
 ///            from occurring after each individual operation is executed.
 /// \see open(), prepare(), execute(), result
 result execute(statement& stmt, long batch_operations = 1);
 
 /// \brief Execute the previously prepared query now and without creating result object.
 /// \param stmt The prepared statement that will be executed.
-/// \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
+/// \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters
+/// to process.
 /// \throws database_error
 /// \return A result set object.
-/// \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits
+/// \attention You will want to use transactions if you are doing batch operations because it will
+/// prevent auto commits
 ///            from occurring after each individual operation is executed.
 /// \see open(), prepare(), execute(), result
 void just_execute(statement& stmt, long batch_operations = 1);
 
 /// \brief Execute the previously prepared query now.
-/// Executes within the context of a transaction object and commits the transaction directly after execution.
+/// Executes within the context of a transaction object and commits the transaction directly after
+/// execution.
 /// \param stmt The prepared statement that will be executed in batch.
-/// \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
+/// \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters
+/// to process.
 /// \throws database_error
 /// \return A result set object.
 /// \see open(), prepare(), execute(), result, transaction
 result transact(statement& stmt, long batch_operations);
 
 /// \brief Execute the previously prepared query now and without creating result object.
-/// Executes within the context of a transaction object and commits the transaction directly after execution.
+/// Executes within the context of a transaction object and commits the transaction directly after
+/// execution.
 /// \param stmt The prepared statement that will be executed in batch.
-/// \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
+/// \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters
+/// to process.
 /// \throws database_error
 /// \return A result set object.
 /// \see open(), prepare(), execute(), result, transaction

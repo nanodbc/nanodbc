@@ -8,7 +8,8 @@ namespace
 {
 struct odbc_fixture : public base_test_fixture
 {
-    odbc_fixture() : base_test_fixture(/* connecting string from NANODBC_TEST_CONNSTR environment variable)*/)
+    odbc_fixture()
+        : base_test_fixture(/* connecting string from NANODBC_TEST_CONNSTR environment variable)*/)
     {
         if (connection_string_.empty())
             connection_string_ = get_env("NANODBC_TEST_CONNSTR_ODBC");

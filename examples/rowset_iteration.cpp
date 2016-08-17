@@ -32,7 +32,8 @@ int main(int argc, char* argv[])
     try
     {
         // Example:
-        // "Driver={ODBC Driver 11 for SQL Server};Server=xxx.sqlserver.net;Database=mydb;UID=joe;PWD=secret;"
+        // "Driver={ODBC Driver 11 for SQL
+        // Server};Server=xxx.sqlserver.net;Database=mydb;UID=joe;PWD=secret;"
         auto const connection_string(convert(argv[1]));
         connection conn(connection_string);
 
@@ -61,10 +62,12 @@ int main(int argc, char* argv[])
 
         // Select and fetch
         long batch_size = 1; // tweak to play with number of ODBC fetch calls
-        result result = execute(conn, NANODBC_TEXT("SELECT i FROM rowset_iteration ORDER BY i DESC;"), batch_size);
+        result result = execute(
+            conn, NANODBC_TEXT("SELECT i FROM rowset_iteration ORDER BY i DESC;"), batch_size);
         for (int i = 1; result.next(); ++i)
         {
-            cout << i << "(" << result.rows() << "/" << result.rowset_size() << ":" << result.get<int>(0) << endl;
+            cout << i << "(" << result.rows() << "/" << result.rowset_size() << ":"
+                 << result.get<int>(0) << endl;
         }
     }
     catch (runtime_error const& e)

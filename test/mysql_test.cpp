@@ -8,7 +8,8 @@ namespace
 {
 struct mysql_fixture : public base_test_fixture
 {
-    mysql_fixture() : base_test_fixture(/* connecting string from NANODBC_TEST_CONNSTR environment variable)*/)
+    mysql_fixture()
+        : base_test_fixture(/* connecting string from NANODBC_TEST_CONNSTR environment variable)*/)
     {
         if (connection_string_.empty())
             connection_string_ = get_env("NANODBC_TEST_CONNSTR_MYSQL");
@@ -117,7 +118,10 @@ TEST_CASE_METHOD(mysql_fixture, "exception_test", "[mysql][exception]")
     exception_test();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "execute_multiple_transaction_test", "[mysql][execute][transaction]")
+TEST_CASE_METHOD(
+    mysql_fixture,
+    "execute_multiple_transaction_test",
+    "[mysql][execute][transaction]")
 {
     execute_multiple_transaction_test();
 }

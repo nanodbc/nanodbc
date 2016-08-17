@@ -41,15 +41,18 @@ struct TestConfig
 #ifdef NANODBC_USE_UNICODE
 #ifdef NANODBC_USE_BOOST_CONVERT
         using boost::locale::conv::utf_to_utf;
-        return utf_to_utf<char16_t>(connection_string_.c_str(), connection_string_.c_str() + connection_string_.size());
+        return utf_to_utf<char16_t>(
+            connection_string_.c_str(), connection_string_.c_str() + connection_string_.size());
 // Workaround for confirmed bug in VS2015.
 // See: https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481
 #elif defined(_MSC_VER) && (_MSC_VER == 1900)
-        auto s = std::wstring_convert<std::codecvt_utf8_utf16<int16_t>, int16_t>().from_bytes(connection_string_);
+        auto s = std::wstring_convert<std::codecvt_utf8_utf16<int16_t>, int16_t>().from_bytes(
+            connection_string_);
         auto p = reinterpret_cast<char16_t const*>(s.data());
         return nanodbc::string_type(p, p + s.size());
 #else
-        return std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>().from_bytes(connection_string_);
+        return std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>().from_bytes(
+            connection_string_);
 #endif
 #else
         return connection_string_;
@@ -91,14 +94,18 @@ struct base_test_fixture
         double>
         integral_test_types;
 
-    base_test_fixture() : connection_string_(cfg.get_connection_string())
+    base_test_fixture()
+        : connection_string_(cfg.get_connection_string())
     {
         // Connection string not specified in command line, try environment variable
         if (connection_string_.empty())
             connection_string_ = get_env("NANODBC_TEST_CONNSTR");
     }
 
-    base_test_fixture(const nanodbc::string_type& connection_string) : connection_string_(connection_string) {}
+    base_test_fixture(const nanodbc::string_type& connection_string)
+        : connection_string_(connection_string)
+    {
+    }
 
     virtual ~base_test_fixture() NANODBC_NOEXCEPT {}
 
@@ -178,12 +185,15 @@ struct base_test_fixture
                 // total number of digits allowed
 
                 // NOTE: Some variations have been observed:
-                // Windows 64-bit + nanodbc 64-bit build + psqlODBC 9.?.? x64 connected to PostgreSQL 9.3 on Windows x64
+                // Windows 64-bit + nanodbc 64-bit build + psqlODBC 9.?.? x64 connected to
+                // PostgreSQL 9.3 on Windows x64
                 // (AppVeyor)
                 REQUIRE(column_size >= 15);
-                // Windows x64      + nanodbc 64-bit build + psqlODBC 9.3.5 x64 connected to PostgreSQL 9.5 on Ubuntu
+                // Windows x64      + nanodbc 64-bit build + psqlODBC 9.3.5 x64 connected to
+                // PostgreSQL 9.5 on Ubuntu
                 // 15.10 x64 (Vagrant)
-                // Ubuntu 12.04 x64 + nanodbc 64-bit build + psqlODBC 9.3.5 x64 connected to PostgreSQL 9.1 on Ubuntu
+                // Ubuntu 12.04 x64 + nanodbc 64-bit build + psqlODBC 9.3.5 x64 connected to
+                // PostgreSQL 9.1 on Ubuntu
                 // 12.04 x64 (Travsi CI)
                 REQUIRE(column_size <= 17);
             }
@@ -196,7 +206,8 @@ struct base_test_fixture
         {
             REQUIRE(
                 (column_size == 2147483647 || column_size == 65535 || // MySQL
-                 column_size == 8190 || // PostgreSQL uses MaxLongVarcharSize=8190, which is configurable in odbc.ini
+                 column_size == 8190 || // PostgreSQL uses MaxLongVarcharSize=8190, which is
+                                        // configurable in odbc.ini
                  column_size == 0));    // SQLite
         }
         else if (name == NANODBC_TEXT("long varchar"))
@@ -287,11 +298,13 @@ struct base_test_fixture
 // Workaround for confirmed bug in VS2015.
 // See: https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481
 #elif defined(_MSC_VER) && (_MSC_VER == 1900)
-        auto s = std::wstring_convert<std::codecvt_utf8_utf16<int16_t>, int16_t>().from_bytes(value);
+        auto s =
+            std::wstring_convert<std::codecvt_utf8_utf16<int16_t>, int16_t>().from_bytes(value);
         auto p = reinterpret_cast<char16_t const*>(s.data());
         return nanodbc::string_type(p, p + s.size());
 #else
-        return std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>().from_bytes(value);
+        return std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>().from_bytes(
+            value);
 #endif
 #else
         return value;
@@ -315,7 +328,10 @@ struct base_test_fixture
         {
             using char_type = typename nanodbc::string_type::value_type;
 
-            is_iequal(std::locale const& loc) : loc_(loc) {}
+            is_iequal(std::locale const& loc)
+                : loc_(loc)
+            {
+            }
 
             bool operator()(char_type const& lhs, char_type const& rhs)
             {
@@ -341,7 +357,10 @@ struct base_test_fixture
 
     // `name` is a table name.
     // `def` is a comma separated column definitions, trailing '(' and ')' are optional.
-    void create_table(nanodbc::connection& connection, nanodbc::string_type const& name, nanodbc::string_type def) const
+    void create_table(
+        nanodbc::connection& connection,
+        nanodbc::string_type const& name,
+        nanodbc::string_type def) const
     {
         if (def.front() != NANODBC_TEXT('('))
             def.insert(0, 1, NANODBC_TEXT('('));
@@ -365,8 +384,8 @@ struct base_test_fixture
         try
         {
             // create empty result set as a poor man's portable "IF EXISTS" test
-            nanodbc::result results =
-                execute(connection, NANODBC_TEXT("SELECT * FROM ") + name + NANODBC_TEXT(" WHERE 0=1;"));
+            nanodbc::result results = execute(
+                connection, NANODBC_TEXT("SELECT * FROM ") + name + NANODBC_TEXT(" WHERE 0=1;"));
         }
         catch (...)
         {
@@ -383,38 +402,64 @@ struct base_test_fixture
 
     void blob_test()
     {
-        nanodbc::string_type s = NANODBC_TEXT(
-            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBB"
-            "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBCCCCCCCCCCCCCC"
-            "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDDDDDDDDDDDD"
-            "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"
-            "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
-            "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG"
-            "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
-            "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII"
-            "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ"
-            "JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK"
-            "KKKKKKKKKKKKKKKKKKKKKKKKKKLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL"
-            "LLLLLLLLLLLLLLLLLLLMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM"
-            "MMMMMMMMMMMNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN"
-            "NNNNOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOPPP"
-            "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPQQQQQQQQQQQ"
-            "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQRRRRRRRRRRRRRRRRRR"
-            "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRSSSSSSSSSSSSSSSSSSSSSSSSS"
-            "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT"
-            "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU"
-            "UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV"
-            "VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
-            "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-            "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY"
-            "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
-            "ZZZZZZZZZZZZZZZZZZZZZZ");
+        nanodbc::string_type s =
+            NANODBC_TEXT("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+                         "AAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBB"
+                         "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+                         "BBBBBBBBBBBBBBBBBBBCCCCCCCCCCCCCC"
+                         "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"
+                         "CCCCCCCCCCCCDDDDDDDDDDDDDDDDDDDDD"
+                         "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"
+                         "DDDDEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"
+                         "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEFFF"
+                         "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+                         "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFGGGGGGGGGG"
+                         "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG"
+                         "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGHHHHHHHHHHHHHHHHHH"
+                         "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
+                         "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHIIIIIIIIIIIIIIIIIIIIIIIII"
+                         "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII"
+                         "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ"
+                         "JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ"
+                         "JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK"
+                         "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK"
+                         "KKKKKKKKKKKKKKKKKKKKKKKKKKLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL"
+                         "LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL"
+                         "LLLLLLLLLLLLLLLLLLLMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM"
+                         "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM"
+                         "MMMMMMMMMMMNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN"
+                         "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN"
+                         "NNNNOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
+                         "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOPPP"
+                         "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP"
+                         "PPPPPPPPPPPPPPPPPPPPPPQQQQQQQQQQQ"
+                         "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ"
+                         "QQQQQQQQQQQQQQQRRRRRRRRRRRRRRRRRR"
+                         "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR"
+                         "RRRRRRRRSSSSSSSSSSSSSSSSSSSSSSSSS"
+                         "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+                         "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT"
+                         "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTUUUUUUU"
+                         "UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU"
+                         "UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUVVVVVVVVVVVVVV"
+                         "VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV"
+                         "VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWWWWWWWWW"
+                         "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+                         "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+                         "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+                         "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY"
+                         "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY"
+                         "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
+                         "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
+                         "ZZZZZZZZZZZZZZZZZZZZZZ");
 
         nanodbc::connection connection = connect();
         create_table(connection, NANODBC_TEXT("blob_test"), NANODBC_TEXT("(data BLOB)"));
-        execute(connection, NANODBC_TEXT("insert into blob_test values ('") + s + NANODBC_TEXT("');"));
+        execute(
+            connection, NANODBC_TEXT("insert into blob_test values ('") + s + NANODBC_TEXT("');"));
 
-        nanodbc::result results = nanodbc::execute(connection, NANODBC_TEXT("select data from blob_test;"));
+        nanodbc::result results =
+            nanodbc::execute(connection, NANODBC_TEXT("select data from blob_test;"));
         REQUIRE(results.next());
         REQUIRE(results.get<nanodbc::string_type>(0) == s);
     }
@@ -470,14 +515,15 @@ struct base_test_fixture
             drop_table(connection, table_name);
             execute(
                 connection,
-                NANODBC_TEXT("create table ") + table_name + NANODBC_TEXT("(") + NANODBC_TEXT("c0 int PRIMARY KEY,") +
-                    NANODBC_TEXT("c1 smallint NOT NULL,") + NANODBC_TEXT("c2 float NULL,") +
-                    NANODBC_TEXT("c3 decimal(9, 3),") +
-                    NANODBC_TEXT(
-                        "c4 date,") // seems more portable than datetime (SQL Server), timestamp (PostgreSQL, MySQL)
+                NANODBC_TEXT("create table ") + table_name + NANODBC_TEXT("(") +
+                    NANODBC_TEXT("c0 int PRIMARY KEY,") + NANODBC_TEXT("c1 smallint NOT NULL,") +
+                    NANODBC_TEXT("c2 float NULL,") + NANODBC_TEXT("c3 decimal(9, 3),") +
+                    NANODBC_TEXT("c4 date,") // seems more portable than datetime (SQL Server),
+                                             // timestamp (PostgreSQL, MySQL)
                     +
-                    NANODBC_TEXT("c5 varchar(60) DEFAULT \'sample value\',") + NANODBC_TEXT("c6 varchar(120),") +
-                    NANODBC_TEXT("c7 ") + text_type_name + NANODBC_TEXT(",") + NANODBC_TEXT("c8 ") + binary_type_name +
+                    NANODBC_TEXT("c5 varchar(60) DEFAULT \'sample value\',") +
+                    NANODBC_TEXT("c6 varchar(120),") + NANODBC_TEXT("c7 ") + text_type_name +
+                    NANODBC_TEXT(",") + NANODBC_TEXT("c8 ") + binary_type_name +
                     NANODBC_TEXT(");"));
 
             // Check only SQL/ODBC standard properties, skip those which are driver-specific.
@@ -511,8 +557,10 @@ struct base_test_fixture
                 if (!columns.is_nullable().empty()) // nullability determined
                     REQUIRE(columns.is_nullable() == NANODBC_TEXT("NO"));
             }
-            REQUIRE(columns.table_name() == table_name); // assume common for the whole result set, check once
-            REQUIRE(!columns.type_name().empty());       // data source dependant name, check once
+            REQUIRE(
+                columns.table_name() ==
+                table_name); // assume common for the whole result set, check once
+            REQUIRE(!columns.type_name().empty()); // data source dependant name, check once
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c1"));
@@ -539,7 +587,8 @@ struct base_test_fixture
             REQUIRE(
                 (columns.sql_data_type() == SQL_FLOAT || columns.sql_data_type() == SQL_REAL ||
                  columns.sql_data_type() == SQL_DOUBLE));
-            check_data_type_size(NANODBC_TEXT("float"), columns.column_size(), columns.numeric_precision_radix());
+            check_data_type_size(
+                NANODBC_TEXT("float"), columns.column_size(), columns.numeric_precision_radix());
             REQUIRE(columns.nullable() == SQL_NULLABLE);
             if (!columns.is_nullable().empty()) // nullability determined
                 REQUIRE(columns.is_nullable() == NANODBC_TEXT("YES"));
@@ -550,7 +599,8 @@ struct base_test_fixture
             {
 #ifdef _WIN32
                 REQUIRE(columns.sql_data_type() == -9); // FIXME: What is this type?
-                REQUIRE(columns.column_size() == 3);    // FIXME: SQLite ODBC mis-reports decimal digits?
+                REQUIRE(
+                    columns.column_size() == 3); // FIXME: SQLite ODBC mis-reports decimal digits?
 #else
                 REQUIRE(columns.sql_data_type() == SQL_VARCHAR);
                 REQUIRE(columns.column_size() == 9);
@@ -558,7 +608,9 @@ struct base_test_fixture
             }
             else
             {
-                REQUIRE((columns.sql_data_type() == SQL_DECIMAL || columns.sql_data_type() == SQL_NUMERIC));
+                REQUIRE(
+                    (columns.sql_data_type() == SQL_DECIMAL ||
+                     columns.sql_data_type() == SQL_NUMERIC));
                 REQUIRE(columns.column_size() == 9);
                 REQUIRE(columns.decimal_digits() == 3);
             }
@@ -577,19 +629,22 @@ struct base_test_fixture
             else
             {
                 REQUIRE(columns.sql_data_type() == SQL_DATE);
-                REQUIRE(
-                    columns.column_size() ==
-                    10); // total number of characters required to display the value when it is converted to characters
+                REQUIRE(columns.column_size() == 10); // total number of characters required to
+                                                      // display the value when it is converted to
+                                                      // characters
             }
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c5"));
-            REQUIRE((columns.sql_data_type() == SQL_VARCHAR || columns.sql_data_type() == SQL_WVARCHAR));
+            REQUIRE((
+                columns.sql_data_type() == SQL_VARCHAR || columns.sql_data_type() == SQL_WVARCHAR));
             REQUIRE(columns.column_size() == 60);
             if (contains_string(dbms, NANODBC_TEXT("SQLite")))
                 REQUIRE(columns.column_default() == NANODBC_TEXT("sample value"));
             else if (contains_string(dbms, NANODBC_TEXT("PostgreSQL")))
-                REQUIRE(columns.column_default() == NANODBC_TEXT("\'sample value\'::character varying"));
+                REQUIRE(
+                    columns.column_default() ==
+                    NANODBC_TEXT("\'sample value\'::character varying"));
             else if (contains_string(dbms, NANODBC_TEXT("SQL Server")))
                 REQUIRE(columns.column_default() == NANODBC_TEXT("(\'sample value\')"));
             else
@@ -597,18 +652,22 @@ struct base_test_fixture
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c6"));
-            REQUIRE((columns.sql_data_type() == SQL_VARCHAR || columns.sql_data_type() == SQL_WVARCHAR));
+            REQUIRE((
+                columns.sql_data_type() == SQL_VARCHAR || columns.sql_data_type() == SQL_WVARCHAR));
             REQUIRE(columns.column_size() == 120);
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c7"));
-            REQUIRE((columns.sql_data_type() == SQL_LONGVARCHAR || columns.sql_data_type() == SQL_WLONGVARCHAR));
             REQUIRE(
-                (columns.column_size() == 2147483647 || columns.column_size() == 1048576 || // Vertica
-                 columns.column_size() == 65535 ||                                          // MySQL
-                 columns.column_size() ==
-                     8190 || // PostgreSQL uses MaxLongVarcharSize=8190, which is configurable in odbc.ini
-                 columns.column_size() == 0)); // SQLite
+                (columns.sql_data_type() == SQL_LONGVARCHAR ||
+                 columns.sql_data_type() == SQL_WLONGVARCHAR));
+            REQUIRE(
+                (columns.column_size() == 2147483647 ||
+                 columns.column_size() == 1048576 || // Vertica
+                 columns.column_size() == 65535 ||   // MySQL
+                 columns.column_size() == 8190 || // PostgreSQL uses MaxLongVarcharSize=8190, which
+                                                  // is configurable in odbc.ini
+                 columns.column_size() == 0));    // SQLite
             check_data_type_size(text_type_name, columns.column_size());
 
             REQUIRE(columns.next());
@@ -652,7 +711,8 @@ struct base_test_fixture
                 execute(
                     connection,
                     NANODBC_TEXT("create table ") + table_name +
-                        NANODBC_TEXT("(i int NOT NULL, CONSTRAINT pk_simple_test PRIMARY KEY (i));"));
+                        NANODBC_TEXT(
+                            "(i int NOT NULL, CONSTRAINT pk_simple_test PRIMARY KEY (i));"));
             }
             nanodbc::catalog::primary_keys keys = catalog.find_primary_keys(table_name);
             REQUIRE(keys.next());
@@ -668,12 +728,14 @@ struct base_test_fixture
 
         // Find a multi-column primary key for table with known name
         {
-            nanodbc::string_type const table_name(NANODBC_TEXT("catalog_primary_keys_composite_test"));
+            nanodbc::string_type const table_name(
+                NANODBC_TEXT("catalog_primary_keys_composite_test"));
             drop_table(connection, table_name);
             execute(
                 connection,
                 NANODBC_TEXT("create table ") + table_name +
-                    NANODBC_TEXT("(a int, b smallint, CONSTRAINT pk_composite_test PRIMARY KEY(a, b));"));
+                    NANODBC_TEXT(
+                        "(a int, b smallint, CONSTRAINT pk_composite_test PRIMARY KEY(a, b));"));
 
             nanodbc::catalog::primary_keys keys = catalog.find_primary_keys(table_name);
             REQUIRE(keys.next());
@@ -737,7 +799,8 @@ struct base_test_fixture
         // Find a table with known name
         {
             drop_table(connection, table_name);
-            execute(connection, NANODBC_TEXT("create table ") + table_name + NANODBC_TEXT("(a int);"));
+            execute(
+                connection, NANODBC_TEXT("create table ") + table_name + NANODBC_TEXT("(a int);"));
 
             // Use brute-force look-up
             {
@@ -781,9 +844,11 @@ struct base_test_fixture
                 }
                 execute(
                     connection,
-                    NANODBC_TEXT("CREATE VIEW ") + view_name + NANODBC_TEXT(" AS SELECT a FROM ") + table_name);
+                    NANODBC_TEXT("CREATE VIEW ") + view_name + NANODBC_TEXT(" AS SELECT a FROM ") +
+                        table_name);
 
-                nanodbc::catalog::tables tables = catalog.find_tables(view_name, NANODBC_TEXT("VIEW"));
+                nanodbc::catalog::tables tables =
+                    catalog.find_tables(view_name, NANODBC_TEXT("VIEW"));
                 // expect single record with the wanted table
                 REQUIRE(tables.next());
                 REQUIRE(tables.table_name() == view_name);
@@ -797,11 +862,13 @@ struct base_test_fixture
 
             // Use SQLTables pattern search by name inside given schema
             // TODO: Target other databases where INFORMATION_SCHEMA support is available.
-            if (connection.dbms_name().find(NANODBC_TEXT("SQL Server")) != nanodbc::string_type::npos)
+            if (connection.dbms_name().find(NANODBC_TEXT("SQL Server")) !=
+                nanodbc::string_type::npos)
             {
                 nanodbc::string_type const view_name(NANODBC_TEXT("TABLE_PRIVILEGES"));
                 nanodbc::string_type const schema_name(NANODBC_TEXT("INFORMATION_SCHEMA"));
-                nanodbc::catalog::tables tables = catalog.find_tables(view_name, NANODBC_TEXT("VIEW"), schema_name);
+                nanodbc::catalog::tables tables =
+                    catalog.find_tables(view_name, NANODBC_TEXT("VIEW"), schema_name);
                 // expect single record with the wanted table
                 REQUIRE(tables.next());
                 REQUIRE(tables.table_schema() == schema_name);
@@ -819,9 +886,11 @@ struct base_test_fixture
         create_table(
             connection,
             NANODBC_TEXT("column_descriptor_test"),
-            NANODBC_TEXT("(i int, d decimal(7,3), n numeric(7,3), f float, s varchar(60), dt date, t timestamp)"));
+            NANODBC_TEXT("(i int, d decimal(7,3), n numeric(7,3), f float, s varchar(60), dt date, "
+                         "t timestamp)"));
 
-        auto result = execute(connection, NANODBC_TEXT("select i,d,n,f,s,dt,t from column_descriptor_test;"));
+        auto result =
+            execute(connection, NANODBC_TEXT("select i,d,n,f,s,dt,t from column_descriptor_test;"));
         REQUIRE(result.columns() == 7);
 
         // i int
@@ -840,17 +909,21 @@ struct base_test_fixture
 #ifdef _WIN32
             REQUIRE(result.column_datatype(1) == -9);   // FIXME: What is this type?
             REQUIRE(result.column_c_datatype(1) == -8); // FIXME: What is this type
-            REQUIRE(result.column_size(1) == 7);        // FIXME: SQLite ODBC mis-reports decimal digits?
+            REQUIRE(result.column_size(1) == 7); // FIXME: SQLite ODBC mis-reports decimal digits?
 #else
             REQUIRE(result.column_datatype(1) == SQL_VARCHAR);
             REQUIRE(result.column_c_datatype(1) == SQL_C_CHAR);
             REQUIRE(result.column_size(1) == 7);
 #endif
-            REQUIRE(result.column_decimal_digits(2) == 0); // FIXME: SQLite ODBC mis-reports decimal digits?
+            REQUIRE(
+                result.column_decimal_digits(2) ==
+                0); // FIXME: SQLite ODBC mis-reports decimal digits?
         }
         else
         {
-            REQUIRE((result.column_datatype(1) == SQL_DECIMAL || result.column_datatype(1) == SQL_NUMERIC));
+            REQUIRE(
+                (result.column_datatype(1) == SQL_DECIMAL ||
+                 result.column_datatype(1) == SQL_NUMERIC));
             REQUIRE(result.column_c_datatype(1) == SQL_C_DOUBLE);
         }
         REQUIRE(result.column_size(1) == 7);
@@ -860,12 +933,16 @@ struct base_test_fixture
         REQUIRE(result.column_size(2) == 7);
         if (vendor_ == database_vendor::sqlite)
         {
-            REQUIRE(result.column_datatype(2) == 8);       // FIXME: What is this type?
-            REQUIRE(result.column_decimal_digits(2) == 0); // FIXME: SQLite ODBC mis-reports decimal digits?
+            REQUIRE(result.column_datatype(2) == 8); // FIXME: What is this type?
+            REQUIRE(
+                result.column_decimal_digits(2) ==
+                0); // FIXME: SQLite ODBC mis-reports decimal digits?
         }
         else
         {
-            REQUIRE((result.column_datatype(2) == SQL_DECIMAL || result.column_datatype(2) == SQL_NUMERIC));
+            REQUIRE(
+                (result.column_datatype(2) == SQL_DECIMAL ||
+                 result.column_datatype(2) == SQL_NUMERIC));
             REQUIRE(result.column_decimal_digits(2) == 3);
         }
     }
@@ -911,12 +988,15 @@ struct base_test_fixture
         nanodbc::connection connection = connect();
         nanodbc::result results;
         drop_table(connection, NANODBC_TEXT("decimal_conversion_test"));
-        execute(connection, NANODBC_TEXT("create table decimal_conversion_test (d decimal(9, 3));"));
-        execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (12345.987);"));
+        execute(
+            connection, NANODBC_TEXT("create table decimal_conversion_test (d decimal(9, 3));"));
+        execute(
+            connection, NANODBC_TEXT("insert into decimal_conversion_test values (12345.987);"));
         execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (5.600);"));
         execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (1.000);"));
         execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (-1.333);"));
-        results = execute(connection, NANODBC_TEXT("select * from decimal_conversion_test order by 1 desc;"));
+        results = execute(
+            connection, NANODBC_TEXT("select * from decimal_conversion_test order by 1 desc;"));
 
         REQUIRE(results.next());
         REQUIRE(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("12345.987"));
@@ -939,9 +1019,10 @@ struct base_test_fixture
         // it is registered with the ODBC Driver Manager in the host environment.
         REQUIRE(!driver_name.empty());
         auto const drivers = nanodbc::list_drivers();
-        bool found = std::any_of(drivers.cbegin(), drivers.cend(), [&driver_name](nanodbc::driver const& drv) {
-            return driver_name == drv.name;
-        });
+        bool found = std::any_of(
+            drivers.cbegin(), drivers.cend(), [&driver_name](nanodbc::driver const& drv) {
+                return driver_name == drv.name;
+            });
         REQUIRE(found);
     }
 
@@ -950,7 +1031,8 @@ struct base_test_fixture
         nanodbc::connection connection = connect();
         nanodbc::result results;
 
-        REQUIRE_THROWS_AS(execute(connection, NANODBC_TEXT("THIS IS NOT VALID SQL!")), nanodbc::database_error);
+        REQUIRE_THROWS_AS(
+            execute(connection, NANODBC_TEXT("THIS IS NOT VALID SQL!")), nanodbc::database_error);
 
         drop_table(connection, NANODBC_TEXT("exception_test"));
         execute(connection, NANODBC_TEXT("create table exception_test (i int);"));
@@ -963,7 +1045,8 @@ struct base_test_fixture
         REQUIRE_THROWS_AS(results.get<nanodbc::date>(0), nanodbc::type_incompatible_error);
         REQUIRE_THROWS_AS(results.get<nanodbc::timestamp>(0), nanodbc::type_incompatible_error);
 
-        results = execute(connection, NANODBC_TEXT("select * from exception_test where i is null;"));
+        results =
+            execute(connection, NANODBC_TEXT("select * from exception_test where i is null;"));
 
         REQUIRE(results.next());
         REQUIRE_THROWS_AS(results.get<int>(0), nanodbc::null_access_error);
@@ -973,7 +1056,9 @@ struct base_test_fixture
         REQUIRE(statement.open());
         REQUIRE(statement.connected());
         statement.close();
-        REQUIRE_THROWS_AS(statement.prepare(NANODBC_TEXT("select * from exception_test;")), nanodbc::programming_error);
+        REQUIRE_THROWS_AS(
+            statement.prepare(NANODBC_TEXT("select * from exception_test;")),
+            nanodbc::programming_error);
     }
 
     void execute_multiple_transaction_test()
@@ -1020,7 +1105,9 @@ struct base_test_fixture
         nanodbc::connection connection = connect();
 
         drop_table(connection, NANODBC_TEXT("integral_test"));
-        execute(connection, NANODBC_TEXT("create table integral_test (i int, f float, d double precision);"));
+        execute(
+            connection,
+            NANODBC_TEXT("create table integral_test (i int, f float, d double precision);"));
 
         nanodbc::statement statement(connection);
         prepare(statement, NANODBC_TEXT("insert into integral_test (i, f, d) values (?, ?, ?);"));
@@ -1129,7 +1216,8 @@ struct base_test_fixture
         statement.bind_null(1, 2);
         execute(statement, 2);
 
-        nanodbc::result results = execute(connection, NANODBC_TEXT("select a, b from null_test order by a;"));
+        nanodbc::result results =
+            execute(connection, NANODBC_TEXT("select a, b from null_test order by a;"));
 
         REQUIRE(results.next());
         REQUIRE(results.is_null(0));
@@ -1164,7 +1252,8 @@ struct base_test_fixture
             REQUIRE(statement.connected());
             execute(statement);
 
-            nanodbc::result results = execute(connection, NANODBC_TEXT("select * from nullptr_nulls_test;"));
+            nanodbc::result results =
+                execute(connection, NANODBC_TEXT("select * from nullptr_nulls_test;"));
             REQUIRE(results.next());
 
             REQUIRE(results.get<int>(0) == i);
@@ -1182,7 +1271,8 @@ struct base_test_fixture
             REQUIRE(statement.connected());
             execute(statement);
 
-            nanodbc::result results = execute(connection, NANODBC_TEXT("select * from nullptr_nulls_test;"));
+            nanodbc::result results =
+                execute(connection, NANODBC_TEXT("select * from nullptr_nulls_test;"));
             REQUIRE(results.next());
 
             REQUIRE(results.get<int>(0) == i);
@@ -1193,20 +1283,23 @@ struct base_test_fixture
     {
         nanodbc::connection connection = connect();
         drop_table(connection, NANODBC_TEXT("result_iterator_test"));
-        execute(connection, NANODBC_TEXT("create table result_iterator_test (i int, s varchar(10));"));
+        execute(
+            connection, NANODBC_TEXT("create table result_iterator_test (i int, s varchar(10));"));
         execute(connection, NANODBC_TEXT("insert into result_iterator_test values (1, 'one');"));
         execute(connection, NANODBC_TEXT("insert into result_iterator_test values (2, 'two');"));
         execute(connection, NANODBC_TEXT("insert into result_iterator_test values (3, 'tri');"));
 
         // Test standard algorithm
         {
-            nanodbc::result results = execute(connection, NANODBC_TEXT("select i, s from result_iterator_test;"));
+            nanodbc::result results =
+                execute(connection, NANODBC_TEXT("select i, s from result_iterator_test;"));
             REQUIRE(std::distance(begin(results), end(results)) == 3);
         }
 
         // Test classic for loop iteration
         {
-            nanodbc::result results = execute(connection, NANODBC_TEXT("select i, s from result_iterator_test;"));
+            nanodbc::result results =
+                execute(connection, NANODBC_TEXT("select i, s from result_iterator_test;"));
             for (auto it = begin(results); it != end(results); ++it)
             {
                 REQUIRE(it->get<int>(0) > 0);
@@ -1219,7 +1312,8 @@ struct base_test_fixture
 
         // Test range-based for loop iteration
         {
-            nanodbc::result results = execute(connection, NANODBC_TEXT("select i, s from result_iterator_test;"));
+            nanodbc::result results =
+                execute(connection, NANODBC_TEXT("select i, s from result_iterator_test;"));
             for (auto& row : results)
             {
                 REQUIRE(row.get<int>(0) > 0);
@@ -1239,15 +1333,17 @@ struct base_test_fixture
         REQUIRE(connection.transactions() == std::size_t(0));
 
         drop_table(connection, NANODBC_TEXT("simple_test"));
-        execute(connection, NANODBC_TEXT("create table simple_test (sort_order int, a int, b varchar(10));"));
+        execute(
+            connection,
+            NANODBC_TEXT("create table simple_test (sort_order int, a int, b varchar(10));"));
         execute(connection, NANODBC_TEXT("insert into simple_test values (2, 1, 'one');"));
         execute(connection, NANODBC_TEXT("insert into simple_test values (3, 2, 'two');"));
         execute(connection, NANODBC_TEXT("insert into simple_test values (4, 3, 'tri');"));
         execute(connection, NANODBC_TEXT("insert into simple_test values (1, NULL, 'z');"));
 
         {
-            nanodbc::result results =
-                execute(connection, NANODBC_TEXT("select a, b from simple_test order by sort_order;"));
+            nanodbc::result results = execute(
+                connection, NANODBC_TEXT("select a, b from simple_test order by sort_order;"));
             REQUIRE((bool)results);
             REQUIRE(results.rows() == 0);
             REQUIRE(results.columns() == 2);
@@ -1256,7 +1352,8 @@ struct base_test_fixture
             // Row count is either the number of rows affected by the request
             // or -1 if the number of affected rows is not available.
             // For other statements and functions, the driver may define the value returned (...)
-            // some data sources may be able to return the number of rows returned by a SELECT statement.
+            // some data sources may be able to return the number of rows returned by a SELECT
+            // statement.
             const bool affected_four = results.affected_rows() == 4;
             const bool affected_zero = results.affected_rows() == 0;
             const bool affected_negative_one = results.affected_rows() == -1;
@@ -1283,8 +1380,11 @@ struct base_test_fixture
             REQUIRE(results.is_null(NANODBC_TEXT("a")));
             REQUIRE(results.get<int>(0, -1) == -1);
             REQUIRE(results.get<int>(NANODBC_TEXT("a"), -1) == -1);
-            REQUIRE(results.get<nanodbc::string_type>(0, NANODBC_TEXT("null")) == NANODBC_TEXT("null"));
-            REQUIRE(results.get<nanodbc::string_type>(NANODBC_TEXT("a"), NANODBC_TEXT("null")) == NANODBC_TEXT("null"));
+            REQUIRE(
+                results.get<nanodbc::string_type>(0, NANODBC_TEXT("null")) == NANODBC_TEXT("null"));
+            REQUIRE(
+                results.get<nanodbc::string_type>(NANODBC_TEXT("a"), NANODBC_TEXT("null")) ==
+                NANODBC_TEXT("null"));
             REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("z"));
             REQUIRE(results.get<nanodbc::string_type>(NANODBC_TEXT("b")) == NANODBC_TEXT("z"));
 
@@ -1297,7 +1397,8 @@ struct base_test_fixture
             nanodbc::string_type ref_str;
             results.get_ref<nanodbc::string_type>(0, NANODBC_TEXT("null"), ref_str);
             REQUIRE(ref_str == NANODBC_TEXT("null"));
-            results.get_ref<nanodbc::string_type>(NANODBC_TEXT("a"), NANODBC_TEXT("null2"), ref_str);
+            results.get_ref<nanodbc::string_type>(
+                NANODBC_TEXT("a"), NANODBC_TEXT("null2"), ref_str);
             REQUIRE(ref_str == NANODBC_TEXT("null2"));
 
             // :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1318,7 +1419,8 @@ struct base_test_fixture
             REQUIRE(results_copy.get<int>(0, -1) == 2);
             REQUIRE(results_copy.get<int>(NANODBC_TEXT("a"), -1) == 2);
             REQUIRE(results_copy.get<nanodbc::string_type>(1) == NANODBC_TEXT("two"));
-            REQUIRE(results_copy.get<nanodbc::string_type>(NANODBC_TEXT("b")) == NANODBC_TEXT("two"));
+            REQUIRE(
+                results_copy.get<nanodbc::string_type>(NANODBC_TEXT("b")) == NANODBC_TEXT("two"));
 
             // FIXME: not supported by the default SQL_CURSOR_FORWARD_ONLY
             // and will require SQL_ATTR_CURSOR_TYPE set to SQL_CURSOR_STATIC at least.
@@ -1404,7 +1506,8 @@ struct base_test_fixture
 
         drop_table(connection, NANODBC_TEXT("transaction_test"));
         if (vendor_ == database_vendor::mysql)
-            execute(connection, NANODBC_TEXT("create table transaction_test (i int) ENGINE = INNODB;"));
+            execute(
+                connection, NANODBC_TEXT("create table transaction_test (i int) ENGINE = INNODB;"));
         else
             execute(connection, NANODBC_TEXT("create table transaction_test (i int);"));
 
@@ -1416,7 +1519,8 @@ struct base_test_fixture
         statement.bind(0, data, elements);
         execute(statement, elements);
 
-        static const nanodbc::string_type::value_type* query = NANODBC_TEXT("select count(1) from transaction_test;");
+        static const nanodbc::string_type::value_type* query =
+            NANODBC_TEXT("select count(1) from transaction_test;");
 
         check_rows_equal(execute(connection, query), 10);
 
@@ -1440,7 +1544,7 @@ struct base_test_fixture
             execute(connection, NANODBC_TEXT("delete from transaction_test;"));
             check_rows_equal(execute(connection, query), 0);
             REQUIRE(connection.transactions() == 1);
-            transaction.rollback();                  // only requests rollback performed in ~transaction()
+            transaction.rollback(); // only requests rollback performed in ~transaction()
             REQUIRE(connection.transactions() == 1); // transaction not released yet
         }
         REQUIRE(connection.transactions() == 0);
@@ -1470,8 +1574,9 @@ struct base_test_fixture
         execute(connection, NANODBC_TEXT("insert into while_not_end_iteration_test values (1);"));
         execute(connection, NANODBC_TEXT("insert into while_not_end_iteration_test values (2);"));
         execute(connection, NANODBC_TEXT("insert into while_not_end_iteration_test values (3);"));
-        nanodbc::result results =
-            execute(connection, NANODBC_TEXT("select * from while_not_end_iteration_test order by 1 desc;"));
+        nanodbc::result results = execute(
+            connection,
+            NANODBC_TEXT("select * from while_not_end_iteration_test order by 1 desc;"));
         int i = 3;
         while (!results.at_end())
         {
@@ -1488,8 +1593,8 @@ struct base_test_fixture
         execute(connection, NANODBC_TEXT("insert into while_next_iteration_test values (1);"));
         execute(connection, NANODBC_TEXT("insert into while_next_iteration_test values (2);"));
         execute(connection, NANODBC_TEXT("insert into while_next_iteration_test values (3);"));
-        nanodbc::result results =
-            execute(connection, NANODBC_TEXT("select * from while_next_iteration_test order by 1 desc;"));
+        nanodbc::result results = execute(
+            connection, NANODBC_TEXT("select * from while_next_iteration_test order by 1 desc;"));
         int i = 3;
         while (results.next())
         {

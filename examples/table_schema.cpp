@@ -22,15 +22,15 @@
 using namespace std;
 using namespace nanodbc;
 
-#define NANODBC_COLUMN(method)                                                                                         \
-    std::cout << std::setw(25) << std::left << #method << ": " << std::right << any_to_string(cols.method())           \
-              << std::endl
+#define NANODBC_COLUMN(method)                                                                     \
+    std::cout << std::setw(25) << std::left << #method << ": " << std::right                       \
+              << any_to_string(cols.method()) << std::endl
 
-#define NANODBC_COLUMN_EX(method, expr)                                                                                \
+#define NANODBC_COLUMN_EX(method, expr)                                                            \
     std::cout << std::setw(25) << std::left << #method << ": " << std::right << (expr) << std::endl
 
-#define ODBC_CHECK(r, handle, handle_type, msg)                                                                        \
-    if (r != SQL_SUCCESS && r != SQL_SUCCESS_WITH_INFO)                                                                \
+#define ODBC_CHECK(r, handle, handle_type, msg)                                                    \
+    if (r != SQL_SUCCESS && r != SQL_SUCCESS_WITH_INFO)                                            \
     throw nanodbc::database_error(handle, handle_type, msg)
 
 inline std::string data_type_identifier(int t)
@@ -141,7 +141,8 @@ int main(int argc, char* argv[])
     try
     {
         // Example:
-        // "Driver={ODBC Driver 11 for SQL Server};Server=xxx.sqlserver.net;Database=mydb;UID=joe;PWD=secret;"
+        // "Driver={ODBC Driver 11 for SQL
+        // Server};Server=xxx.sqlserver.net;Database=mydb;UID=joe;PWD=secret;"
         auto const connection_string(convert(argv[1]));
         auto const table_name(convert(argv[2]));
         nanodbc::string_type schema_name;

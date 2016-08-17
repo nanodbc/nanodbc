@@ -21,8 +21,9 @@ int main()
 
         for (int i = 1; row.next(); ++i)
         {
-            cout << i << " :" << convert(row.get<string_type>(0)) << " " << convert(row.get<string_type>(1)) << " "
-                 << convert(row.get<string_type>(2)) << " " << endl;
+            cout << i << " :" << convert(row.get<string_type>(0)) << " "
+                 << convert(row.get<string_type>(1)) << " " << convert(row.get<string_type>(2))
+                 << " " << endl;
         }
     }
     catch (runtime_error const& e)

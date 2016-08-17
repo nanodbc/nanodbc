@@ -17,7 +17,8 @@ const nanodbc::string_type connection_string =
 
 struct sqlite_fixture : public base_test_fixture
 {
-    sqlite_fixture() : base_test_fixture(connection_string)
+    sqlite_fixture()
+        : base_test_fixture(connection_string)
     {
         sqlite_cleanup(); // in case prior test exited without proper cleanup
     }
@@ -35,7 +36,8 @@ struct sqlite_fixture : public base_test_fixture
         // Since SQLite does not have metadata tables,
         // we need to ensure, there is at least one table to search for.
         auto conn = connect();
-        create_table(conn, NANODBC_TEXT("catalog_tables_test"), NANODBC_TEXT("(a int PRIMARY KEY, b text)"));
+        create_table(
+            conn, NANODBC_TEXT("catalog_tables_test"), NANODBC_TEXT("(a int PRIMARY KEY, b text)"));
     }
 };
 }
@@ -179,12 +181,14 @@ TEST_CASE_METHOD(sqlite_fixture, "decimal_conversion_test", "[sqlite][decimal][c
     nanodbc::connection connection = connect();
     nanodbc::result results;
 
-    create_table(connection, NANODBC_TEXT("decimal_conversion_test"), NANODBC_TEXT("(d decimal(9, 3))"));
+    create_table(
+        connection, NANODBC_TEXT("decimal_conversion_test"), NANODBC_TEXT("(d decimal(9, 3))"));
     execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (12345.987);"));
     execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (5.6);"));
     execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (1);"));
     execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (-1.333);"));
-    results = execute(connection, NANODBC_TEXT("select * from decimal_conversion_test order by 1 desc;"));
+    results =
+        execute(connection, NANODBC_TEXT("select * from decimal_conversion_test order by 1 desc;"));
 
     REQUIRE(results.next());
     REQUIRE(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("12345.987"));
@@ -204,7 +208,10 @@ TEST_CASE_METHOD(sqlite_fixture, "exception_test", "[sqlite][exception]")
     exception_test();
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "execute_multiple_transaction_test", "[sqlite][execute][transaction]")
+TEST_CASE_METHOD(
+    sqlite_fixture,
+    "execute_multiple_transaction_test",
+    "[sqlite][execute][transaction]")
 {
     execute_multiple_transaction_test();
 }
@@ -226,9 +233,12 @@ TEST_CASE_METHOD(sqlite_fixture, "integral_boundary_test", "[sqlite][integral]")
 
     // SQLite3 uses single storage class INTEGER for all integral SQL types
     execute(
-        connection, NANODBC_TEXT("create table integral_boundary_test(i1 integer,i2 integer,i4 integer,i8 integer);"));
+        connection,
+        NANODBC_TEXT(
+            "create table integral_boundary_test(i1 integer,i2 integer,i4 integer,i8 integer);"));
 
-    auto const sql = NANODBC_TEXT("insert into integral_boundary_test(i1,i2,i4,i8) values (?,?,?,?);");
+    auto const sql =
+        NANODBC_TEXT("insert into integral_boundary_test(i1,i2,i4,i8) values (?,?,?,?);");
 
     std::int16_t const i1min = std::numeric_limits<std::int8_t>::min();
     auto const i2min = std::numeric_limits<std::int16_t>::min();
@@ -264,8 +274,9 @@ TEST_CASE_METHOD(sqlite_fixture, "integral_boundary_test", "[sqlite][integral]")
     }
 
     // query
-    nanodbc::result result =
-        execute(connection, NANODBC_TEXT("select i1,i2,i4,i8 from integral_boundary_test order by i1 asc;"));
+    nanodbc::result result = execute(
+        connection,
+        NANODBC_TEXT("select i1,i2,i4,i8 from integral_boundary_test order by i1 asc;"));
     // min
     REQUIRE(result.next());
     // All of string converted values are incorrect
@@ -291,17 +302,36 @@ TEST_CASE_METHOD(sqlite_fixture, "integral_to_string_conversion_test", "[sqlite]
 {
     // TODO: Move to common tests
     nanodbc::connection connection = connect();
-    create_table(connection, NANODBC_TEXT("integral_to_string_conversion_test"), NANODBC_TEXT("(i int, n int)"));
-    execute(connection, NANODBC_TEXT("insert into integral_to_string_conversion_test values (1, 0);"));
-    execute(connection, NANODBC_TEXT("insert into integral_to_string_conversion_test values (2, 255);"));
-    execute(connection, NANODBC_TEXT("insert into integral_to_string_conversion_test values (3, -128);"));
-    execute(connection, NANODBC_TEXT("insert into integral_to_string_conversion_test values (4, 127);"));
-    execute(connection, NANODBC_TEXT("insert into integral_to_string_conversion_test values (5, -32768);"));
-    execute(connection, NANODBC_TEXT("insert into integral_to_string_conversion_test values (6, 32767);"));
-    execute(connection, NANODBC_TEXT("insert into integral_to_string_conversion_test values (7, -2147483648);"));
-    execute(connection, NANODBC_TEXT("insert into integral_to_string_conversion_test values (8, 2147483647);"));
-    auto results =
-        execute(connection, NANODBC_TEXT("select * from integral_to_string_conversion_test order by i asc;"));
+    create_table(
+        connection,
+        NANODBC_TEXT("integral_to_string_conversion_test"),
+        NANODBC_TEXT("(i int, n int)"));
+    execute(
+        connection, NANODBC_TEXT("insert into integral_to_string_conversion_test values (1, 0);"));
+    execute(
+        connection,
+        NANODBC_TEXT("insert into integral_to_string_conversion_test values (2, 255);"));
+    execute(
+        connection,
+        NANODBC_TEXT("insert into integral_to_string_conversion_test values (3, -128);"));
+    execute(
+        connection,
+        NANODBC_TEXT("insert into integral_to_string_conversion_test values (4, 127);"));
+    execute(
+        connection,
+        NANODBC_TEXT("insert into integral_to_string_conversion_test values (5, -32768);"));
+    execute(
+        connection,
+        NANODBC_TEXT("insert into integral_to_string_conversion_test values (6, 32767);"));
+    execute(
+        connection,
+        NANODBC_TEXT("insert into integral_to_string_conversion_test values (7, -2147483648);"));
+    execute(
+        connection,
+        NANODBC_TEXT("insert into integral_to_string_conversion_test values (8, 2147483647);"));
+    auto results = execute(
+        connection,
+        NANODBC_TEXT("select * from integral_to_string_conversion_test order by i asc;"));
 
     REQUIRE(results.next());
     REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("0"));

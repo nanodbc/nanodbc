@@ -36,8 +36,8 @@ void run_test(const char* connection_string)
 
     // Accessing results by name, or column number
     {
-        nanodbc::result results =
-            execute(connection, "select a as first, b as second from public.simple_test where a = 1;");
+        nanodbc::result results = execute(
+            connection, "select a as first, b as second from public.simple_test where a = 1;");
         results.next();
         cout << endl << results.get<int>("first") << ", " << results.get<string>(1) << endl;
     }

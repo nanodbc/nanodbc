@@ -14,13 +14,16 @@
 #ifdef NANODBC_USE_UNICODE
 inline nanodbc::string_type convert(std::string const& in)
 {
-    static_assert(sizeof(nanodbc::string_type::value_type) > 1, "NANODBC_USE_UNICODE mode requires wide string_type");
+    static_assert(
+        sizeof(nanodbc::string_type::value_type) > 1,
+        "NANODBC_USE_UNICODE mode requires wide string_type");
     nanodbc::string_type out;
 // Workaround for confirmed bug in VS2015.
 // See: https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481
 #if defined(_MSC_VER) && (_MSC_VER == 1900)
     using wide_char_t = nanodbc::string_type::value_type;
-    auto s = std::wstring_convert<std::codecvt_utf8_utf16<wide_char_t>, wide_char_t>().from_bytes(in);
+    auto s =
+        std::wstring_convert<std::codecvt_utf8_utf16<wide_char_t>, wide_char_t>().from_bytes(in);
     auto p = reinterpret_cast<wide_char_t const*>(s.data());
     out.assign(p, p + s.size());
 #else
