@@ -3702,6 +3702,58 @@ string_type catalog::tables::table_remarks() const
     return result_.get<string_type>(4, string_type());
 }
 
+catalog::table_privileges::table_privileges(result& find_result)
+    : result_(find_result)
+{
+}
+
+bool catalog::table_privileges::next()
+{
+    return result_.next();
+}
+
+string_type catalog::table_privileges::table_catalog() const
+{
+    // TABLE_CAT might be NULL
+    return result_.get<string_type>(0, string_type());
+}
+
+string_type catalog::table_privileges::table_schema() const
+{
+    // TABLE_SCHEM might be NULL
+    return result_.get<string_type>(1, string_type());
+}
+
+string_type catalog::table_privileges::table_name() const
+{
+    // TABLE_NAME column is never NULL
+    return result_.get<string_type>(2);
+}
+
+string_type catalog::table_privileges::grantor() const
+{
+    // GRANTOR might be NULL
+    return result_.get<string_type>(3, string_type());
+}
+
+string_type catalog::table_privileges::grantee() const
+{
+    // GRANTEE column is never NULL
+    return result_.get<string_type>(4);
+}
+
+string_type catalog::table_privileges::privilege() const
+{
+    // PRIVILEGE column is never NULL
+    return result_.get<string_type>(5);
+}
+
+string_type catalog::table_privileges::is_grantable() const
+{
+    // IS_GRANTABLE might be NULL
+    return result_.get<string_type>(6, string_type());
+}
+
 catalog::primary_keys::primary_keys(result& find_result)
     : result_(find_result)
 {
@@ -3903,6 +3955,37 @@ catalog::tables catalog::find_tables(
 
     result find_result(stmt, 1);
     return catalog::tables(find_result);
+}
+
+catalog::table_privileges catalog::find_table_privileges(
+    const string_type& catalog,
+    const string_type& table,
+    const string_type& schema)
+{
+    // Passing a null pointer to a search pattern argument does not
+    // constrain the search for that argument; that is, a null pointer and
+    // the search pattern % (any characters) are equivalent.
+    // However, a zero-length search pattern - that is, a valid pointer to
+    // a string of length zero - matches only the empty string ("").
+    // See https://msdn.microsoft.com/en-us/library/ms710171.aspx
+
+    statement stmt(conn_);
+    RETCODE rc;
+    NANODBC_CALL_RC(
+        NANODBC_FUNC(SQLTablePrivileges),
+        rc,
+        stmt.native_statement_handle(),
+        (NANODBC_SQLCHAR*)(catalog.empty() ? nullptr : catalog.c_str()),
+        (catalog.empty() ? 0 : SQL_NTS),
+        (NANODBC_SQLCHAR*)(schema.empty() ? nullptr : schema.c_str()),
+        (schema.empty() ? 0 : SQL_NTS),
+        (NANODBC_SQLCHAR*)(table.empty() ? nullptr : table.c_str()),
+        (table.empty() ? 0 : SQL_NTS));
+    if (!success(rc))
+        NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
+
+    result find_result(stmt, 1);
+    return catalog::table_privileges(find_result);
 }
 
 catalog::columns catalog::find_columns(

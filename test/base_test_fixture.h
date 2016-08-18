@@ -864,6 +864,54 @@ struct base_test_fixture
         }
     }
 
+    void catalog_table_privileges_test()
+    {
+        nanodbc::connection connection = connect();
+        nanodbc::catalog catalog(connection);
+
+        // create several tables
+        create_table(
+            connection, NANODBC_TEXT("catalog_table_privileges_test"), NANODBC_TEXT("i int"));
+
+        // Check we can iterate over any tables
+        {
+            auto tables = catalog.find_table_privileges(NANODBC_TEXT(""));
+            long count = 0;
+            while (tables.next())
+            {
+                // These values must not be NULL (returned as empty string)
+                REQUIRE(!tables.table_name().empty());
+                REQUIRE(!tables.privilege().empty());
+                count++;
+            }
+            REQUIRE(count > 0);
+        }
+
+        // Check we can find a particular table
+        {
+            auto tables = catalog.find_table_privileges(
+                NANODBC_TEXT(""), NANODBC_TEXT("catalog_table_privileges_test"));
+            long count = 0;
+            std::set<nanodbc::string_type> privileges;
+            while (tables.next())
+            {
+                // These two values must not be NULL (returned as empty string)
+                REQUIRE(tables.table_name() == NANODBC_TEXT("catalog_table_privileges_test"));
+                privileges.insert(tables.privilege());
+                count++;
+            }
+            REQUIRE(count > 0);
+
+            // verify expected privileges
+            REQUIRE(!privileges.empty());
+            REQUIRE(privileges.count(NANODBC_TEXT("SELECT")));
+            REQUIRE(privileges.count(NANODBC_TEXT("INSERT")));
+            REQUIRE(privileges.count(NANODBC_TEXT("UPDATE")));
+            REQUIRE(privileges.count(NANODBC_TEXT("DELETE")));
+            // there can be more
+        }
+    }
+
     void column_descriptor_test()
     {
         auto connection = connect();

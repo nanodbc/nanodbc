@@ -99,6 +99,8 @@ TEST_CASE_METHOD(mysql_fixture, "catalog_tables_test", "[mysql][catalog][tables]
     catalog_tables_test();
 }
 
+// TODO: Add catalog_table_privileges_test - SQLTablePrivileges returns empty result set
+
 TEST_CASE_METHOD(mysql_fixture, "column_descriptor_test", "[mysql][columns]")
 {
     column_descriptor_test();

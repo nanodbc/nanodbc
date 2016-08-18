@@ -153,6 +153,12 @@ TEST_CASE_METHOD(sqlite_fixture, "catalog_tables_test", "[sqlite][catalog][table
     catalog_tables_test();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "catalog_table_privileges_test", "[sqlite][catalog][tables]")
+{
+    before_catalog_test();
+    catalog_table_privileges_test();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "column_descriptor_test", "[sqlite][columns]")
 {
     column_descriptor_test();
