@@ -6,19 +6,18 @@
 
 namespace
 {
-    struct odbc_fixture : public base_test_fixture
+struct odbc_fixture : public base_test_fixture
+{
+    odbc_fixture()
+        // connection string from command line or NANODBC_TEST_CONNSTR environment variable
+        : base_test_fixture()
     {
-        odbc_fixture()
-        : base_test_fixture(/* connecting string from NANODBC_TEST_CONNSTR environment variable)*/)
-        {
-            if (connection_string_.empty())
-                connection_string_ = get_env("NANODBC_TEST_CONNSTR_ODBC");
-        }
+        if (connection_string_.empty())
+            connection_string_ = get_env("NANODBC_TEST_CONNSTR_ODBC");
+    }
 
-        virtual ~odbc_fixture() NANODBC_NOEXCEPT
-        {
-        }
-    };
+    virtual ~odbc_fixture() NANODBC_NOEXCEPT {}
+};
 }
 
 TEST_CASE_METHOD(odbc_fixture, "driver_test", "[odbc][driver]")

@@ -6,19 +6,18 @@
 
 namespace
 {
-    struct vertica_fixture : public base_test_fixture
+struct vertica_fixture : public base_test_fixture
+{
+    vertica_fixture()
+        // connection string from command line or NANODBC_TEST_CONNSTR environment variable
+        : base_test_fixture()
     {
-        vertica_fixture()
-        : base_test_fixture(/* connecting string from NANODBC_TEST_CONNSTR environment variable)*/)
-        {
-            if (connection_string_.empty())
-                connection_string_ = get_env("NANODBC_TEST_CONNSTR_VERTICA");
-        }
+        if (connection_string_.empty())
+            connection_string_ = get_env("NANODBC_TEST_CONNSTR_VERTICA");
+    }
 
-        virtual ~vertica_fixture() NANODBC_NOEXCEPT
-        {
-        }
-    };
+    virtual ~vertica_fixture() NANODBC_NOEXCEPT {}
+};
 }
 
 // TODO: add blob (bytea) test
@@ -68,7 +67,10 @@ TEST_CASE_METHOD(vertica_fixture, "exception_test", "[vertica][exception]")
     exception_test();
 }
 
-TEST_CASE_METHOD(vertica_fixture, "execute_multiple_transaction_test", "[vertica][execute][transaction]")
+TEST_CASE_METHOD(
+    vertica_fixture,
+    "execute_multiple_transaction_test",
+    "[vertica][execute][transaction]")
 {
     execute_multiple_transaction_test();
 }

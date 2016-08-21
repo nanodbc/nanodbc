@@ -11,7 +11,7 @@ A small C++ wrapper for the native C ODBC API. Please see the [online documentat
 | `master`  | Contains the latest development code, not yet ready for a published version. |
 | `v2.x.x`  | Targets C++14+. All future development will build upon this version. |
 | `v1.x.x`  | Supports C++03 and optionally C++11. *There is no longer any support for this version.* |
- 
+
 ## Build Status
 
 | Branch | Travis CI | AppVeyor | Coverity |
@@ -20,7 +20,7 @@ A small C++ wrapper for the native C ODBC API. Please see the [online documentat
 | `latest` | [![latest](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=latest)](https://travis-ci.org/lexicalunit/nanodbc) |  [![latest](https://ci.appveyor.com/api/projects/status/71nb7l794n3i8vdj/branch/latest?svg=true)](https://ci.appveyor.com/project/lexicalunit/nanodbc?branch=latest) | |
 | `release` | [![release](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=release)](https://travis-ci.org/lexicalunit/nanodbc) |  [![recent](https://ci.appveyor.com/api/projects/status/71nb7l794n3i8vdj/branch/release?svg=true)](https://ci.appveyor.com/project/lexicalunit/nanodbc?branch=release) | |
 
-Note, the Coverity status is based on the [coverity_scan](https://github.com/lexicalunit/nanodbc/tree/coverity_scan) branch, so every time substantial work is pushed to `master`, it also needs to be merged and pushed to `coverity_scan`, in oder to keep the status up to date.
+> **Note:** The Coverity status uses the [coverity_scan](https://github.com/lexicalunit/nanodbc/tree/coverity_scan) branch. When `master` has had a significant amount of work pushed to it, merge those changes into `coverity_scan` as well to keep the status up to date.
 
 # Building
 
@@ -84,6 +84,16 @@ Continuous integration tests run on [Travis-CI](https://travis-ci.org/). The bui
 ---
 
 # Contributing
+
+## Code Style
+
+[`clang-format`](http://clang.llvm.org/docs/ClangFormat.html) handles all C++ code formatting for nanodbc. This utility is [brew-installable](http://brew.sh/) on OS X (`brew install clang-format`) and is available on all major platforms. See our `.clang-format` configuration file for details on the style. The script `scripts/style.sh` formats all code in the repository automatically. To run `clang-format` on a single file use the following.
+
+```shell
+$ clang-format -i /path/to/file
+```
+
+**Please auto-format all code submitted in Pull Requests.**
 
 ## Publish and Release Process
 
