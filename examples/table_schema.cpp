@@ -86,8 +86,10 @@ inline std::string data_type_identifier(int t)
         return "SQL_TYPE_TIME";
     case SQL_TYPE_TIMESTAMP:
         return "SQL_TYPE_TIMESTAMP";
-    // case SQL_TYPE_UTCDATETIME: return "SQL_TYPE_UTCDATETIME";
-    // case SQL_TYPE_UTCTIME:  return "SQL_TYPE_UTCTIME";
+    // case SQL_TYPE_UTCDATETIME:
+    //     return "SQL_TYPE_UTCDATETIME";
+    // case SQL_TYPE_UTCTIME:
+    //     return "SQL_TYPE_UTCTIME";
     case SQL_INTERVAL_MONTH:
         return "SQL_INTERVAL_MONTH";
     case SQL_INTERVAL_YEAR:
@@ -141,8 +143,8 @@ int main(int argc, char* argv[])
     try
     {
         // Example:
-        // "Driver={ODBC Driver 11 for SQL
-        // Server};Server=xxx.sqlserver.net;Database=mydb;UID=joe;PWD=secret;"
+        // "Driver={ODBC Driver 11 for SQL Server};
+        //  Server=xxx.sqlserver.net;Database=mydb;UID=joe;PWD=secret;"
         auto const connection_string(convert(argv[1]));
         auto const table_name(convert(argv[2]));
         nanodbc::string_type schema_name;
@@ -170,7 +172,7 @@ int main(int argc, char* argv[])
             NANODBC_COLUMN(column_size);
             NANODBC_COLUMN(decimal_digits);
             NANODBC_COLUMN(buffer_length);
-            NANODBC_COLUMN(char_octed_length);
+            NANODBC_COLUMN(char_octet_length);
             NANODBC_COLUMN(numeric_precision_radix);
             NANODBC_COLUMN(nullable);
             NANODBC_COLUMN(is_nullable);

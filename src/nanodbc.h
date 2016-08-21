@@ -440,18 +440,18 @@ public:
     /// \see execute(), just_execute(), execute_direct(), just_execute_direct(), open(), prepare()
     statement(class connection& conn, const string_type& query, long timeout = 0);
 
-    /// Copy constructor.
+    /// \brief Copy constructor.
     statement(const statement& rhs);
 
 #ifndef NANODBC_NO_MOVE_CTOR
-    /// Move constructor.
+    /// \brief Move constructor.
     statement(statement&& rhs) NANODBC_NOEXCEPT;
 #endif
 
-    /// Assignment.
+    /// \brief Assignment.
     statement& operator=(statement rhs);
 
-    /// Member swap.
+    /// \brief Member swap.
     void swap(statement& rhs) NANODBC_NOEXCEPT;
 
     /// \brief Closes the statement.
@@ -1331,21 +1331,26 @@ private:
 class result_iterator
 {
 public:
-    typedef std::input_iterator_tag iterator_category;
-    typedef result value_type;
-    typedef result* pointer;
-    typedef result& reference;
-    typedef std::ptrdiff_t difference_type;
+    typedef std::input_iterator_tag iterator_category; ///< Category of iterator.
+    typedef result value_type; ///< Values returned by iterator access.
+    typedef result* pointer; ///< Pointer to iteration values.
+    typedef result& reference; ///< Reference to iteration values.
+    typedef std::ptrdiff_t difference_type; ///< Iterator difference.
 
+    /// Default iterator; an empty result set.
     result_iterator() = default;
+
+    /// Create result iterator for a given result set.
     result_iterator(result& r)
         : result_(r)
     {
         ++(*this);
     }
 
+    /// Dereference.
     reference operator*() { return result_; }
 
+    /// Access through dereference.
     pointer operator->()
     {
         if (!result_)
@@ -1353,6 +1358,7 @@ public:
         return &(operator*());
     }
 
+    /// Iteration.
     result_iterator& operator++()
     {
         try
@@ -1367,6 +1373,7 @@ public:
         return *this;
     }
 
+    /// Iteration.
     result_iterator operator++(int)
     {
         result_iterator tmp(*this);
@@ -1374,6 +1381,7 @@ public:
         return tmp;
     }
 
+    /// Iterators are equal if they a tied to the same native statemnt handle, or both empty.
     bool operator==(result_iterator const& rhs) const
     {
         if (result_ && rhs.result_)
@@ -1382,6 +1390,7 @@ public:
             return !result_ && !rhs.result_;
     }
 
+    /// Iterators are not equal if they have different native statemnt handles.
     bool operator!=(result_iterator const& rhs) const { return !(*this == rhs); }
 
 private:
@@ -1433,12 +1442,12 @@ public:
     class tables
     {
     public:
-        bool next();
-        string_type table_catalog() const;
-        string_type table_schema() const;
-        string_type table_name() const;
-        string_type table_type() const;
-        string_type table_remarks() const;
+        bool next(); ///< Move to the next result in the result set.
+        string_type table_catalog() const; ///< Fetch table catalog.
+        string_type table_schema() const; ///< Fetch table schema.
+        string_type table_name() const; ///< Fetch table name.
+        string_type table_type() const; ///< Fetch table type.
+        string_type table_remarks() const; ///< Fetch table remarks.
 
     private:
         friend class nanodbc::catalog;
@@ -1450,30 +1459,36 @@ public:
     class columns
     {
     public:
-        bool next();
-        string_type table_catalog() const;
-        string_type table_schema() const;
-        string_type table_name() const;
-        string_type column_name() const;
-        short data_type() const;
-        string_type type_name() const;
-        long column_size() const;
-        long buffer_length() const;
-        short decimal_digits() const;
-        short numeric_precision_radix() const;
-        short nullable() const;
-        string_type remarks() const;
-        string_type column_default() const;
-        short sql_data_type() const;
-        short sql_datetime_subtype() const;
-        long char_octed_length() const;
+        bool next(); ///< Move to the next result in the result set.
+        string_type table_catalog() const; ///< Fetch table catalog.
+        string_type table_schema() const; ///< Fetch table schema.
+        string_type table_name() const; ///< Fetch table name.
+        string_type column_name() const; ///< Fetch column name.
+        short data_type() const; ///< Fetch column data type.
+        string_type type_name() const; ///< Fetch column type name.
+        long column_size() const; ///< Fetch column size.
+        long buffer_length() const; ///< Fetch buffer length.
+        short decimal_digits() const; ///< Fetch decimal digits.
+        short numeric_precision_radix() const; ///< Fetch numeric precission.
+        short nullable() const; ///< True iff column is nullable.
+        string_type remarks() const; ///< Fetch column remarks.
+        string_type column_default() const; ///< Fetch column's default.
+        short sql_data_type() const; ///< Fetch column's SQL data type.
+        short sql_datetime_subtype() const; ///< Fetch datetime subtype of column.
+        long char_octet_length() const; ///< Fetch char octet length.
 
         /// \brief Ordinal position of the column in the table.
         /// The first column in the table is number 1.
         /// Returns ORDINAL_POSITION column value in result set returned by SQLColumns.
         long ordinal_position() const;
 
-        // TODO: Translate "YES","NO", <empty> strings to IsNullable enum?
+        /// \brief Fetch column is-nullable information.
+        ///
+        /// \note MSDN: This column returns a zero-length string if nullability is unknown.
+        ///       ISO rules are followed to determine nullability.
+        ///       An ISO SQL-compliant DBMS cannot return an empty string.
+        ///
+        /// TODO: Translate "YES","NO", <empty> strings to IsNullable enum?
         string_type is_nullable() const;
 
     private:
@@ -1486,11 +1501,11 @@ public:
     class primary_keys
     {
     public:
-        bool next();
-        string_type table_catalog() const;
-        string_type table_schema() const;
-        string_type table_name() const;
-        string_type column_name() const;
+        bool next(); ///< Move to the next result in the result set.
+        string_type table_catalog() const; ///< Fetch table catalog.
+        string_type table_schema() const; ///< Fetch table schema.
+        string_type table_name() const; ///< Fetch table name.
+        string_type column_name() const; ///< Fetch column name.
 
         /// \brief Column sequence number in the key (starting with 1).
         /// Returns valye of KEY_SEQ column in result set returned by SQLPrimaryKeys.
@@ -1569,18 +1584,6 @@ private:
 
 /// @}
 
-struct driver
-{
-    struct attribute
-    {
-        nanodbc::string_type keyword;
-        nanodbc::string_type value;
-    };
-
-    nanodbc::string_type name;
-    std::list<attribute> attributes;
-};
-
 // clang-format off
 // 8888888888                            8888888888                         888    d8b
 // 888                                   888                                888    Y8P
@@ -1598,6 +1601,21 @@ struct driver
 ///
 /// @{
 
+/// \brief Information on a configured ODBC driver.
+struct driver
+{
+    /// \brief Driver attributes.
+    struct attribute
+    {
+        nanodbc::string_type keyword; ///< Driver keyword attribute.
+        nanodbc::string_type value; ///< Driver attribute value.
+    };
+
+    nanodbc::string_type name; ///< Driver name.
+    std::list<attribute> attributes; ///< List of driver attributes.
+};
+
+/// \brief Returns a list of ODBC drivers on your system.
 std::list<driver> list_drivers();
 
 /// \brief Immediately opens, prepares, and executes the given query directly on the given
@@ -1609,8 +1627,7 @@ std::list<driver> list_drivers();
 /// \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
 /// \return A result set object.
 /// \attention You will want to use transactions if you are doing batch operations because it will
-/// prevent auto commits
-///            from occurring after each individual operation is executed.
+///            prevent auto commits from occurring after each individual operation is executed.
 /// \see open(), prepare(), execute(), result, transaction
 result
 execute(connection& conn, const string_type& query, long batch_operations = 1, long timeout = 0);

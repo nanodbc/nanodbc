@@ -9,7 +9,8 @@ namespace
 struct vertica_fixture : public base_test_fixture
 {
     vertica_fixture()
-        : base_test_fixture(/* connecting string from NANODBC_TEST_CONNSTR environment variable)*/)
+        // connection string from command line or NANODBC_TEST_CONNSTR environment variable
+        : base_test_fixture()
     {
         if (connection_string_.empty())
             connection_string_ = get_env("NANODBC_TEST_CONNSTR_VERTICA");

@@ -32,8 +32,8 @@ int main(int argc, char* argv[])
     try
     {
         // Example:
-        // "Driver={ODBC Driver 11 for SQL
-        // Server};Server=xxx.sqlserver.net;Database=mydb;UID=joe;PWD=secret;"
+        // "Driver={ODBC Driver 11 for SQL Server};
+        //  Server=xxx.sqlserver.net;Database=mydb;UID=joe;PWD=secret;"
         auto const connection_string(convert(argv[1]));
         connection conn(connection_string);
 
@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
         {
             try
             {
-                // XXX: SQL Server <=2014 does not support "if exists"
+                // XXX: SQL Server <= 2014 does not support "if exists"
                 execute(conn, NANODBC_TEXT("drop table rowset_iteration;"));
             }
             catch (runtime_error const&)

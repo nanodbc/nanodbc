@@ -1924,7 +1924,9 @@ public:
         , rowset_position_(0)
         , bound_columns_by_name_()
         , at_end_(false)
+#if defined(NANODBC_DO_ASYNC_IMPL)
         , async_(false)
+#endif
     {
         RETCODE rc;
         NANODBC_CALL_RC(
@@ -2513,7 +2515,9 @@ private:
     long rowset_position_;
     std::map<string_type, bound_column*> bound_columns_by_name_;
     bool at_end_;
+#if defined(NANODBC_DO_ASYNC_IMPL)
     bool async_; // true if statement is currently in SQL_STILL_EXECUTING mode
+#endif
 };
 
 template <>
@@ -3828,7 +3832,7 @@ string_type catalog::columns::remarks() const
 
 string_type catalog::columns::column_default() const
 {
-    // COLUMN_DEF might be NULL, if no default value is specified.
+    // COLUMN_DEF might be NULL, if no default value is specified
     return result_.get<string_type>(12, string_type());
 }
 
@@ -3844,9 +3848,9 @@ short catalog::columns::sql_datetime_subtype() const
     return result_.get<short>(14, 0);
 }
 
-long catalog::columns::char_octed_length() const
+long catalog::columns::char_octet_length() const
 {
-    // CHAR_OCTET_LENGTH might be nULL
+    // CHAR_OCTET_LENGTH might be NULL
     return result_.get<long>(15, 0);
 }
 
@@ -3858,11 +3862,7 @@ long catalog::columns::ordinal_position() const
 
 string_type catalog::columns::is_nullable() const
 {
-    // IS_NULLABLE might be NULL
-
-    // MSDN: This column returns a zero-length string if nullability is unknown.
-    //       ISO rules are followed to determine nullability.
-    //       An ISO SQL-compliant DBMS cannot return an empty string.
+    // IS_NULLABLE might be NULL.
     return result_.get<string_type>(17, string_type());
 }
 
