@@ -1487,8 +1487,6 @@ public:
         /// \note MSDN: This column returns a zero-length string if nullability is unknown.
         ///       ISO rules are followed to determine nullability.
         ///       An ISO SQL-compliant DBMS cannot return an empty string.
-        ///
-        /// TODO: Translate "YES","NO", <empty> strings to IsNullable enum?
         string_type is_nullable() const;
 
     private:
@@ -1522,6 +1520,26 @@ public:
         result result_;
     };
 
+    /// \brief Result set for a list of tables and the privileges associated with each table.
+    class table_privileges
+    {
+    public:
+        bool next(); ///< Move to the next result in the result set
+        string_type table_catalog() const; ///< Fetch table catalog.
+        string_type table_schema() const; ///< Fetch table schema.
+        string_type table_name() const; ///< Fetch table name.
+        string_type grantor() const; ///< Fetch name of user who granted the privilege.
+        string_type grantee() const; ///< Fetch name of user whom the privilege was granted.
+        string_type privilege() const; ///< Fetch the table privilege.
+        /// Fetch indicator whether the grantee is permitted to grant the privilege to other users.
+        string_type is_grantable() const;
+
+    private:
+        friend class nanodbc::catalog;
+        table_privileges(result& find_result);
+        result result_;
+    };
+
     /// \brief Creates catalog operating on database accessible through the specified connection.
     catalog(connection& conn);
 
@@ -1539,6 +1557,23 @@ public:
         const string_type& type = string_type(),
         const string_type& schema = string_type(),
         const string_type& catalog = string_type());
+
+    /// \brief Creates result set with tables and the privileges associated with each table.
+    /// Tables information is obtained by executing `SQLTablePrivileges` function within
+    /// scope of the connected database accessible with the specified connection.
+    /// Since this function is implemented in terms of the `SQLTablePrivileges`s, it returns
+    /// result set ordered by TABLE_CAT, TABLE_SCHEM, TABLE_NAME, PRIVILEGE, and GRANTEE.
+    ///
+    /// \param catalog The table catalog. It cannot contain a string search pattern.
+    /// \param schema String search pattern for schema names, treated as the Pattern Value Arguments.
+    /// \param table String search pattern for table names, treated as the Pattern Value Arguments.
+    ///
+    /// \note Due to the fact catalog cannot is not the Pattern Value Argument,
+    ///       order of parameters is different than in the other catalog look-up functions.
+    catalog::table_privileges find_table_privileges(
+        const string_type& catalog,
+        const string_type& table = string_type(),
+        const string_type& schema = string_type());
 
     /// \brief Creates result set with columns in one or more tables.
     ///
