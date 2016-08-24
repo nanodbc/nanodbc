@@ -2,6 +2,20 @@
 
 A small C++ wrapper for the native C ODBC API. Please see the [online documentation](http://lexicalunit.github.com/nanodbc/) for user information, example usage, propaganda, and detailed source level documentation.
 
+## Philosophy
+
+The native C API for working with ODBC is exorbitantly verbose, ridiculously complicated, and fantastically brittle. nanodbc addresses these frustrations! The goal for nanodbc is to make developers happy. Common tasks should be easy, requiring concise and simple code.
+
+The [latest C++ standards](https://isocpp.org/std/status) and [best practices](https://github.com/isocpp/CppCoreGuidelines) are _enthusiastically_ incorporated to make the library as future-proof as possible. To accommodate users who can not use the latest and greatest, [semantic versioning](http://semver.org/) and release notes will clarify required C++ features and/or standards for particular versions.
+
+### Design Decisions
+
+All complex objects in nanodbc follow the [pimpl (Pointer to IMPLementation)](http://c2.com/cgi/wiki?PimplIdiom) idiom to provide separation between interface and implementation, value semantics, and a clean `nanodbc.h` header file that includes nothing but standard C++ headers.
+
+nanodbc wraps ODBC code, providing a simpler way to do the same thing. We try to be as featureful as possible, but I can't guarantee you'll never have to write supporting ODBC code. Personally, I have never had to do so.
+
+Major features beyond what's already supported by ODBC are not within the scope of nanodbc. This is where the *nano* part of nanodbc becomes relevant: This library is _as minimal as possible_. That means no dependencies beyond standard C++ and typical ODBC headers. No features unsupported by existing ODBC API calls.
+
 ## Branches
 
 | Version | Description |

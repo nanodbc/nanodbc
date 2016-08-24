@@ -1242,7 +1242,7 @@ public:
     ///
     /// There is a bug/limitation in ODBC drivers for SQL Server (and possibly others)
     /// which causes SQLBindCol() to never write SQL_NOT_NULL to the length/indicator
-    /// buffer unless you also bind the data column. Nanodbc's is_null() will return
+    /// buffer unless you also bind the data column. nanodbc's is_null() will return
     /// correct values for (n)varchar(max) columns when you ensure that SQLGetData()
     /// has been called for that column (i.e. after get() or get_ref() is called).
     ///
