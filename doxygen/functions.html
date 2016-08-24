@@ -73,6 +73,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li class="current"><a href="functions.html"><span>All</span></a></li>
       <li><a href="functions_func.html"><span>Functions</span></a></li>
       <li><a href="functions_vars.html"><span>Variables</span></a></li>
+      <li><a href="functions_type.html"><span>Typedefs</span></a></li>
       <li><a href="functions_enum.html"><span>Enumerations</span></a></li>
       <li><a href="functions_eval.html"><span>Enumerator</span></a></li>
     </ul>
@@ -89,6 +90,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="#index_h"><span>h</span></a></li>
       <li><a href="#index_i"><span>i</span></a></li>
       <li><a href="#index_j"><span>j</span></a></li>
+      <li><a href="#index_k"><span>k</span></a></li>
       <li><a href="#index_l"><span>l</span></a></li>
       <li><a href="#index_m"><span>m</span></a></li>
       <li><a href="#index_n"><span>n</span></a></li>
@@ -97,6 +99,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="#index_r"><span>r</span></a></li>
       <li><a href="#index_s"><span>s</span></a></li>
       <li><a href="#index_t"><span>t</span></a></li>
+      <li><a href="#index_v"><span>v</span></a></li>
       <li><a href="#index_y"><span>y</span></a></li>
       <li class="current"><a href="#index_0x7e"><span>~</span></a></li>
     </ul>
@@ -129,10 +132,25 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 , <a class="el" href="classnanodbc_1_1statement.html#ac8cbfe331f62139669b31d38ff51c8d5">nanodbc::statement</a>
 </li>
 <li>async_connect()
-: <a class="el" href="classnanodbc_1_1connection.html#a28885aa74be6e52c3f32d5848c7c9223">nanodbc::connection</a>
+: <a class="el" href="classnanodbc_1_1connection.html#a4ecd245a977d3bc4f8d84c63cfd754b2">nanodbc::connection</a>
+</li>
+<li>async_execute()
+: <a class="el" href="classnanodbc_1_1statement.html#ac7086dafc8c0f014c629d15f97cc9505">nanodbc::statement</a>
 </li>
 <li>async_execute_direct()
-: <a class="el" href="classnanodbc_1_1statement.html#a07b083b3f038cd6f16b003ec7e0591e0">nanodbc::statement</a>
+: <a class="el" href="classnanodbc_1_1statement.html#a97b7d1ee2b289c82bcf4a70eb113374a">nanodbc::statement</a>
+</li>
+<li>async_next()
+: <a class="el" href="classnanodbc_1_1result.html#a8c690c95797a04a6ea022e64867d0f53">nanodbc::result</a>
+</li>
+<li>async_prepare()
+: <a class="el" href="classnanodbc_1_1statement.html#a20baa8c049c8c67169bdf8e7446de5eb">nanodbc::statement</a>
+</li>
+<li>at_end()
+: <a class="el" href="classnanodbc_1_1result.html#a0460239e2125619395888f80b60a24c7">nanodbc::result</a>
+</li>
+<li>attributes
+: <a class="el" href="structnanodbc_1_1driver.html#a4528ae3553031578ba886933c03c3f35">nanodbc::driver</a>
 </li>
 </ul>
 
@@ -145,7 +163,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="group__binding.html#ga62903fa78ce9444f9e6cf3015c427f62">nanodbc::statement</a>
 </li>
 <li>bind_strings()
-: <a class="el" href="group__bind__strings.html#ga151f4ab504de6243cdbe54f070c85a2e">nanodbc::statement</a>
+: <a class="el" href="group__bind__strings.html#ga475aad05cf4e90224270d1a525d38f1e">nanodbc::statement</a>
+</li>
+<li>buffer_length()
+: <a class="el" href="classnanodbc_1_1catalog_1_1columns.html#a22f3c2c061d59f6d239e13fad5a0e5e8">nanodbc::catalog::columns</a>
 </li>
 </ul>
 
@@ -154,8 +175,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>cancel()
 : <a class="el" href="classnanodbc_1_1statement.html#a81f6e6e0b547a900d20652fe5abe7b75">nanodbc::statement</a>
 </li>
+<li>catalog()
+: <a class="el" href="classnanodbc_1_1catalog.html#ad18e6a0858639c14eb33b90736ab6d0e">nanodbc::catalog</a>
+</li>
 <li>catalog_name()
 : <a class="el" href="classnanodbc_1_1connection.html#a1da2af13e61f54e8af66d6b19da7da57">nanodbc::connection</a>
+</li>
+<li>char_octet_length()
+: <a class="el" href="classnanodbc_1_1catalog_1_1columns.html#a102b53585d466c908f8238977d5f2e55">nanodbc::catalog::columns</a>
 </li>
 <li>close()
 : <a class="el" href="classnanodbc_1_1statement.html#abcf1dda8ab40a3b8ebd33c69afa4a399">nanodbc::statement</a>
@@ -169,11 +196,23 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>column_datatype()
 : <a class="el" href="classnanodbc_1_1result.html#a1859170a42f5127e3079642c85c92060">nanodbc::result</a>
 </li>
+<li>column_decimal_digits()
+: <a class="el" href="classnanodbc_1_1result.html#a64aa406884c20081e0d288fe41b7c5c7">nanodbc::result</a>
+</li>
+<li>column_default()
+: <a class="el" href="classnanodbc_1_1catalog_1_1columns.html#a4b42914c61d21d4e64033771ce8288ea">nanodbc::catalog::columns</a>
+</li>
 <li>column_name()
-: <a class="el" href="classnanodbc_1_1result.html#af8cbcfaf255c7e60a67e00137358c7cb">nanodbc::result</a>
+: <a class="el" href="classnanodbc_1_1catalog_1_1columns.html#acec597c499d47833a4387e05febed5d7">nanodbc::catalog::columns</a>
+, <a class="el" href="classnanodbc_1_1catalog_1_1primary__keys.html#a6433b66eaa65480ff268408f1504d0c6">nanodbc::catalog::primary_keys</a>
+, <a class="el" href="classnanodbc_1_1result.html#af8cbcfaf255c7e60a67e00137358c7cb">nanodbc::result</a>
+</li>
+<li>column_number()
+: <a class="el" href="classnanodbc_1_1catalog_1_1primary__keys.html#a22782e365a586ed1a10d22bde4ad197c">nanodbc::catalog::primary_keys</a>
 </li>
 <li>column_size()
-: <a class="el" href="classnanodbc_1_1result.html#a1f92be8e23c6503464dfbb4645914dfa">nanodbc::result</a>
+: <a class="el" href="classnanodbc_1_1catalog_1_1columns.html#a9fa6609e0cff5507b1ff1b8e9f949e03">nanodbc::catalog::columns</a>
+, <a class="el" href="classnanodbc_1_1result.html#a1f92be8e23c6503464dfbb4645914dfa">nanodbc::result</a>
 </li>
 <li>columns()
 : <a class="el" href="classnanodbc_1_1result.html#a839990af1305d8dcb249f8464433034a">nanodbc::result</a>
@@ -181,6 +220,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 <li>commit()
 : <a class="el" href="classnanodbc_1_1transaction.html#ad13c6871ac5f572456e881c2e52c2c91">nanodbc::transaction</a>
+</li>
+<li>complete_execute()
+: <a class="el" href="classnanodbc_1_1statement.html#aa4a0bb3fc0112469e837e1acd5ef3f6a">nanodbc::statement</a>
+</li>
+<li>complete_next()
+: <a class="el" href="classnanodbc_1_1result.html#a0af2da5efc2576da4d2b2b54e340e11c">nanodbc::result</a>
+</li>
+<li>complete_prepare()
+: <a class="el" href="classnanodbc_1_1statement.html#a416c39007e292cf9b95f368d829ad5cb">nanodbc::statement</a>
 </li>
 <li>connect()
 : <a class="el" href="classnanodbc_1_1connection.html#a693524630eff2384e4c4aef8f6adcfad">nanodbc::connection</a>
@@ -190,14 +238,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 , <a class="el" href="classnanodbc_1_1statement.html#a6ea61610405cd2dd80897e1420193967">nanodbc::statement</a>
 </li>
 <li>connection()
-: <a class="el" href="classnanodbc_1_1connection.html#ae5119a17fea556d44472ba06d1576548">nanodbc::connection</a>
-, <a class="el" href="classnanodbc_1_1statement.html#af2fcfa69cc51730d7fecb7e8153b0f7a">nanodbc::statement</a>
+: <a class="el" href="classnanodbc_1_1connection.html#aaea353f8c2f0b4576bc4c95bed330b46">nanodbc::connection</a>
+, <a class="el" href="classnanodbc_1_1statement.html#a83c6e4b8040ddf5a351984676c599851">nanodbc::statement</a>
 , <a class="el" href="classnanodbc_1_1transaction.html#a1ed227eab7388d2567c2f3fedd89b611">nanodbc::transaction</a>
 </li>
 </ul>
 
 
 <h3><a class="anchor" id="index_d"></a>- d -</h3><ul>
+<li>data_type()
+: <a class="el" href="classnanodbc_1_1catalog_1_1columns.html#add1ed5c35298eb154648cf0c26032121">nanodbc::catalog::columns</a>
+</li>
 <li>database_error()
 : <a class="el" href="classnanodbc_1_1database__error.html#a5896a7b81053281d045eb9a0e127ef76">nanodbc::database_error</a>
 </li>
@@ -214,6 +265,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>dbms_version()
 : <a class="el" href="classnanodbc_1_1connection.html#a8507106f1c3bfc6265e8525e29254ee0">nanodbc::connection</a>
 </li>
+<li>decimal_digits()
+: <a class="el" href="classnanodbc_1_1catalog_1_1columns.html#af5da3d10b81e17165ed59c6c7a01648f">nanodbc::catalog::columns</a>
+</li>
+<li>difference_type
+: <a class="el" href="classnanodbc_1_1result__iterator.html#af16f09f398c533c9346d521a2ea9aeef">nanodbc::result_iterator</a>
+</li>
+<li>disable_async()
+: <a class="el" href="classnanodbc_1_1statement.html#ac6f0f45eb778a39b9e9ad89a67b9e965">nanodbc::statement</a>
+</li>
 <li>disconnect()
 : <a class="el" href="classnanodbc_1_1connection.html#adf614b7fdc08596122ca12e21a61ba34">nanodbc::connection</a>
 </li>
@@ -224,8 +284,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 
 <h3><a class="anchor" id="index_e"></a>- e -</h3><ul>
-<li>end()
-: <a class="el" href="classnanodbc_1_1result.html#ae29a7bec7f8b8eaddd7989fbcaa59032">nanodbc::result</a>
+<li>enable_async()
+: <a class="el" href="classnanodbc_1_1statement.html#ada8ceb1d90ebe7c0a876a185fa89f009">nanodbc::statement</a>
 </li>
 <li>execute()
 : <a class="el" href="classnanodbc_1_1statement.html#aaf1b96ccd2da0f671d9e845d68fcde37">nanodbc::statement</a>
@@ -237,6 +297,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 
 <h3><a class="anchor" id="index_f"></a>- f -</h3><ul>
+<li>find_columns()
+: <a class="el" href="classnanodbc_1_1catalog.html#ab43a54cbf8e0fe01be9168a104265220">nanodbc::catalog</a>
+</li>
+<li>find_primary_keys()
+: <a class="el" href="classnanodbc_1_1catalog.html#a6a15cdc1df3a2ebd976dd4fb772a533d">nanodbc::catalog</a>
+</li>
+<li>find_tables()
+: <a class="el" href="classnanodbc_1_1catalog.html#a7eefea4d14c32402c7f754517da84a51">nanodbc::catalog</a>
+</li>
 <li>first()
 : <a class="el" href="classnanodbc_1_1result.html#a8ce75f4ab1bb039c6ee6724966f54a93">nanodbc::result</a>
 </li>
@@ -258,7 +327,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <h3><a class="anchor" id="index_h"></a>- h -</h3><ul>
 <li>hour
-: <a class="el" href="structnanodbc_1_1timestamp.html#a07789e9f5f634491786cf8d6ceb4e4a3">nanodbc::timestamp</a>
+: <a class="el" href="structnanodbc_1_1time.html#a057fb220c0d675c9760b86666a985dbc">nanodbc::time</a>
+, <a class="el" href="structnanodbc_1_1timestamp.html#a07789e9f5f634491786cf8d6ceb4e4a3">nanodbc::timestamp</a>
 </li>
 </ul>
 
@@ -266,6 +336,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <h3><a class="anchor" id="index_i"></a>- i -</h3><ul>
 <li>is_null()
 : <a class="el" href="classnanodbc_1_1result.html#a46777a452792e0184f63bc370c3303a4">nanodbc::result</a>
+</li>
+<li>is_nullable()
+: <a class="el" href="classnanodbc_1_1catalog_1_1columns.html#ab6e9818674a3e9591058ba7391b8a229">nanodbc::catalog::columns</a>
+</li>
+<li>iterator_category
+: <a class="el" href="classnanodbc_1_1result__iterator.html#af46c41cf24ac2db0574486dc2b88c848">nanodbc::result_iterator</a>
 </li>
 </ul>
 
@@ -280,16 +356,30 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </ul>
 
 
+<h3><a class="anchor" id="index_k"></a>- k -</h3><ul>
+<li>keyword
+: <a class="el" href="structnanodbc_1_1driver_1_1attribute.html#af1b789c44685f58a7b4ff95e2de5acb8">nanodbc::driver::attribute</a>
+</li>
+</ul>
+
+
 <h3><a class="anchor" id="index_l"></a>- l -</h3><ul>
 <li>last()
 : <a class="el" href="classnanodbc_1_1result.html#a5078a998be38e7814338597eaf100405">nanodbc::result</a>
+</li>
+<li>list_catalogs()
+: <a class="el" href="classnanodbc_1_1catalog.html#ab7338afc7ebe35a33db3a1d54c308ae1">nanodbc::catalog</a>
+</li>
+<li>list_schemas()
+: <a class="el" href="classnanodbc_1_1catalog.html#a2fe34db2271a8726646cb630a4b44775">nanodbc::catalog</a>
 </li>
 </ul>
 
 
 <h3><a class="anchor" id="index_m"></a>- m -</h3><ul>
 <li>min
-: <a class="el" href="structnanodbc_1_1timestamp.html#a6d43619ba944b287e1db1c41493ba2a3">nanodbc::timestamp</a>
+: <a class="el" href="structnanodbc_1_1time.html#a343d25fdd7c3e67467bf18d3d9cc82c9">nanodbc::time</a>
+, <a class="el" href="structnanodbc_1_1timestamp.html#a6d43619ba944b287e1db1c41493ba2a3">nanodbc::timestamp</a>
 </li>
 <li>month
 : <a class="el" href="structnanodbc_1_1date.html#a041c454a0d601ee4467e50267f02a297">nanodbc::date</a>
@@ -302,6 +392,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 
 <h3><a class="anchor" id="index_n"></a>- n -</h3><ul>
+<li>name
+: <a class="el" href="structnanodbc_1_1driver.html#a02b3faf7a5e9a82eab2cbc079fde2555">nanodbc::driver</a>
+</li>
 <li>native_dbc_handle()
 : <a class="el" href="classnanodbc_1_1connection.html#a75c8024e3f9b3a6944a1969111514b58">nanodbc::connection</a>
 </li>
@@ -313,10 +406,19 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 , <a class="el" href="classnanodbc_1_1statement.html#aa9ab1d41fba17763b6ef604a458cdd5d">nanodbc::statement</a>
 </li>
 <li>next()
-: <a class="el" href="classnanodbc_1_1result.html#a31470b51f194181373e4c2c4292d11c4">nanodbc::result</a>
+: <a class="el" href="classnanodbc_1_1catalog_1_1columns.html#a81a4fc993319b106131a8f2c23874042">nanodbc::catalog::columns</a>
+, <a class="el" href="classnanodbc_1_1catalog_1_1primary__keys.html#a1bf49eceb97125f61a0bde77a932e0f6">nanodbc::catalog::primary_keys</a>
+, <a class="el" href="classnanodbc_1_1catalog_1_1tables.html#a5315f75223a7ce90b4fcff38e03ee355">nanodbc::catalog::tables</a>
+, <a class="el" href="classnanodbc_1_1result.html#a31470b51f194181373e4c2c4292d11c4">nanodbc::result</a>
 </li>
 <li>next_result()
 : <a class="el" href="classnanodbc_1_1result.html#a9cb9d5325c3ce58e7c48c1e4da1a99bb">nanodbc::result</a>
+</li>
+<li>nullable()
+: <a class="el" href="classnanodbc_1_1catalog_1_1columns.html#a17a3058a582a07fa8336ffb6e41cd022">nanodbc::catalog::columns</a>
+</li>
+<li>numeric_precision_radix()
+: <a class="el" href="classnanodbc_1_1catalog_1_1columns.html#a9d527459e401395ef44162f522404772">nanodbc::catalog::columns</a>
 </li>
 </ul>
 
@@ -334,11 +436,29 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>operator const class connection &amp;()
 : <a class="el" href="classnanodbc_1_1transaction.html#af259d76344c7b8e24c974a2619a31beb">nanodbc::transaction</a>
 </li>
+<li>operator!=()
+: <a class="el" href="classnanodbc_1_1result__iterator.html#a9e393e32c7a70eeee78badd319f78e59">nanodbc::result_iterator</a>
+</li>
+<li>operator*()
+: <a class="el" href="classnanodbc_1_1result__iterator.html#a81e7fb97c415a43e812b6c296ea992a6">nanodbc::result_iterator</a>
+</li>
+<li>operator++()
+: <a class="el" href="classnanodbc_1_1result__iterator.html#ab63c554a6588e6dfb0a16dbba8e01247">nanodbc::result_iterator</a>
+</li>
+<li>operator-&gt;()
+: <a class="el" href="classnanodbc_1_1result__iterator.html#a4f6eafe2226e141383d4461fa5de2746">nanodbc::result_iterator</a>
+</li>
 <li>operator=()
 : <a class="el" href="classnanodbc_1_1connection.html#a9576a354ff4882ecc3124f25fc6960e7">nanodbc::connection</a>
 , <a class="el" href="classnanodbc_1_1result.html#aaf3b372233acae955b4fa7f39557762a">nanodbc::result</a>
 , <a class="el" href="classnanodbc_1_1statement.html#a84b754fdb748dbd60449b33a1e032a56">nanodbc::statement</a>
 , <a class="el" href="classnanodbc_1_1transaction.html#a3970ffdedc20838bd40da663138863b6">nanodbc::transaction</a>
+</li>
+<li>operator==()
+: <a class="el" href="classnanodbc_1_1result__iterator.html#a38c8dffda1d180e6d3d8330aeb76b4d3">nanodbc::result_iterator</a>
+</li>
+<li>ordinal_position()
+: <a class="el" href="classnanodbc_1_1catalog_1_1columns.html#a539bf140c43ab7c42380cc46bf3fe449">nanodbc::catalog::columns</a>
 </li>
 </ul>
 
@@ -362,11 +482,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>parameter_size()
 : <a class="el" href="classnanodbc_1_1statement.html#aefeddb781b664abaa99977fd4e50d608">nanodbc::statement</a>
 </li>
+<li>pointer
+: <a class="el" href="classnanodbc_1_1result__iterator.html#a49329c62a4366740ff86be23ca1eef0d">nanodbc::result_iterator</a>
+</li>
 <li>position()
 : <a class="el" href="classnanodbc_1_1result.html#af35deace1b1577117cded9fc622ab9b8">nanodbc::result</a>
 </li>
 <li>prepare()
 : <a class="el" href="classnanodbc_1_1statement.html#a94ac4d6e92a8b18100f27d86bf6a6356">nanodbc::statement</a>
+</li>
+<li>primary_key_name()
+: <a class="el" href="classnanodbc_1_1catalog_1_1primary__keys.html#a2c37ac593fc3c74b0c6bd8a5e27053d7">nanodbc::catalog::primary_keys</a>
 </li>
 <li>prior()
 : <a class="el" href="classnanodbc_1_1result.html#afd0b71a0bfe3e184f3b9a1caf8f17058">nanodbc::result</a>
@@ -378,11 +504,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 
 <h3><a class="anchor" id="index_r"></a>- r -</h3><ul>
+<li>reference
+: <a class="el" href="classnanodbc_1_1result__iterator.html#aeca21fe535e223231562d96a76c5ee92">nanodbc::result_iterator</a>
+</li>
+<li>remarks()
+: <a class="el" href="classnanodbc_1_1catalog_1_1columns.html#a56d5ac0e9bd9789decec1afa9a07f7e0">nanodbc::catalog::columns</a>
+</li>
 <li>reset_parameters()
 : <a class="el" href="classnanodbc_1_1statement.html#a2b84d737d7710195546cbb0eb7c54cb8">nanodbc::statement</a>
 </li>
 <li>result()
 : <a class="el" href="classnanodbc_1_1result.html#ad4d59619a46d67bbc171d0d5c9e84705">nanodbc::result</a>
+</li>
+<li>result_iterator()
+: <a class="el" href="classnanodbc_1_1result__iterator.html#a3802a8a11ad2f043484be879e92fbd33">nanodbc::result_iterator</a>
 </li>
 <li>rollback()
 : <a class="el" href="classnanodbc_1_1transaction.html#a1e76516316c91d611fa7a9ac8da3d19c">nanodbc::transaction</a>
@@ -398,10 +533,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <h3><a class="anchor" id="index_s"></a>- s -</h3><ul>
 <li>sec
-: <a class="el" href="structnanodbc_1_1timestamp.html#a2656a11498c4efff9488cca0184a0c12">nanodbc::timestamp</a>
+: <a class="el" href="structnanodbc_1_1time.html#a57df2df9fcc00af1e9c34e95899a420b">nanodbc::time</a>
+, <a class="el" href="structnanodbc_1_1timestamp.html#a2656a11498c4efff9488cca0184a0c12">nanodbc::timestamp</a>
 </li>
 <li>skip()
 : <a class="el" href="classnanodbc_1_1result.html#abcd96eb3fd8fea53fa41289c5fc87377">nanodbc::result</a>
+</li>
+<li>sql_data_type()
+: <a class="el" href="classnanodbc_1_1catalog_1_1columns.html#a6cc4f9ca649c14123d33e082424fdc55">nanodbc::catalog::columns</a>
+</li>
+<li>sql_datetime_subtype()
+: <a class="el" href="classnanodbc_1_1catalog_1_1columns.html#aa9e9251b30b340ceaf6560a0266aad81">nanodbc::catalog::columns</a>
 </li>
 <li>statement()
 : <a class="el" href="classnanodbc_1_1statement.html#ab711e5ef116c846a59ea3d37e89cbd14">nanodbc::statement</a>
@@ -416,6 +558,27 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 
 <h3><a class="anchor" id="index_t"></a>- t -</h3><ul>
+<li>table_catalog()
+: <a class="el" href="classnanodbc_1_1catalog_1_1columns.html#abad7e60781fc3afe3d909fe7404b281c">nanodbc::catalog::columns</a>
+, <a class="el" href="classnanodbc_1_1catalog_1_1primary__keys.html#a0788216f2d4e933dc7cf5866ac48e5c5">nanodbc::catalog::primary_keys</a>
+, <a class="el" href="classnanodbc_1_1catalog_1_1tables.html#a7c3c06db13b11853d2ca1c943139a60d">nanodbc::catalog::tables</a>
+</li>
+<li>table_name()
+: <a class="el" href="classnanodbc_1_1catalog_1_1columns.html#a401c2774d441d787e3bedc70cb1290b5">nanodbc::catalog::columns</a>
+, <a class="el" href="classnanodbc_1_1catalog_1_1primary__keys.html#a95cc1f97386f9608e910d8d25143b1bd">nanodbc::catalog::primary_keys</a>
+, <a class="el" href="classnanodbc_1_1catalog_1_1tables.html#adcf8817e578dc6a777305114361490fb">nanodbc::catalog::tables</a>
+</li>
+<li>table_remarks()
+: <a class="el" href="classnanodbc_1_1catalog_1_1tables.html#afc773c828f3f8dc591e26e02eea2e148">nanodbc::catalog::tables</a>
+</li>
+<li>table_schema()
+: <a class="el" href="classnanodbc_1_1catalog_1_1columns.html#aeba81dda90b28fa3686d99fc909791c7">nanodbc::catalog::columns</a>
+, <a class="el" href="classnanodbc_1_1catalog_1_1primary__keys.html#a2af458c92885561963684292df9aca99">nanodbc::catalog::primary_keys</a>
+, <a class="el" href="classnanodbc_1_1catalog_1_1tables.html#ab23f9e557df30adfbc232ad12e5596bf">nanodbc::catalog::tables</a>
+</li>
+<li>table_type()
+: <a class="el" href="classnanodbc_1_1catalog_1_1tables.html#a83f6f4fde1abee3dc82882cd967ab770">nanodbc::catalog::tables</a>
+</li>
 <li>timeout()
 : <a class="el" href="classnanodbc_1_1statement.html#adbd1acbbdcc529dc668bfef341593573">nanodbc::statement</a>
 </li>
@@ -424,6 +587,19 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 <li>transactions()
 : <a class="el" href="classnanodbc_1_1connection.html#ac48fefefa6cbc39969ca2c508d11dcca">nanodbc::connection</a>
+</li>
+<li>type_name()
+: <a class="el" href="classnanodbc_1_1catalog_1_1columns.html#a51dba516b5ee3e1462eb63a736a817c6">nanodbc::catalog::columns</a>
+</li>
+</ul>
+
+
+<h3><a class="anchor" id="index_v"></a>- v -</h3><ul>
+<li>value
+: <a class="el" href="structnanodbc_1_1driver_1_1attribute.html#a0dd3430b8c9f940dfb8b3fe740c97006">nanodbc::driver::attribute</a>
+</li>
+<li>value_type
+: <a class="el" href="classnanodbc_1_1result__iterator.html#a70c5112a23653e61cfd840631f5a370e">nanodbc::result_iterator</a>
 </li>
 </ul>
 

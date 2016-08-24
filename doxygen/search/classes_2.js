@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['index_5frange_5ferror',['index_range_error',['../classnanodbc_1_1index__range__error.html',1,'nanodbc']]]
+  ['database_5ferror',['database_error',['../classnanodbc_1_1database__error.html',1,'nanodbc']]],
+  ['date',['date',['../structnanodbc_1_1date.html',1,'nanodbc']]],
+  ['driver',['driver',['../structnanodbc_1_1driver.html',1,'nanodbc']]]
 ];

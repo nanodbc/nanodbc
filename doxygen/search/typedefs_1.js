@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['string_5ftype',['string_type',['../namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5',1,'nanodbc']]]
+  ['iterator_5fcategory',['iterator_category',['../classnanodbc_1_1result__iterator.html#af46c41cf24ac2db0574486dc2b88c848',1,'nanodbc::result_iterator']]]
 ];

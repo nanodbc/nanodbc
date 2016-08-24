@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['macros',['Macros',['../group__macros.html',1,'']]],
-  ['main_20classes',['Main classes',['../group__mainc.html',1,'']]],
-  ['min',['min',['../structnanodbc_1_1timestamp.html#a6d43619ba944b287e1db1c41493ba2a3',1,'nanodbc::timestamp']]],
-  ['month',['month',['../structnanodbc_1_1date.html#a041c454a0d601ee4467e50267f02a297',1,'nanodbc::date::month()'],['../structnanodbc_1_1timestamp.html#ae2bd4cf92b2a27aac722cf431406f4e0',1,'nanodbc::timestamp::month()']]],
-  ['move',['move',['../classnanodbc_1_1result.html#a70388a8ca569a6e30367a45f215f2986',1,'nanodbc::result']]]
+  ['last',['last',['../classnanodbc_1_1result.html#a5078a998be38e7814338597eaf100405',1,'nanodbc::result']]],
+  ['list_5fcatalogs',['list_catalogs',['../classnanodbc_1_1catalog.html#ab7338afc7ebe35a33db3a1d54c308ae1',1,'nanodbc::catalog']]],
+  ['list_5fdrivers',['list_drivers',['../group__mainf.html#ga1a463085cf583c00a8e990a643422d63',1,'nanodbc']]],
+  ['list_5fschemas',['list_schemas',['../classnanodbc_1_1catalog.html#a2fe34db2271a8726646cb630a4b44775',1,'nanodbc::catalog']]]
 ];

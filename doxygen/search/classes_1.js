@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['database_5ferror',['database_error',['../classnanodbc_1_1database__error.html',1,'nanodbc']]],
-  ['date',['date',['../structnanodbc_1_1date.html',1,'nanodbc']]]
+  ['catalog',['catalog',['../classnanodbc_1_1catalog.html',1,'nanodbc']]],
+  ['columns',['columns',['../classnanodbc_1_1catalog_1_1columns.html',1,'nanodbc::catalog']]],
+  ['connection',['connection',['../classnanodbc_1_1connection.html',1,'nanodbc']]]
 ];

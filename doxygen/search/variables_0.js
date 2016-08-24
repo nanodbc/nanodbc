@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['day',['day',['../structnanodbc_1_1date.html#ad796f131143db2ceb9277f52745b8d33',1,'nanodbc::date::day()'],['../structnanodbc_1_1timestamp.html#a5ca9eb0eb39990449ba3f855e119f487',1,'nanodbc::timestamp::day()']]]
+  ['attributes',['attributes',['../structnanodbc_1_1driver.html#a4528ae3553031578ba886933c03c3f35',1,'nanodbc::driver']]]
 ];

@@ -106,7 +106,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a5896a7b81053281d045eb9a0e127ef76"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1database__error.html#a5896a7b81053281d045eb9a0e127ef76">database_error</a> (void *handle, short handle_type, const std::string &amp;info=&quot;&quot;)</td></tr>
-<tr class="memdesc:a5896a7b81053281d045eb9a0e127ef76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a runtime_error with a message describing the last ODBC error generated for the given handle and handle_type.  <a href="#a5896a7b81053281d045eb9a0e127ef76">More...</a><br /></td></tr>
+<tr class="memdesc:a5896a7b81053281d045eb9a0e127ef76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates runtime_error with message about last ODBC error.  <a href="#a5896a7b81053281d045eb9a0e127ef76">More...</a><br /></td></tr>
 <tr class="separator:a5896a7b81053281d045eb9a0e127ef76"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -145,7 +145,7 @@ Public Member Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">handle</td><td>The native ODBC statement or connection handle. </td></tr>
     <tr><td class="paramname">handle_type</td><td>The native ODBC handle type code for the given handle. </td></tr>
-    <tr><td class="paramname">info</td><td>Additional information that will be appended to the beginning of the error message. </td></tr>
+    <tr><td class="paramname">info</td><td>Additional info that will be appended to the beginning of the error message. </td></tr>
   </table>
   </dd>
 </dl>
