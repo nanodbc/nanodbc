@@ -3021,9 +3021,9 @@ std::list<driver> list_drivers()
             drv.name = string_type(&descr[0], &descr[strarrlen(descr)]);
 
             // Split "Key1=Value1\0Key2=Value2\0\0" into list of key-value pairs
-            auto beg{&attrs[0]};
-            auto const end{&attrs[attrs_len_ret]};
-            auto pair_end{end};
+            auto beg = &attrs[0];
+            auto const end = &attrs[attrs_len_ret];
+            auto pair_end = end;
             while ((pair_end = std::find(beg, end, NANODBC_TEXT('\0'))) != end)
             {
                 auto const eq_pos = std::find(beg, pair_end, NANODBC_TEXT('='));
