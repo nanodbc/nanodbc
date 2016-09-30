@@ -231,9 +231,9 @@ struct base_test_fixture
         if (connection_string_.empty())
             return nanodbc::string_type();
 
-        auto beg{connection_string_.begin()};
-        auto const end{connection_string_.end()};
-        auto pair_end{end};
+        auto beg = connection_string_.begin();
+        auto const end = connection_string_.end();
+        auto pair_end = end;
         while ((pair_end = std::find(beg, end, NANODBC_TEXT(';'))) != end)
         {
             auto const eq_pos = std::find(beg, pair_end, NANODBC_TEXT('='));
