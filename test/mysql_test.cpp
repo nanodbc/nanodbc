@@ -3,6 +3,7 @@
 #include "test/base_test_fixture.h"
 #include <cstdio>
 #include <cstdlib>
+#include <string>
 
 namespace
 {
@@ -59,10 +60,35 @@ TEST_CASE_METHOD(mysql_fixture, "affected_rows_test", "[mysql][affected_rows]")
         auto result = execute(conn, NANODBC_TEXT("DELETE FROM nanodbc_test_temp_table"));
         REQUIRE(result.affected_rows() == 2);
     }
+    // Inseting/retrieving long strings
+    {
+        std::string long_string(1024, '\0');
+        for (unsigned i=0; i<1024; i++)
+            long_string[i]=(i%64)+32;
+        
+        nanodbc::result result;
+        result = execute(conn, NANODBC_TEXT("CREATE TABLE nanodbc_longstring (t TEXT NOT NULL)"));
+        REQUIRE(result.affected_rows() == 0);
+        
+        nanodbc::statement stmt(conn, NANODBC_TEXT("INSERT INTO nanodbc_longstring VALUES (?)"));
+        stmt.bind(0, long_string.c_str());
+        result = stmt.execute();
+        REQUIRE(result.affected_rows() == 1);
+        
+        result = execute(conn, NANODBC_TEXT("SELECT t FROM nanodbc_longstring LIMIT 1"));
+        REQUIRE(result.affected_rows() == 1);
+        
+        if (result.next()) {
+            std::string str_from_db = result.get<std::string>(0);
+            REQUIRE(str_from_db == long_string);
+        }
+    }
     // DROP DATABASE|TABLE
     {
         nanodbc::result result;
         result = execute(conn, NANODBC_TEXT("DROP TABLE nanodbc_test_temp_table"));
+        REQUIRE(result.affected_rows() == 0);
+        result = execute(conn, NANODBC_TEXT("DROP TABLE nanodbc_longstring"));
         REQUIRE(result.affected_rows() == 0);
         result = execute(conn, NANODBC_TEXT("DROP DATABASE nanodbc_test_temp_db"));
         REQUIRE(result.affected_rows() == 0);
