@@ -1143,6 +1143,7 @@ public:
         , open_(false)
         , conn_()
         , bind_len_or_null_()
+        , data_()
 #if defined(NANODBC_DO_ASYNC_IMPL)
         , async_(false)
         , async_enabled_(false)
@@ -1157,6 +1158,7 @@ public:
         , open_(false)
         , conn_()
         , bind_len_or_null_()
+        , data_()
 #if defined(NANODBC_DO_ASYNC_IMPL)
         , async_(false)
         , async_enabled_(false)
@@ -1683,6 +1685,13 @@ public:
         bind(param, values, elements, direction);
     }
 
+    // handles multiple string values
+    void bind_strings(
+        short param,
+        const std::vector<string_type> & values,
+        std::size_t elements,
+        param_direction direction);
+
     // handles multiple null values
     void bind_null(short param, std::size_t elements)
     {
@@ -1742,6 +1751,7 @@ private:
     bool open_;
     class connection conn_;
     std::map<short, std::vector<null_type>> bind_len_or_null_;
+    std::map<short, std::vector<string_type::value_type>> data_;
 
 #if defined(NANODBC_DO_ASYNC_IMPL)
     bool async_;                 // true if statement is currently in SQL_STILL_EXECUTING mode
@@ -1821,6 +1831,33 @@ void statement::statement_impl::bind(
             bind_len_or_null_[param][i] = parameter_size;
 
     bind_parameter(param, values, elements, data_type, param_type, parameter_size, scale);
+}
+
+
+void statement::statement_impl::bind_strings(
+    short param,
+    const std::vector<string_type> & values,
+    std::size_t elements,
+    param_direction direction) {
+
+  SQLSMALLINT data_type;
+  SQLSMALLINT param_type;
+  SQLULEN parameter_size;
+  SQLSMALLINT scale;
+  prepare_bind(param, elements, direction, data_type, param_type, parameter_size, scale);
+
+  size_t max_len = 0;
+  for (std::size_t i = 0; i < elements; ++i) {
+    if (values[i].length() > max_len) {
+      max_len = values[i].length();
+    }
+  }
+  data_[param] = std::vector<string_type::value_type>(max_len * elements, 0);
+  for (std::size_t i = 0; i < elements; ++i) {
+    bind_len_or_null_[param][i] = values[i].length();
+    std::copy(values[i].begin(), values[i].end(), data_[param].data() + (i * max_len));
+  }
+  bind_parameter(param, data_[param].data(), elements, data_type, param_type, max_len, scale);
 }
 
 void statement::statement_impl::bind_strings(
@@ -3619,6 +3656,15 @@ void statement::bind(
     param_direction direction)
 {
     impl_->bind(param, values, elements, nulls, (T*)0, direction);
+}
+
+void statement::bind_strings(
+    short param,
+    const std::vector<string_type> & values,
+    std::size_t elements,
+    param_direction direction) {
+
+  impl_->bind_strings(param, values, elements, direction);
 }
 
 void statement::bind_strings(
