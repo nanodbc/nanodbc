@@ -883,80 +883,42 @@ public:
 
     void* native_env_handle() const { return env_; }
 
-    string_type dbms_name() const
+    string_type get_string_info(short info_type) const
     {
-        NANODBC_SQLCHAR name[255] = {0};
+        NANODBC_SQLCHAR value[255] = {0};
         SQLSMALLINT length(0);
         RETCODE rc;
         NANODBC_CALL_RC(
             NANODBC_FUNC(SQLGetInfo),
             rc,
             conn_,
-            SQL_DBMS_NAME,
-            name,
-            sizeof(name) / sizeof(NANODBC_SQLCHAR),
+            info_type,
+            value,
+            sizeof(value) / sizeof(NANODBC_SQLCHAR),
             &length);
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
-        return string_type(&name[0], &name[strarrlen(name)]);
+        return string_type(&value[0], &value[strarrlen(value)]);
+    }
+
+    string_type dbms_name() const
+    {
+      return get_string_info(SQL_DBMS_NAME);
     }
 
     string_type dbms_version() const
     {
-        NANODBC_SQLCHAR version[255] = {0};
-        SQLSMALLINT length(0);
-        RETCODE rc;
-        NANODBC_CALL_RC(
-            NANODBC_FUNC(SQLGetInfo),
-            rc,
-            conn_,
-            SQL_DBMS_VER,
-            version,
-            sizeof(version) / sizeof(NANODBC_SQLCHAR),
-            &length);
-        if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
-        return string_type(&version[0], &version[strarrlen(version)]);
+      return get_string_info(SQL_DBMS_VER);
     }
 
     string_type driver_name() const
     {
-        NANODBC_SQLCHAR name[1024];
-        SQLSMALLINT length;
-        RETCODE rc;
-        NANODBC_CALL_RC(
-            NANODBC_FUNC(SQLGetInfo),
-            rc,
-            conn_,
-            SQL_DRIVER_NAME,
-            name,
-            sizeof(name) / sizeof(NANODBC_SQLCHAR),
-            &length);
-        if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
-        return string_type(&name[0], &name[strarrlen(name)]);
+      return get_string_info(SQL_DRIVER_NAME);
     }
 
     string_type database_name() const
     {
-        // FIXME: Allocate buffer of dynamic size as drivers do not agree on universal size
-        // MySQL driver limits MAX_NAME_LEN=255
-        // PostgreSQL driver MAX_INFO_STIRNG=128
-        // MFC CDatabase allocates buffer dynamically.
-        NANODBC_SQLCHAR name[255] = {0};
-        SQLSMALLINT length(0);
-        RETCODE rc;
-        NANODBC_CALL_RC(
-            NANODBC_FUNC(SQLGetInfo),
-            rc,
-            conn_,
-            SQL_DATABASE_NAME,
-            name,
-            sizeof(name) / sizeof(NANODBC_SQLCHAR),
-            &length);
-        if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
-        return string_type(&name[0], &name[strarrlen(name)]);
+      return get_string_info(SQL_DATABASE_NAME);
     }
 
     string_type catalog_name() const
@@ -3208,6 +3170,11 @@ void connection::disconnect()
 std::size_t connection::transactions() const
 {
     return impl_->transactions();
+}
+
+string_type connection::get_string_info(short info_type) const
+{
+    return impl_->get_string_info(info_type);
 }
 
 void* connection::native_dbc_handle() const
