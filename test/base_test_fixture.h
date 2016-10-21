@@ -1012,6 +1012,15 @@ struct base_test_fixture
         REQUIRE(!connection.dbms_version().empty());
     }
 
+    void get_string_info_test()
+    {
+        // A generic test to exercise the DBMS info API is callable.
+        // DBMS-specific test (MySQL, SQLite, etc.) may perform extended checks.
+        nanodbc::connection connection = connect();
+        REQUIRE(!connection.get_string_info(SQL_DRIVER_NAME).empty());
+        REQUIRE(!connection.get_string_info(SQL_ODBC_VER).empty());
+    }
+
     void decimal_conversion_test()
     {
         nanodbc::connection connection = connect();
