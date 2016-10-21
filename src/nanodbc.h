@@ -784,7 +784,7 @@ public:
     /// \see bind_strings
     void bind_strings(
         short param,
-        const std::vector<string_type> & values,
+        const std::vector<string_type>& values,
         std::size_t elements,
         param_direction direction = PARAM_IN);
 
@@ -814,7 +814,7 @@ public:
     /// \see bind_strings
     void bind_strings(
         short param,
-        const std::vector<string_type> & values,
+        const std::vector<string_type>& values,
         std::size_t elements,
         const string_type::value_type* null_sentry,
         param_direction direction = PARAM_IN);
@@ -851,7 +851,7 @@ public:
     /// \see bind_strings
     void bind_strings(
         short param,
-        const std::vector<string_type> & values,
+        const std::vector<string_type>& values,
         std::size_t elements,
         const bool* nulls,
         param_direction direction = PARAM_IN);

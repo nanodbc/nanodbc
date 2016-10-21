@@ -1688,7 +1688,7 @@ public:
     // handles multiple string values
     void bind_strings(
         short param,
-        const std::vector<string_type> & values,
+        const std::vector<string_type>& values,
         std::size_t elements,
         const bool* nulls,
         const string_type::value_type* null_sentry,
@@ -1835,35 +1835,38 @@ void statement::statement_impl::bind(
     bind_parameter(param, values, elements, data_type, param_type, parameter_size, scale);
 }
 
-
 void statement::statement_impl::bind_strings(
     short param,
-    const std::vector<string_type> & values,
+    const std::vector<string_type>& values,
     std::size_t elements,
     const bool* nulls,
     const string_type::value_type* null_sentry,
-    param_direction direction) {
+    param_direction direction)
+{
 
-  SQLSMALLINT data_type;
-  SQLSMALLINT param_type;
-  SQLULEN parameter_size;
-  SQLSMALLINT scale;
-  prepare_bind(param, elements, direction, data_type, param_type, parameter_size, scale);
+    SQLSMALLINT data_type;
+    SQLSMALLINT param_type;
+    SQLULEN parameter_size;
+    SQLSMALLINT scale;
+    prepare_bind(param, elements, direction, data_type, param_type, parameter_size, scale);
 
-  size_t max_len = 0;
-  for (std::size_t i = 0; i < elements; ++i) {
-    if (values[i].length() > max_len) {
-      max_len = values[i].length();
+    size_t max_len = 0;
+    for (std::size_t i = 0; i < elements; ++i)
+    {
+        if (values[i].length() > max_len)
+        {
+            max_len = values[i].length();
+        }
     }
-  }
-  // add space for null terminator
-  ++max_len;
+    // add space for null terminator
+    ++max_len;
 
-  data_[param] = std::vector<string_type::value_type>(max_len * elements, 0);
-  for (std::size_t i = 0; i < elements; ++i) {
-    std::copy(values[i].begin(), values[i].end(), data_[param].data() + (i * max_len));
-  }
-  bind_strings(param, data_[param].data(), max_len, elements, nulls, null_sentry, direction);
+    data_[param] = std::vector<string_type::value_type>(max_len * elements, 0);
+    for (std::size_t i = 0; i < elements; ++i)
+    {
+        std::copy(values[i].begin(), values[i].end(), data_[param].data() + (i * max_len));
+    }
+    bind_strings(param, data_[param].data(), max_len, elements, nulls, null_sentry, direction);
 }
 
 void statement::statement_impl::bind_strings(
@@ -1912,10 +1915,10 @@ void statement::statement_impl::bind_strings(
     }
     else
     {
-      for (std::size_t i = 0; i < elements; ++i)
-      {
-        bind_len_or_null_[param][i] = SQL_NTS;
-      }
+        for (std::size_t i = 0; i < elements; ++i)
+        {
+            bind_len_or_null_[param][i] = SQL_NTS;
+        }
     }
 
     bind_parameter(param, values, elements, data_type, param_type, length, scale);
@@ -3673,11 +3676,12 @@ void statement::bind(
 
 void statement::bind_strings(
     short param,
-    const std::vector<string_type> & values,
+    const std::vector<string_type>& values,
     std::size_t elements,
-    param_direction direction) {
+    param_direction direction)
+{
 
-  impl_->bind_strings(param, values, elements, nullptr, nullptr, direction);
+    impl_->bind_strings(param, values, elements, nullptr, nullptr, direction);
 }
 
 void statement::bind_strings(
@@ -3715,7 +3719,7 @@ void statement::bind_strings(
 
 void statement::bind_strings(
     short param,
-    const std::vector<string_type> & values,
+    const std::vector<string_type>& values,
     std::size_t elements,
     const string_type::value_type* null_sentry,
     param_direction direction)
@@ -3725,13 +3729,12 @@ void statement::bind_strings(
 
 void statement::bind_strings(
     short param,
-    const std::vector<string_type> & values,
+    const std::vector<string_type>& values,
     std::size_t elements,
     const bool* nulls,
     param_direction direction)
 {
-    impl_->bind_strings(
-        param, values, elements, nulls, (string_type::value_type*)0, direction);
+    impl_->bind_strings(param, values, elements, nulls, (string_type::value_type*)0, direction);
 }
 
 void statement::bind_null(short param, std::size_t elements)
