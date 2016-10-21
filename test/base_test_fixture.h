@@ -1502,6 +1502,38 @@ struct base_test_fixture
         results.get_ref(0, ref);
         REQUIRE(ref == name);
     }
+    void string_vector_test()
+    {
+        nanodbc::connection connection = connect();
+        REQUIRE(connection.native_dbc_handle() != nullptr);
+        REQUIRE(connection.native_env_handle() != nullptr);
+        REQUIRE(connection.transactions() == std::size_t(0));
+
+        const std::vector<nanodbc::string_type> first_name = {NANODBC_TEXT("Fred"), NANODBC_TEXT("Barney"), NANODBC_TEXT("Dino")};
+        const std::vector<nanodbc::string_type> last_name = {NANODBC_TEXT("Flintstone"), NANODBC_TEXT("Rubble"), ""};
+
+        drop_table(connection, NANODBC_TEXT("string_test"));
+        execute(connection, NANODBC_TEXT("create table string_test (first varchar(10), last varchar(10));"));
+
+        nanodbc::statement query(connection);
+        prepare(query, NANODBC_TEXT("insert into string_test(s) values(?, ?)"));
+        query.bind_strings(0, first_name, 3);
+
+        // With null sentry
+        query.bind_strings(2, last_name, 3, NANODBC_TEXT(""));
+        nanodbc::execute(query);
+
+        nanodbc::result results = execute(connection, NANODBC_TEXT("select s from string_test;"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("Fred"));
+        REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("Flintstone"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("Barney"));
+        REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("Rubble"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("Dino"));
+        REQUIRE(results.is_null(1));
+    }
 
     void time_test()
     {
