@@ -1510,7 +1510,7 @@ struct base_test_fixture
         REQUIRE(connection.transactions() == std::size_t(0));
 
         const std::vector<nanodbc::string_type> first_name = {NANODBC_TEXT("Fred"), NANODBC_TEXT("Barney"), NANODBC_TEXT("Dino")};
-        const std::vector<nanodbc::string_type> last_name = {NANODBC_TEXT("Flintstone"), NANODBC_TEXT("Rubble"), ""};
+        const std::vector<nanodbc::string_type> last_name = {NANODBC_TEXT("Flintstone"), NANODBC_TEXT("Rubble"), NANODBC_TEXT("")};
 
         drop_table(connection, NANODBC_TEXT("string_test"));
         execute(connection, NANODBC_TEXT("create table string_test (first varchar(10), last varchar(10));"));
