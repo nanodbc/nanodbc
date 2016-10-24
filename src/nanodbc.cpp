@@ -886,7 +886,7 @@ public:
     template <class T>
     T get_info(short info_type) const
     {
-      return get_info_impl<T>(info_type);
+        return get_info_impl<T>(info_type);
     }
     string_type dbms_name() const;
 
@@ -929,7 +929,7 @@ public:
 
 private:
     template <class T>
-      T get_info_impl(short info_type) const;
+    T get_info_impl(short info_type) const;
 
     HENV env_;
     HDBC conn_;
@@ -941,58 +941,51 @@ private:
 template <class T>
 T connection::connection_impl::get_info_impl(short info_type) const
 {
-  T value;
-  RETCODE rc;
-  NANODBC_CALL_RC(
-      NANODBC_FUNC(SQLGetInfo),
-      rc,
-      conn_,
-      info_type,
-      &value,
-      0,
-      nullptr);
-  if (!success(rc))
-    NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
-  return value;
+    T value;
+    RETCODE rc;
+    NANODBC_CALL_RC(NANODBC_FUNC(SQLGetInfo), rc, conn_, info_type, &value, 0, nullptr);
+    if (!success(rc))
+        NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+    return value;
 }
 
 template <>
 string_type connection::connection_impl::get_info_impl<string_type>(short info_type) const
 {
-  NANODBC_SQLCHAR value[1024] = {0};
-  SQLSMALLINT length(0);
-  RETCODE rc;
-  NANODBC_CALL_RC(
-      NANODBC_FUNC(SQLGetInfo),
-      rc,
-      conn_,
-      info_type,
-      value,
-      sizeof(value) / sizeof(NANODBC_SQLCHAR),
-      &length);
-  if (!success(rc))
-    NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
-  return string_type(&value[0], &value[strarrlen(value)]);
+    NANODBC_SQLCHAR value[1024] = {0};
+    SQLSMALLINT length(0);
+    RETCODE rc;
+    NANODBC_CALL_RC(
+        NANODBC_FUNC(SQLGetInfo),
+        rc,
+        conn_,
+        info_type,
+        value,
+        sizeof(value) / sizeof(NANODBC_SQLCHAR),
+        &length);
+    if (!success(rc))
+        NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+    return string_type(&value[0], &value[strarrlen(value)]);
 }
 
 string_type connection::connection_impl::dbms_name() const
 {
-  return get_info<string_type>(SQL_DBMS_NAME);
+    return get_info<string_type>(SQL_DBMS_NAME);
 }
 
 string_type connection::connection_impl::dbms_version() const
 {
-  return get_info<string_type>(SQL_DBMS_VER);
+    return get_info<string_type>(SQL_DBMS_VER);
 }
 
 string_type connection::connection_impl::driver_name() const
 {
-  return get_info<string_type>(SQL_DRIVER_NAME);
+    return get_info<string_type>(SQL_DRIVER_NAME);
 }
 
 string_type connection::connection_impl::database_name() const
 {
-  return get_info<string_type>(SQL_DATABASE_NAME);
+    return get_info<string_type>(SQL_DATABASE_NAME);
 }
 
 template string_type connection::get_info(short info_type) const;

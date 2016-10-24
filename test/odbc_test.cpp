@@ -60,7 +60,7 @@ TEST_CASE_METHOD(odbc_fixture, "dbms_info_test", "[odbc][dmbs][metadata][info]")
     dbms_info_test();
 }
 
-T_CASE_METHOD(odbc_fixture, "get_info_test", "[odbc][dmbs][metadata][info]")
+TEST_CASE_METHOD(odbc_fixture, "get_info_test", "[odbc][dmbs][metadata][info]")
 {
     get_info_test();
 }
