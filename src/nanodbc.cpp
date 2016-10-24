@@ -883,43 +883,18 @@ public:
 
     void* native_env_handle() const { return env_; }
 
-    string_type get_string_info(short info_type) const
+    template <class T>
+    T get_info(short info_type) const
     {
-        NANODBC_SQLCHAR value[255] = {0};
-        SQLSMALLINT length(0);
-        RETCODE rc;
-        NANODBC_CALL_RC(
-            NANODBC_FUNC(SQLGetInfo),
-            rc,
-            conn_,
-            info_type,
-            value,
-            sizeof(value) / sizeof(NANODBC_SQLCHAR),
-            &length);
-        if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
-        return string_type(&value[0], &value[strarrlen(value)]);
+      return get_info_impl<T>(info_type);
     }
+    string_type dbms_name() const;
 
-    string_type dbms_name() const
-    {
-      return get_string_info(SQL_DBMS_NAME);
-    }
+    string_type dbms_version() const;
 
-    string_type dbms_version() const
-    {
-      return get_string_info(SQL_DBMS_VER);
-    }
+    string_type driver_name() const;
 
-    string_type driver_name() const
-    {
-      return get_string_info(SQL_DRIVER_NAME);
-    }
-
-    string_type database_name() const
-    {
-      return get_string_info(SQL_DATABASE_NAME);
-    }
+    string_type database_name() const;
 
     string_type catalog_name() const
     {
@@ -953,12 +928,77 @@ public:
     void rollback(bool onoff) { rollback_ = onoff; }
 
 private:
+    template <class T>
+      T get_info_impl(short info_type) const;
+
     HENV env_;
     HDBC conn_;
     bool connected_;
     std::size_t transactions_;
     bool rollback_; // if true, this connection is marked for eventual transaction rollback
 };
+
+template <class T>
+T connection::connection_impl::get_info_impl(short info_type) const
+{
+  T value;
+  RETCODE rc;
+  NANODBC_CALL_RC(
+      NANODBC_FUNC(SQLGetInfo),
+      rc,
+      conn_,
+      info_type,
+      &value,
+      0,
+      nullptr);
+  if (!success(rc))
+    NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+  return value;
+}
+
+template <>
+string_type connection::connection_impl::get_info_impl<string_type>(short info_type) const
+{
+  NANODBC_SQLCHAR value[1024] = {0};
+  SQLSMALLINT length(0);
+  RETCODE rc;
+  NANODBC_CALL_RC(
+      NANODBC_FUNC(SQLGetInfo),
+      rc,
+      conn_,
+      info_type,
+      value,
+      sizeof(value) / sizeof(NANODBC_SQLCHAR),
+      &length);
+  if (!success(rc))
+    NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+  return string_type(&value[0], &value[strarrlen(value)]);
+}
+
+string_type connection::connection_impl::dbms_name() const
+{
+  return get_info<string_type>(SQL_DBMS_NAME);
+}
+
+string_type connection::connection_impl::dbms_version() const
+{
+  return get_info<string_type>(SQL_DBMS_VER);
+}
+
+string_type connection::connection_impl::driver_name() const
+{
+  return get_info<string_type>(SQL_DRIVER_NAME);
+}
+
+string_type connection::connection_impl::database_name() const
+{
+  return get_info<string_type>(SQL_DATABASE_NAME);
+}
+
+template string_type connection::get_info(short info_type) const;
+template unsigned short connection::get_info(short info_type) const;
+template uint32_t connection::get_info(short info_type) const;
+template uint64_t connection::get_info(short info_type) const;
 
 } // namespace nanodbc
 
@@ -3172,9 +3212,10 @@ std::size_t connection::transactions() const
     return impl_->transactions();
 }
 
-string_type connection::get_string_info(short info_type) const
+template <class T>
+T connection::get_info(short info_type) const
 {
-    return impl_->get_string_info(info_type);
+    return impl_->get_info<T>(info_type);
 }
 
 void* connection::native_dbc_handle() const

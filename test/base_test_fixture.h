@@ -1,6 +1,7 @@
 #ifndef NANODBC_TEST_BASE_TEST_FIXTURE_H
 #define NANODBC_TEST_BASE_TEST_FIXTURE_H
 
+#include <iostream>
 #include "nanodbc.h"
 #include <cassert>
 #include <tuple>
@@ -1012,13 +1013,22 @@ struct base_test_fixture
         REQUIRE(!connection.dbms_version().empty());
     }
 
-    void get_string_info_test()
+    void get_info_test()
     {
         // A generic test to exercise the DBMS info API is callable.
         // DBMS-specific test (MySQL, SQLite, etc.) may perform extended checks.
         nanodbc::connection connection = connect();
-        REQUIRE(!connection.get_string_info(SQL_DRIVER_NAME).empty());
-        REQUIRE(!connection.get_string_info(SQL_ODBC_VER).empty());
+        REQUIRE(!connection.get_info<nanodbc::string_type>(SQL_DRIVER_NAME).empty());
+        REQUIRE(!connection.get_info<nanodbc::string_type>(SQL_ODBC_VER).empty());
+
+       // Test SQLUSMALLINT resutls
+        REQUIRE(connection.get_info<unsigned short>(SQL_ODBC_INTERFACE_CONFORMANCE) > 0);
+
+        // Test SQUINTEGER bitmask results
+        REQUIRE((connection.get_info<uint32_t>(SQL_CREATE_TABLE) & SQL_CT_CREATE_TABLE));
+
+        // Test SQLULEN results
+        REQUIRE(connection.get_info<uint64_t>(SQL_DRIVER_HDBC) > 0);
     }
 
     void decimal_conversion_test()

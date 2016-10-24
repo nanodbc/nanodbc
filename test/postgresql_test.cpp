@@ -76,6 +76,11 @@ TEST_CASE_METHOD(postgresql_fixture, "dbms_info_test", "[postgresql][dmbs][metad
     dbms_info_test();
 }
 
+TEST_CASE_METHOD(postgresql_fixture, "get_info_test", "[postgresql][dmbs][metadata][info]")
+{
+    get_info_test();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "decimal_conversion_test", "[postgresql][decimal][conversion]")
 {
     decimal_conversion_test();

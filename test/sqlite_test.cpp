@@ -178,6 +178,11 @@ TEST_CASE_METHOD(sqlite_fixture, "dbms_info_test", "[sqlite][dmbs][metadata][inf
     REQUIRE(connection.dbms_name() == NANODBC_TEXT("SQLite"));
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "get_info_test", "[sqlite][dmbs][metadata][info]")
+{
+    get_info_test();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "decimal_conversion_test", "[sqlite][decimal][conversion]")
 {
     // SQLite ODBC driver requires dedicated test.

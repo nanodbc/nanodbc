@@ -111,6 +111,11 @@ TEST_CASE_METHOD(mysql_fixture, "dbms_info_test", "[mysql][dmbs][metadata][info]
     dbms_info_test();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "get_info_test", "[mysql][dmbs][metadata][info]")
+{
+    get_info_test();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "decimal_conversion_test", "[mysql][decimal][conversion]")
 {
     decimal_conversion_test();

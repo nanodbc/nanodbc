@@ -1021,7 +1021,8 @@ public:
 
 
     /// \brief Returns information from the ODBC connection as a string.
-    string_type get_string_info(short info_type) const;
+    template<class T>
+    T get_info(short info_type) const;
 
     /// \brief Returns name of the DBMS product.
     /// Returns the ODBC information type SQL_DBMS_NAME of the DBMS product

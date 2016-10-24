@@ -57,6 +57,11 @@ TEST_CASE_METHOD(vertica_fixture, "dbms_info_test", "[vertica][dmbs][metadata][i
     dbms_info_test();
 }
 
+TEST_CASE_METHOD(vertica_fixture, "get_info_test", "[vertica][dmbs][metadata][info]")
+{
+    get_info_test();
+}
+
 TEST_CASE_METHOD(vertica_fixture, "decimal_conversion_test", "[vertica][decimal][conversion]")
 {
     decimal_conversion_test();
