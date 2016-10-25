@@ -1860,12 +1860,12 @@ void statement::statement_impl::bind_strings(
     // add space for null terminator
     ++max_len;
 
-    data_[param] = std::vector<string_type::value_type>(max_len * elements, 0);
+    data_[param] = std::vector<string_type::value_type>(elements * max_len, 0);
     for (std::size_t i = 0; i < elements; ++i)
     {
         std::copy(values[i].begin(), values[i].end(), data_[param].data() + (i * max_len));
     }
-    bind_strings(param, data_[param].data(), max_len, elements, nulls, null_sentry, direction);
+    bind_strings(param, data_[param].data(), max_len * sizeof(string_type::value_type), elements, nulls, null_sentry, direction);
 }
 
 void statement::statement_impl::bind_strings(
