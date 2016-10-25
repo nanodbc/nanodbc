@@ -696,7 +696,7 @@ public:
     /// If your prepared SQL query has any ? placeholders, this is how you bind values to them.
     /// Placeholder numbers count from left to right and are 0-indexed.
     ///
-    /// It is NOT possible to use these functions for bulk operations as number of elements is not
+    /// It is NOT possible to use these functions for batch operations as number of elements is not
     /// specified here.
     ///
     /// \param param Placeholder position.
@@ -712,7 +712,7 @@ public:
     /// If your prepared SQL query has any ? placeholders, this is how you bind values to them.
     /// Placeholder numbers count from left to right and are 0-indexed.
     ///
-    /// It is possible to use these functions for bulk operations.
+    /// It is possible to use these functions for batch operations.
     ///
     /// \param param Placeholder position.
     /// \param values Values to substitute into placeholder.
@@ -758,7 +758,7 @@ public:
     /// If your prepared SQL query has any ? placeholders, this is how you bind values to them.
     /// Placeholder numbers count from left to right and are 0-indexed.
     ///
-    /// It is possible to use these functions for bulk operations.
+    /// It is possible to use these functions for batch operations.
     ///
     /// \param param Placeholder position.
     /// \param values Values to substitute into placeholder.
@@ -855,7 +855,7 @@ public:
     /// If your prepared SQL query has any ? placeholders, this is how you bind values to them.
     /// Placeholder numbers count from left to right and are 0-indexed.
     ///
-    /// It is possible to use this function for bulk operations.
+    /// It is possible to use this function for batch operations.
     ///
     /// \param param Placeholder position.
     /// \param elements The number of elements being bound.
