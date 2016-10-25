@@ -1,6 +1,7 @@
 #ifndef NANODBC_TEST_BASE_TEST_FIXTURE_H
 #define NANODBC_TEST_BASE_TEST_FIXTURE_H
 
+#include <iostream>
 #include "nanodbc.h"
 #include <cassert>
 #include <tuple>
@@ -1517,23 +1518,27 @@ struct base_test_fixture
 
         nanodbc::statement query(connection);
         prepare(query, NANODBC_TEXT("insert into string_vector_test(first, last) values(?, ?)"));
+
+        // Without nulls
         query.bind_strings(0, first_name);
 
         // With null sentry
-        query.bind_strings(1, last_name, NANODBC_TEXT(""));
-        nanodbc::execute(query);
+        bool b[3] = {false, false, true};
+        query.bind_strings(1, last_name, b);
 
-        nanodbc::result results = execute(connection, NANODBC_TEXT("select first,last from string_vector_test order by first desc;"));
-        for (auto &vals : results) {
-          REQUIRE(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("Fred"));
-          //REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("Flintstone"));
-          //results.next();
-          REQUIRE(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("Barney"));
-          //REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("Rubble"));
-          //results.next();
-          REQUIRE(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("Dino"));
-          REQUIRE(results.is_null(1));
-        }
+        nanodbc::execute(query, 3);
+
+        nanodbc::result results = execute(connection, NANODBC_TEXT("select first,last from string_vector_test"));
+        auto i = 0;
+        REQUIRE(results.next());
+        REQUIRE(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("Fred"));
+        REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("Flintstone"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("Barney"));
+        REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("Rubble"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("Dino"));
+        REQUIRE(results.is_null(1));
     }
 
     void time_test()
