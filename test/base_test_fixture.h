@@ -1,7 +1,6 @@
 #ifndef NANODBC_TEST_BASE_TEST_FIXTURE_H
 #define NANODBC_TEST_BASE_TEST_FIXTURE_H
 
-#include <iostream>
 #include "nanodbc.h"
 #include <cassert>
 #include <tuple>
