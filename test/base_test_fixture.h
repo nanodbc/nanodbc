@@ -1021,8 +1021,11 @@ struct base_test_fixture
         REQUIRE(!connection.get_info<nanodbc::string_type>(SQL_DRIVER_NAME).empty());
         REQUIRE(!connection.get_info<nanodbc::string_type>(SQL_ODBC_VER).empty());
 
-       // Test SQLUSMALLINT resutls
-        REQUIRE(connection.get_info<unsigned short>(SQL_ODBC_INTERFACE_CONFORMANCE) > 0);
+       // Test SQLUSMALLINT results
+        REQUIRE(connection.get_info<unsigned short>(SQL_NON_NULLABLE_COLUMNS) == SQL_NNC_NON_NULL);
+
+        // Test SQUINTEGER results
+        REQUIRE(connection.get_info<uint32_t>(SQL_ODBC_INTERFACE_CONFORMANCE) > 0);
 
         // Test SQUINTEGER bitmask results
         REQUIRE((connection.get_info<uint32_t>(SQL_CREATE_TABLE) & SQL_CT_CREATE_TABLE));
