@@ -1528,7 +1528,6 @@ struct base_test_fixture
         nanodbc::execute(query, 3);
 
         nanodbc::result results = execute(connection, NANODBC_TEXT("select first,last from string_vector_test"));
-        auto i = 0;
         REQUIRE(results.next());
         REQUIRE(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("Fred"));
         REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("Flintstone"));
