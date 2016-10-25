@@ -4,6 +4,15 @@
 // ASCII art banners are helpful for code editors with a minimap display.
 // Generated with http://patorjk.com/software/taag/#p=display&v=0&f=Colossal
 
+#if defined(_MSC_VER)
+# if _MSC_VER <= 1800
+// silence spurious Visual C++ warnings
+#pragma warning(disable : 4244) // warning about integer conversion issues.
+#pragma warning(disable : 4312) // warning about 64-bit portability issues.
+#endif
+#pragma warning(disable : 4996) // warning about deprecated declaration
+#endif
+
 #include "nanodbc.h"
 
 #include <algorithm>
@@ -28,13 +37,6 @@
 #include <boost/locale/encoding_utf.hpp>
 #else
 #include <codecvt>
-#endif
-
-#if defined(_MSC_VER) && _MSC_VER <= 1800
-// silence spurious Visual C++ warnings
-#pragma warning(disable : 4244) // warning about integer conversion issues.
-#pragma warning(disable : 4312) // warning about 64-bit portability issues.
-#pragma warning(disable : 4996) // warning about snprintf() deprecated.
 #endif
 
 #ifdef __APPLE__
