@@ -1689,7 +1689,6 @@ public:
     void bind_strings(
         short param,
         const std::vector<string_type>& values,
-        std::size_t elements,
         const bool* nulls,
         const string_type::value_type* null_sentry,
         param_direction direction);
@@ -1838,7 +1837,6 @@ void statement::statement_impl::bind(
 void statement::statement_impl::bind_strings(
     short param,
     const std::vector<string_type>& values,
-    std::size_t elements,
     const bool* nulls,
     const string_type::value_type* null_sentry,
     param_direction direction)
@@ -1848,6 +1846,7 @@ void statement::statement_impl::bind_strings(
     SQLSMALLINT param_type;
     SQLULEN parameter_size;
     SQLSMALLINT scale;
+    const size_t elements = values.size();
     prepare_bind(param, elements, direction, data_type, param_type, parameter_size, scale);
 
     size_t max_len = 0;
@@ -3677,11 +3676,10 @@ void statement::bind(
 void statement::bind_strings(
     short param,
     const std::vector<string_type>& values,
-    std::size_t elements,
     param_direction direction)
 {
 
-    impl_->bind_strings(param, values, elements, nullptr, nullptr, direction);
+    impl_->bind_strings(param, values, nullptr, nullptr, direction);
 }
 
 void statement::bind_strings(
@@ -3720,21 +3718,19 @@ void statement::bind_strings(
 void statement::bind_strings(
     short param,
     const std::vector<string_type>& values,
-    std::size_t elements,
     const string_type::value_type* null_sentry,
     param_direction direction)
 {
-    impl_->bind_strings(param, values, elements, (bool*)0, null_sentry, direction);
+    impl_->bind_strings(param, values, (bool*)0, null_sentry, direction);
 }
 
 void statement::bind_strings(
     short param,
     const std::vector<string_type>& values,
-    std::size_t elements,
     const bool* nulls,
     param_direction direction)
 {
-    impl_->bind_strings(param, values, elements, nulls, (string_type::value_type*)0, direction);
+    impl_->bind_strings(param, values, nulls, (string_type::value_type*)0, direction);
 }
 
 void statement::bind_null(short param, std::size_t elements)

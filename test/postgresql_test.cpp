@@ -129,6 +129,10 @@ TEST_CASE_METHOD(postgresql_fixture, "string_test", "[postgresql][string]")
     string_test();
 }
 
+TEST_CASE_METHOD(postgresql_fixture, "string_vector_test", "[postgresql][string]") {
+    string_vector_test();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "transaction_test", "[postgresql][transaction]")
 {
     transaction_test();

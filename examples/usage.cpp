@@ -101,7 +101,7 @@ void run_test(nanodbc::string_type const& connection_string)
         statement.bind_strings(0, xdata);
 
         std::vector<std::string> x2data(xdata, xdata + elements);
-        statement.bind_strings(1, x2data, elements);
+        statement.bind_strings(1, x2data);
 
         int ydata[elements] = {1, 2, 3, 4};
         statement.bind(2, ydata, elements);
