@@ -140,6 +140,11 @@ TEST_CASE_METHOD(vertica_fixture, "test_transaction", "[vertica][transaction]")
     test_transaction();
 }
 
+TEST_CASE_METHOD(vertica_fixture, "batch_binary_test", "[vertica][binary]")
+{
+    batch_binary_test();
+}
+
 TEST_CASE_METHOD(vertica_fixture, "test_while_not_end_iteration", "[vertica][looping]")
 {
     test_while_not_end_iteration();

@@ -125,6 +125,11 @@ TEST_CASE_METHOD(odbc_fixture, "test_string_vector", "[odbc][string]")
     test_string_vector();
 }
 
+TEST_CASE_METHOD(odbc_fixture, "batch_binary_test", "[odbc][binary]")
+{
+    batch_binary_test();
+}
+
 TEST_CASE_METHOD(odbc_fixture, "test_transaction", "[odbc][transaction]")
 {
     test_transaction();
