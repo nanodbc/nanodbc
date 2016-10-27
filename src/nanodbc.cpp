@@ -1143,7 +1143,7 @@ public:
         , open_(false)
         , conn_()
         , bind_len_or_null_()
-        , data_()
+        , string_data_()
 #if defined(NANODBC_DO_ASYNC_IMPL)
         , async_(false)
         , async_enabled_(false)
@@ -1158,7 +1158,7 @@ public:
         , open_(false)
         , conn_()
         , bind_len_or_null_()
-        , data_()
+        , string_data_()
 #if defined(NANODBC_DO_ASYNC_IMPL)
         , async_(false)
         , async_enabled_(false)
@@ -1752,7 +1752,7 @@ private:
     bool open_;
     class connection conn_;
     std::map<short, std::vector<null_type>> bind_len_or_null_;
-    std::map<short, std::vector<string_type::value_type>> data_;
+    std::map<short, std::vector<string_type::value_type>> string_data_;
 
 #if defined(NANODBC_DO_ASYNC_IMPL)
     bool async_;                 // true if statement is currently in SQL_STILL_EXECUTING mode
@@ -1860,12 +1860,12 @@ void statement::statement_impl::bind_strings(
     // add space for null terminator
     ++max_len;
 
-    data_[param] = std::vector<string_type::value_type>(elements * max_len, 0);
+    string_data_[param] = std::vector<string_type::value_type>(elements * max_len, 0);
     for (std::size_t i = 0; i < elements; ++i)
     {
-        std::copy(values[i].begin(), values[i].end(), data_[param].data() + (i * max_len));
+        std::copy(values[i].begin(), values[i].end(), string_data_[param].data() + (i * max_len));
     }
-    bind_strings(param, data_[param].data(), max_len * sizeof(string_type::value_type), elements, nulls, null_sentry, direction);
+    bind_strings(param, string_data_[param].data(), max_len * sizeof(string_type::value_type), elements, nulls, null_sentry, direction);
 }
 
 void statement::statement_impl::bind_strings(
