@@ -87,6 +87,11 @@ TEST_CASE_METHOD(mssql_fixture, "affected_rows_test", "[mssql][affected_rows]")
     }
 }
 
+TEST_CASE_METHOD(mssql_fixture, "batch_insert_string_test", "[mssql][batch]")
+{
+    batch_insert_string_test();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "blob_test", "[mssql][blob][binary][varbinary]")
 {
     nanodbc::connection connection = connect();

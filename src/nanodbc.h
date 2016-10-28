@@ -699,12 +699,12 @@ public:
     /// It is NOT possible to use these functions for batch operations as number of elements is not
     /// specified here.
     ///
-    /// \param param Placeholder position.
+    /// \param param_index Zero-based index of parameter marker (placeholder position).
     /// \param value Value to substitute into placeholder.
     /// \param direction ODBC parameter direction.
     /// \throws database_error
     template <class T>
-    void bind(short param, const T* value, param_direction direction = PARAM_IN);
+    void bind(short param_index, const T* value, param_direction direction = PARAM_IN);
 
     /// \addtogroup bind_multi Binding multiple non-string values
     /// \brief Binds given values to given parameter placeholder number in the prepared statement.
@@ -714,7 +714,7 @@ public:
     ///
     /// It is possible to use these functions for batch operations.
     ///
-    /// \param param Placeholder position.
+    /// \param param_index Zero-based index of parameter marker (placeholder position).
     /// \param values Values to substitute into placeholder.
     /// \param elements The number of elements being bound.
     /// \param null_sentry Value which should represent a null value.
@@ -728,13 +728,13 @@ public:
     /// \see bind_multi
     template <class T>
     void
-    bind(short param, const T* values, std::size_t elements, param_direction direction = PARAM_IN);
+    bind(short param_index, const T* values, std::size_t elements, param_direction direction = PARAM_IN);
 
     /// \brief Binds multiple values.
     /// \see bind_multi
     template <class T>
     void bind(
-        short param,
+        short param_index,
         const T* values,
         std::size_t elements,
         const T* null_sentry,
@@ -744,7 +744,7 @@ public:
     /// \see bind_multi
     template <class T>
     void bind(
-        short param,
+        short param_index,
         const T* values,
         std::size_t elements,
         const bool* nulls,
@@ -774,7 +774,7 @@ public:
     /// \brief Binds multiple string values.
     /// \see bind_strings
     void bind_strings(
-        short param,
+        short param_index,
         const string_type::value_type* values,
         std::size_t length,
         std::size_t elements,
@@ -783,7 +783,7 @@ public:
     /// \brief Binds multiple string values.
     /// \see bind_strings
     void bind_strings(
-        short param,
+        short param_index,
         const std::vector<string_type>& values,
         param_direction direction = PARAM_IN);
 
@@ -791,18 +791,18 @@ public:
     /// \see bind_strings
     template <std::size_t N, std::size_t M>
     void bind_strings(
-        short param,
+        short param_index,
         const string_type::value_type (&values)[N][M],
         param_direction direction = PARAM_IN)
     {
-        bind_strings(
-            param, reinterpret_cast<const string_type::value_type*>(values), M, N, direction);
+        auto param_values = reinterpret_cast<string_type::value_type const*>(values);
+        bind_strings(param_index, param_values, M, N, direction);
     }
 
     /// \brief Binds multiple string values.
     /// \see bind_strings
     void bind_strings(
-        short param,
+        short param_index,
         const string_type::value_type* values,
         std::size_t length,
         std::size_t elements,
@@ -812,7 +812,7 @@ public:
     /// \brief Binds multiple string values.
     /// \see bind_strings
     void bind_strings(
-        short param,
+        short param_index,
         const std::vector<string_type>& values,
         const string_type::value_type* null_sentry,
         param_direction direction = PARAM_IN);
@@ -821,24 +821,19 @@ public:
     /// \see bind_strings
     template <std::size_t N, std::size_t M>
     void bind_strings(
-        short param,
+        short param_index,
         const string_type::value_type (&values)[N][M],
         const string_type::value_type* null_sentry,
         param_direction direction = PARAM_IN)
     {
-        bind_strings(
-            param,
-            reinterpret_cast<const string_type::value_type*>(values),
-            M,
-            N,
-            null_sentry,
-            direction);
+        auto param_values = reinterpret_cast<string_type::value_type const*>(values);
+        bind_strings(param_index, param_values, M, N, null_sentry, direction);
     }
 
     /// \brief Binds multiple string values.
     /// \see bind_strings
     void bind_strings(
-        short param,
+        short param_index,
         const string_type::value_type* values,
         std::size_t length,
         std::size_t elements,
@@ -848,7 +843,7 @@ public:
     /// \brief Binds multiple string values.
     /// \see bind_strings
     void bind_strings(
-        short param,
+        short param_index,
         const std::vector<string_type>& values,
         const bool* nulls,
         param_direction direction = PARAM_IN);
@@ -857,18 +852,13 @@ public:
     /// \see bind_strings
     template <std::size_t N, std::size_t M>
     void bind_strings(
-        short param,
+        short param_index,
         const string_type::value_type (&values)[N][M],
         const bool* nulls,
         param_direction direction = PARAM_IN)
     {
-        bind_strings(
-            param,
-            reinterpret_cast<const string_type::value_type*>(values),
-            M,
-            N,
-            nulls,
-            direction);
+        auto param_values = reinterpret_cast<string_type::value_type const*>(values);
+        bind_strings(param_index, param_values, M, N, nulls, direction);
     }
 
     /// @}
@@ -883,7 +873,7 @@ public:
     /// \param param Placeholder position.
     /// \param elements The number of elements being bound.
     /// \throws database_error
-    void bind_null(short param, std::size_t elements = 1);
+    void bind_null(short param_index, std::size_t elements = 1);
 
     /// @}
 
