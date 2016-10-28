@@ -27,6 +27,21 @@ TEST_CASE_METHOD(vertica_fixture, "driver_test", "[vertica][driver]")
     driver_test();
 }
 
+TEST_CASE_METHOD(vertica_fixture, "batch_insert_integer_test", "[vertica][batch][integral]")
+{
+    batch_insert_integral_test();
+}
+
+TEST_CASE_METHOD(vertica_fixture, "batch_insert_string_test", "[vertica][batch][string]")
+{
+    batch_insert_string_test();
+}
+
+TEST_CASE_METHOD(vertica_fixture, "batch_insert_mixed_test", "[vertica][batch]")
+{
+    batch_insert_mixed_test();
+}
+
 TEST_CASE_METHOD(vertica_fixture, "catalog_list_catalogs_test", "[vertica][catalog][catalogs]")
 {
     catalog_list_catalogs_test();
