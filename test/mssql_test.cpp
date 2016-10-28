@@ -297,6 +297,11 @@ TEST_CASE_METHOD(mssql_fixture, "dbms_info_test", "[mssql][dmbs][metadata][info]
     dbms_info_test();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "get_info_test", "[mssql][dmbs][metadata][info]")
+{
+    get_info_test();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "decimal_conversion_test", "[mssql][decimal][conversion]")
 {
     decimal_conversion_test();

@@ -60,6 +60,11 @@ TEST_CASE_METHOD(odbc_fixture, "dbms_info_test", "[odbc][dmbs][metadata][info]")
     dbms_info_test();
 }
 
+TEST_CASE_METHOD(odbc_fixture, "get_info_test", "[odbc][dmbs][metadata][info]")
+{
+    get_info_test();
+}
+
 TEST_CASE_METHOD(odbc_fixture, "decimal_conversion_test", "[odbc][decimal][conversion]")
 {
     decimal_conversion_test();
