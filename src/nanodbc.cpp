@@ -1852,10 +1852,9 @@ void statement::statement_impl::bind_strings(
 
     if (null_sentry)
     {
-        auto const char_size = sizeof(string_type::value_type);
         for (std::size_t i = 0; i < elements; ++i)
         {
-            const string_type s_lhs(values + i * length / char_size, values + (i + 1) * length / char_size);
+            const string_type s_lhs(values + i * length, values + (i + 1) * length);
             const string_type s_rhs(null_sentry);
 #if NANODBC_USE_UNICODE
             std::string narrow_lhs;
@@ -1864,7 +1863,7 @@ void statement::statement_impl::bind_strings(
             std::string narrow_rhs;
             narrow_rhs.reserve(s_rhs.size());
             convert(s_rhs, narrow_rhs);
-            if (std::strncmp(narrow_lhs.c_str(), narrow_rhs.c_str(), length / char_size) != 0)
+            if (std::strncmp(narrow_lhs.c_str(), narrow_rhs.c_str(), length) != 0)
               bind_len_or_null_[param_index][i] = SQL_NTS;
 #else
             if (std::strncmp(s_lhs.c_str(), s_rhs.c_str(), length) != 0)
