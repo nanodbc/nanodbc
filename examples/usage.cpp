@@ -92,7 +92,7 @@ void run_test(nanodbc::string_type const& connection_string)
         execute(connection, NANODBC_TEXT("drop table if exists batch_test;"));
         execute(
             connection, NANODBC_TEXT("create table batch_test (x varchar(10), y int, z float);"));
-        prepare(statement, NANODBC_TEXT("insert into batch_test (x, y, z) values (?, ?, ?);"));
+        prepare(statement, NANODBC_TEXT("insert into batch_test (x, x2, y, z) values (?, ?, ?, ?);"));
 
         const size_t elements = 4;
 
@@ -100,11 +100,14 @@ void run_test(nanodbc::string_type const& connection_string)
             NANODBC_TEXT("this"), NANODBC_TEXT("is"), NANODBC_TEXT("a"), NANODBC_TEXT("test")};
         statement.bind_strings(0, xdata);
 
+        std::vector<nanodbc::string_type> x2data(xdata, xdata + elements);
+        statement.bind_strings(1, x2data);
+
         int ydata[elements] = {1, 2, 3, 4};
-        statement.bind(1, ydata, elements);
+        statement.bind(2, ydata, elements);
 
         float zdata[elements] = {1.1f, 2.2f, 3.3f, 4.4f};
-        statement.bind(2, zdata, elements);
+        statement.bind(3, zdata, elements);
 
         transact(statement, elements);
 

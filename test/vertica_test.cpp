@@ -115,6 +115,11 @@ TEST_CASE_METHOD(vertica_fixture, "string_test", "[vertica][string]")
     string_test();
 }
 
+TEST_CASE_METHOD(vertica_fixture, "string_vector_test", "[vertica][string]")
+{
+    string_vector_test();
+}
+
 TEST_CASE_METHOD(vertica_fixture, "transaction_test", "[vertica][transaction]")
 {
     transaction_test();

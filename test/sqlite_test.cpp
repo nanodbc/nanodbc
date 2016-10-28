@@ -395,6 +395,11 @@ TEST_CASE_METHOD(sqlite_fixture, "string_test", "[sqlite][string]")
     string_test();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "string_vector_test", "[sqlite][string]")
+{
+    string_vector_test();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "time_test", "[sqlite][time]")
 {
     time_test();

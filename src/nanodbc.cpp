@@ -1138,6 +1138,7 @@ public:
         , open_(false)
         , conn_()
         , bind_len_or_null_()
+        , string_data_()
 #if defined(NANODBC_DO_ASYNC_IMPL)
         , async_(false)
         , async_enabled_(false)
@@ -1152,6 +1153,7 @@ public:
         , open_(false)
         , conn_()
         , bind_len_or_null_()
+        , string_data_()
 #if defined(NANODBC_DO_ASYNC_IMPL)
         , async_(false)
         , async_enabled_(false)
@@ -1678,6 +1680,14 @@ public:
         bind(param, values, elements, direction);
     }
 
+    // handles multiple string values
+    void bind_strings(
+        short param,
+        const std::vector<string_type>& values,
+        const bool* nulls,
+        const string_type::value_type* null_sentry,
+        param_direction direction);
+
     // handles multiple null values
     void bind_null(short param, std::size_t elements)
     {
@@ -1737,6 +1747,7 @@ private:
     bool open_;
     class connection conn_;
     std::map<short, std::vector<null_type>> bind_len_or_null_;
+    std::map<short, std::vector<string_type::value_type>> string_data_;
 
 #if defined(NANODBC_DO_ASYNC_IMPL)
     bool async_;                 // true if statement is currently in SQL_STILL_EXECUTING mode
@@ -1820,6 +1831,40 @@ void statement::statement_impl::bind(
 
 void statement::statement_impl::bind_strings(
     short param,
+    const std::vector<string_type>& values,
+    const bool* nulls,
+    const string_type::value_type* null_sentry,
+    param_direction direction)
+{
+
+    SQLSMALLINT data_type;
+    SQLSMALLINT param_type;
+    SQLULEN parameter_size;
+    SQLSMALLINT scale;
+    const size_t elements = values.size();
+    prepare_bind(param, elements, direction, data_type, param_type, parameter_size, scale);
+
+    size_t max_len = 0;
+    for (std::size_t i = 0; i < elements; ++i)
+    {
+        if (values[i].length() > max_len)
+        {
+            max_len = values[i].length();
+        }
+    }
+    // add space for null terminator
+    ++max_len;
+
+    string_data_[param] = std::vector<string_type::value_type>(elements * max_len, 0);
+    for (std::size_t i = 0; i < elements; ++i)
+    {
+        std::copy(values[i].begin(), values[i].end(), string_data_[param].data() + (i * max_len));
+    }
+    bind_strings(param, string_data_[param].data(), max_len * sizeof(string_type::value_type), elements, nulls, null_sentry, direction);
+}
+
+void statement::statement_impl::bind_strings(
+    short param,
     const string_type::value_type* values,
     std::size_t length,
     std::size_t elements,
@@ -1835,9 +1880,10 @@ void statement::statement_impl::bind_strings(
 
     if (null_sentry)
     {
+      const size_t char_size = sizeof(string_type::value_type);
         for (std::size_t i = 0; i < elements; ++i)
         {
-            const string_type s_lhs(values + i * length, values + (i + 1) * length);
+            const string_type s_lhs(values + i * length / char_size, values + (i + 1) * length / char_size);
             const string_type s_rhs(null_sentry);
 #if NANODBC_USE_UNICODE
             std::string narrow_lhs;
@@ -1845,12 +1891,12 @@ void statement::statement_impl::bind_strings(
             convert(s_lhs, narrow_lhs);
             std::string narrow_rhs;
             narrow_rhs.reserve(s_rhs.size());
-            convert(s_rhs, narrow_lhs);
-            if (std::strncmp(narrow_lhs.c_str(), narrow_rhs.c_str(), length))
-                bind_len_or_null_[param][i] = parameter_size;
+            convert(s_rhs, narrow_rhs);
+            if (std::strncmp(narrow_lhs.c_str(), narrow_rhs.c_str(), length / char_size) != 0)
+              bind_len_or_null_[param][i] = SQL_NTS;
 #else
-            if (std::strncmp(s_lhs.c_str(), s_rhs.c_str(), length))
-                bind_len_or_null_[param][i] = parameter_size;
+            if (std::strncmp(s_lhs.c_str(), s_rhs.c_str(), length) != 0)
+              bind_len_or_null_[param][i] = SQL_NTS;
 #endif
         }
     }
@@ -1862,8 +1908,15 @@ void statement::statement_impl::bind_strings(
                 bind_len_or_null_[param][i] = SQL_NTS; // null terminated
         }
     }
+    else
+    {
+        for (std::size_t i = 0; i < elements; ++i)
+        {
+            bind_len_or_null_[param][i] = SQL_NTS;
+        }
+    }
 
-    bind_parameter(param, values, elements, data_type, param_type, parameter_size, scale);
+    bind_parameter(param, values, elements, data_type, param_type, length, scale);
 }
 
 template <>
@@ -3624,6 +3677,15 @@ void statement::bind(
 
 void statement::bind_strings(
     short param,
+    const std::vector<string_type>& values,
+    param_direction direction)
+{
+
+    impl_->bind_strings(param, values, nullptr, nullptr, direction);
+}
+
+void statement::bind_strings(
+    short param,
     const string_type::value_type* values,
     std::size_t length,
     std::size_t elements,
@@ -3653,6 +3715,24 @@ void statement::bind_strings(
 {
     impl_->bind_strings(
         param, values, length, elements, nulls, (string_type::value_type*)0, direction);
+}
+
+void statement::bind_strings(
+    short param,
+    const std::vector<string_type>& values,
+    const string_type::value_type* null_sentry,
+    param_direction direction)
+{
+    impl_->bind_strings(param, values, (bool*)0, null_sentry, direction);
+}
+
+void statement::bind_strings(
+    short param,
+    const std::vector<string_type>& values,
+    const bool* nulls,
+    param_direction direction)
+{
+    impl_->bind_strings(param, values, nulls, (string_type::value_type*)0, direction);
 }
 
 void statement::bind_null(short param, std::size_t elements)
