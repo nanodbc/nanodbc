@@ -1,9 +1,9 @@
 #ifndef NANODBC_TEST_BASE_TEST_FIXTURE_H
 #define NANODBC_TEST_BASE_TEST_FIXTURE_H
 
-#include <iostream>
 #include "nanodbc.h"
 #include <cassert>
+#include <iostream>
 #include <tuple>
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -401,24 +401,128 @@ struct base_test_fixture
 
     // Test Cases
 
-    template <std::size_t N, std::size_t M>
-    void batch_insert_string_test_template(nanodbc::connection& conn, const nanodbc::string_type::value_type (&strings)[N][M])
+    void batch_insert_integral_test()
     {
-        create_table(conn, NANODBC_TEXT("batch_insert_string_test"), NANODBC_TEXT("(s varchar(60))"));
+        auto conn = connect();
+        create_table(conn, NANODBC_TEXT("batch_insert_integer_test"), NANODBC_TEXT("(i int)"));
+
+        std::size_t const batch_size = 9;
+        int values[batch_size] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 
         nanodbc::statement stmt(conn);
-        prepare(stmt, NANODBC_TEXT("insert into batch_insert_string_test(s) values (?);"));
+        prepare(stmt, NANODBC_TEXT("insert into batch_insert_integer_test(i) values (?)"));
+        stmt.bind(0, values, batch_size);
+
+        nanodbc::transact(stmt, batch_size);
+        {
+            auto result = nanodbc::execute(
+                conn, NANODBC_TEXT("select i from batch_insert_integer_test order by i asc"));
+            std::size_t i = 0;
+            while (result.next())
+            {
+                REQUIRE(result.get<int>(0) == values[i]);
+                ++i;
+            }
+            REQUIRE(i == batch_size);
+        }
+    }
+
+    void batch_insert_mixed_test()
+    {
+        std::size_t const batch_size = 9;
+        int integers[batch_size] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        float floats[batch_size] = {1.123f, 2.345f, 3.1f, 4.5f, 5.678f, 6.f, 7.89f, 8.90f, 9.1234f};
+        nanodbc::string_type::value_type strings[batch_size][60] = {
+            NANODBC_TEXT("first string"),
+            NANODBC_TEXT("second string"),
+            NANODBC_TEXT("third string"),
+            NANODBC_TEXT("this is fourth string"),
+            NANODBC_TEXT("finally, the fifthstring"),
+            NANODBC_TEXT(""),
+            NANODBC_TEXT("sixth string"),
+            NANODBC_TEXT("A"),
+            NANODBC_TEXT("ninth string")};
+
+        // Test binding strings as variable-length parameter at different positions
+        auto conn = connect();
+        for (auto strings_param_pos : {2, 1, 0})
+        {
+            create_table(
+                conn,
+                NANODBC_TEXT("batch_insert_mixed_test"),
+                NANODBC_TEXT("(i int, s varchar(60), f float)"));
+
+            nanodbc::string_type insert(NANODBC_TEXT("insert into batch_insert_mixed_test "));
+            if (strings_param_pos == 2)
+                insert += NANODBC_TEXT("(i, f, s)");
+            else if (strings_param_pos == 1)
+                insert += NANODBC_TEXT("(i, s, f)");
+            else if (strings_param_pos == 0)
+                insert += NANODBC_TEXT("(s, i, f)");
+            insert += NANODBC_TEXT(" values(?, ?, ?)");
+
+            nanodbc::statement stmt(conn);
+            prepare(stmt, insert);
+            if (strings_param_pos == 2)
+            {
+                stmt.bind(0, integers, batch_size);
+                stmt.bind(1, floats, batch_size);
+                stmt.bind_strings(2, strings);
+            }
+            else if (strings_param_pos == 1)
+            {
+                stmt.bind(0, integers, batch_size);
+                stmt.bind_strings(1, strings);
+                stmt.bind(2, floats, batch_size);
+            }
+            else if (strings_param_pos == 0)
+            {
+                stmt.bind_strings(0, strings);
+                stmt.bind(1, integers, batch_size);
+                stmt.bind(2, floats, batch_size);
+            }
+
+            nanodbc::transact(stmt, batch_size);
+            {
+                auto result = nanodbc::execute(
+                    conn, NANODBC_TEXT("select i, f, s from batch_insert_mixed_test order by i asc"));
+                std::size_t i = 0;
+                while (result.next())
+                {
+                    REQUIRE(result.get<int>(0) == integers[i]);
+                    REQUIRE(result.get<float>(1) == floats[i]); // exact test might fail, switch to Approx
+                    REQUIRE(result.get<nanodbc::string_type>(2) == strings[i]);
+                    ++i;
+                }
+                REQUIRE(i == batch_size);
+            }
+        }
+    }
+
+
+    template <std::size_t BatchSize, std::size_t MaxValueSize>
+    void batch_insert_string_test_template(
+        nanodbc::connection& conn,
+        nanodbc::string_type::value_type const (&strings)[BatchSize][MaxValueSize])
+    {
+        create_table(
+            conn, NANODBC_TEXT("batch_insert_string_test"), NANODBC_TEXT("(s varchar(60))"));
+
+        nanodbc::statement stmt(conn);
+        prepare(stmt, NANODBC_TEXT("insert into batch_insert_string_test(s) values (?)"));
         stmt.bind_strings(0, strings);
 
-        nanodbc::transact(stmt, N);
+        nanodbc::transact(stmt, BatchSize);
         {
-            auto result = nanodbc::execute(conn, NANODBC_TEXT("select s from batch_insert_string_test"));
+            auto result =
+                nanodbc::execute(conn, NANODBC_TEXT("select s from batch_insert_string_test"));
             std::size_t i = 0;
             while (result.next())
             {
                 REQUIRE(result.get<nanodbc::string_type>(0) == strings[i]);
                 ++i;
             }
+            REQUIRE(i == BatchSize);
         }
     }
 
@@ -426,60 +530,54 @@ struct base_test_fixture
     {
         auto conn = connect();
 
-        // Test input buffer lengths smaller than and equal to column size.
-        std::size_t const strings_size = 5;
-        nanodbc::string_type::value_type strings25[strings_size][25] = {
+        // Test input buffer lengths smaller than and equal to column size (varchar(60)).
+        std::size_t const batch_size = 5;
+        nanodbc::string_type::value_type strings25[batch_size][25] = {
             NANODBC_TEXT("first string"),
             NANODBC_TEXT("second string"),
             NANODBC_TEXT("third string"),
             NANODBC_TEXT("this is fourth string"),
-            NANODBC_TEXT("finally, the fifthstring")
-        };
+            NANODBC_TEXT("finally, the fifthstring")};
         batch_insert_string_test_template(conn, strings25);
 
-        nanodbc::string_type::value_type strings27[strings_size][27] = {
+        nanodbc::string_type::value_type strings27[batch_size][27] = {
             NANODBC_TEXT("first string"),
             NANODBC_TEXT("second string"),
             NANODBC_TEXT("third string"),
             NANODBC_TEXT("this is fourth string"),
-            NANODBC_TEXT("finally, the fifthstring")
-        };
+            NANODBC_TEXT("finally, the fifthstring")};
         batch_insert_string_test_template(conn, strings27);
 
-        nanodbc::string_type::value_type strings30[strings_size][30] = {
+        nanodbc::string_type::value_type strings30[batch_size][30] = {
             NANODBC_TEXT("first string"),
             NANODBC_TEXT("second string"),
             NANODBC_TEXT("third string"),
             NANODBC_TEXT("this is fourth string"),
-            NANODBC_TEXT("finally, the fifthstring")
-        };
+            NANODBC_TEXT("finally, the fifthstring")};
         batch_insert_string_test_template(conn, strings30);
 
-        nanodbc::string_type::value_type strings41[strings_size][41] = {
+        nanodbc::string_type::value_type strings41[batch_size][41] = {
             NANODBC_TEXT("first string"),
             NANODBC_TEXT("second string"),
             NANODBC_TEXT("third string"),
             NANODBC_TEXT("this is fourth string"),
-            NANODBC_TEXT("finally, the fifthstring")
-        };
+            NANODBC_TEXT("finally, the fifthstring")};
         batch_insert_string_test_template(conn, strings41);
 
-        nanodbc::string_type::value_type strings55[strings_size][55] = {
+        nanodbc::string_type::value_type strings55[batch_size][55] = {
             NANODBC_TEXT("first string"),
             NANODBC_TEXT("second string"),
             NANODBC_TEXT("third string"),
             NANODBC_TEXT("this is fourth string"),
-            NANODBC_TEXT("finally, the fifthstring")
-        };
+            NANODBC_TEXT("finally, the fifthstring")};
         batch_insert_string_test_template(conn, strings55);
 
-        nanodbc::string_type::value_type strings60[strings_size][60] = {
+        nanodbc::string_type::value_type strings60[batch_size][60] = {
             NANODBC_TEXT("first string"),
             NANODBC_TEXT("second string"),
             NANODBC_TEXT("third string"),
             NANODBC_TEXT("this is fourth string"),
-            NANODBC_TEXT("finally, the fifthstring")
-        };
+            NANODBC_TEXT("finally, the fifthstring")};
         batch_insert_string_test_template(conn, strings60);
     }
 
@@ -1103,7 +1201,7 @@ struct base_test_fixture
         REQUIRE(!connection.get_info<nanodbc::string_type>(SQL_DRIVER_NAME).empty());
         REQUIRE(!connection.get_info<nanodbc::string_type>(SQL_ODBC_VER).empty());
 
-       // Test SQLUSMALLINT results
+        // Test SQLUSMALLINT results
         REQUIRE(connection.get_info<unsigned short>(SQL_NON_NULLABLE_COLUMNS) == SQL_NNC_NON_NULL);
 
         // Test SQUINTEGER results
@@ -1613,15 +1711,23 @@ struct base_test_fixture
         REQUIRE(connection.native_env_handle() != nullptr);
         REQUIRE(connection.transactions() == std::size_t(0));
 
-        const std::vector<nanodbc::string_type> first_name = {NANODBC_TEXT("Fred"), NANODBC_TEXT("Barney"), NANODBC_TEXT("Dino")};
-        const std::vector<nanodbc::string_type> last_name = {NANODBC_TEXT("Flintstone"), NANODBC_TEXT("Rubble"), NANODBC_TEXT("")};
-        const std::vector<nanodbc::string_type> gender = {NANODBC_TEXT("Male"), NANODBC_TEXT("Male"), NANODBC_TEXT("")};
+        const std::vector<nanodbc::string_type> first_name = {
+            NANODBC_TEXT("Fred"), NANODBC_TEXT("Barney"), NANODBC_TEXT("Dino")};
+        const std::vector<nanodbc::string_type> last_name = {
+            NANODBC_TEXT("Flintstone"), NANODBC_TEXT("Rubble"), NANODBC_TEXT("")};
+        const std::vector<nanodbc::string_type> gender = {
+            NANODBC_TEXT("Male"), NANODBC_TEXT("Male"), NANODBC_TEXT("")};
 
         drop_table(connection, NANODBC_TEXT("string_vector_test"));
-        execute(connection, NANODBC_TEXT("create table string_vector_test (first varchar(10), last varchar(10), gender varchar(10));"));
+        execute(
+            connection,
+            NANODBC_TEXT("create table string_vector_test (first varchar(10), last "
+                         "varchar(10), gender varchar(10));"));
 
         nanodbc::statement query(connection);
-        prepare(query, NANODBC_TEXT("insert into string_vector_test(first, last, gender) values(?, ?, ?)"));
+        prepare(
+            query,
+            NANODBC_TEXT("insert into string_vector_test(first, last, gender) values(?, ?, ?)"));
 
         // Without nulls
         query.bind_strings(0, first_name);
@@ -1635,7 +1741,8 @@ struct base_test_fixture
 
         nanodbc::execute(query, 3);
 
-        nanodbc::result results = execute(connection, NANODBC_TEXT("select first,last,gender from string_vector_test"));
+        nanodbc::result results =
+            execute(connection, NANODBC_TEXT("select first,last,gender from string_vector_test"));
         REQUIRE(results.next());
         REQUIRE(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("Fred"));
         REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("Flintstone"));

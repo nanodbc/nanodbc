@@ -69,6 +69,21 @@ TEST_CASE_METHOD(mysql_fixture, "affected_rows_test", "[mysql][affected_rows]")
     }
 }
 
+TEST_CASE_METHOD(mysql_fixture, "batch_insert_integer_test", "[mysql][batch][integral]")
+{
+    batch_insert_integral_test();
+}
+
+TEST_CASE_METHOD(mysql_fixture, "batch_insert_string_test", "[mysql][batch][string]")
+{
+    batch_insert_string_test();
+}
+
+TEST_CASE_METHOD(mysql_fixture, "batch_insert_mixed_test", "[mysql][batch]")
+{
+    batch_insert_mixed_test();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "blob_test", "[mysql][blob]")
 {
     blob_test();

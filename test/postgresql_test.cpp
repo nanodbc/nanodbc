@@ -27,6 +27,21 @@ TEST_CASE_METHOD(postgresql_fixture, "driver_test", "[postgresql][driver]")
     driver_test();
 }
 
+TEST_CASE_METHOD(postgresql_fixture, "batch_insert_integer_test", "[postgresql][batch][integral]")
+{
+    batch_insert_integral_test();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "batch_insert_string_test", "[postgresql][batch][string]")
+{
+    batch_insert_string_test();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "batch_insert_mixed_test", "[postgresql][batch]")
+{
+    batch_insert_mixed_test();
+}
+
 TEST_CASE_METHOD(
     postgresql_fixture,
     "catalog_list_catalogs_test",
@@ -134,7 +149,8 @@ TEST_CASE_METHOD(postgresql_fixture, "string_test", "[postgresql][string]")
     string_test();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "string_vector_test", "[postgresql][string]") {
+TEST_CASE_METHOD(postgresql_fixture, "string_vector_test", "[postgresql][string]")
+{
     string_vector_test();
 }
 
