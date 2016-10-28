@@ -758,14 +758,14 @@ public:
     /// \see bind_multi
     void bind(
         short param,
-        const std::vector<std::vector<uint8_t>> & values,
+        const std::vector<std::vector<uint8_t>>& values,
         param_direction direction = PARAM_IN);
 
     /// \brief Binds multiple values.
     /// \see bind_multi
     void bind(
         short param,
-        const std::vector<std::vector<uint8_t>> & values,
+        const std::vector<std::vector<uint8_t>>& values,
         const bool* nulls,
         param_direction direction = PARAM_IN);
 
@@ -773,7 +773,7 @@ public:
     /// \see bind_multi
     void bind(
         short param,
-        const std::vector<std::vector<uint8_t>> & values,
+        const std::vector<std::vector<uint8_t>>& values,
         const uint8_t* null_sentry,
         param_direction direction = PARAM_IN);
 

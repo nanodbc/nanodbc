@@ -1741,52 +1741,60 @@ public:
         string_type::value_type const* null_sentry = nullptr);
 
     // handles multiple binary values
-    void bind(short param, const std::vector<std::vector<uint8_t>> & values, const bool* nulls, const uint8_t* null_sentry, param_direction direction)
+    void bind(
+        short param,
+        const std::vector<std::vector<uint8_t>>& values,
+        const bool* nulls,
+        const uint8_t* null_sentry,
+        param_direction direction)
     {
-      SQLSMALLINT data_type;
-      SQLSMALLINT param_type;
-      SQLULEN parameter_size;
-      SQLSMALLINT scale;
-      const size_t elements = values.size();
-      prepare_bind(param, elements, direction, data_type, param_type, parameter_size, scale);
+        SQLSMALLINT data_type;
+        SQLSMALLINT param_type;
+        SQLULEN parameter_size;
+        SQLSMALLINT scale;
+        const size_t elements = values.size();
+        prepare_bind(param, elements, direction, data_type, param_type, parameter_size, scale);
 
-      size_t max_len = 0;
-      for (std::size_t i = 0; i < elements; ++i)
-      {
-        if (values[i].size() > max_len)
+        size_t max_len = 0;
+        for (std::size_t i = 0; i < elements; ++i)
         {
-          max_len = values[i].size();
+            if (values[i].size() > max_len)
+            {
+                max_len = values[i].size();
+            }
         }
-      }
-      binary_data_[param] = std::vector<uint8_t>(elements * max_len, 0);
-      for (std::size_t i = 0; i < elements; ++i)
-      {
-        std::copy(values[i].begin(), values[i].end(), binary_data_[param].data() + (i * max_len));
-      }
+        binary_data_[param] = std::vector<uint8_t>(elements * max_len, 0);
+        for (std::size_t i = 0; i < elements; ++i)
+        {
+            std::copy(
+                values[i].begin(), values[i].end(), binary_data_[param].data() + (i * max_len));
+        }
 
-      if (null_sentry)
-      {
-        for (std::size_t i = 0; i < elements; ++i)
-          if (!std::equal(values[i].begin(), values[i].end(), null_sentry))
-          {
-            bind_len_or_null_[param][i] = values[i].size();
-          }
-      }
-      else if (nulls)
-      {
-        for (std::size_t i = 0; i < elements; ++i)
+        if (null_sentry)
         {
-          if (!nulls[i])
-            bind_len_or_null_[param][i] = values[i].size(); // null terminated
+            for (std::size_t i = 0; i < elements; ++i)
+                if (!std::equal(values[i].begin(), values[i].end(), null_sentry))
+                {
+                    bind_len_or_null_[param][i] = values[i].size();
+                }
         }
-      }
-      else {
-        for (std::size_t i = 0; i < elements; ++i)
+        else if (nulls)
         {
-          bind_len_or_null_[param][i] = values[i].size();
+            for (std::size_t i = 0; i < elements; ++i)
+            {
+                if (!nulls[i])
+                    bind_len_or_null_[param][i] = values[i].size(); // null terminated
+            }
         }
-      }
-      bind_parameter(param, binary_data_[param].data(), elements, data_type, param_type, max_len, scale);
+        else
+        {
+            for (std::size_t i = 0; i < elements; ++i)
+            {
+                bind_len_or_null_[param][i] = values[i].size();
+            }
+        }
+        bind_parameter(
+            param, binary_data_[param].data(), elements, data_type, param_type, max_len, scale);
     }
 
     // handles multiple null values
@@ -3746,7 +3754,7 @@ void statement::bind(
 
 void statement::bind(
     short param,
-    const std::vector<std::vector<uint8_t>> & values,
+    const std::vector<std::vector<uint8_t>>& values,
     param_direction direction)
 {
     impl_->bind(param, values, (bool*)0, (uint8_t*)0, direction);
@@ -3754,7 +3762,7 @@ void statement::bind(
 
 void statement::bind(
     short param,
-    const std::vector<std::vector<uint8_t>> & values,
+    const std::vector<std::vector<uint8_t>>& values,
     const bool* nulls,
     param_direction direction)
 {
@@ -3763,7 +3771,7 @@ void statement::bind(
 
 void statement::bind(
     short param,
-    const std::vector<std::vector<uint8_t>> & values,
+    const std::vector<std::vector<uint8_t>>& values,
     const uint8_t* null_sentry,
     param_direction direction)
 {
