@@ -1773,7 +1773,7 @@ struct base_test_fixture
 
         drop_table(connection, NANODBC_TEXT("batch_binary_test"));
         nanodbc::string_type const binary_type_name = get_binary_type_name();
-        execute(connection, NANODBC_TEXT("create table batch_binary_test (s ") + binary_type_name + NANODBC_TEXT(")"));
+        execute(connection, NANODBC_TEXT("create table batch_binary_test (s ") + binary_type_name + NANODBC_TEXT("(10))"));
         nanodbc::statement query(connection);
         prepare(query, NANODBC_TEXT("insert into batch_binary_test(s) values(?)"));
         query.bind(0, data);
