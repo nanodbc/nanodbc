@@ -22,12 +22,12 @@ struct mysql_fixture : public base_test_fixture
 
 // FIXME: No catlog_* tests for MySQL. Not supported?
 
-TEST_CASE_METHOD(mysql_fixture, "driver_test", "[mysql][driver]")
+TEST_CASE_METHOD(mysql_fixture, "test_driver", "[mysql][driver]")
 {
-    driver_test();
+    test_driver();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "affected_rows_test", "[mysql][affected_rows]")
+TEST_CASE_METHOD(mysql_fixture, "test_affected_rows", "[mysql][affected_rows]")
 {
     nanodbc::connection conn = connect();
 
@@ -69,142 +69,139 @@ TEST_CASE_METHOD(mysql_fixture, "affected_rows_test", "[mysql][affected_rows]")
     }
 }
 
-TEST_CASE_METHOD(mysql_fixture, "batch_insert_integer_test", "[mysql][batch][integral]")
+TEST_CASE_METHOD(mysql_fixture, "test_batch_insert_integer", "[mysql][batch][integral]")
 {
-    batch_insert_integral_test();
+    test_batch_insert_integral();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "batch_insert_string_test", "[mysql][batch][string]")
+TEST_CASE_METHOD(mysql_fixture, "test_batch_insert_string", "[mysql][batch][string]")
 {
-    batch_insert_string_test();
+    test_batch_insert_string();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "batch_insert_mixed_test", "[mysql][batch]")
+TEST_CASE_METHOD(mysql_fixture, "test_batch_insert_mixed", "[mysql][batch]")
 {
-    batch_insert_mixed_test();
+    test_batch_insert_mixed();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "blob_test", "[mysql][blob]")
+TEST_CASE_METHOD(mysql_fixture, "test_blob", "[mysql][blob]")
 {
-    blob_test();
+    test_blob();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "catalog_list_catalogs_test", "[mysql][catalog][catalogs]")
+TEST_CASE_METHOD(mysql_fixture, "test_catalog_list_catalogs", "[mysql][catalog][catalogs]")
 {
-    catalog_list_catalogs_test();
+    test_catalog_list_catalogs();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "catalog_list_schemas_test", "[mysql][catalog][schemas]")
+TEST_CASE_METHOD(mysql_fixture, "test_catalog_list_schemas", "[mysql][catalog][schemas]")
 {
-    catalog_list_schemas_test();
+    test_catalog_list_schemas();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "catalog_columns_test", "[mysql][catalog][columns]")
+TEST_CASE_METHOD(mysql_fixture, "test_catalog_columns", "[mysql][catalog][columns]")
 {
-    catalog_columns_test();
+    test_catalog_columns();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "catalog_primary_keys_test", "[mysql][catalog][primary_keys]")
+TEST_CASE_METHOD(mysql_fixture, "test_catalog_primary_keys", "[mysql][catalog][primary_keys]")
 {
-    catalog_primary_keys_test();
+    test_catalog_primary_keys();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "catalog_tables_test", "[mysql][catalog][tables]")
+TEST_CASE_METHOD(mysql_fixture, "test_catalog_tables", "[mysql][catalog][tables]")
 {
-    catalog_tables_test();
+    test_catalog_tables();
 }
 
-// TODO: Add catalog_table_privileges_test - SQLTablePrivileges returns empty result set
+// TODO: Add test_catalog_table_privileges - SQLTablePrivileges returns empty result set
 
-TEST_CASE_METHOD(mysql_fixture, "column_descriptor_test", "[mysql][columns]")
+TEST_CASE_METHOD(mysql_fixture, "test_column_descriptor", "[mysql][columns]")
 {
-    column_descriptor_test();
+    test_column_descriptor();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "dbms_info_test", "[mysql][dmbs][metadata][info]")
+TEST_CASE_METHOD(mysql_fixture, "test_dbms_info", "[mysql][dmbs][metadata][info]")
 {
-    dbms_info_test();
+    test_dbms_info();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "get_info_test", "[mysql][dmbs][metadata][info]")
+TEST_CASE_METHOD(mysql_fixture, "test_get_info", "[mysql][dmbs][metadata][info]")
 {
-    get_info_test();
+    test_get_info();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "decimal_conversion_test", "[mysql][decimal][conversion]")
+TEST_CASE_METHOD(mysql_fixture, "test_decimal_conversion", "[mysql][decimal][conversion]")
 {
-    decimal_conversion_test();
+    test_decimal_conversion();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "exception_test", "[mysql][exception]")
+TEST_CASE_METHOD(mysql_fixture, "test_exception", "[mysql][exception]")
 {
-    exception_test();
+    test_exception();
 }
 
-TEST_CASE_METHOD(
-    mysql_fixture,
-    "execute_multiple_transaction_test",
-    "[mysql][execute][transaction]")
+TEST_CASE_METHOD(mysql_fixture, "test_execute_multiple_transaction", "[mysql][execute][transaction]")
 {
-    execute_multiple_transaction_test();
+    test_execute_multiple_transaction();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "execute_multiple_test", "[mysql][execute]")
+TEST_CASE_METHOD(mysql_fixture, "test_execute_multiple", "[mysql][execute]")
 {
-    execute_multiple_test();
+    test_execute_multiple();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "integral_test", "[mysql][integral]")
+TEST_CASE_METHOD(mysql_fixture, "test_integral", "[mysql][integral]")
 {
-    integral_test<mysql_fixture>();
+    test_integral<mysql_fixture>();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "move_test", "[mysql][move]")
+TEST_CASE_METHOD(mysql_fixture, "test_move", "[mysql][move]")
 {
-    move_test();
+    test_move();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "null_test", "[mysql][null]")
+TEST_CASE_METHOD(mysql_fixture, "test_null", "[mysql][null]")
 {
-    null_test();
+    test_null();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "nullptr_nulls_test", "[mysql][null]")
+TEST_CASE_METHOD(mysql_fixture, "test_nullptr_nulls", "[mysql][null]")
 {
-    nullptr_nulls_test();
+    test_nullptr_nulls();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "result_iterator_test", "[mysql][iterator]")
+TEST_CASE_METHOD(mysql_fixture, "test_result_iterator", "[mysql][iterator]")
 {
-    result_iterator_test();
+    test_result_iterator();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "simple_test", "[mysql]")
+TEST_CASE_METHOD(mysql_fixture, "test_simple", "[mysql]")
 {
-    simple_test();
+    test_simple();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "string_test", "[mysql][string]")
+TEST_CASE_METHOD(mysql_fixture, "test_string", "[mysql][string]")
 {
-    string_test();
+    test_string();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "string_vector_test", "[mysql][string]")
+TEST_CASE_METHOD(mysql_fixture, "test_string_vector", "[mysql][string]")
 {
-    string_vector_test();
+    test_string_vector();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "transaction_test", "[mysql][transaction]")
+TEST_CASE_METHOD(mysql_fixture, "test_transaction", "[mysql][transaction]")
 {
-    transaction_test();
+    test_transaction();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "while_not_end_iteration_test", "[mysql][looping]")
+TEST_CASE_METHOD(mysql_fixture, "test_while_not_end_iteration", "[mysql][looping]")
 {
-    while_not_end_iteration_test();
+    test_while_not_end_iteration();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "while_next_iteration_test", "[mysql][looping]")
+TEST_CASE_METHOD(mysql_fixture, "test_while_next_iteration", "[mysql][looping]")
 {
-    while_next_iteration_test();
+    test_while_next_iteration();
 }

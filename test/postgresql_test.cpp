@@ -22,149 +22,149 @@ struct postgresql_fixture : public base_test_fixture
 
 // TODO: add blob (bytea) test
 
-TEST_CASE_METHOD(postgresql_fixture, "driver_test", "[postgresql][driver]")
+TEST_CASE_METHOD(postgresql_fixture, "test_driver", "[postgresql][driver]")
 {
-    driver_test();
+    test_driver();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "batch_insert_integer_test", "[postgresql][batch][integral]")
+TEST_CASE_METHOD(postgresql_fixture, "test_batch_insert_integer", "[postgresql][batch][integral]")
 {
-    batch_insert_integral_test();
+    test_batch_insert_integral();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "batch_insert_string_test", "[postgresql][batch][string]")
+TEST_CASE_METHOD(postgresql_fixture, "test_batch_insert_string", "[postgresql][batch][string]")
 {
-    batch_insert_string_test();
+    test_batch_insert_string();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "batch_insert_mixed_test", "[postgresql][batch]")
+TEST_CASE_METHOD(postgresql_fixture, "test_batch_insert_mixed", "[postgresql][batch]")
 {
-    batch_insert_mixed_test();
+    test_batch_insert_mixed();
 }
 
 TEST_CASE_METHOD(
     postgresql_fixture,
-    "catalog_list_catalogs_test",
+    "test_catalog_list_catalogs",
     "[postgresql][catalog][catalogs]")
 {
-    catalog_list_catalogs_test();
+    test_catalog_list_catalogs();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "catalog_list_schemas_test", "[postgresql][catalog][schemas]")
+TEST_CASE_METHOD(postgresql_fixture, "test_catalog_list_schemas", "[postgresql][catalog][schemas]")
 {
-    catalog_list_schemas_test();
+    test_catalog_list_schemas();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "catalog_columns_test", "[postgresql][catalog][columns]")
+TEST_CASE_METHOD(postgresql_fixture, "test_catalog_columns", "[postgresql][catalog][columns]")
 {
-    catalog_columns_test();
+    test_catalog_columns();
 }
 
 TEST_CASE_METHOD(
     postgresql_fixture,
-    "catalog_primary_keys_test",
+    "test_catalog_primary_keys",
     "[postgresql][catalog][primary_keys]")
 {
-    catalog_primary_keys_test();
+    test_catalog_primary_keys();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "catalog_tables_test", "[postgresql][catalog][tables]")
+TEST_CASE_METHOD(postgresql_fixture, "test_catalog_tables", "[postgresql][catalog][tables]")
 {
-    catalog_tables_test();
+    test_catalog_tables();
 }
 
 TEST_CASE_METHOD(
     postgresql_fixture,
-    "catalog_table_privileges_test",
+    "test_catalog_table_privileges",
     "[postgresql][catalog][tables]")
 {
-    catalog_table_privileges_test();
+    test_catalog_table_privileges();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "column_descriptor_test", "[postgresql][columns]")
+TEST_CASE_METHOD(postgresql_fixture, "test_column_descriptor", "[postgresql][columns]")
 {
-    column_descriptor_test();
+    test_column_descriptor();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "dbms_info_test", "[postgresql][dmbs][metadata][info]")
+TEST_CASE_METHOD(postgresql_fixture, "test_dbms_info", "[postgresql][dmbs][metadata][info]")
 {
-    dbms_info_test();
+    test_dbms_info();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "get_info_test", "[postgresql][dmbs][metadata][info]")
+TEST_CASE_METHOD(postgresql_fixture, "test_get_info", "[postgresql][dmbs][metadata][info]")
 {
-    get_info_test();
+    test_get_info();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "decimal_conversion_test", "[postgresql][decimal][conversion]")
+TEST_CASE_METHOD(postgresql_fixture, "test_decimal_conversion", "[postgresql][decimal][conversion]")
 {
-    decimal_conversion_test();
+    test_decimal_conversion();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "exception_test", "[postgresql][exception]")
+TEST_CASE_METHOD(postgresql_fixture, "test_exception", "[postgresql][exception]")
 {
-    exception_test();
+    test_exception();
 }
 
 TEST_CASE_METHOD(
     postgresql_fixture,
-    "execute_multiple_transaction_test",
+    "test_execute_multiple_transaction",
     "[postgresql][execute][transaction]")
 {
-    execute_multiple_transaction_test();
+    test_execute_multiple_transaction();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "execute_multiple_test", "[postgresql][execute]")
+TEST_CASE_METHOD(postgresql_fixture, "test_execute_multiple", "[postgresql][execute]")
 {
-    execute_multiple_test();
+    test_execute_multiple();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "integral_test", "[postgresql][integral]")
+TEST_CASE_METHOD(postgresql_fixture, "test_integral", "[postgresql][integral]")
 {
-    integral_test<postgresql_fixture>();
+    test_integral<postgresql_fixture>();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "move_test", "[postgresql][move]")
+TEST_CASE_METHOD(postgresql_fixture, "test_move", "[postgresql][move]")
 {
-    move_test();
+    test_move();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "null_test", "[postgresql][null]")
+TEST_CASE_METHOD(postgresql_fixture, "test_null", "[postgresql][null]")
 {
-    null_test();
+    test_null();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "result_iterator_test", "[postgresql][iterator]")
+TEST_CASE_METHOD(postgresql_fixture, "test_result_iterator", "[postgresql][iterator]")
 {
-    result_iterator_test();
+    test_result_iterator();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "simple_test", "[postgresql]")
+TEST_CASE_METHOD(postgresql_fixture, "test_simple", "[postgresql]")
 {
-    simple_test();
+    test_simple();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "string_test", "[postgresql][string]")
+TEST_CASE_METHOD(postgresql_fixture, "test_string", "[postgresql][string]")
 {
-    string_test();
+    test_string();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "string_vector_test", "[postgresql][string]")
+TEST_CASE_METHOD(postgresql_fixture, "test_string_vector", "[postgresql][string]")
 {
-    string_vector_test();
+    test_string_vector();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "transaction_test", "[postgresql][transaction]")
+TEST_CASE_METHOD(postgresql_fixture, "test_transaction", "[postgresql][transaction]")
 {
-    transaction_test();
+    test_transaction();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "while_not_end_iteration_test", "[postgresql][looping]")
+TEST_CASE_METHOD(postgresql_fixture, "test_while_not_end_iteration", "[postgresql][looping]")
 {
-    while_not_end_iteration_test();
+    test_while_not_end_iteration();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "while_next_iteration_test", "[postgresql][looping]")
+TEST_CASE_METHOD(postgresql_fixture, "test_while_next_iteration", "[postgresql][looping]")
 {
-    while_next_iteration_test();
+    test_while_next_iteration();
 }
