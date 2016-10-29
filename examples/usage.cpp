@@ -92,7 +92,8 @@ void run_test(nanodbc::string_type const& connection_string)
         execute(connection, NANODBC_TEXT("drop table if exists batch_test;"));
         execute(
             connection, NANODBC_TEXT("create table batch_test (x varchar(10), y int, z float);"));
-        prepare(statement, NANODBC_TEXT("insert into batch_test (x, x2, y, z) values (?, ?, ?, ?);"));
+        prepare(
+            statement, NANODBC_TEXT("insert into batch_test (x, x2, y, z) values (?, ?, ?, ?);"));
 
         const size_t elements = 4;
 

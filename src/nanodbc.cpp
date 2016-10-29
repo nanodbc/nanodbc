@@ -1600,7 +1600,14 @@ public:
 #endif
 
         NANODBC_CALL_RC(
-            SQLDescribeParam, rc, stmt_, param_index + 1, &data_type, &parameter_size, 0, &nullable);
+            SQLDescribeParam,
+            rc,
+            stmt_,
+            param_index + 1,
+            &data_type,
+            &parameter_size,
+            0,
+            &nullable);
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
         NANODBC_ASSERT(
@@ -3705,7 +3712,8 @@ void statement::bind_strings(
     string_type::value_type const* null_sentry,
     param_direction direction)
 {
-    impl_->bind_strings(direction, param_index, values, value_size, batch_size, nullptr, null_sentry);
+    impl_->bind_strings(
+        direction, param_index, values, value_size, batch_size, nullptr, null_sentry);
 }
 
 void statement::bind_strings(
