@@ -4,6 +4,7 @@
 #include "nanodbc.h"
 #include <cassert>
 #include <iostream>
+#include <random>
 #include <tuple>
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -1345,10 +1346,10 @@ struct base_test_fixture
         nanodbc::statement statement(connection);
         prepare(statement, NANODBC_TEXT("insert into test_integral (i, f, d) values (?, ?, ?);"));
 
-        srand(0);
-        const int32_t i = rand() % 5000;
-        const float f = rand() / (rand() + 1.0);
-        const float d = -rand() / (rand() + 1.0);
+        std::minstd_rand nanodbc_rand;
+        const int32_t i = nanodbc_rand() % 5000;
+        const float f = nanodbc_rand() / (nanodbc_rand() + 1.0);
+        const float d = -static_cast<std::int_fast32_t>(nanodbc_rand()) / (nanodbc_rand() + 1.0);
 
         short p = 0;
         statement.bind(p++, &i);
