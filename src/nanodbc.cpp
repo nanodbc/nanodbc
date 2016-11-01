@@ -1748,23 +1748,22 @@ public:
         const bool* nulls = nullptr,
         const uint8_t* null_sentry = nullptr)
     {
-      std::size_t batch_size = values.size();
-      bound_parameter param;
-      prepare_bind(param_index, batch_size, direction, param);
+        std::size_t batch_size = values.size();
+        bound_parameter param;
+        prepare_bind(param_index, batch_size, direction, param);
 
         size_t max_length = 0;
         for (std::size_t i = 0; i < batch_size; ++i)
         {
-            if (values[i].size() > max_length)
-            {
-                max_length = values[i].size();
-            }
+            max_length = std::max(values[i].size(), max_length);
         }
         binary_data_[param_index] = std::vector<uint8_t>(batch_size * max_length, 0);
         for (std::size_t i = 0; i < batch_size; ++i)
         {
             std::copy(
-                values[i].begin(), values[i].end(), binary_data_[param_index].data() + (i * max_length));
+                values[i].begin(),
+                values[i].end(),
+                binary_data_[param_index].data() + (i * max_length));
         }
 
         if (null_sentry)
