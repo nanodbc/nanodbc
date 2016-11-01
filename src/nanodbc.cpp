@@ -3680,9 +3680,9 @@ void statement::reset_parameters() NANODBC_NOEXCEPT
     impl_->reset_parameters();
 }
 
-unsigned long statement::parameter_size(short param) const
+unsigned long statement::parameter_size(short param_index) const
 {
-    return impl_->parameter_size(param);
+    return impl_->parameter_size(param_index);
 }
 
 // We need to instantiate each form of bind() for each of our supported data types.
@@ -3750,7 +3750,7 @@ void statement::bind(
 
 void statement::bind(
     short param_index,
-    const std::vector<std::vector<uint8_t>>& values,
+    std::vector<std::vector<uint8_t>> const& values,
     param_direction direction)
 {
     impl_->bind(direction, param_index, values, (bool*)0, (uint8_t*)0);
@@ -3758,8 +3758,8 @@ void statement::bind(
 
 void statement::bind(
     short param_index,
-    const std::vector<std::vector<uint8_t>>& values,
-    const bool* nulls,
+    std::vector<std::vector<uint8_t>> const& values,
+    bool const* nulls,
     param_direction direction)
 {
     impl_->bind(direction, param_index, values, nulls, (uint8_t*)0);
@@ -3767,8 +3767,8 @@ void statement::bind(
 
 void statement::bind(
     short param_index,
-    const std::vector<std::vector<uint8_t>>& values,
-    const uint8_t* null_sentry,
+    std::vector<std::vector<uint8_t>> const& values,
+    uint8_t const* null_sentry,
     param_direction direction)
 {
     impl_->bind(direction, param_index, values, (bool*)0, null_sentry);

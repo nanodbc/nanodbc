@@ -141,7 +141,10 @@ TEST_CASE_METHOD(mysql_fixture, "test_exception", "[mysql][exception]")
     test_exception();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "test_execute_multiple_transaction", "[mysql][execute][transaction]")
+TEST_CASE_METHOD(
+    mysql_fixture,
+    "test_execute_multiple_transaction",
+    "[mysql][execute][transaction]")
 {
     test_execute_multiple_transaction();
 }
