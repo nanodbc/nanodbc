@@ -1760,6 +1760,42 @@ struct base_test_fixture
         REQUIRE(results.is_null(2));
     }
 
+    void test_batch_binary()
+    {
+        nanodbc::connection connection = connect();
+        REQUIRE(connection.native_dbc_handle() != nullptr);
+        REQUIRE(connection.native_env_handle() != nullptr);
+        REQUIRE(connection.transactions() == std::size_t(0));
+
+        // Include null termination to ensure they are handled properly
+        const std::vector<std::vector<uint8_t>> data = { {0x00, 0x01, 0x02, 0x03},
+          { 0x03, 0x02, 0x01, 0x00 }};
+
+        drop_table(connection, NANODBC_TEXT("test_batch_binary"));
+        nanodbc::string_type const binary_type_name = get_binary_type_name();
+
+        // PostgreSQL does not allow limits on bytea fields, MS-SQL requires
+        // them on varbinary fields
+        nanodbc::string_type create_table_sql = NANODBC_TEXT("create table test_batch_binary (s ");
+        if (vendor_ == database_vendor::postgresql) {
+          create_table_sql = create_table_sql + binary_type_name + NANODBC_TEXT(")");
+        } else {
+          create_table_sql = create_table_sql + binary_type_name + NANODBC_TEXT("(10))");
+        }
+
+        execute(connection, create_table_sql);
+        nanodbc::statement query(connection);
+        prepare(query, NANODBC_TEXT("insert into test_batch_binary(s) values(?)"));
+        query.bind(0, data);
+        nanodbc::execute(query, 2);
+
+        nanodbc::result results = execute(connection, NANODBC_TEXT("select s from test_batch_binary;"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<std::vector<uint8_t>>(0) == data[0]);
+        REQUIRE(results.next());
+        REQUIRE(results.get<std::vector<uint8_t>>(0) == data[1]);
+    }
+
     void test_time()
     {
         auto connection = connect();

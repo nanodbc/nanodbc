@@ -478,6 +478,12 @@ struct sql_ctype<nanodbc::string_type::value_type>
 };
 
 template <>
+struct sql_ctype<uint8_t>
+{
+    static const SQLSMALLINT value = SQL_C_BINARY;
+};
+
+template <>
 struct sql_ctype<short>
 {
     static const SQLSMALLINT value = SQL_C_SSHORT;
@@ -1169,6 +1175,7 @@ public:
         , conn_()
         , bind_len_or_null_()
         , string_data_()
+        , binary_data_()
 #if defined(NANODBC_DO_ASYNC_IMPL)
         , async_(false)
         , async_enabled_(false)
@@ -1184,6 +1191,7 @@ public:
         , conn_()
         , bind_len_or_null_()
         , string_data_()
+        , binary_data_()
 #if defined(NANODBC_DO_ASYNC_IMPL)
         , async_(false)
         , async_enabled_(false)
@@ -1732,6 +1740,59 @@ public:
         bool const* nulls = nullptr,
         string_type::value_type const* null_sentry = nullptr);
 
+    // handles multiple binary values
+    void bind(
+        param_direction direction,
+        short param_index,
+        const std::vector<std::vector<uint8_t>>& values,
+        const bool* nulls = nullptr,
+        const uint8_t* null_sentry = nullptr)
+    {
+        std::size_t batch_size = values.size();
+        bound_parameter param;
+        prepare_bind(param_index, batch_size, direction, param);
+
+        size_t max_length = 0;
+        for (std::size_t i = 0; i < batch_size; ++i)
+        {
+            max_length = std::max(values[i].size(), max_length);
+        }
+        binary_data_[param_index] = std::vector<uint8_t>(batch_size * max_length, 0);
+        for (std::size_t i = 0; i < batch_size; ++i)
+        {
+            std::copy(
+                values[i].begin(),
+                values[i].end(),
+                binary_data_[param_index].data() + (i * max_length));
+        }
+
+        if (null_sentry)
+        {
+            for (std::size_t i = 0; i < batch_size; ++i)
+                if (!std::equal(values[i].begin(), values[i].end(), null_sentry))
+                {
+                    bind_len_or_null_[param_index][i] = values[i].size();
+                }
+        }
+        else if (nulls)
+        {
+            for (std::size_t i = 0; i < batch_size; ++i)
+            {
+                if (!nulls[i])
+                    bind_len_or_null_[param_index][i] = values[i].size(); // null terminated
+            }
+        }
+        else
+        {
+            for (std::size_t i = 0; i < batch_size; ++i)
+            {
+                bind_len_or_null_[param_index][i] = values[i].size();
+            }
+        }
+        bound_buffer<uint8_t> buffer(binary_data_[param_index].data(), batch_size, max_length);
+        bind_parameter(param, buffer);
+    }
+
     // handles multiple null values
     void bind_null(short param_index, std::size_t batch_size)
     {
@@ -1769,6 +1830,7 @@ private:
     class connection conn_;
     std::map<short, std::vector<null_type>> bind_len_or_null_;
     std::map<short, std::vector<string_type::value_type>> string_data_;
+    std::map<short, std::vector<uint8_t>> binary_data_;
 
 #if defined(NANODBC_DO_ASYNC_IMPL)
     bool async_;                 // true if statement is currently in SQL_STILL_EXECUTING mode
@@ -3684,6 +3746,32 @@ void statement::bind(
     param_direction direction)
 {
     impl_->bind(direction, param_index, values, batch_size, nulls, (T*)0);
+}
+
+void statement::bind(
+    short param_index,
+    const std::vector<std::vector<uint8_t>>& values,
+    param_direction direction)
+{
+    impl_->bind(direction, param_index, values, (bool*)0, (uint8_t*)0);
+}
+
+void statement::bind(
+    short param_index,
+    const std::vector<std::vector<uint8_t>>& values,
+    const bool* nulls,
+    param_direction direction)
+{
+    impl_->bind(direction, param_index, values, nulls, (uint8_t*)0);
+}
+
+void statement::bind(
+    short param_index,
+    const std::vector<std::vector<uint8_t>>& values,
+    const uint8_t* null_sentry,
+    param_direction direction)
+{
+    impl_->bind(direction, param_index, values, (bool*)0, null_sentry);
 }
 
 void statement::bind_strings(
