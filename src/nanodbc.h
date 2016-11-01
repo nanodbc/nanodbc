@@ -684,7 +684,7 @@ public:
     void reset_parameters() NANODBC_NOEXCEPT;
 
     /// \brief Returns parameter size for indicated parameter placeholder in a prepared statement.
-    unsigned long parameter_size(short param) const;
+    unsigned long parameter_size(short param_index) const;
 
     /// \addtogroup binding Binding parameters
     /// \brief These functions are used to bind values to ODBC parameters.
@@ -696,27 +696,28 @@ public:
     /// If your prepared SQL query has any ? placeholders, this is how you bind values to them.
     /// Placeholder numbers count from left to right and are 0-indexed.
     ///
-    /// It is NOT possible to use these functions for bulk operations as number of elements is not
+    /// It is NOT possible to use these functions for batch operations as number of elements is not
     /// specified here.
     ///
-    /// \param param Placeholder position.
+    /// \param param_index Zero-based index of parameter marker (placeholder position).
     /// \param value Value to substitute into placeholder.
     /// \param direction ODBC parameter direction.
     /// \throws database_error
     template <class T>
-    void bind(short param, const T* value, param_direction direction = PARAM_IN);
+    void bind(short param_index, T const* value, param_direction direction = PARAM_IN);
 
     /// \addtogroup bind_multi Binding multiple non-string values
     /// \brief Binds given values to given parameter placeholder number in the prepared statement.
     ///
-    /// If your prepared SQL query has any ? placeholders, this is how you bind values to them.
-    /// Placeholder numbers count from left to right and are 0-indexed.
+    /// If your prepared SQL query has any parameter markers, ? (question  mark) placeholders,
+    /// this is how you bind values to them.
+    /// Parameter markers are numbered using Zero-based index from left to right.
     ///
-    /// It is possible to use these functions for bulk operations.
+    /// It is possible to use these functions for batch operations.
     ///
-    /// \param param Placeholder position.
+    /// \param param_index Zero-based index of parameter marker (placeholder position).
     /// \param values Values to substitute into placeholder.
-    /// \param elements The number of elements being bound.
+    /// \param batch_size The number of values being bound.
     /// \param null_sentry Value which should represent a null value.
     /// \param nulls Flags for values that should be set to a null value.
     /// \param param_direciton ODBC parameter direction.
@@ -727,43 +728,48 @@ public:
     /// \brief Binds multiple values.
     /// \see bind_multi
     template <class T>
-    void
-    bind(short param, const T* values, std::size_t elements, param_direction direction = PARAM_IN);
-
-    /// \brief Binds multiple values.
-    /// \see bind_multi
-    template <class T>
     void bind(
-        short param,
-        const T* values,
-        std::size_t elements,
-        const T* null_sentry,
+        short param_index,
+        T const* values,
+        std::size_t batch_size,
         param_direction direction = PARAM_IN);
 
     /// \brief Binds multiple values.
     /// \see bind_multi
     template <class T>
     void bind(
-        short param,
-        const T* values,
-        std::size_t elements,
-        const bool* nulls,
+        short param_index,
+        T const* values,
+        std::size_t batch_size,
+        T const* null_sentry,
+        param_direction direction = PARAM_IN);
+
+    /// \brief Binds multiple values.
+    /// \see bind_multi
+    template <class T>
+    void bind(
+        short param_index,
+        T const* values,
+        std::size_t batch_size,
+        bool const* nulls,
         param_direction direction = PARAM_IN);
 
     /// @}
 
     /// \addtogroup bind_strings Binding multiple string values
-    /// \brief Binds given string values to parameter placeholder number in prepared statement.
+    /// \brief Binds given string values to parameter marker in prepared statement.
     ///
-    /// If your prepared SQL query has any ? placeholders, this is how you bind values to them.
-    /// Placeholder numbers count from left to right and are 0-indexed.
+    /// If your prepared SQL query has any parameter markers, ? (question  mark) placeholders,
+    /// this is how you bind values to them.
+    /// Parameter markers are numbered using Zero-based index from left to right.
     ///
-    /// It is possible to use these functions for bulk operations.
+    /// It is possible to use these functions for batch operations.
     ///
-    /// \param param Placeholder position.
-    /// \param values Values to substitute into placeholder.
-    /// \param length Maximum length of string elements.
-    /// \param elements Number of elements to bind. Otherwise N is taken as the number of elements.
+    /// \param param_index Zero-based index of parameter marker (placeholder position).
+    /// \param values Array of values to substitute into parameter placeholders.
+    /// \param value_size Maximum length of string value in array.
+    /// \param batch_size Number of string values to bind. Otherwise template parameter BatchSize is
+    /// taken as the number of values.
     /// \param null_sentry Value which should represent a null value.
     /// \param nulls Flags for values that should be set to a null value.
     /// \param param_direciton ODBC parameter direction.
@@ -774,93 +780,111 @@ public:
     /// \brief Binds multiple string values.
     /// \see bind_strings
     void bind_strings(
-        short param,
-        const string_type::value_type* values,
-        std::size_t length,
-        std::size_t elements,
+        short param_index,
+        string_type::value_type const* values,
+        std::size_t value_size,
+        std::size_t batch_size,
+        param_direction direction = PARAM_IN);
+
+    /// \brief Binds multiple string values.
+    ///
+    /// Size of the values vector indicates number of values to bind.
+    /// Longest string in the array determines maximum length of individual value.
+    ///
+    /// \see bind_strings
+    void bind_strings(
+        short param_index,
+        std::vector<string_type> const& values,
         param_direction direction = PARAM_IN);
 
     /// \brief Binds multiple string values.
     /// \see bind_strings
-    template <std::size_t N, std::size_t M>
+    template <std::size_t BatchSize, std::size_t ValueSize>
     void bind_strings(
-        short param,
-        const string_type::value_type (&values)[N][M],
+        short param_index,
+        string_type::value_type const (&values)[BatchSize][ValueSize],
         param_direction direction = PARAM_IN)
     {
-        bind_strings(
-            param, reinterpret_cast<const string_type::value_type*>(values), M, N, direction);
+        auto param_values = reinterpret_cast<string_type::value_type const*>(values);
+        bind_strings(param_index, param_values, ValueSize, BatchSize, direction);
     }
 
     /// \brief Binds multiple string values.
     /// \see bind_strings
     void bind_strings(
-        short param,
-        const string_type::value_type* values,
-        std::size_t length,
-        std::size_t elements,
-        const string_type::value_type* null_sentry,
+        short param_index,
+        string_type::value_type const* values,
+        std::size_t value_size,
+        std::size_t batch_size,
+        string_type::value_type const* null_sentry,
         param_direction direction = PARAM_IN);
 
     /// \brief Binds multiple string values.
     /// \see bind_strings
-    template <std::size_t N, std::size_t M>
     void bind_strings(
-        short param,
-        const string_type::value_type (&values)[N][M],
-        const string_type::value_type* null_sentry,
+        short param_index,
+        std::vector<string_type> const& values,
+        string_type::value_type const* null_sentry,
+        param_direction direction = PARAM_IN);
+
+    /// \brief Binds multiple string values.
+    /// \see bind_strings
+    template <std::size_t BatchSize, std::size_t ValueSize>
+    void bind_strings(
+        short param_index,
+        string_type::value_type const (&values)[BatchSize][ValueSize],
+        string_type::value_type const* null_sentry,
         param_direction direction = PARAM_IN)
     {
-        bind_strings(
-            param,
-            reinterpret_cast<const string_type::value_type*>(values),
-            M,
-            N,
-            null_sentry,
-            direction);
+        auto param_values = reinterpret_cast<string_type::value_type const*>(values);
+        bind_strings(param_index, param_values, ValueSize, BatchSize, null_sentry, direction);
     }
 
     /// \brief Binds multiple string values.
     /// \see bind_strings
     void bind_strings(
-        short param,
-        const string_type::value_type* values,
-        std::size_t length,
-        std::size_t elements,
-        const bool* nulls,
+        short param_index,
+        string_type::value_type const* values,
+        std::size_t value_size,
+        std::size_t batch_size,
+        bool const* nulls,
         param_direction direction = PARAM_IN);
 
     /// \brief Binds multiple string values.
     /// \see bind_strings
-    template <std::size_t N, std::size_t M>
     void bind_strings(
-        short param,
-        const string_type::value_type (&values)[N][M],
-        const bool* nulls,
+        short param_index,
+        std::vector<string_type> const& values,
+        bool const* nulls,
+        param_direction direction = PARAM_IN);
+
+    /// \brief Binds multiple string values.
+    /// \see bind_strings
+    template <std::size_t BatchSize, std::size_t ValueSize>
+    void bind_strings(
+        short param_index,
+        string_type::value_type const (&values)[BatchSize][ValueSize],
+        bool const* nulls,
         param_direction direction = PARAM_IN)
     {
-        bind_strings(
-            param,
-            reinterpret_cast<const string_type::value_type*>(values),
-            M,
-            N,
-            nulls,
-            direction);
+        auto param_values = reinterpret_cast<string_type::value_type const*>(values);
+        bind_strings(param_index, param_values, ValueSize, BatchSize, nulls, direction);
     }
 
     /// @}
 
     /// \brief Binds null values to the parameter placeholder number in the prepared statement.
     ///
-    /// If your prepared SQL query has any ? placeholders, this is how you bind values to them.
-    /// Placeholder numbers count from left to right and are 0-indexed.
+    /// If your prepared SQL query has any parameter markers, ? (question  mark) placeholders,
+    /// this is how you bind values to them.
+    /// Parameter markers are numbered using Zero-based index from left to right.
     ///
-    /// It is possible to use this function for bulk operations.
+    /// It is possible to use this function for batch operations.
     ///
-    /// \param param Placeholder position.
-    /// \param elements The number of elements being bound.
+    /// \param param_index Zero-based index of parameter marker (placeholder position).
+    /// \param batch_size The number of elements being bound.
     /// \throws database_error
-    void bind_null(short param, std::size_t elements = 1);
+    void bind_null(short param_index, std::size_t batch_size = 1);
 
     /// @}
 
@@ -1018,6 +1042,10 @@ public:
 
     /// \brief Returns the native ODBC environment handle.
     void* native_env_handle() const;
+
+    /// \brief Returns information from the ODBC connection as a string.
+    template <class T>
+    T get_info(short info_type) const;
 
     /// \brief Returns name of the DBMS product.
     /// Returns the ODBC information type SQL_DBMS_NAME of the DBMS product
@@ -1332,10 +1360,10 @@ class result_iterator
 {
 public:
     typedef std::input_iterator_tag iterator_category; ///< Category of iterator.
-    typedef result value_type; ///< Values returned by iterator access.
-    typedef result* pointer; ///< Pointer to iteration values.
-    typedef result& reference; ///< Reference to iteration values.
-    typedef std::ptrdiff_t difference_type; ///< Iterator difference.
+    typedef result value_type;                         ///< Values returned by iterator access.
+    typedef result* pointer;                           ///< Pointer to iteration values.
+    typedef result& reference;                         ///< Reference to iteration values.
+    typedef std::ptrdiff_t difference_type;            ///< Iterator difference.
 
     /// Default iterator; an empty result set.
     result_iterator() = default;
@@ -1442,11 +1470,11 @@ public:
     class tables
     {
     public:
-        bool next(); ///< Move to the next result in the result set.
+        bool next();                       ///< Move to the next result in the result set.
         string_type table_catalog() const; ///< Fetch table catalog.
-        string_type table_schema() const; ///< Fetch table schema.
-        string_type table_name() const; ///< Fetch table name.
-        string_type table_type() const; ///< Fetch table type.
+        string_type table_schema() const;  ///< Fetch table schema.
+        string_type table_name() const;    ///< Fetch table name.
+        string_type table_type() const;    ///< Fetch table type.
         string_type table_remarks() const; ///< Fetch table remarks.
 
     private:
@@ -1459,23 +1487,23 @@ public:
     class columns
     {
     public:
-        bool next(); ///< Move to the next result in the result set.
-        string_type table_catalog() const; ///< Fetch table catalog.
-        string_type table_schema() const; ///< Fetch table schema.
-        string_type table_name() const; ///< Fetch table name.
-        string_type column_name() const; ///< Fetch column name.
-        short data_type() const; ///< Fetch column data type.
-        string_type type_name() const; ///< Fetch column type name.
-        long column_size() const; ///< Fetch column size.
-        long buffer_length() const; ///< Fetch buffer length.
-        short decimal_digits() const; ///< Fetch decimal digits.
+        bool next();                           ///< Move to the next result in the result set.
+        string_type table_catalog() const;     ///< Fetch table catalog.
+        string_type table_schema() const;      ///< Fetch table schema.
+        string_type table_name() const;        ///< Fetch table name.
+        string_type column_name() const;       ///< Fetch column name.
+        short data_type() const;               ///< Fetch column data type.
+        string_type type_name() const;         ///< Fetch column type name.
+        long column_size() const;              ///< Fetch column size.
+        long buffer_length() const;            ///< Fetch buffer length.
+        short decimal_digits() const;          ///< Fetch decimal digits.
         short numeric_precision_radix() const; ///< Fetch numeric precission.
-        short nullable() const; ///< True iff column is nullable.
-        string_type remarks() const; ///< Fetch column remarks.
-        string_type column_default() const; ///< Fetch column's default.
-        short sql_data_type() const; ///< Fetch column's SQL data type.
-        short sql_datetime_subtype() const; ///< Fetch datetime subtype of column.
-        long char_octet_length() const; ///< Fetch char octet length.
+        short nullable() const;                ///< True iff column is nullable.
+        string_type remarks() const;           ///< Fetch column remarks.
+        string_type column_default() const;    ///< Fetch column's default.
+        short sql_data_type() const;           ///< Fetch column's SQL data type.
+        short sql_datetime_subtype() const;    ///< Fetch datetime subtype of column.
+        long char_octet_length() const;        ///< Fetch char octet length.
 
         /// \brief Ordinal position of the column in the table.
         /// The first column in the table is number 1.
@@ -1499,11 +1527,11 @@ public:
     class primary_keys
     {
     public:
-        bool next(); ///< Move to the next result in the result set.
+        bool next();                       ///< Move to the next result in the result set.
         string_type table_catalog() const; ///< Fetch table catalog.
-        string_type table_schema() const; ///< Fetch table schema.
-        string_type table_name() const; ///< Fetch table name.
-        string_type column_name() const; ///< Fetch column name.
+        string_type table_schema() const;  ///< Fetch table schema.
+        string_type table_name() const;    ///< Fetch table name.
+        string_type column_name() const;   ///< Fetch column name.
 
         /// \brief Column sequence number in the key (starting with 1).
         /// Returns valye of KEY_SEQ column in result set returned by SQLPrimaryKeys.
@@ -1524,13 +1552,13 @@ public:
     class table_privileges
     {
     public:
-        bool next(); ///< Move to the next result in the result set
+        bool next();                       ///< Move to the next result in the result set
         string_type table_catalog() const; ///< Fetch table catalog.
-        string_type table_schema() const; ///< Fetch table schema.
-        string_type table_name() const; ///< Fetch table name.
-        string_type grantor() const; ///< Fetch name of user who granted the privilege.
-        string_type grantee() const; ///< Fetch name of user whom the privilege was granted.
-        string_type privilege() const; ///< Fetch the table privilege.
+        string_type table_schema() const;  ///< Fetch table schema.
+        string_type table_name() const;    ///< Fetch table name.
+        string_type grantor() const;       ///< Fetch name of user who granted the privilege.
+        string_type grantee() const;       ///< Fetch name of user whom the privilege was granted.
+        string_type privilege() const;     ///< Fetch the table privilege.
         /// Fetch indicator whether the grantee is permitted to grant the privilege to other users.
         string_type is_grantable() const;
 
@@ -1565,7 +1593,8 @@ public:
     /// result set ordered by TABLE_CAT, TABLE_SCHEM, TABLE_NAME, PRIVILEGE, and GRANTEE.
     ///
     /// \param catalog The table catalog. It cannot contain a string search pattern.
-    /// \param schema String search pattern for schema names, treated as the Pattern Value Arguments.
+    /// \param schema String search pattern for schema names, treated as the Pattern Value
+    /// Arguments.
     /// \param table String search pattern for table names, treated as the Pattern Value Arguments.
     ///
     /// \note Due to the fact catalog cannot is not the Pattern Value Argument,
@@ -1643,10 +1672,10 @@ struct driver
     struct attribute
     {
         nanodbc::string_type keyword; ///< Driver keyword attribute.
-        nanodbc::string_type value; ///< Driver attribute value.
+        nanodbc::string_type value;   ///< Driver attribute value.
     };
 
-    nanodbc::string_type name; ///< Driver name.
+    nanodbc::string_type name;       ///< Driver name.
     std::list<attribute> attributes; ///< List of driver attributes.
 };
 

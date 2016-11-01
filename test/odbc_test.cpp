@@ -20,112 +20,122 @@ struct odbc_fixture : public base_test_fixture
 };
 }
 
-TEST_CASE_METHOD(odbc_fixture, "driver_test", "[odbc][driver]")
+TEST_CASE_METHOD(odbc_fixture, "test_driver", "[odbc][driver]")
 {
-    driver_test();
+    test_driver();
 }
 
-TEST_CASE_METHOD(odbc_fixture, "blob_test", "[odbc][blob]")
+TEST_CASE_METHOD(odbc_fixture, "test_blob", "[odbc][blob]")
 {
-    blob_test();
+    test_blob();
 }
 
-TEST_CASE_METHOD(odbc_fixture, "catalog_list_catalogs_test", "[odbc][catalog][catalogs]")
+TEST_CASE_METHOD(odbc_fixture, "test_catalog_list_catalogs", "[odbc][catalog][catalogs]")
 {
-    catalog_list_catalogs_test();
+    test_catalog_list_catalogs();
 }
 
-TEST_CASE_METHOD(odbc_fixture, "catalog_list_schemas_test", "[odbc][catalog][schemas]")
+TEST_CASE_METHOD(odbc_fixture, "test_catalog_list_schemas", "[odbc][catalog][schemas]")
 {
-    catalog_list_schemas_test();
+    test_catalog_list_schemas();
 }
 
-TEST_CASE_METHOD(odbc_fixture, "catalog_columns_test", "[odbc][catalog][columns]")
+TEST_CASE_METHOD(odbc_fixture, "test_catalog_columns", "[odbc][catalog][columns]")
 {
-    catalog_columns_test();
+    test_catalog_columns();
 }
 
-TEST_CASE_METHOD(odbc_fixture, "catalog_primary_keys_test", "[odbc][catalog][primary_keys]")
+TEST_CASE_METHOD(odbc_fixture, "test_catalog_primary_keys", "[odbc][catalog][primary_keys]")
 {
-    catalog_primary_keys_test();
+    test_catalog_primary_keys();
 }
 
-TEST_CASE_METHOD(odbc_fixture, "catalog_tables_test", "[odbc][catalog][tables]")
+TEST_CASE_METHOD(odbc_fixture, "test_catalog_tables", "[odbc][catalog][tables]")
 {
-    catalog_tables_test();
+    test_catalog_tables();
 }
 
-TEST_CASE_METHOD(odbc_fixture, "dbms_info_test", "[odbc][dmbs][metadata][info]")
+TEST_CASE_METHOD(odbc_fixture, "test_dbms_info", "[odbc][dmbs][metadata][info]")
 {
-    dbms_info_test();
+    test_dbms_info();
 }
 
-TEST_CASE_METHOD(odbc_fixture, "decimal_conversion_test", "[odbc][decimal][conversion]")
+TEST_CASE_METHOD(odbc_fixture, "test_get_info", "[odbc][dmbs][metadata][info]")
 {
-    decimal_conversion_test();
+    test_get_info();
 }
 
-TEST_CASE_METHOD(odbc_fixture, "exception_test", "[odbc][exception]")
+TEST_CASE_METHOD(odbc_fixture, "test_decimal_conversion", "[odbc][decimal][conversion]")
 {
-    exception_test();
+    test_decimal_conversion();
 }
 
-TEST_CASE_METHOD(odbc_fixture, "execute_multiple_transaction_test", "[odbc][execute][transaction]")
+TEST_CASE_METHOD(odbc_fixture, "test_exception", "[odbc][exception]")
 {
-    execute_multiple_transaction_test();
+    test_exception();
 }
 
-TEST_CASE_METHOD(odbc_fixture, "execute_multiple_test", "[odbc][execute]")
+TEST_CASE_METHOD(odbc_fixture, "test_execute_multiple_transaction", "[odbc][execute][transaction]")
 {
-    execute_multiple_test();
+    test_execute_multiple_transaction();
 }
 
-TEST_CASE_METHOD(odbc_fixture, "integral_test", "[odbc][integral]")
+TEST_CASE_METHOD(odbc_fixture, "test_execute_multiple", "[odbc][execute]")
 {
-    integral_test<odbc_fixture>();
+    test_execute_multiple();
 }
 
-TEST_CASE_METHOD(odbc_fixture, "move_test", "[odbc][move]")
+TEST_CASE_METHOD(odbc_fixture, "test_integral", "[odbc][integral]")
 {
-    move_test();
+    test_integral<odbc_fixture>();
 }
 
-TEST_CASE_METHOD(odbc_fixture, "null_test", "[odbc][null]")
+TEST_CASE_METHOD(odbc_fixture, "test_move", "[odbc][move]")
 {
-    null_test();
+    test_move();
 }
 
-TEST_CASE_METHOD(odbc_fixture, "nullptr_nulls_test", "[odbc][null]")
+TEST_CASE_METHOD(odbc_fixture, "test_null", "[odbc][null]")
 {
-    nullptr_nulls_test();
+    test_null();
 }
 
-TEST_CASE_METHOD(odbc_fixture, "result_iterator_test", "[odbc][iterator]")
+TEST_CASE_METHOD(odbc_fixture, "test_nullptr_nulls", "[odbc][null]")
 {
-    result_iterator_test();
+    test_nullptr_nulls();
 }
 
-TEST_CASE_METHOD(odbc_fixture, "simple_test", "[odbc]")
+TEST_CASE_METHOD(odbc_fixture, "test_result_iterator", "[odbc][iterator]")
 {
-    simple_test();
+    test_result_iterator();
 }
 
-TEST_CASE_METHOD(odbc_fixture, "string_test", "[odbc][string]")
+TEST_CASE_METHOD(odbc_fixture, "test_simple", "[odbc]")
 {
-    string_test();
+    test_simple();
 }
 
-TEST_CASE_METHOD(odbc_fixture, "transaction_test", "[odbc][transaction]")
+TEST_CASE_METHOD(odbc_fixture, "test_string", "[odbc][string]")
 {
-    transaction_test();
+    test_string();
 }
 
-TEST_CASE_METHOD(odbc_fixture, "while_not_end_iteration_test", "[odbc][looping]")
+TEST_CASE_METHOD(odbc_fixture, "test_string_vector", "[odbc][string]")
 {
-    while_not_end_iteration_test();
+    test_string_vector();
 }
 
-TEST_CASE_METHOD(odbc_fixture, "while_next_iteration_test", "[odbc][looping]")
+TEST_CASE_METHOD(odbc_fixture, "test_transaction", "[odbc][transaction]")
 {
-    while_next_iteration_test();
+    test_transaction();
+}
+
+TEST_CASE_METHOD(odbc_fixture, "test_while_not_end_iteration", "[odbc][looping]")
+{
+    test_while_not_end_iteration();
+}
+
+TEST_CASE_METHOD(odbc_fixture, "test_while_next_iteration", "[odbc][looping]")
+{
+    test_while_next_iteration();
 }

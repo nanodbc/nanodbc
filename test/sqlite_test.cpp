@@ -51,7 +51,7 @@ struct sqlite_fixture : public base_test_fixture
 // https://groups.google.com/forum/#!msg/catch-forum/7tIpgm8SvDA/1QZZESIuCQAJ
 // TODO: Uncomment as soon as the SIGSEGV issue has been fixed.
 #ifndef NANODBC_USE_UNICODE
-TEST_CASE_METHOD(sqlite_fixture, "affected_rows_test", "[sqlite][affected_rows]")
+TEST_CASE_METHOD(sqlite_fixture, "test_affected_rows", "[sqlite][affected_rows]")
 {
     nanodbc::connection conn = connect();
 
@@ -95,17 +95,36 @@ TEST_CASE_METHOD(sqlite_fixture, "affected_rows_test", "[sqlite][affected_rows]"
 }
 #endif
 
-TEST_CASE_METHOD(sqlite_fixture, "driver_test", "[sqlite][driver]")
+TEST_CASE_METHOD(sqlite_fixture, "test_driver", "[sqlite][driver]")
 {
-    driver_test();
+    test_driver();
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "blob_test", "[sqlite][blob]")
+// TODO: Investigate why these tests fail on Linux
+// See https://github.com/lexicalunit/nanodbc/pull/220#issuecomment-257029475
+#ifdef _WIN32
+TEST_CASE_METHOD(sqlite_fixture, "test_batch_insert_integral", "[sqlite][batch][integral]")
 {
-    blob_test();
+    test_batch_insert_integral();
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "catalog_list_catalogs_test", "[sqlite][catalog][catalogs]")
+TEST_CASE_METHOD(sqlite_fixture, "test_batch_insert_mixed", "[sqlite][batch]")
+{
+    test_batch_insert_mixed();
+}
+#endif // _WIN32
+
+TEST_CASE_METHOD(sqlite_fixture, "test_batch_insert_string", "[sqlite][batch][string]")
+{
+    test_batch_insert_string();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_blob", "[sqlite][blob]")
+{
+    test_blob();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_catalog_list_catalogs", "[sqlite][catalog][catalogs]")
 {
     before_catalog_test();
 
@@ -120,7 +139,7 @@ TEST_CASE_METHOD(sqlite_fixture, "catalog_list_catalogs_test", "[sqlite][catalog
     REQUIRE(names.front().empty());
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "catalog_list_schemas_test", "[sqlite][catalog][schemas]")
+TEST_CASE_METHOD(sqlite_fixture, "test_catalog_list_schemas", "[sqlite][catalog][schemas]")
 {
     before_catalog_test();
 
@@ -135,50 +154,55 @@ TEST_CASE_METHOD(sqlite_fixture, "catalog_list_schemas_test", "[sqlite][catalog]
     REQUIRE(names.front().empty());
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "catalog_columns_test", "[sqlite][catalog][columns]")
+TEST_CASE_METHOD(sqlite_fixture, "test_catalog_columns", "[sqlite][catalog][columns]")
 {
     before_catalog_test();
-    catalog_columns_test();
+    test_catalog_columns();
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "catalog_primary_keys_test", "[sqlite][catalog][primary_keys]")
+TEST_CASE_METHOD(sqlite_fixture, "test_catalog_primary_keys", "[sqlite][catalog][primary_keys]")
 {
     before_catalog_test();
-    catalog_primary_keys_test();
+    test_catalog_primary_keys();
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "catalog_tables_test", "[sqlite][catalog][tables]")
+TEST_CASE_METHOD(sqlite_fixture, "test_catalog_tables", "[sqlite][catalog][tables]")
 {
     before_catalog_test();
-    catalog_tables_test();
+    test_catalog_tables();
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "catalog_table_privileges_test", "[sqlite][catalog][tables]")
+TEST_CASE_METHOD(sqlite_fixture, "test_catalog_table_privileges", "[sqlite][catalog][tables]")
 {
     before_catalog_test();
-    catalog_table_privileges_test();
+    test_catalog_table_privileges();
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "column_descriptor_test", "[sqlite][columns]")
+TEST_CASE_METHOD(sqlite_fixture, "test_column_descriptor", "[sqlite][columns]")
 {
-    column_descriptor_test();
+    test_column_descriptor();
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "date_test", "[sqlite][date]")
+TEST_CASE_METHOD(sqlite_fixture, "test_date", "[sqlite][date]")
 {
-    date_test();
+    test_date();
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "dbms_info_test", "[sqlite][dmbs][metadata][info]")
+TEST_CASE_METHOD(sqlite_fixture, "test_dbms_info", "[sqlite][dmbs][metadata][info]")
 {
-    dbms_info_test();
+    test_dbms_info();
 
     // Additional SQLite-specific checks
     nanodbc::connection connection = connect();
     REQUIRE(connection.dbms_name() == NANODBC_TEXT("SQLite"));
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "decimal_conversion_test", "[sqlite][decimal][conversion]")
+TEST_CASE_METHOD(sqlite_fixture, "test_get_info", "[sqlite][dmbs][metadata][info]")
+{
+    test_get_info();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_decimal_conversion", "[sqlite][decimal][conversion]")
 {
     // SQLite ODBC driver requires dedicated test.
     // The driver converts SQL DECIMAL value to C float value
@@ -188,13 +212,13 @@ TEST_CASE_METHOD(sqlite_fixture, "decimal_conversion_test", "[sqlite][decimal][c
     nanodbc::result results;
 
     create_table(
-        connection, NANODBC_TEXT("decimal_conversion_test"), NANODBC_TEXT("(d decimal(9, 3))"));
-    execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (12345.987);"));
-    execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (5.6);"));
-    execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (1);"));
-    execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (-1.333);"));
+        connection, NANODBC_TEXT("test_decimal_conversion"), NANODBC_TEXT("(d decimal(9, 3))"));
+    execute(connection, NANODBC_TEXT("insert into test_decimal_conversion values (12345.987);"));
+    execute(connection, NANODBC_TEXT("insert into test_decimal_conversion values (5.6);"));
+    execute(connection, NANODBC_TEXT("insert into test_decimal_conversion values (1);"));
+    execute(connection, NANODBC_TEXT("insert into test_decimal_conversion values (-1.333);"));
     results =
-        execute(connection, NANODBC_TEXT("select * from decimal_conversion_test order by 1 desc;"));
+        execute(connection, NANODBC_TEXT("select * from test_decimal_conversion order by 1 desc;"));
 
     REQUIRE(results.next());
     REQUIRE(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("12345.987"));
@@ -209,42 +233,42 @@ TEST_CASE_METHOD(sqlite_fixture, "decimal_conversion_test", "[sqlite][decimal][c
     REQUIRE(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("-1.333"));
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "exception_test", "[sqlite][exception]")
+TEST_CASE_METHOD(sqlite_fixture, "test_exception", "[sqlite][exception]")
 {
-    exception_test();
+    test_exception();
 }
 
 TEST_CASE_METHOD(
     sqlite_fixture,
-    "execute_multiple_transaction_test",
+    "test_execute_multiple_transaction",
     "[sqlite][execute][transaction]")
 {
-    execute_multiple_transaction_test();
+    test_execute_multiple_transaction();
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "execute_multiple_test", "[sqlite][execute]")
+TEST_CASE_METHOD(sqlite_fixture, "test_execute_multiple", "[sqlite][execute]")
 {
-    execute_multiple_test();
+    test_execute_multiple();
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "integral_test", "[sqlite][integral]")
+TEST_CASE_METHOD(sqlite_fixture, "test_integral", "[sqlite][integral]")
 {
-    integral_test<sqlite_fixture>();
+    test_integral<sqlite_fixture>();
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "integral_boundary_test", "[sqlite][integral]")
+TEST_CASE_METHOD(sqlite_fixture, "test_integral_boundary", "[sqlite][integral]")
 {
     nanodbc::connection connection = connect();
-    drop_table(connection, NANODBC_TEXT("integral_boundary_test"));
+    drop_table(connection, NANODBC_TEXT("test_integral_boundary"));
 
     // SQLite3 uses single storage class INTEGER for all integral SQL types
     execute(
         connection,
         NANODBC_TEXT(
-            "create table integral_boundary_test(i1 integer,i2 integer,i4 integer,i8 integer);"));
+            "create table test_integral_boundary(i1 integer,i2 integer,i4 integer,i8 integer);"));
 
     auto const sql =
-        NANODBC_TEXT("insert into integral_boundary_test(i1,i2,i4,i8) values (?,?,?,?);");
+        NANODBC_TEXT("insert into test_integral_boundary(i1,i2,i4,i8) values (?,?,?,?);");
 
     std::int16_t const i1min = std::numeric_limits<std::int8_t>::min();
     auto const i2min = std::numeric_limits<std::int16_t>::min();
@@ -282,7 +306,7 @@ TEST_CASE_METHOD(sqlite_fixture, "integral_boundary_test", "[sqlite][integral]")
     // query
     nanodbc::result result = execute(
         connection,
-        NANODBC_TEXT("select i1,i2,i4,i8 from integral_boundary_test order by i1 asc;"));
+        NANODBC_TEXT("select i1,i2,i4,i8 from test_integral_boundary order by i1 asc;"));
     // min
     REQUIRE(result.next());
     // All of string converted values are incorrect
@@ -304,40 +328,40 @@ TEST_CASE_METHOD(sqlite_fixture, "integral_boundary_test", "[sqlite][integral]")
     REQUIRE(!result.next());
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "integral_to_string_conversion_test", "[sqlite][integral]")
+TEST_CASE_METHOD(sqlite_fixture, "test_integral_to_string_conversion", "[sqlite][integral]")
 {
     // TODO: Move to common tests
     nanodbc::connection connection = connect();
     create_table(
         connection,
-        NANODBC_TEXT("integral_to_string_conversion_test"),
+        NANODBC_TEXT("test_integral_to_string_conversion"),
         NANODBC_TEXT("(i int, n int)"));
     execute(
-        connection, NANODBC_TEXT("insert into integral_to_string_conversion_test values (1, 0);"));
+        connection, NANODBC_TEXT("insert into test_integral_to_string_conversion values (1, 0);"));
     execute(
         connection,
-        NANODBC_TEXT("insert into integral_to_string_conversion_test values (2, 255);"));
+        NANODBC_TEXT("insert into test_integral_to_string_conversion values (2, 255);"));
     execute(
         connection,
-        NANODBC_TEXT("insert into integral_to_string_conversion_test values (3, -128);"));
+        NANODBC_TEXT("insert into test_integral_to_string_conversion values (3, -128);"));
     execute(
         connection,
-        NANODBC_TEXT("insert into integral_to_string_conversion_test values (4, 127);"));
+        NANODBC_TEXT("insert into test_integral_to_string_conversion values (4, 127);"));
     execute(
         connection,
-        NANODBC_TEXT("insert into integral_to_string_conversion_test values (5, -32768);"));
+        NANODBC_TEXT("insert into test_integral_to_string_conversion values (5, -32768);"));
     execute(
         connection,
-        NANODBC_TEXT("insert into integral_to_string_conversion_test values (6, 32767);"));
+        NANODBC_TEXT("insert into test_integral_to_string_conversion values (6, 32767);"));
     execute(
         connection,
-        NANODBC_TEXT("insert into integral_to_string_conversion_test values (7, -2147483648);"));
+        NANODBC_TEXT("insert into test_integral_to_string_conversion values (7, -2147483648);"));
     execute(
         connection,
-        NANODBC_TEXT("insert into integral_to_string_conversion_test values (8, 2147483647);"));
+        NANODBC_TEXT("insert into test_integral_to_string_conversion values (8, 2147483647);"));
     auto results = execute(
         connection,
-        NANODBC_TEXT("select * from integral_to_string_conversion_test order by i asc;"));
+        NANODBC_TEXT("select * from test_integral_to_string_conversion order by i asc;"));
 
     REQUIRE(results.next());
     REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("0"));
@@ -360,52 +384,57 @@ TEST_CASE_METHOD(sqlite_fixture, "integral_to_string_conversion_test", "[sqlite]
     REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("2147483647"));
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "move_test", "[sqlite][move]")
+TEST_CASE_METHOD(sqlite_fixture, "test_move", "[sqlite][move]")
 {
-    move_test();
+    test_move();
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "null_test", "[sqlite][null]")
+TEST_CASE_METHOD(sqlite_fixture, "test_null", "[sqlite][null]")
 {
-    null_test();
+    test_null();
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "nullptr_nulls_test", "[sqlite][null]")
+TEST_CASE_METHOD(sqlite_fixture, "test_nullptr_nulls", "[sqlite][null]")
 {
-    nullptr_nulls_test();
+    test_nullptr_nulls();
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "result_iterator_test", "[sqlite][iterator]")
+TEST_CASE_METHOD(sqlite_fixture, "test_result_iterator", "[sqlite][iterator]")
 {
-    result_iterator_test();
+    test_result_iterator();
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "simple_test", "[sqlite]")
+TEST_CASE_METHOD(sqlite_fixture, "test_simple", "[sqlite]")
 {
-    simple_test();
+    test_simple();
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "string_test", "[sqlite][string]")
+TEST_CASE_METHOD(sqlite_fixture, "test_string", "[sqlite][string]")
 {
-    string_test();
+    test_string();
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "time_test", "[sqlite][time]")
+TEST_CASE_METHOD(sqlite_fixture, "test_string_vector", "[sqlite][string]")
 {
-    time_test();
+    test_string_vector();
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "transaction_test", "[sqlite][transaction]")
+TEST_CASE_METHOD(sqlite_fixture, "test_time", "[sqlite][time]")
 {
-    transaction_test();
+    test_time();
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "while_not_end_iteration_test", "[sqlite][looping]")
+TEST_CASE_METHOD(sqlite_fixture, "test_transaction", "[sqlite][transaction]")
 {
-    while_not_end_iteration_test();
+    test_transaction();
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "while_next_iteration_test", "[sqlite][looping]")
+TEST_CASE_METHOD(sqlite_fixture, "test_while_not_end_iteration", "[sqlite][looping]")
 {
-    while_next_iteration_test();
+    test_while_not_end_iteration();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_while_next_iteration", "[sqlite][looping]")
+{
+    test_while_next_iteration();
 }

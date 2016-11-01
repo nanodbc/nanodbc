@@ -20,18 +20,18 @@ struct mssql_fixture : public base_test_fixture
 };
 }
 
-TEST_CASE_METHOD(mssql_fixture, "driver_test", "[mssql][driver]")
+TEST_CASE_METHOD(mssql_fixture, "test_driver", "[mssql][driver]")
 {
-    driver_test();
+    test_driver();
 }
 
-TEST_CASE_METHOD(mssql_fixture, "affected_rows_test", "[mssql][affected_rows]")
+TEST_CASE_METHOD(mssql_fixture, "test_affected_rows", "[mssql][affected_rows]")
 {
     // Skip on SQL Server 2008, see details at
     // http://help.appveyor.com/discussions/problems/4704-database-cannot-be-autostarted-during-server-shutdown-or-startup
     if (get_env("DB") == NANODBC_TEXT("MSSQL2008"))
     {
-        WARN("affected_rows_test skipped on AppVeyor with SQL Server 2008");
+        WARN("test_affected_rows skipped on AppVeyor with SQL Server 2008");
         return;
     }
 
@@ -87,18 +87,33 @@ TEST_CASE_METHOD(mssql_fixture, "affected_rows_test", "[mssql][affected_rows]")
     }
 }
 
-TEST_CASE_METHOD(mssql_fixture, "blob_test", "[mssql][blob][binary][varbinary]")
+TEST_CASE_METHOD(mssql_fixture, "test_batch_insert_integral", "[mssql][batch][integral]")
+{
+    test_batch_insert_integral();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_batch_insert_string", "[mssql][batch][string]")
+{
+    test_batch_insert_string();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_batch_insert_mixed", "[mssql][batch]")
+{
+    test_batch_insert_mixed();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_blob", "[mssql][blob][binary][varbinary]")
 {
     nanodbc::connection connection = connect();
     // Test data size less than the default size of the internal buffer (1024)
     {
-        create_table(connection, NANODBC_TEXT("blob_test"), NANODBC_TEXT("(data varbinary(max))"));
+        create_table(connection, NANODBC_TEXT("test_blob"), NANODBC_TEXT("(data varbinary(max))"));
         execute(
             connection,
-            NANODBC_TEXT("insert into blob_test values (CONVERT(varbinary(max), "
+            NANODBC_TEXT("insert into test_blob values (CONVERT(varbinary(max), "
                          "'0x010100000000000000000059400000000000005940', 1));"));
         nanodbc::result results =
-            nanodbc::execute(connection, NANODBC_TEXT("select data from blob_test;"));
+            nanodbc::execute(connection, NANODBC_TEXT("select data from test_blob;"));
         REQUIRE(results.next());
 
         auto const blob = results.get<std::vector<std::uint8_t>>(0);
@@ -109,10 +124,10 @@ TEST_CASE_METHOD(mssql_fixture, "blob_test", "[mssql][blob][binary][varbinary]")
     // Test data size greater than, but not multiple of, the default size of the internal buffer
     // (1024)
     {
-        create_table(connection, NANODBC_TEXT("blob_test"), NANODBC_TEXT("(data varbinary(max))"));
-        execute(connection, NANODBC_TEXT("insert into blob_test values (CRYPT_GEN_RANDOM(1579));"));
+        create_table(connection, NANODBC_TEXT("test_blob"), NANODBC_TEXT("(data varbinary(max))"));
+        execute(connection, NANODBC_TEXT("insert into test_blob values (CRYPT_GEN_RANDOM(1579));"));
         nanodbc::result results =
-            nanodbc::execute(connection, NANODBC_TEXT("select data from blob_test;"));
+            nanodbc::execute(connection, NANODBC_TEXT("select data from test_blob;"));
         REQUIRE(results.next());
         REQUIRE(results.get<std::vector<std::uint8_t>>(0).size() == 1579);
     }
@@ -120,7 +135,7 @@ TEST_CASE_METHOD(mssql_fixture, "blob_test", "[mssql][blob][binary][varbinary]")
 
 TEST_CASE_METHOD(
     mssql_fixture,
-    "blob_test_with_varchar",
+    "test_blob_with_varchar",
     "[mssql][blob][binary][varbinary][varchar]")
 {
     nanodbc::string_type s = NANODBC_TEXT(
@@ -156,21 +171,21 @@ TEST_CASE_METHOD(
 
     nanodbc::connection connection = connect();
     create_table(
-        connection, NANODBC_TEXT("blob_test_with_varchar"), NANODBC_TEXT("(data varbinary(max))"));
+        connection, NANODBC_TEXT("test_blob_with_varchar"), NANODBC_TEXT("(data varbinary(max))"));
     execute(
         connection,
-        NANODBC_TEXT("insert into blob_test_with_varchar values (CONVERT(varbinary(max), '") + s +
+        NANODBC_TEXT("insert into test_blob_with_varchar values (CONVERT(varbinary(max), '") + s +
             NANODBC_TEXT("'));"));
 
     nanodbc::result results =
-        nanodbc::execute(connection, NANODBC_TEXT("select data from blob_test_with_varchar;"));
+        nanodbc::execute(connection, NANODBC_TEXT("select data from test_blob_with_varchar;"));
     REQUIRE(results.next());
     REQUIRE(results.get<nanodbc::string_type>(0) == s);
 }
 
 TEST_CASE_METHOD(
     mssql_fixture,
-    "block_cursor_with_nvarchar_test",
+    "test_block_cursor_with_nvarchar",
     "[mssql][nvarchar][block][rowset]")
 {
     nanodbc::connection conn = connect();
@@ -179,18 +194,18 @@ TEST_CASE_METHOD(
     std::size_t const rowset_size = 2;
 
     create_table(
-        conn, NANODBC_TEXT("variable_string_test"), NANODBC_TEXT("(i int, s nvarchar(256))"));
+        conn, NANODBC_TEXT("test_variable_string"), NANODBC_TEXT("(i int, s nvarchar(256))"));
     execute(
         conn,
         NANODBC_TEXT(
-            "insert into variable_string_test (i, s) values (1, 'this is a shorter text');"));
+            "insert into test_variable_string (i, s) values (1, 'this is a shorter text');"));
     execute(
         conn,
         NANODBC_TEXT(
-            "insert into variable_string_test (i, s) values (2, 'this is a longer text of the two "
+            "insert into test_variable_string (i, s) values (2, 'this is a longer text of the two "
             "texts in the table');"));
     nanodbc::result results = nanodbc::execute(
-        conn, NANODBC_TEXT("select i, s from variable_string_test order by i;"), rowset_size);
+        conn, NANODBC_TEXT("select i, s from test_variable_string order by i;"), rowset_size);
     REQUIRE(results.next());
     REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("this is a shorter text"));
     REQUIRE(results.next());
@@ -202,22 +217,22 @@ TEST_CASE_METHOD(
 
 TEST_CASE_METHOD(
     mssql_fixture,
-    "block_cursor_with_nvarchar_and_first_row_null_test",
+    "test_block_cursor_with_nvarchar_and_first_row_null",
     "[mssql][nvarchar][block][rowset]")
 {
     nanodbc::connection conn = connect();
     std::size_t const rowset_size = 2;
 
     create_table(
-        conn, NANODBC_TEXT("variable_string_test"), NANODBC_TEXT("(i int, s nvarchar(256))"));
-    execute(conn, NANODBC_TEXT("insert into variable_string_test (i, s) values (1, NULL);"));
+        conn, NANODBC_TEXT("test_variable_string"), NANODBC_TEXT("(i int, s nvarchar(256))"));
+    execute(conn, NANODBC_TEXT("insert into test_variable_string (i, s) values (1, NULL);"));
     execute(
         conn,
         NANODBC_TEXT(
-            "insert into variable_string_test (i, s) values (2, 'this is a longer text of the two "
+            "insert into test_variable_string (i, s) values (2, 'this is a longer text of the two "
             "texts in the table');"));
     nanodbc::result results = nanodbc::execute(
-        conn, NANODBC_TEXT("select i, s from variable_string_test order by i;"), rowset_size);
+        conn, NANODBC_TEXT("select i, s from test_variable_string order by i;"), rowset_size);
     REQUIRE(results.next());
     REQUIRE(results.is_null(1));
     REQUIRE(
@@ -232,21 +247,21 @@ TEST_CASE_METHOD(
 
 TEST_CASE_METHOD(
     mssql_fixture,
-    "block_cursor_with_nvarchar_and_second_row_null_test",
+    "test_block_cursor_with_nvarchar_and_second_row_null",
     "[mssql][nvarchar][block][rowset]")
 {
     nanodbc::connection conn = connect();
     std::size_t const rowset_size = 2;
 
     create_table(
-        conn, NANODBC_TEXT("variable_string_test"), NANODBC_TEXT("(i int, s nvarchar(256))"));
+        conn, NANODBC_TEXT("test_variable_string"), NANODBC_TEXT("(i int, s nvarchar(256))"));
     execute(
         conn,
         NANODBC_TEXT(
-            "insert into variable_string_test (i, s) values (1, 'this is a shorter text');"));
-    execute(conn, NANODBC_TEXT("insert into variable_string_test (i, s) values (2, NULL);"));
+            "insert into test_variable_string (i, s) values (1, 'this is a shorter text');"));
+    execute(conn, NANODBC_TEXT("insert into test_variable_string (i, s) values (2, NULL);"));
     nanodbc::result results = nanodbc::execute(
-        conn, NANODBC_TEXT("select i, s from variable_string_test order by i;"), rowset_size);
+        conn, NANODBC_TEXT("select i, s from test_variable_string order by i;"), rowset_size);
     REQUIRE(results.next());
     REQUIRE(!results.is_null(1));
     REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("this is a shorter text"));
@@ -257,121 +272,131 @@ TEST_CASE_METHOD(
     REQUIRE(!results.next());
 }
 
-TEST_CASE_METHOD(mssql_fixture, "catalog_list_catalogs_test", "[mssql][catalog][catalogs]")
+TEST_CASE_METHOD(mssql_fixture, "test_catalog_list_catalogs", "[mssql][catalog][catalogs]")
 {
-    catalog_list_catalogs_test();
+    test_catalog_list_catalogs();
 }
 
-TEST_CASE_METHOD(mssql_fixture, "catalog_list_schemas_test", "[mssql][catalog][schemas]")
+TEST_CASE_METHOD(mssql_fixture, "test_catalog_list_schemas", "[mssql][catalog][schemas]")
 {
-    catalog_list_schemas_test();
+    test_catalog_list_schemas();
 }
 
-TEST_CASE_METHOD(mssql_fixture, "catalog_columns_test", "[mssql][catalog][columns]")
+TEST_CASE_METHOD(mssql_fixture, "test_catalog_columns", "[mssql][catalog][columns]")
 {
-    catalog_columns_test();
+    test_catalog_columns();
 }
 
-TEST_CASE_METHOD(mssql_fixture, "catalog_primary_keys_test", "[mssql][catalog][primary_keys]")
+TEST_CASE_METHOD(mssql_fixture, "test_catalog_primary_keys", "[mssql][catalog][primary_keys]")
 {
-    catalog_primary_keys_test();
+    test_catalog_primary_keys();
 }
 
-TEST_CASE_METHOD(mssql_fixture, "catalog_tables_test", "[mssql][catalog][tables]")
+TEST_CASE_METHOD(mssql_fixture, "test_catalog_tables", "[mssql][catalog][tables]")
 {
-    catalog_tables_test();
+    test_catalog_tables();
 }
 
-TEST_CASE_METHOD(mssql_fixture, "catalog_table_privileges_test", "[mssql][catalog][tables]")
+TEST_CASE_METHOD(mssql_fixture, "test_catalog_table_privileges", "[mssql][catalog][tables]")
 {
-    catalog_table_privileges_test();
+    test_catalog_table_privileges();
 }
 
-TEST_CASE_METHOD(mssql_fixture, "column_descriptor_test", "[mssql][columns]")
+TEST_CASE_METHOD(mssql_fixture, "test_column_descriptor", "[mssql][columns]")
 {
-    column_descriptor_test();
+    test_column_descriptor();
 }
 
-TEST_CASE_METHOD(mssql_fixture, "dbms_info_test", "[mssql][dmbs][metadata][info]")
+TEST_CASE_METHOD(mssql_fixture, "test_dbms_info", "[mssql][dmbs][metadata][info]")
 {
-    dbms_info_test();
+    test_dbms_info();
 }
 
-TEST_CASE_METHOD(mssql_fixture, "decimal_conversion_test", "[mssql][decimal][conversion]")
+TEST_CASE_METHOD(mssql_fixture, "test_get_info", "[mssql][dmbs][metadata][info]")
 {
-    decimal_conversion_test();
+    test_get_info();
 }
 
-TEST_CASE_METHOD(mssql_fixture, "exception_test", "[mssql][exception]")
+TEST_CASE_METHOD(mssql_fixture, "test_decimal_conversion", "[mssql][decimal][conversion]")
 {
-    exception_test();
+    test_decimal_conversion();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_exception", "[mssql][exception]")
+{
+    test_exception();
 }
 
 TEST_CASE_METHOD(
     mssql_fixture,
-    "execute_multiple_transaction_test",
+    "test_execute_multiple_transaction",
     "[mssql][execute][transaction]")
 {
-    execute_multiple_transaction_test();
+    test_execute_multiple_transaction();
 }
 
-TEST_CASE_METHOD(mssql_fixture, "execute_multiple_test", "[mssql][execute]")
+TEST_CASE_METHOD(mssql_fixture, "test_execute_multiple", "[mssql][execute]")
 {
-    execute_multiple_test();
+    test_execute_multiple();
 }
 
-TEST_CASE_METHOD(mssql_fixture, "integral_test", "[mssql][integral]")
+TEST_CASE_METHOD(mssql_fixture, "test_integral", "[mssql][integral]")
 {
-    integral_test<mssql_fixture>();
+    test_integral<mssql_fixture>();
 }
 
-TEST_CASE_METHOD(mssql_fixture, "move_test", "[mssql][move]")
+TEST_CASE_METHOD(mssql_fixture, "test_move", "[mssql][move]")
 {
-    move_test();
+    test_move();
 }
 
-TEST_CASE_METHOD(mssql_fixture, "null_test", "[mssql][null]")
+TEST_CASE_METHOD(mssql_fixture, "test_null", "[mssql][null]")
 {
-    null_test();
+    test_null();
 }
 
-TEST_CASE_METHOD(mssql_fixture, "nullptr_nulls_test", "[mssql][null]")
+TEST_CASE_METHOD(mssql_fixture, "test_nullptr_nulls", "[mssql][null]")
 {
-    nullptr_nulls_test();
+    test_nullptr_nulls();
 }
 
-TEST_CASE_METHOD(mssql_fixture, "result_iterator_test", "[mssql][iterator]")
+TEST_CASE_METHOD(mssql_fixture, "test_result_iterator", "[mssql][iterator]")
 {
-    result_iterator_test();
+    test_result_iterator();
 }
 
-TEST_CASE_METHOD(mssql_fixture, "simple_test", "[mssql]")
+TEST_CASE_METHOD(mssql_fixture, "test_simple", "[mssql]")
 {
-    simple_test();
+    test_simple();
 }
 
-TEST_CASE_METHOD(mssql_fixture, "string_test", "[mssql][string]")
+TEST_CASE_METHOD(mssql_fixture, "test_string", "[mssql][string]")
 {
-    string_test();
+    test_string();
 }
 
-TEST_CASE_METHOD(mssql_fixture, "transaction_test", "[mssql][transaction]")
+TEST_CASE_METHOD(mssql_fixture, "test_string_vector", "[mssql][string]")
 {
-    transaction_test();
+    test_string_vector();
 }
 
-TEST_CASE_METHOD(mssql_fixture, "while_not_end_iteration_test", "[mssql][looping]")
+TEST_CASE_METHOD(mssql_fixture, "test_transaction", "[mssql][transaction]")
 {
-    while_not_end_iteration_test();
+    test_transaction();
 }
 
-TEST_CASE_METHOD(mssql_fixture, "while_next_iteration_test", "[mssql][looping]")
+TEST_CASE_METHOD(mssql_fixture, "test_while_not_end_iteration", "[mssql][looping]")
 {
-    while_next_iteration_test();
+    test_while_not_end_iteration();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_while_next_iteration", "[mssql][looping]")
+{
+    test_while_next_iteration();
 }
 
 #if !defined(NANODBC_DISABLE_ASYNC) && defined(WIN32)
-TEST_CASE_METHOD(mssql_fixture, "async_test", "[mssql][async]")
+TEST_CASE_METHOD(mssql_fixture, "test_async", "[mssql][async]")
 {
     HANDLE event_handle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 

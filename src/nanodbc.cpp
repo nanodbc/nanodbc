@@ -4,6 +4,15 @@
 // ASCII art banners are helpful for code editors with a minimap display.
 // Generated with http://patorjk.com/software/taag/#p=display&v=0&f=Colossal
 
+#if defined(_MSC_VER)
+#if _MSC_VER <= 1800
+// silence spurious Visual C++ warnings
+#pragma warning(disable : 4244) // warning about integer conversion issues.
+#pragma warning(disable : 4312) // warning about 64-bit portability issues.
+#endif
+#pragma warning(disable : 4996) // warning about deprecated declaration
+#endif
+
 #include "nanodbc.h"
 
 #include <algorithm>
@@ -28,13 +37,6 @@
 #include <boost/locale/encoding_utf.hpp>
 #else
 #include <codecvt>
-#endif
-
-#if defined(_MSC_VER) && _MSC_VER <= 1800
-// silence spurious Visual C++ warnings
-#pragma warning(disable : 4244) // warning about integer conversion issues.
-#pragma warning(disable : 4312) // warning about 64-bit portability issues.
-#pragma warning(disable : 4996) // warning about snprintf() deprecated.
 #endif
 
 #ifdef __APPLE__
@@ -591,6 +593,36 @@ public:
     char* pdata_;
 };
 
+// Encapsulates properties of statement parameter.
+// Parameter corresponds to parameter marker associated with a prepared SQL statement.
+struct bound_parameter
+{
+    bound_parameter() = default;
+
+    SQLUSMALLINT index_ = 0; // Zero-based index of parameter marker
+    SQLSMALLINT iotype_ = 0; // Input/Output type of parameter
+    SQLSMALLINT type_ = 0;   // SQL data type of parameter
+    SQLULEN size_ = 0;       // SQL data size of column or expression inbytes or characters
+    SQLSMALLINT scale_ = 0;  // decimal digits of column or expression
+};
+
+// Encapsulates properties of buffer with data values bound to statement parameter.
+template <typename T>
+struct bound_buffer
+{
+    bound_buffer() = default;
+    bound_buffer(T const* values, std::size_t size, std::size_t value_size = 0)
+        : values_(values)
+        , size_(size)
+        , value_size_(value_size)
+    {
+    }
+
+    T const* values_ = nullptr;  // Pointer to buffer for parameter's data
+    std::size_t size_ = 0;       // Number of values (1 or length of array)
+    std::size_t value_size_ = 0; // Size of single value (max size). Zero, if ignored.
+};
+
 // Allocates the native ODBC handles.
 inline void allocate_environment_handle(SQLHENV& env)
 {
@@ -881,81 +913,18 @@ public:
 
     void* native_env_handle() const { return env_; }
 
-    string_type dbms_name() const
+    template <class T>
+    T get_info(short info_type) const
     {
-        NANODBC_SQLCHAR name[255] = {0};
-        SQLSMALLINT length(0);
-        RETCODE rc;
-        NANODBC_CALL_RC(
-            NANODBC_FUNC(SQLGetInfo),
-            rc,
-            conn_,
-            SQL_DBMS_NAME,
-            name,
-            sizeof(name) / sizeof(NANODBC_SQLCHAR),
-            &length);
-        if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
-        return string_type(&name[0], &name[strarrlen(name)]);
+        return get_info_impl<T>(info_type);
     }
+    string_type dbms_name() const;
 
-    string_type dbms_version() const
-    {
-        NANODBC_SQLCHAR version[255] = {0};
-        SQLSMALLINT length(0);
-        RETCODE rc;
-        NANODBC_CALL_RC(
-            NANODBC_FUNC(SQLGetInfo),
-            rc,
-            conn_,
-            SQL_DBMS_VER,
-            version,
-            sizeof(version) / sizeof(NANODBC_SQLCHAR),
-            &length);
-        if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
-        return string_type(&version[0], &version[strarrlen(version)]);
-    }
+    string_type dbms_version() const;
 
-    string_type driver_name() const
-    {
-        NANODBC_SQLCHAR name[1024];
-        SQLSMALLINT length;
-        RETCODE rc;
-        NANODBC_CALL_RC(
-            NANODBC_FUNC(SQLGetInfo),
-            rc,
-            conn_,
-            SQL_DRIVER_NAME,
-            name,
-            sizeof(name) / sizeof(NANODBC_SQLCHAR),
-            &length);
-        if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
-        return string_type(&name[0], &name[strarrlen(name)]);
-    }
+    string_type driver_name() const;
 
-    string_type database_name() const
-    {
-        // FIXME: Allocate buffer of dynamic size as drivers do not agree on universal size
-        // MySQL driver limits MAX_NAME_LEN=255
-        // PostgreSQL driver MAX_INFO_STIRNG=128
-        // MFC CDatabase allocates buffer dynamically.
-        NANODBC_SQLCHAR name[255] = {0};
-        SQLSMALLINT length(0);
-        RETCODE rc;
-        NANODBC_CALL_RC(
-            NANODBC_FUNC(SQLGetInfo),
-            rc,
-            conn_,
-            SQL_DATABASE_NAME,
-            name,
-            sizeof(name) / sizeof(NANODBC_SQLCHAR),
-            &length);
-        if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
-        return string_type(&name[0], &name[strarrlen(name)]);
-    }
+    string_type database_name() const;
 
     string_type catalog_name() const
     {
@@ -989,12 +958,70 @@ public:
     void rollback(bool onoff) { rollback_ = onoff; }
 
 private:
+    template <class T>
+    T get_info_impl(short info_type) const;
+
     HENV env_;
     HDBC conn_;
     bool connected_;
     std::size_t transactions_;
     bool rollback_; // if true, this connection is marked for eventual transaction rollback
 };
+
+template <class T>
+T connection::connection_impl::get_info_impl(short info_type) const
+{
+    T value;
+    RETCODE rc;
+    NANODBC_CALL_RC(NANODBC_FUNC(SQLGetInfo), rc, conn_, info_type, &value, 0, nullptr);
+    if (!success(rc))
+        NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+    return value;
+}
+
+template <>
+string_type connection::connection_impl::get_info_impl<string_type>(short info_type) const
+{
+    NANODBC_SQLCHAR value[1024] = {0};
+    SQLSMALLINT length(0);
+    RETCODE rc;
+    NANODBC_CALL_RC(
+        NANODBC_FUNC(SQLGetInfo),
+        rc,
+        conn_,
+        info_type,
+        value,
+        sizeof(value) / sizeof(NANODBC_SQLCHAR),
+        &length);
+    if (!success(rc))
+        NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+    return string_type(&value[0], &value[strarrlen(value)]);
+}
+
+string_type connection::connection_impl::dbms_name() const
+{
+    return get_info<string_type>(SQL_DBMS_NAME);
+}
+
+string_type connection::connection_impl::dbms_version() const
+{
+    return get_info<string_type>(SQL_DBMS_VER);
+}
+
+string_type connection::connection_impl::driver_name() const
+{
+    return get_info<string_type>(SQL_DRIVER_NAME);
+}
+
+string_type connection::connection_impl::database_name() const
+{
+    return get_info<string_type>(SQL_DATABASE_NAME);
+}
+
+template string_type connection::get_info(short info_type) const;
+template unsigned short connection::get_info(short info_type) const;
+template uint32_t connection::get_info(short info_type) const;
+template uint64_t connection::get_info(short info_type) const;
 
 } // namespace nanodbc
 
@@ -1141,6 +1168,7 @@ public:
         , open_(false)
         , conn_()
         , bind_len_or_null_()
+        , string_data_()
 #if defined(NANODBC_DO_ASYNC_IMPL)
         , async_(false)
         , async_enabled_(false)
@@ -1155,6 +1183,7 @@ public:
         , open_(false)
         , conn_()
         , bind_len_or_null_()
+        , string_data_()
 #if defined(NANODBC_DO_ASYNC_IMPL)
         , async_(false)
         , async_enabled_(false)
@@ -1559,7 +1588,7 @@ public:
 
     void reset_parameters() NANODBC_NOEXCEPT { NANODBC_CALL(SQLFreeStmt, stmt_, SQL_RESET_PARAMS); }
 
-    unsigned long parameter_size(short param) const
+    unsigned long parameter_size(short param_index) const
     {
         RETCODE rc;
         SQLSMALLINT data_type;
@@ -1571,7 +1600,14 @@ public:
 #endif
 
         NANODBC_CALL_RC(
-            SQLDescribeParam, rc, stmt_, param + 1, &data_type, &parameter_size, 0, &nullable);
+            SQLDescribeParam,
+            rc,
+            stmt_,
+            param_index + 1,
+            &data_type,
+            &parameter_size,
+            0,
+            &nullable);
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
         NANODBC_ASSERT(
@@ -1603,107 +1639,119 @@ public:
 
     // initializes bind_len_or_null_ and gets information for bind
     void prepare_bind(
-        short param,
-        std::size_t elements,
+        short param_index,
+        std::size_t batch_size,
         param_direction direction,
-        SQLSMALLINT& data_type,
-        SQLSMALLINT& param_type,
-        SQLULEN& parameter_size,
-        SQLSMALLINT& scale)
+        bound_parameter& param)
     {
-        RETCODE rc;
-        SQLSMALLINT nullable;
+        NANODBC_ASSERT(param_index >= 0);
 
 #if defined(NANODBC_DO_ASYNC_IMPL)
         disable_async();
 #endif
 
+        RETCODE rc;
+        SQLSMALLINT nullable; // unused
         NANODBC_CALL_RC(
-            SQLDescribeParam, rc, stmt_, param + 1, &data_type, &parameter_size, &scale, &nullable);
+            SQLDescribeParam,
+            rc,
+            stmt_,
+            param_index + 1,
+            &param.type_,
+            &param.size_,
+            &param.scale_,
+            &nullable);
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
-        param_type = param_type_from_direction(direction);
+        param.index_ = param_index;
+        param.iotype_ = param_type_from_direction(direction);
 
-        if (!bind_len_or_null_.count(param))
-            bind_len_or_null_[param] = std::vector<null_type>();
-        std::vector<null_type>().swap(bind_len_or_null_[param]);
+        if (!bind_len_or_null_.count(param_index))
+            bind_len_or_null_[param_index] = std::vector<null_type>();
+        std::vector<null_type>().swap(bind_len_or_null_[param_index]);
 
         // ODBC weirdness: this must be at least 8 elements in size
-        const std::size_t indicator_size = elements > 8 ? elements : 8;
+        const std::size_t indicator_size = batch_size > 8 ? batch_size : 8;
+        bind_len_or_null_[param_index].reserve(indicator_size);
+        bind_len_or_null_[param_index].assign(indicator_size, SQL_NULL_DATA);
 
-        bind_len_or_null_[param].reserve(indicator_size);
-        bind_len_or_null_[param].assign(indicator_size, SQL_NULL_DATA);
+        NANODBC_ASSERT(param.index_ == param_index);
+        NANODBC_ASSERT(param.iotype_ > 0);
     }
 
     // calls actual ODBC bind parameter function
     template <class T>
-    void bind_parameter(
-        short param,
-        const T* data,
-        std::size_t, // elements
-        SQLSMALLINT data_type,
-        SQLSMALLINT param_type,
-        SQLULEN parameter_size,
-        SQLSMALLINT scale)
+    void bind_parameter(bound_parameter const& param, bound_buffer<T>& buffer)
     {
+        NANODBC_ASSERT(param.index_ >= 0);
+
+        auto const buffer_size = buffer.value_size_ > 0 ? buffer.value_size_ : param.size_;
+
         RETCODE rc;
         NANODBC_CALL_RC(
             SQLBindParameter,
             rc,
             stmt_,               // handle
-            param + 1,           // parameter number
-            param_type,          // input or output type
+            param.index_ + 1,    // parameter number
+            param.iotype_,       // input or output type
             sql_ctype<T>::value, // value type
-            data_type,           // parameter type
-            parameter_size,      // column size ignored for many types, but needed for strings
-            scale,               // decimal digits
-            (SQLPOINTER)data,    // parameter value
-            parameter_size,      // buffer length
-            bind_len_or_null_[param].data());
+            param.type_,         // parameter type
+            param.size_,         // column size ignored for many types, but needed for strings
+            param.scale_,        // decimal digits
+            (SQLPOINTER)buffer.values_, // parameter value
+            buffer_size,                // buffer length
+            bind_len_or_null_[param.index_].data());
 
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     }
 
-    // handles a single value (possibly a single string value), or multiple non-string values
     template <class T>
-    void bind(short param, const T* values, std::size_t elements, param_direction direction);
+    void bind(
+        param_direction direction,
+        short param_index,
+        T const* values,
+        std::size_t batch_size,
+        bool const* nulls = nullptr,
+        T const* null_sentry = nullptr);
 
-    // handles multiple string values
     void bind_strings(
-        short param,
-        const string_type::value_type* values,
-        std::size_t, // length
-        std::size_t elements,
-        param_direction direction)
-    {
-        bind(param, values, elements, direction);
-    }
+        param_direction direction,
+        short param_index,
+        string_type::value_type const* values,
+        std::size_t value_size,
+        std::size_t batch_size,
+        bool const* nulls = nullptr,
+        string_type::value_type const* null_sentry = nullptr);
+
+    void bind_strings(
+        param_direction direction,
+        short param_index,
+        std::vector<string_type> const& values,
+        bool const* nulls = nullptr,
+        string_type::value_type const* null_sentry = nullptr);
 
     // handles multiple null values
-    void bind_null(short param, std::size_t elements)
+    void bind_null(short param_index, std::size_t batch_size)
     {
-        SQLSMALLINT data_type;
-        SQLSMALLINT param_type;
-        SQLULEN parameter_size;
-        SQLSMALLINT scale;
-        prepare_bind(param, elements, PARAM_IN, data_type, param_type, parameter_size, scale);
+        bound_parameter param;
+        prepare_bind(param_index, batch_size, PARAM_IN, param);
 
         RETCODE rc;
         NANODBC_CALL_RC(
             SQLBindParameter,
             rc,
             stmt_,
-            param + 1,
-            param_type,
+            param.index_ + 1, // parameter number
+            param.iotype_,    // input or output typ,
             SQL_C_CHAR,
-            data_type,
-            parameter_size, // column size ignored for many types, but needed for strings
-            0,
-            (SQLPOINTER)0, // null value
-            0,             // parameter_size
-            bind_len_or_null_[param].data());
+            param.type_, // parameter type
+            param.size_, // column size ignored for many types, but needed for string,
+            0,           // decimal digits
+            nullptr,     // null value
+            0,           // buffe length
+            bind_len_or_null_[param.index_].data());
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     }
@@ -1715,31 +1763,12 @@ public:
         return lhs == rhs;
     }
 
-    // handles multiple non-string values with a null sentry
-    template <class T>
-    void bind(
-        short param,
-        const T* values,
-        std::size_t elements,
-        const bool* nulls,
-        const T* null_sentry,
-        param_direction direction);
-
-    // handles multiple string values
-    void bind_strings(
-        short param,
-        const string_type::value_type* values,
-        std::size_t length,
-        std::size_t elements,
-        const bool* nulls,
-        const string_type::value_type* null_sentry,
-        param_direction direction);
-
 private:
     HSTMT stmt_;
     bool open_;
     class connection conn_;
     std::map<short, std::vector<null_type>> bind_len_or_null_;
+    std::map<short, std::vector<string_type::value_type>> string_data_;
 
 #if defined(NANODBC_DO_ASYNC_IMPL)
     bool async_;                 // true if statement is currently in SQL_STILL_EXECUTING mode
@@ -1753,28 +1782,25 @@ private:
 // In this case, we need to pass nullptr to the final parameter of SQLBindParameter().
 template <>
 void statement::statement_impl::bind_parameter<string_type::value_type>(
-    short param,
-    const string_type::value_type* data,
-    std::size_t elements,
-    SQLSMALLINT data_type,
-    SQLSMALLINT param_type,
-    SQLULEN parameter_size,
-    SQLSMALLINT scale)
+    bound_parameter const& param,
+    bound_buffer<string_type::value_type>& buffer)
 {
+    auto const buffer_size = buffer.value_size_ > 0 ? buffer.value_size_ : param.size_;
+
     RETCODE rc;
     NANODBC_CALL_RC(
         SQLBindParameter,
         rc,
         stmt_,                                     // handle
-        param + 1,                                 // parameter number
-        param_type,                                // input or output type
+        param.index_ + 1,                          // parameter number
+        param.iotype_,                             // input or output type
         sql_ctype<string_type::value_type>::value, // value type
-        data_type,                                 // parameter type
-        parameter_size,   // column size ignored for many types, but needed for strings
-        scale,            // decimal digits
-        (SQLPOINTER)data, // parameter value
-        parameter_size,   // buffer length
-        (elements <= 1 ? nullptr : bind_len_or_null_[param].data()));
+        param.type_,                               // parameter type
+        param.size_,                // column size ignored for many types, but needed for strings
+        param.scale_,               // decimal digits
+        (SQLPOINTER)buffer.values_, // parameter value
+        buffer_size,                // buffer length
+        (buffer.size_ <= 1 ? nullptr : bind_len_or_null_[param.index_].data()));
 
     if (!success(rc))
         NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
@@ -1782,65 +1808,87 @@ void statement::statement_impl::bind_parameter<string_type::value_type>(
 
 template <class T>
 void statement::statement_impl::bind(
-    short param,
-    const T* values,
-    std::size_t elements,
-    param_direction direction)
+    param_direction direction,
+    short param_index,
+    T const* values,
+    std::size_t batch_size,
+    bool const* nulls /*= nullptr*/,
+    T const* null_sentry /*= nullptr*/)
 {
-    SQLSMALLINT data_type;
-    SQLSMALLINT param_type;
-    SQLULEN parameter_size;
-    SQLSMALLINT scale;
-    prepare_bind(param, elements, direction, data_type, param_type, parameter_size, scale);
+    bound_parameter param;
+    prepare_bind(param_index, batch_size, direction, param);
 
-    for (std::size_t i = 0; i < elements; ++i)
-        bind_len_or_null_[param][i] = parameter_size;
+    if (nulls || null_sentry)
+    {
+        for (std::size_t i = 0; i < batch_size; ++i)
+            if ((null_sentry && !equals(values[i], *null_sentry)) || (nulls && !nulls[i]) || !nulls)
+                bind_len_or_null_[param_index][i] = param.size_;
+    }
+    else
+    {
+        for (std::size_t i = 0; i < batch_size; ++i)
+            bind_len_or_null_[param_index][i] = param.size_;
+    }
 
-    bind_parameter(param, values, elements, data_type, param_type, parameter_size, scale);
-}
-
-template <class T>
-void statement::statement_impl::bind(
-    short param,
-    const T* values,
-    std::size_t elements,
-    const bool* nulls,
-    const T* null_sentry,
-    param_direction direction)
-{
-    SQLSMALLINT data_type;
-    SQLSMALLINT param_type;
-    SQLULEN parameter_size;
-    SQLSMALLINT scale;
-    prepare_bind(param, elements, direction, data_type, param_type, parameter_size, scale);
-
-    for (std::size_t i = 0; i < elements; ++i)
-        if ((null_sentry && !equals(values[i], *null_sentry)) || (nulls && !nulls[i]) || !nulls)
-            bind_len_or_null_[param][i] = parameter_size;
-
-    bind_parameter(param, values, elements, data_type, param_type, parameter_size, scale);
+    bound_buffer<T> buffer(values, batch_size);
+    bind_parameter(param, buffer);
 }
 
 void statement::statement_impl::bind_strings(
-    short param,
-    const string_type::value_type* values,
-    std::size_t length,
-    std::size_t elements,
-    const bool* nulls,
-    const string_type::value_type* null_sentry,
-    param_direction direction)
+    param_direction direction,
+    short param_index,
+    std::vector<string_type> const& values,
+    bool const* nulls /*= nullptr*/,
+    string_type::value_type const* null_sentry /*= nullptr*/)
 {
-    SQLSMALLINT data_type;
-    SQLSMALLINT param_type;
-    SQLULEN parameter_size;
-    SQLSMALLINT scale;
-    prepare_bind(param, elements, direction, data_type, param_type, parameter_size, scale);
+
+    size_t const batch_size = values.size();
+    bound_parameter param;
+    prepare_bind(param_index, batch_size, direction, param);
+
+    size_t max_length = 0;
+    for (std::size_t i = 0; i < batch_size; ++i)
+    {
+        max_length = std::max(values[i].length(), max_length);
+    }
+    // add space for null terminator
+    ++max_length;
+
+    string_data_[param_index] = std::vector<string_type::value_type>(batch_size * max_length, 0);
+    for (std::size_t i = 0; i < batch_size; ++i)
+    {
+        std::copy(
+            values[i].begin(),
+            values[i].end(),
+            string_data_[param_index].data() + (i * max_length));
+    }
+    bind_strings(
+        direction,
+        param_index,
+        string_data_[param_index].data(),
+        max_length,
+        batch_size,
+        nulls,
+        null_sentry);
+}
+
+void statement::statement_impl::bind_strings(
+    param_direction direction,
+    short param_index,
+    string_type::value_type const* values,
+    std::size_t value_size,
+    std::size_t batch_size,
+    bool const* nulls /*= nullptr*/,
+    string_type::value_type const* null_sentry /*= nullptr*/)
+{
+    bound_parameter param;
+    prepare_bind(param_index, batch_size, direction, param);
 
     if (null_sentry)
     {
-        for (std::size_t i = 0; i < elements; ++i)
+        for (std::size_t i = 0; i < batch_size; ++i)
         {
-            const string_type s_lhs(values + i * length, values + (i + 1) * length);
+            const string_type s_lhs(values + i * value_size, values + (i + 1) * value_size);
             const string_type s_rhs(null_sentry);
 #if NANODBC_USE_UNICODE
             std::string narrow_lhs;
@@ -1848,25 +1896,34 @@ void statement::statement_impl::bind_strings(
             convert(s_lhs, narrow_lhs);
             std::string narrow_rhs;
             narrow_rhs.reserve(s_rhs.size());
-            convert(s_rhs, narrow_lhs);
-            if (std::strncmp(narrow_lhs.c_str(), narrow_rhs.c_str(), length))
-                bind_len_or_null_[param][i] = parameter_size;
+            convert(s_rhs, narrow_rhs);
+            if (std::strncmp(narrow_lhs.c_str(), narrow_rhs.c_str(), value_size) != 0)
+                bind_len_or_null_[param_index][i] = SQL_NTS;
 #else
-            if (std::strncmp(s_lhs.c_str(), s_rhs.c_str(), length))
-                bind_len_or_null_[param][i] = parameter_size;
+            if (std::strncmp(s_lhs.c_str(), s_rhs.c_str(), value_size) != 0)
+                bind_len_or_null_[param_index][i] = SQL_NTS;
 #endif
         }
     }
     else if (nulls)
     {
-        for (std::size_t i = 0; i < elements; ++i)
+        for (std::size_t i = 0; i < batch_size; ++i)
         {
             if (!nulls[i])
-                bind_len_or_null_[param][i] = SQL_NTS; // null terminated
+                bind_len_or_null_[param_index][i] = SQL_NTS; // null terminated
+        }
+    }
+    else
+    {
+        for (std::size_t i = 0; i < batch_size; ++i)
+        {
+            bind_len_or_null_[param_index][i] = SQL_NTS;
         }
     }
 
-    bind_parameter(param, values, elements, data_type, param_type, parameter_size, scale);
+    auto const buffer_length = value_size * sizeof(string_type::value_type);
+    bound_buffer<string_type::value_type> buffer(values, batch_size, buffer_length);
+    bind_parameter(param, buffer);
 }
 
 template <>
@@ -3208,6 +3265,12 @@ std::size_t connection::transactions() const
     return impl_->transactions();
 }
 
+template <class T>
+T connection::get_info(short info_type) const
+{
+    return impl_->get_info<T>(info_type);
+}
+
 void* connection::native_dbc_handle() const
 {
     return impl_->native_dbc_handle();
@@ -3567,7 +3630,7 @@ unsigned long statement::parameter_size(short param) const
     template void statement::bind(                                                                 \
         short, const type*, std::size_t, const type*, param_direction); /* n-ary, sentry */        \
     template void statement::bind(                                                                 \
-        short, const type*, std::size_t, const bool*, param_direction) /* n-ary, flags */ /**/
+        short, const type*, std::size_t, const bool*, param_direction) /* n-ary, flags */
 
 // The following are the only supported instantiations of statement::bind().
 NANODBC_INSTANTIATE_BINDS(string_type::value_type);
@@ -3586,75 +3649,105 @@ NANODBC_INSTANTIATE_BINDS(timestamp);
 #undef NANODBC_INSTANTIATE_BINDS
 
 template <class T>
-void statement::bind(short param, const T* value, param_direction direction)
+void statement::bind(short param_index, const T* value, param_direction direction)
 {
-    impl_->bind(param, value, 1, direction);
-}
-
-template <class T>
-void statement::bind(short param, const T* values, std::size_t elements, param_direction direction)
-{
-    impl_->bind(param, values, elements, direction);
+    impl_->bind(direction, param_index, value, 1);
 }
 
 template <class T>
 void statement::bind(
-    short param,
-    const T* values,
-    std::size_t elements,
-    const T* null_sentry,
+    short param_index,
+    T const* values,
+    std::size_t batch_size,
     param_direction direction)
 {
-    impl_->bind(param, values, elements, 0, null_sentry, direction);
+    impl_->bind(direction, param_index, values, batch_size);
 }
 
 template <class T>
 void statement::bind(
-    short param,
-    const T* values,
-    std::size_t elements,
-    const bool* nulls,
+    short param_index,
+    T const* values,
+    std::size_t batch_size,
+    T const* null_sentry,
     param_direction direction)
 {
-    impl_->bind(param, values, elements, nulls, (T*)0, direction);
+    impl_->bind(direction, param_index, values, batch_size, nullptr, null_sentry);
+}
+
+template <class T>
+void statement::bind(
+    short param_index,
+    T const* values,
+    std::size_t batch_size,
+    bool const* nulls,
+    param_direction direction)
+{
+    impl_->bind(direction, param_index, values, batch_size, nulls, (T*)0);
 }
 
 void statement::bind_strings(
-    short param,
-    const string_type::value_type* values,
-    std::size_t length,
-    std::size_t elements,
+    short param_index,
+    std::vector<string_type> const& values,
     param_direction direction)
 {
-    impl_->bind_strings(param, values, length, elements, direction);
+    impl_->bind_strings(direction, param_index, values, nullptr, nullptr);
 }
 
 void statement::bind_strings(
-    short param,
-    const string_type::value_type* values,
-    std::size_t length,
-    std::size_t elements,
-    const string_type::value_type* null_sentry,
+    short param_index,
+    string_type::value_type const* values,
+    std::size_t value_size,
+    std::size_t batch_size,
     param_direction direction)
 {
-    impl_->bind_strings(param, values, length, elements, (bool*)0, null_sentry, direction);
+    impl_->bind_strings(direction, param_index, values, value_size, batch_size);
 }
 
 void statement::bind_strings(
-    short param,
-    const string_type::value_type* values,
-    std::size_t length,
-    std::size_t elements,
-    const bool* nulls,
+    short param_index,
+    string_type::value_type const* values,
+    std::size_t value_size,
+    std::size_t batch_size,
+    string_type::value_type const* null_sentry,
     param_direction direction)
 {
     impl_->bind_strings(
-        param, values, length, elements, nulls, (string_type::value_type*)0, direction);
+        direction, param_index, values, value_size, batch_size, nullptr, null_sentry);
 }
 
-void statement::bind_null(short param, std::size_t elements)
+void statement::bind_strings(
+    short param_index,
+    string_type::value_type const* values,
+    std::size_t value_size,
+    std::size_t batch_size,
+    bool const* nulls,
+    param_direction direction)
 {
-    impl_->bind_null(param, elements);
+    impl_->bind_strings(direction, param_index, values, value_size, batch_size, nulls);
+}
+
+void statement::bind_strings(
+    short param_index,
+    std::vector<string_type> const& values,
+    string_type::value_type const* null_sentry,
+    param_direction direction)
+{
+    impl_->bind_strings(direction, param_index, values, nullptr, null_sentry);
+}
+
+void statement::bind_strings(
+    short param_index,
+    std::vector<string_type> const& values,
+    bool const* nulls,
+    param_direction direction)
+{
+    impl_->bind_strings(direction, param_index, values, nulls, nullptr);
+}
+
+void statement::bind_null(short param_index, std::size_t batch_size)
+{
+    impl_->bind_null(param_index, batch_size);
 }
 
 } // namespace nanodbc

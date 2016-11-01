@@ -22,105 +22,130 @@ struct vertica_fixture : public base_test_fixture
 
 // TODO: add blob (bytea) test
 
-TEST_CASE_METHOD(vertica_fixture, "driver_test", "[vertica][driver]")
+TEST_CASE_METHOD(vertica_fixture, "test_driver", "[vertica][driver]")
 {
-    driver_test();
+    test_driver();
 }
 
-TEST_CASE_METHOD(vertica_fixture, "catalog_list_catalogs_test", "[vertica][catalog][catalogs]")
+TEST_CASE_METHOD(vertica_fixture, "test_batch_insert_integer", "[vertica][batch][integral]")
 {
-    catalog_list_catalogs_test();
+    test_batch_insert_integral();
 }
 
-TEST_CASE_METHOD(vertica_fixture, "catalog_list_schemas_test", "[vertica][catalog][schemas]")
+TEST_CASE_METHOD(vertica_fixture, "test_batch_insert_string", "[vertica][batch][string]")
 {
-    catalog_list_schemas_test();
+    test_batch_insert_string();
 }
 
-TEST_CASE_METHOD(vertica_fixture, "catalog_columns_test", "[vertica][catalog][columns]")
+TEST_CASE_METHOD(vertica_fixture, "test_batch_insert_mixed", "[vertica][batch]")
 {
-    catalog_columns_test();
+    test_batch_insert_mixed();
 }
 
-TEST_CASE_METHOD(vertica_fixture, "catalog_primary_keys_test", "[vertica][catalog][primary_keys]")
+TEST_CASE_METHOD(vertica_fixture, "test_catalog_list_catalogs", "[vertica][catalog][catalogs]")
 {
-    catalog_primary_keys_test();
+    test_catalog_list_catalogs();
 }
 
-TEST_CASE_METHOD(vertica_fixture, "catalog_tables_test", "[vertica][catalog][tables]")
+TEST_CASE_METHOD(vertica_fixture, "test_catalog_list_schemas", "[vertica][catalog][schemas]")
 {
-    catalog_tables_test();
+    test_catalog_list_schemas();
 }
 
-TEST_CASE_METHOD(vertica_fixture, "dbms_info_test", "[vertica][dmbs][metadata][info]")
+TEST_CASE_METHOD(vertica_fixture, "test_catalog_columns", "[vertica][catalog][columns]")
 {
-    dbms_info_test();
+    test_catalog_columns();
 }
 
-TEST_CASE_METHOD(vertica_fixture, "decimal_conversion_test", "[vertica][decimal][conversion]")
+TEST_CASE_METHOD(vertica_fixture, "test_catalog_primary_keys", "[vertica][catalog][primary_keys]")
 {
-    decimal_conversion_test();
+    test_catalog_primary_keys();
 }
 
-TEST_CASE_METHOD(vertica_fixture, "exception_test", "[vertica][exception]")
+TEST_CASE_METHOD(vertica_fixture, "test_catalog_tables", "[vertica][catalog][tables]")
 {
-    exception_test();
+    test_catalog_tables();
+}
+
+TEST_CASE_METHOD(vertica_fixture, "test_dbms_info", "[vertica][dmbs][metadata][info]")
+{
+    test_dbms_info();
+}
+
+TEST_CASE_METHOD(vertica_fixture, "test_get_info", "[vertica][dmbs][metadata][info]")
+{
+    test_get_info();
+}
+
+TEST_CASE_METHOD(vertica_fixture, "test_decimal_conversion", "[vertica][decimal][conversion]")
+{
+    test_decimal_conversion();
+}
+
+TEST_CASE_METHOD(vertica_fixture, "test_exception", "[vertica][exception]")
+{
+    test_exception();
 }
 
 TEST_CASE_METHOD(
     vertica_fixture,
-    "execute_multiple_transaction_test",
+    "test_execute_multiple_transaction",
     "[vertica][execute][transaction]")
 {
-    execute_multiple_transaction_test();
+    test_execute_multiple_transaction();
 }
 
-TEST_CASE_METHOD(vertica_fixture, "execute_multiple_test", "[vertica][execute]")
+TEST_CASE_METHOD(vertica_fixture, "test_execute_multiple", "[vertica][execute]")
 {
-    execute_multiple_test();
+    test_execute_multiple();
 }
 
-TEST_CASE_METHOD(vertica_fixture, "integral_test", "[vertica][integral]")
+TEST_CASE_METHOD(vertica_fixture, "test_integral", "[vertica][integral]")
 {
-    integral_test<vertica_fixture>();
+    test_integral<vertica_fixture>();
 }
 
-TEST_CASE_METHOD(vertica_fixture, "move_test", "[vertica][move]")
+TEST_CASE_METHOD(vertica_fixture, "test_move", "[vertica][move]")
 {
-    move_test();
+    test_move();
 }
 
-TEST_CASE_METHOD(vertica_fixture, "null_test", "[vertica][null]")
+TEST_CASE_METHOD(vertica_fixture, "test_null", "[vertica][null]")
 {
-    null_test();
+    test_null();
 }
 
-TEST_CASE_METHOD(vertica_fixture, "result_iterator_test", "[vertica][iterator]")
+TEST_CASE_METHOD(vertica_fixture, "test_result_iterator", "[vertica][iterator]")
 {
-    result_iterator_test();
+    test_result_iterator();
 }
 
-TEST_CASE_METHOD(vertica_fixture, "simple_test", "[vertica]")
+TEST_CASE_METHOD(vertica_fixture, "test_simple", "[vertica]")
 {
-    simple_test();
+    test_simple();
 }
 
-TEST_CASE_METHOD(vertica_fixture, "string_test", "[vertica][string]")
+TEST_CASE_METHOD(vertica_fixture, "test_string", "[vertica][string]")
 {
-    string_test();
+    test_string();
 }
 
-TEST_CASE_METHOD(vertica_fixture, "transaction_test", "[vertica][transaction]")
+TEST_CASE_METHOD(vertica_fixture, "test_string_vector", "[vertica][string]")
 {
-    transaction_test();
+    test_string_vector();
 }
 
-TEST_CASE_METHOD(vertica_fixture, "while_not_end_iteration_test", "[vertica][looping]")
+TEST_CASE_METHOD(vertica_fixture, "test_transaction", "[vertica][transaction]")
 {
-    while_not_end_iteration_test();
+    test_transaction();
 }
 
-TEST_CASE_METHOD(vertica_fixture, "while_next_iteration_test", "[vertica][looping]")
+TEST_CASE_METHOD(vertica_fixture, "test_while_not_end_iteration", "[vertica][looping]")
 {
-    while_next_iteration_test();
+    test_while_not_end_iteration();
+}
+
+TEST_CASE_METHOD(vertica_fixture, "test_while_next_iteration", "[vertica][looping]")
+{
+    test_while_next_iteration();
 }

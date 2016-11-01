@@ -109,25 +109,6 @@ $ clang-format -i /path/to/file
 
 **Please auto-format all code submitted in Pull Requests.**
 
-## Publish and Release Process
-
-Once your local `master` branch is ready for publishing (i.e. [semantic versioning](http://semver.org/)), use the `scripts/publish.sh` script. This script bumps the major, minor, or patch version, then updates the repository's `VERSION` file, adds a "Preparing" commit, and creates git tags appropriately. For example to make a minor update you would run `./scripts/publish.sh minor`.
-
-> **Important:** Always update [`CHANGELOG.md`](CHANGELOG.md) with information about new changes, bug fixes, and features when making a new release. Use the `./scripts/changes.sh` script to aid in your composition of this document. The publish script itself will attempt to verify that the changelog file has been properly updated.
-
-To do this manually instead, use the following steps &mdash; for example a minor update from `2.9.x` to `2.10.0`:
-
-1. `echo "2.10.0" > VERSION`
-2. `git add VERSION`
-3. `git commit -m "Preparing 2.10.0 release."`
-4. `git tag -f "v2.10.0"`
-5. `git push -f origin "v2.10.0"`
-6. `git push -f origin master:latest`
-
-### Release Process
-
-Release nanodbc with the `scripts/release.sh` script. All this script does is push out the `master` branch to the `release` branch, indicating that a new "stable" published version of nanodbc exists. To do so manually, execute `git push -f origin master:release`. **Caution: Do this for versions deemed "stable" based on suitable criteria.**
-
 ## Source Level Documentation
 
 Source level documentation provided via [GitHub's gh-pages](https://help.github.com/articles/what-are-github-pages/) is available at [nanodbc.lexicalunit.com](http://lexicalunit.github.io/nanodbc/). To re-build and update it, preform the following steps from the root directory of the repository:
@@ -164,6 +145,44 @@ vagrant@vagrant-ubuntu-precise-64:~$ mkdir -p nanodbc/build && cd nanodbc/build
 vagrant@vagrant-ubuntu-precise-64:~$ CXX=g++-5 cmake ..
 vagrant@vagrant-ubuntu-precise-64:~$ make nanodbc
 ```
+
+## Tests
+
+One of important objectives is to maintain nanodbc covered with tests.
+Thus, new contributions, especially new features, submitted via Pull requests should be accompanied by
+corresponding tests. 
+
+Short procedure of adding new tests to nanodbc is outlined below.
+
+The tests structure:
+* `tests/base_test_fixture.h` is where a set of common test cases is maintained.
+* `tests/<database>_test.cpp` is a source code for an independent test program that includes both, common and database-specific test cases.
+
+In order to add new test case:
+
+1. In `tests/base_test_fixture.h` file, add a new test case method to `base_test_fixture` class (e.g. `void my_feature_test()`).
+2. In each `tests/<database>_test.cpp` file, copy and paste the `TEST_CASE_METHOD` boilerplate, updating name, tags, etc.
+
+If a feature requires a database-specific test case for each database, then skip the `tests/base_test_fixture.h` step and implement dedicated test case directly in `tests/<database>_test.cpp` file.
+
+## Publish and Release Process
+
+Once your local `master` branch is ready for publishing (i.e. [semantic versioning](http://semver.org/)), use the `scripts/publish.sh` script. This script bumps the major, minor, or patch version, then updates the repository's `VERSION` file, adds a "Preparing" commit, and creates git tags appropriately. For example to make a minor update you would run `./scripts/publish.sh minor`.
+
+> **Important:** Always update [`CHANGELOG.md`](CHANGELOG.md) with information about new changes, bug fixes, and features when making a new release. Use the `./scripts/changes.sh` script to aid in your composition of this document. The publish script itself will attempt to verify that the changelog file has been properly updated.
+
+To do this manually instead, use the following steps &mdash; for example a minor update from `2.9.x` to `2.10.0`:
+
+1. `echo "2.10.0" > VERSION`
+2. `git add VERSION`
+3. `git commit -m "Preparing 2.10.0 release."`
+4. `git tag -f "v2.10.0"`
+5. `git push -f origin "v2.10.0"`
+6. `git push -f origin master:latest`
+
+### Release Process
+
+Release nanodbc with the `scripts/release.sh` script. All this script does is push out the `master` branch to the `release` branch, indicating that a new "stable" published version of nanodbc exists. To do so manually, execute `git push -f origin master:release`. **Caution: Do this for versions deemed "stable" based on suitable criteria.**
 
 ## Future work
 
