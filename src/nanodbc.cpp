@@ -1724,29 +1724,13 @@ public:
         bool const* nulls = nullptr,
         T const* null_sentry = nullptr);
 
-    void bind_strings(
-        param_direction direction,
-        short param_index,
-        string_type::value_type const* values,
-        std::size_t value_size,
-        std::size_t batch_size,
-        bool const* nulls = nullptr,
-        string_type::value_type const* null_sentry = nullptr);
-
-    void bind_strings(
-        param_direction direction,
-        short param_index,
-        std::vector<string_type> const& values,
-        bool const* nulls = nullptr,
-        string_type::value_type const* null_sentry = nullptr);
-
     // handles multiple binary values
     void bind(
         param_direction direction,
         short param_index,
-        const std::vector<std::vector<uint8_t>>& values,
-        const bool* nulls = nullptr,
-        const uint8_t* null_sentry = nullptr)
+        std::vector<std::vector<uint8_t>> const& values,
+        bool const* nulls = nullptr,
+        uint8_t const* null_sentry = nullptr)
     {
         std::size_t batch_size = values.size();
         bound_parameter param;
@@ -1792,6 +1776,22 @@ public:
         bound_buffer<uint8_t> buffer(binary_data_[param_index].data(), batch_size, max_length);
         bind_parameter(param, buffer);
     }
+
+    void bind_strings(
+        param_direction direction,
+        short param_index,
+        string_type::value_type const* values,
+        std::size_t value_size,
+        std::size_t batch_size,
+        bool const* nulls = nullptr,
+        string_type::value_type const* null_sentry = nullptr);
+
+    void bind_strings(
+        param_direction direction,
+        short param_index,
+        std::vector<string_type> const& values,
+        bool const* nulls = nullptr,
+        string_type::value_type const* null_sentry = nullptr);
 
     // handles multiple null values
     void bind_null(short param_index, std::size_t batch_size)
@@ -3745,7 +3745,7 @@ void statement::bind(
     bool const* nulls,
     param_direction direction)
 {
-    impl_->bind(direction, param_index, values, batch_size, nulls, (T*)0);
+    impl_->bind(direction, param_index, values, batch_size, nulls);
 }
 
 void statement::bind(
@@ -3753,7 +3753,7 @@ void statement::bind(
     std::vector<std::vector<uint8_t>> const& values,
     param_direction direction)
 {
-    impl_->bind(direction, param_index, values, (bool*)0, (uint8_t*)0);
+    impl_->bind(direction, param_index, values);
 }
 
 void statement::bind(
@@ -3762,7 +3762,7 @@ void statement::bind(
     bool const* nulls,
     param_direction direction)
 {
-    impl_->bind(direction, param_index, values, nulls, (uint8_t*)0);
+    impl_->bind(direction, param_index, values, nulls);
 }
 
 void statement::bind(
@@ -3771,7 +3771,7 @@ void statement::bind(
     uint8_t const* null_sentry,
     param_direction direction)
 {
-    impl_->bind(direction, param_index, values, (bool*)0, null_sentry);
+    impl_->bind(direction, param_index, values, nullptr, null_sentry);
 }
 
 void statement::bind_strings(
@@ -3779,7 +3779,7 @@ void statement::bind_strings(
     std::vector<string_type> const& values,
     param_direction direction)
 {
-    impl_->bind_strings(direction, param_index, values, nullptr, nullptr);
+    impl_->bind_strings(direction, param_index, values);
 }
 
 void statement::bind_strings(
@@ -3830,7 +3830,7 @@ void statement::bind_strings(
     bool const* nulls,
     param_direction direction)
 {
-    impl_->bind_strings(direction, param_index, values, nulls, nullptr);
+    impl_->bind_strings(direction, param_index, values, nulls);
 }
 
 void statement::bind_null(short param_index, std::size_t batch_size)
