@@ -136,7 +136,7 @@ before_script:
   - if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then sudo odbcinst -i -d -f /usr/share/libmyodbc/odbcinst.ini; fi
   - if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then mysql -e "DROP DATABASE IF EXISTS nanodbc_tests; CREATE DATABASE IF NOT EXISTS nanodbc_tests;" -uroot; fi
   - if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost';" -uroot; fi
-  - if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then export NANODBC_TEST_CONNSTR_MYSQL="Driver=MySQL;Server=localhost;Database=nanodbc_tests;User=root;Password=;Option=3;"; fi
+  - if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then export NANODBC_TEST_CONNSTR_MYSQL="Driver=MySQL;Server=localhost;Database=nanodbc_tests;User=root;Password=;Option=3;big_packets=1;"; fi
   - if [[ "$DB" == "postgresql" ]]; then sudo odbcinst -i -d -f /usr/share/psqlodbc/odbcinst.ini.template; fi
   - if [[ "$DB" == "postgresql" ]]; then psql -c "CREATE DATABASE nanodbc_tests;" -U postgres; fi
   - if [[ "$DB" == "postgresql" ]]; then export NANODBC_TEST_CONNSTR_PGSQL="DRIVER={PostgreSQL ANSI};Server=localhost;Port=5432;Database=nanodbc_tests;UID=postgres;"; fi
