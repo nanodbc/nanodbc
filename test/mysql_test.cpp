@@ -62,7 +62,7 @@ TEST_CASE_METHOD(mysql_fixture, "test_affected_rows", "[mysql][affected_rows]")
     }
     // Inseting/retrieving long strings
     {
-        std::string long_string(1024, '\0');
+        nanodbc::string_type long_string(1024, '\0');
         for (unsigned i=0; i<1024; i++)
             long_string[i]=(i%64)+32;
         
@@ -79,7 +79,7 @@ TEST_CASE_METHOD(mysql_fixture, "test_affected_rows", "[mysql][affected_rows]")
         REQUIRE(result.affected_rows() == 1);
         
         if (result.next()) {
-            std::string str_from_db = result.get<std::string>(0);
+            nanodbc::string_type str_from_db = result.get<nanodbc::string_type>(0);
             REQUIRE(str_from_db == long_string);
         }
     }
