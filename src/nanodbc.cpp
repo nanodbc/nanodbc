@@ -2709,7 +2709,7 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
 {
     bound_column& col = bound_columns_[column];
     const SQLULEN column_size = col.sqlsize_;
-    
+
     switch (col.ctype_)
     {
     case SQL_C_CHAR:

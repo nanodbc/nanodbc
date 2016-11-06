@@ -150,7 +150,7 @@ vagrant@vagrant-ubuntu-precise-64:~$ make nanodbc
 
 One of important objectives is to maintain nanodbc covered with tests.
 Thus, new contributions, especially new features, submitted via Pull requests should be accompanied by
-corresponding tests. 
+corresponding tests.
 
 Short procedure of adding new tests to nanodbc is outlined below.
 
