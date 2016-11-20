@@ -1,25 +1,28 @@
 #include "catch.hpp"
 
-#include "test/base_test_fixture.h"
+#include "test/test_case_fixture.h"
 #include <cstdio>
 
 namespace
 {
-// According to the sqliteodbc documentation,
-// driver name is different on Windows and Unix.
-#ifdef _WIN32
-const nanodbc::string_type driver_name(NANODBC_TEXT("SQLite3 ODBC Driver"));
-#else
-const nanodbc::string_type driver_name(NANODBC_TEXT("SQLite3"));
-#endif
-const nanodbc::string_type connection_string =
-    NANODBC_TEXT("Driver=") + driver_name + NANODBC_TEXT(";Database=nanodbc.db;");
 
-struct sqlite_fixture : public base_test_fixture
+struct sqlite_fixture : public test_case_fixture
 {
     sqlite_fixture()
-        : base_test_fixture(connection_string)
+        : test_case_fixture()
     {
+        // According to the sqliteodbc documentation,
+        // driver name is different on Windows and Unix.
+        nanodbc::string_type const driver_name =
+#ifdef _WIN32
+            (NANODBC_TEXT("SQLite3 ODBC Driver"));
+#else
+            (NANODBC_TEXT("SQLite3"));
+#endif
+
+        connection_string_ =
+            NANODBC_TEXT("Driver=") + driver_name + NANODBC_TEXT(";Database=nanodbc.db;");
+
         sqlite_cleanup(); // in case prior test exited without proper cleanup
     }
 
