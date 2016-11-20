@@ -1,14 +1,15 @@
 #include "catch.hpp"
 
-#include "test/base_test_fixture.h"
+#include "test/test_case_fixture.h"
 #include <cstdio>
 #include <cstdlib>
 
 namespace
 {
-struct vertica_fixture : public base_test_fixture
+struct vertica_fixture : public test_case_fixture
 {
-    vertica_fixture() : base_test_fixture()
+    vertica_fixture()
+        : test_case_fixture()
     {
         // connection string from command line or NANODBC_TEST_CONNSTR environment variable
         if (connection_string_.empty())

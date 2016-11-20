@@ -1,15 +1,16 @@
 #include "catch.hpp"
 
-#include "test/base_test_fixture.h"
+#include "test/test_case_fixture.h"
 #include <cstdio>
 #include <cstdlib>
 #include <string>
 
 namespace
 {
-struct mysql_fixture : public base_test_fixture
+struct mysql_fixture : public test_case_fixture
 {
-    mysql_fixture() : base_test_fixture()
+    mysql_fixture()
+        : test_case_fixture()
     {
         // connection string from command line or NANODBC_TEST_CONNSTR environment variable
         if (connection_string_.empty())
