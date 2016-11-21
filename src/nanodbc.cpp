@@ -55,6 +55,26 @@
 #include <sql.h>
 #include <sqlext.h>
 
+// Driver specific SQL data type defines.
+// Microsoft has -150 thru -199 reserved for Microsoft SQL Server Native Client driver usage.
+// Originally, defined in sqlncli.h (old SQL Server Native Client driver)
+// and msodbcsql.h (new Microsoft ODBC Driver for SQL Server)
+// See https://github.com/lexicalunit/nanodbc/issues/226
+#ifndef SQL_SS_VARIANT
+#define SQL_SS_VARIANT (-150)
+#endif
+#ifndef SQL_SS_XML
+#define SQL_SS_XML (-152)
+#endif
+#ifndef SQL_SS_TABLE
+#define SQL_SS_TABLE (-153)
+#endif
+#ifndef SQL_SS_TIME2
+#define SQL_SS_TIME2 (-154)
+#endif
+#ifndef SQL_SS_TIMESTAMPOFFSET
+#define SQL_SS_TIMESTAMPOFFSET (-155)
+#endif
 // Large CLR User-Defined Types (ODBC)
 // https://msdn.microsoft.com/en-us/library/bb677316.aspx
 // Essentially, UDT is a varbinary type with additional metadata.
@@ -2545,11 +2565,13 @@ private:
                 break;
             case SQL_TIME:
             case SQL_TYPE_TIME:
+            case SQL_SS_TIME2:
                 col.ctype_ = SQL_C_TIME;
                 col.clen_ = sizeof(time);
                 break;
             case SQL_TIMESTAMP:
             case SQL_TYPE_TIMESTAMP:
+            case SQL_SS_TIMESTAMPOFFSET:
                 col.ctype_ = SQL_C_TIMESTAMP;
                 col.clen_ = sizeof(timestamp);
                 break;

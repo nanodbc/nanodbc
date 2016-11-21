@@ -383,6 +383,102 @@ TEST_CASE_METHOD(mssql_fixture, "test_batch_binary", "[mssql][binary]")
     test_batch_binary();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_time", "[mssql][time]")
+{
+    test_time();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_datetime", "[mssql][datetime]")
+{
+    auto connection = connect();
+    create_table(connection, NANODBC_TEXT("test_datetime"), NANODBC_TEXT("d datetime"));
+
+    // insert
+    // See "CAST and CONVERT" https://msdn.microsoft.com/en-US/library/ms187928.aspx
+    {
+        execute(
+            connection,
+            NANODBC_TEXT("insert into test_datetime(d) values (CONVERT(datetime, "
+                         "'2006-12-30T13:45:12.345', 126));"));
+    }
+
+    // select
+    {
+        auto result = execute(connection, NANODBC_TEXT("select d from test_datetime;"));
+        REQUIRE(result.next());
+        auto t = result.get<nanodbc::timestamp>(0);
+        REQUIRE(t.year == 2006);
+        REQUIRE(t.month == 12);
+        REQUIRE(t.day == 30);
+        REQUIRE(t.hour == 13);
+        REQUIRE(t.min == 45);
+        REQUIRE(t.sec == 12);
+        REQUIRE(t.fract > 0);
+    }
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_datetime2", "[mssql][datetime]")
+{
+    auto connection = connect();
+    create_table(connection, NANODBC_TEXT("test_datetime2"), NANODBC_TEXT("d datetime2"));
+
+    // insert
+    // See "CAST and CONVERT" https://msdn.microsoft.com/en-US/library/ms187928.aspx
+    {
+        execute(
+            connection,
+            NANODBC_TEXT("insert into test_datetime2(d) values (CONVERT(datetime2, "
+                         "'2006-12-30T13:45:12.345', 127));"));
+    }
+
+    // select
+    {
+        auto result = execute(connection, NANODBC_TEXT("select d from test_datetime2;"));
+        REQUIRE(result.next());
+        auto t = result.get<nanodbc::timestamp>(0);
+        REQUIRE(t.year == 2006);
+        REQUIRE(t.month == 12);
+        REQUIRE(t.day == 30);
+        REQUIRE(t.hour == 13);
+        REQUIRE(t.min == 45);
+        REQUIRE(t.sec == 12);
+        REQUIRE(t.fract > 0);
+    }
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_datetimeoffset", "[mssql][datetime]")
+{
+    auto connection = connect();
+    create_table(connection, NANODBC_TEXT("test_datetimeoffset"), NANODBC_TEXT("d datetimeoffset"));
+
+    // insert
+    // See "CAST and CONVERT" https://msdn.microsoft.com/en-US/library/ms187928.aspx
+    execute(
+        connection,
+        NANODBC_TEXT("insert into test_datetimeoffset(d) values "
+                     "(CONVERT(datetimeoffset, '2006-12-30T13:45:12.345-08:00', 127));"));
+
+    // select
+    {
+        auto result = execute(connection, NANODBC_TEXT("select d from test_datetimeoffset;"));
+        REQUIRE(result.next());
+        auto t = result.get<nanodbc::timestamp>(0);
+        REQUIRE(t.year == 2006);
+        REQUIRE(t.month == 12);
+        REQUIRE(t.day == 30);
+        // Currently, nanodbc binds SQL_SS_TIMESTAMPOFFSET as SQL_C_TIMESTAMP,
+        // not as SQL_C_SS_TIMESTAMPOFFSET.
+        // This seems to cause the DBMS or the driver to convert the time to local time
+        // based on time zone
+        // REQUIRE(t.hour == 13); // or 21 (GMT) or 22 (CET) or other client local time
+        REQUIRE(t.hour > 0);
+        REQUIRE(t.min == 45);
+        REQUIRE(t.sec == 12);
+        REQUIRE(t.fract > 0);
+        ;
+    }
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_transaction", "[mssql][transaction]")
 {
     test_transaction();
