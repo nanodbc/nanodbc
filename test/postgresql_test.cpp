@@ -157,6 +157,11 @@ TEST_CASE_METHOD(postgresql_fixture, "test_batch_binary", "[postgresql][binary]"
     test_batch_binary();
 }
 
+TEST_CASE_METHOD(postgresql_fixture, "test_time", "[postgresql][time]")
+{
+    test_time();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_transaction", "[postgresql][transaction]")
 {
     test_transaction();
