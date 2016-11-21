@@ -162,6 +162,118 @@ TEST_CASE_METHOD(postgresql_fixture, "test_time", "[postgresql][time]")
     test_time();
 }
 
+TEST_CASE_METHOD(postgresql_fixture, "test_time_without_time_zone", "[postgresql][time][timezone]")
+{
+    auto connection = connect();
+    create_table(
+        connection, NANODBC_TEXT("test_time_without_tz"), NANODBC_TEXT("t time without time zone"));
+
+    // insert
+    execute(
+        connection,
+        NANODBC_TEXT("insert into test_time_without_tz(t) values "
+                     "('2006-12-30 13:45:12.345'::time with time zone);"));
+
+    // select
+    {
+        auto result = execute(connection, NANODBC_TEXT("select t from test_time_without_tz;"));
+        REQUIRE(result.next());
+        auto t = result.get<nanodbc::time>(0);
+        REQUIRE(t.hour > 0);
+        REQUIRE(t.min == 45);
+        REQUIRE(t.sec == 12);
+    }
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "test_time_with_time_zone", "[postgresql][time][timezone]")
+{
+    auto connection = connect();
+    create_table(
+        connection, NANODBC_TEXT("test_time_with_tz"), NANODBC_TEXT("t time with time zone"));
+
+    // insert
+    execute(
+        connection,
+        NANODBC_TEXT("insert into test_time_with_tz(t) values "
+                     "('2006-12-30 13:45:12.345-08:00'::time with time zone);"));
+
+    // select
+    {
+        auto result = execute(connection, NANODBC_TEXT("select t from test_time_with_tz;"));
+        REQUIRE(result.next());
+        // Note, pgsqlODBC reports 'time with time zone' as SQL_WVARCHAR, not SQL_TIME.
+        // auto t = result.get<nanodbc::time>(0);
+        auto t = result.get<nanodbc::string_type>(0);
+        REQUIRE(t == NANODBC_TEXT("13:45:12.345-08"));
+    }
+}
+
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_timestamp_without_time_zone",
+    "[postgresql][timestamp][timezone]")
+{
+    auto connection = connect();
+    create_table(
+        connection,
+        NANODBC_TEXT("test_timestamp_without_tz"),
+        NANODBC_TEXT("t timestamp without time zone"));
+
+    // insert
+    execute(
+        connection,
+        NANODBC_TEXT("insert into test_timestamp_without_tz(t) values "
+                     "('2006-12-30 13:45:12.345'::timestamp with time zone);"));
+
+    // select
+    {
+        auto result = execute(connection, NANODBC_TEXT("select t from test_timestamp_without_tz;"));
+        REQUIRE(result.next());
+        auto t = result.get<nanodbc::timestamp>(0);
+        REQUIRE(t.year == 2006);
+        REQUIRE(t.month == 12);
+        REQUIRE(t.day == 30);
+        REQUIRE(t.hour > 0);
+        REQUIRE(t.min == 45);
+        REQUIRE(t.sec == 12);
+        REQUIRE(t.fract > 0);
+    }
+}
+
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_timestamp_with_time_zone",
+    "[postgresql][timestamp][timezone]")
+{
+    auto connection = connect();
+    create_table(
+        connection,
+        NANODBC_TEXT("test_timestamp_with_tz"),
+        NANODBC_TEXT("t timestamp with time zone"));
+
+    // insert
+    execute(
+        connection,
+        NANODBC_TEXT("insert into test_timestamp_with_tz(t) values "
+                     "('2006-12-30 13:45:12.345-08:00'::timestamp with time zone);"));
+
+    // select
+    {
+        auto result = execute(connection, NANODBC_TEXT("select t from test_timestamp_with_tz;"));
+        REQUIRE(result.next());
+        // Note, unlike 'time with time zone' reported as SQL_WVARCHAR, but not SQL_TIME,
+        // 'timestamp with time zone' seems reported as SQL_TIMESTAMP.
+        auto t = result.get<nanodbc::timestamp>(0);
+        REQUIRE(t.year == 2006);
+        REQUIRE(t.month == 12);
+        REQUIRE(t.day == 30);
+        REQUIRE(t.hour > 0);
+        REQUIRE(t.min == 45);
+        REQUIRE(t.sec == 12);
+        REQUIRE(t.fract > 0);
+    }
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_transaction", "[postgresql][transaction]")
 {
     test_transaction();
