@@ -201,8 +201,8 @@ TEST_CASE_METHOD(postgresql_fixture, "test_time_with_time_zone", "[postgresql][t
     {
         auto result = execute(connection, NANODBC_TEXT("select t from test_time_with_tz;"));
         REQUIRE(result.next());
-        // Note, pgsqlODBC reports 'time with time zone' as SQL_WVARCHAR, not SQL_TIME.
-        // auto t = result.get<nanodbc::time>(0);
+        // pgsqlODBC reports 'time with time zone' as SQL_WVARCHAR, not SQL_TIME.
+        // See https://github.com/lexicalunit/nanodbc/pull/229
         auto t = result.get<nanodbc::string_type>(0);
         REQUIRE(t == NANODBC_TEXT("13:45:12.345-08"));
     }
