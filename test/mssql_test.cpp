@@ -4,6 +4,16 @@
 #include <cstdio>
 #include <cstdlib>
 
+#ifdef _MSC_VER
+#include <comutil.h>
+#include <atlsafe.h>
+#ifdef _DEBUG
+#pragma comment(lib, "comsuppwd.lib")
+#else
+#pragma comment(lib, "comsuppw.lib")
+#endif
+#endif
+
 namespace
 {
 struct mssql_fixture : public test_case_fixture
@@ -518,5 +528,61 @@ TEST_CASE_METHOD(mssql_fixture, "test_async", "[mssql][async]")
     REQUIRE(row.complete_next());
 
     REQUIRE(row.get<int>(0) >= 0);
+}
+#endif
+
+#if defined(_MSC_VER ) && defined(_UNICODE)
+TEST_CASE_METHOD(mssql_fixture, "test_bind_variant", "[mssql][variant]")
+{
+
+    // Test prepared statement and binding Windows VARIANT data.
+    auto conn = connect();
+    create_table(
+        conn,
+        NANODBC_TEXT("test_bind_variant"),
+        NANODBC_TEXT("(i int, f float, s varchar(256), b varbinary(max))"));
+
+    nanodbc::statement stmt(conn);
+    prepare(stmt, NANODBC_TEXT("insert into test_bind_variant(i,f,s,b) values (?,?,?,?)"));
+
+    static_assert(sizeof(long) == sizeof(std::int32_t), "long is too large");
+    _variant_t v_i(7L);
+    stmt.bind(0, reinterpret_cast<std::int32_t*>(&v_i.lVal)); // no bind(long) provided
+    _variant_t v_f(3.14);
+    stmt.bind(1, &v_f.dblVal);
+    _variant_t v_s(L"This is a text");
+    wchar_t* x = v_s.bstrVal;
+    stmt.bind_strings(2, x, wcslen(x), 1);
+
+    // Since, currently, only way to bind binary data is via std::bector<std::uint8_t>,
+    // we need to copy data from SAFEARRAY to intermediate vector.
+    // NOTE: The example with number of round-trips below might seem redundant,
+    // but it has been kept to for illustration purposes.
+    std::vector<std::uint8_t> bytes;
+    {
+        std::uint8_t data[] = {0x00, 0x01, 0x02, 0x03};
+        CComSafeArray<std::uint8_t> sa;
+        for (auto b : data)
+            sa.Add(b);
+        for (auto i = 0UL; i < sa.GetCount(); ++i)
+            bytes.push_back(sa.GetAt(i));
+    }
+    std::vector<std::vector<std::uint8_t>> binary_items = {bytes};
+    stmt.bind(3, binary_items);
+
+    nanodbc::transact(stmt, 1);
+    {
+        auto result = nanodbc::execute(conn, NANODBC_TEXT("select i,f,s,b from test_bind_variant"));
+        std::size_t i = 0;
+        while (result.next())
+        {
+            REQUIRE(result.get<std::int32_t>(0) == static_cast<std::int32_t>(v_i));
+            REQUIRE(result.get<double>(1) == static_cast<double>(v_f));
+            REQUIRE(result.get<nanodbc::string_type>(2) == v_s.bstrVal);
+            REQUIRE(result.get<std::vector<std::uint8_t>>(3) == bytes);
+            ++i;
+        }
+        REQUIRE(i == 1);
+    }
 }
 #endif
