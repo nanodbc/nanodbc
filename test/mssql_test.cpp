@@ -549,7 +549,7 @@ TEST_CASE_METHOD(mssql_fixture, "test_bind_variant", "[mssql][variant]")
     static_assert(sizeof(long) == sizeof(std::int32_t), "long is too large");
     _variant_t v_i(7L);
     stmt.bind(0, reinterpret_cast<std::int32_t*>(&v_i.lVal)); // no bind(long) provided
-                                                              // double -> FLOAT
+    // double -> FLOAT
     _variant_t v_f(3.14);
     stmt.bind(1, &v_f.dblVal);
     // wchar_t* -> VARCHAR
