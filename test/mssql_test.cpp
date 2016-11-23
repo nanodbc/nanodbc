@@ -545,15 +545,17 @@ TEST_CASE_METHOD(mssql_fixture, "test_bind_variant", "[mssql][variant]")
     nanodbc::statement stmt(conn);
     prepare(stmt, NANODBC_TEXT("insert into test_bind_variant(i,f,s,b) values (?,?,?,?)"));
 
+    // int -> INT
     static_assert(sizeof(long) == sizeof(std::int32_t), "long is too large");
     _variant_t v_i(7L);
     stmt.bind(0, reinterpret_cast<std::int32_t*>(&v_i.lVal)); // no bind(long) provided
+                                                              // double -> FLOAT
     _variant_t v_f(3.14);
     stmt.bind(1, &v_f.dblVal);
+    // wchar_t* -> VARCHAR
     _variant_t v_s(L"This is a text");
-    wchar_t* x = v_s.bstrVal;
-    stmt.bind_strings(2, x, wcslen(x), 1);
-
+    stmt.bind_strings(2, reinterpret_cast<wchar_t*>(v_s.bstrVal), wcslen(v_s.bstrVal), 1);
+    // SAFEARRAY -> vector<uint8_t> -> VARBINARY
     // Since, currently, only way to bind binary data is via std::bector<std::uint8_t>,
     // we need to copy data from SAFEARRAY to intermediate vector.
     // NOTE: The example with number of round-trips below might seem redundant,
