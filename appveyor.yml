@@ -17,15 +17,19 @@ clone_depth: 5
 
 environment:
   matrix:
-    - DB: MSSQL2008
+    - DB: MSSQL2016
       USE_UNICODE: OFF
+      USE_BOOST_CONVERT: OFF
+      GENERATOR: "Visual Studio 14 2015 Win64"
+    - DB: MSSQL2016
+      USE_UNICODE: ON
       USE_BOOST_CONVERT: OFF
       GENERATOR: "Visual Studio 14 2015 Win64"
     - DB: MSSQL2014
       USE_UNICODE: OFF
       USE_BOOST_CONVERT: OFF
       GENERATOR: "Visual Studio 14 2015 Win64"
-    - DB: MSSQL2016
+    - DB: MSSQL2008
       USE_UNICODE: OFF
       USE_BOOST_CONVERT: OFF
       GENERATOR: "Visual Studio 14 2015 Win64"
