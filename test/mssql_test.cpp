@@ -5,8 +5,8 @@
 #include <cstdlib>
 
 #ifdef _MSC_VER
-#include <comutil.h>
 #include <atlsafe.h>
+#include <comutil.h>
 #ifdef _DEBUG
 #pragma comment(lib, "comsuppwd.lib")
 #else
@@ -531,35 +531,46 @@ TEST_CASE_METHOD(mssql_fixture, "test_async", "[mssql][async]")
 }
 #endif
 
-#if defined(_MSC_VER ) && defined(_UNICODE)
+#if defined(_MSC_VER) && defined(_UNICODE)
 TEST_CASE_METHOD(mssql_fixture, "test_bind_variant", "[mssql][variant]")
 {
-
     // Test prepared statement and binding Windows VARIANT data.
     auto conn = connect();
     create_table(
         conn,
         NANODBC_TEXT("test_bind_variant"),
-        NANODBC_TEXT("(i int, f float, s varchar(256), b varbinary(max))"));
+        NANODBC_TEXT("(i int, f float, s varchar(256), d decimal(9, 3), b varbinary(max))"));
 
     nanodbc::statement stmt(conn);
-    prepare(stmt, NANODBC_TEXT("insert into test_bind_variant(i,f,s,b) values (?,?,?,?)"));
+    prepare(stmt, NANODBC_TEXT("insert into test_bind_variant(i,f,s,d,b) values (?,?,?,?,?)"));
 
-    // int -> INT
+    // NOTE: Some examples with number of round-trips below might seem redundant,
+    // but it has been kept to for illustration purposes.
+
+    // VT_I4 -> INT
     static_assert(sizeof(long) == sizeof(std::int32_t), "long is too large");
     _variant_t v_i(7L);
     stmt.bind(0, reinterpret_cast<std::int32_t*>(&v_i.lVal)); // no bind(long) provided
-    // double -> FLOAT
+    // VT_R8 -> FLOAT
     _variant_t v_f(3.14);
     stmt.bind(1, &v_f.dblVal);
-    // wchar_t* -> VARCHAR
+    // VT_BSTR -> VARCHAR
     _variant_t v_s(L"This is a text");
     stmt.bind_strings(2, reinterpret_cast<wchar_t*>(v_s.bstrVal), wcslen(v_s.bstrVal), 1);
+    // VT_DECIMAL|VT_CY -> double -> DECIMAL(9,3)
+    _variant_t v_d;
+    {
+        // use input value longer than DECIMAL(9,3) to test SQL will convert it appropriately
+        DECIMAL d;
+        VarDecFromStr(L"3.45612345", 0, LOCALE_NOUSEROVERRIDE, &d);
+        double dbl;
+        ::VarR8FromDec(&d, &dbl);
+        v_d = dbl;
+    }
+    stmt.bind(3, &v_d.dblVal);
     // SAFEARRAY -> vector<uint8_t> -> VARBINARY
     // Since, currently, only way to bind binary data is via std::bector<std::uint8_t>,
     // we need to copy data from SAFEARRAY to intermediate vector.
-    // NOTE: The example with number of round-trips below might seem redundant,
-    // but it has been kept to for illustration purposes.
     std::vector<std::uint8_t> bytes;
     {
         std::uint8_t data[] = {0x00, 0x01, 0x02, 0x03};
@@ -570,18 +581,23 @@ TEST_CASE_METHOD(mssql_fixture, "test_bind_variant", "[mssql][variant]")
             bytes.push_back(sa.GetAt(i));
     }
     std::vector<std::vector<std::uint8_t>> binary_items = {bytes};
-    stmt.bind(3, binary_items);
+    stmt.bind(4, binary_items);
 
     nanodbc::transact(stmt, 1);
     {
-        auto result = nanodbc::execute(conn, NANODBC_TEXT("select i,f,s,b from test_bind_variant"));
+        auto result =
+            nanodbc::execute(conn, NANODBC_TEXT("select i,f,s,d,b from test_bind_variant"));
         std::size_t i = 0;
         while (result.next())
         {
             REQUIRE(result.get<std::int32_t>(0) == static_cast<std::int32_t>(v_i));
             REQUIRE(result.get<double>(1) == static_cast<double>(v_f));
             REQUIRE(result.get<nanodbc::string_type>(2) == v_s.bstrVal);
-            REQUIRE(result.get<std::vector<std::uint8_t>>(3) == bytes);
+            v_d.ChangeType(VT_BSTR);
+            REQUIRE(
+                result.get<nanodbc::string_type>(3) ==
+                nanodbc::string_type(v_d.bstrVal).substr(0, 5));
+            REQUIRE(result.get<std::vector<std::uint8_t>>(4) == bytes);
             ++i;
         }
         REQUIRE(i == 1);
