@@ -13,13 +13,18 @@ struct test_case_fixture : public base_test_fixture
     // To invoke a unit test over all integral types, use:
     //
     typedef std::tuple<
-        nanodbc::string_type::value_type,
         short,
         unsigned short,
+        int,
+        unsigned int,
         int32_t,
         uint32_t,
+        long int,
+        unsigned long int,
         int64_t,
         uint64_t,
+        signed long long,
+        unsigned long long,
         float,
         double>
         integral_test_types;
@@ -971,7 +976,7 @@ struct test_case_fixture : public base_test_fixture
         prepare(statement, NANODBC_TEXT("insert into test_integral (i, f, d) values (?, ?, ?);"));
 
         std::minstd_rand nanodbc_rand;
-        const int32_t i = nanodbc_rand() % 5000;
+        const T i = nanodbc_rand() % 100; // also tests if bind(T) is defined
         const float f = nanodbc_rand() / (nanodbc_rand() + 1.0);
         const float d = -static_cast<std::int_fast32_t>(nanodbc_rand()) / (nanodbc_rand() + 1.0);
 
