@@ -13,6 +13,7 @@
 *.a
 
 /.vagrant
+/.vscode
 /_build/
 /_build32/
 /_build64/
