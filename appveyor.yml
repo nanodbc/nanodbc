@@ -41,23 +41,22 @@ environment:
       USE_UNICODE: OFF
       USE_BOOST_CONVERT: OFF
       GENERATOR: "Visual Studio 14 2015 Win64"
-# TODO: HTTP 404 http://www.ch-werner.de/sqliteodbc/
-#- DB: SQLite
-#  USE_UNICODE: OFF
-#  USE_BOOST_CONVERT: OFF
-#  GENERATOR: "Visual Studio 14 2015 Win64"
-#- DB: SQLite
-#  USE_UNICODE: OFF
-#  USE_BOOST_CONVERT: OFF
-#  DISABLE_ASYNC: ON
-#  GENERATOR: "MinGW Makefiles"
-#  PLATFORM: x86-32
-#- DB: SQLite
-#  USE_UNICODE: OFF
-#  USE_BOOST_CONVERT: OFF
-#  DISABLE_ASYNC: ON
-#  GENERATOR: "MinGW Makefiles"
-#  PLATFORM: x86-64
+    - DB: SQLite
+      USE_UNICODE: OFF
+      USE_BOOST_CONVERT: OFF
+      GENERATOR: "Visual Studio 14 2015 Win64"
+    - DB: SQLite
+      USE_UNICODE: OFF
+      USE_BOOST_CONVERT: OFF
+      DISABLE_ASYNC: ON
+      GENERATOR: "MinGW Makefiles"
+      PLATFORM: x86-32
+    - DB: SQLite
+      USE_UNICODE: OFF
+      USE_BOOST_CONVERT: OFF
+      DISABLE_ASYNC: ON
+      GENERATOR: "MinGW Makefiles"
+      PLATFORM: x86-64
 
 matrix:
   allow_failures:
