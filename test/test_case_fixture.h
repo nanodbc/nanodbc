@@ -41,6 +41,8 @@ struct test_case_fixture : public base_test_fixture
 
         nanodbc::statement stmt(conn);
         prepare(stmt, NANODBC_TEXT("insert into test_batch_insert_integer(i) values (?)"));
+        REQUIRE(stmt.parameters() == 1);
+
         stmt.bind(0, values, batch_size);
 
         nanodbc::transact(stmt, batch_size);
@@ -142,6 +144,7 @@ struct test_case_fixture : public base_test_fixture
 
         nanodbc::statement stmt(conn);
         prepare(stmt, NANODBC_TEXT("insert into test_batch_insert_string(s) values (?)"));
+        REQUIRE(stmt.parameters() == 1);
         stmt.bind_strings(0, strings);
 
         nanodbc::transact(stmt, BatchSize);
@@ -799,6 +802,7 @@ struct test_case_fixture : public base_test_fixture
         {
             nanodbc::statement statement(connection);
             prepare(statement, NANODBC_TEXT("insert into test_date(d) values (?);"));
+            REQUIRE(statement.parameters() == 1);
 
             nanodbc::date d{2016, 7, 12};
             statement.bind(0, &d);
@@ -974,6 +978,8 @@ struct test_case_fixture : public base_test_fixture
 
         nanodbc::statement statement(connection);
         prepare(statement, NANODBC_TEXT("insert into test_integral (i, f, d) values (?, ?, ?);"));
+        REQUIRE(statement.parameters() == 3);
+
 
         std::minstd_rand nanodbc_rand;
         const T i = nanodbc_rand() % 100; // also tests if bind(T) is defined
@@ -1070,11 +1076,13 @@ struct test_case_fixture : public base_test_fixture
         nanodbc::statement statement(connection);
 
         prepare(statement, NANODBC_TEXT("insert into test_null (a, b) values (?, ?);"));
+        REQUIRE(statement.parameters() == 2);
         statement.bind_null(0);
         statement.bind_null(1);
         execute(statement);
 
         prepare(statement, NANODBC_TEXT("insert into test_null (a, b) values (?, ?);"));
+        REQUIRE(statement.parameters() == 2);
         statement.bind_null(0, 2);
         statement.bind_null(1, 2);
         execute(statement, 2);
@@ -1108,6 +1116,7 @@ struct test_case_fixture : public base_test_fixture
         {
             nanodbc::statement statement(connection);
             prepare(statement, NANODBC_TEXT("insert into test_nullptr_nulls (i) values (?);"));
+            REQUIRE(statement.parameters() == 1);
 
             int i = 5;
             statement.bind(0, &i, 1, nullptr, nanodbc::statement::PARAM_IN);
@@ -1127,6 +1136,7 @@ struct test_case_fixture : public base_test_fixture
         {
             nanodbc::statement statement(connection);
             prepare(statement, NANODBC_TEXT("insert into test_nullptr_nulls (i) values (?);"));
+            REQUIRE(statement.parameters() == 1);
 
             int i = 5;
             statement.bind(0, &i, 1, nanodbc::statement::PARAM_IN);
@@ -1325,6 +1335,7 @@ struct test_case_fixture : public base_test_fixture
 
         nanodbc::statement query(connection);
         prepare(query, NANODBC_TEXT("insert into test_string(s) values(?)"));
+        REQUIRE(query.parameters() == 1);
         query.bind(0, name.c_str());
         nanodbc::execute(query);
 
@@ -1361,6 +1372,7 @@ struct test_case_fixture : public base_test_fixture
         prepare(
             query,
             NANODBC_TEXT("insert into test_string_vector(first, last, gender) values(?, ?, ?)"));
+        REQUIRE(query.parameters() == 3);
 
         // Without nulls
         query.bind_strings(0, first_name);
@@ -1419,6 +1431,7 @@ struct test_case_fixture : public base_test_fixture
         execute(connection, create_table_sql);
         nanodbc::statement query(connection);
         prepare(query, NANODBC_TEXT("insert into test_batch_binary(s) values(?)"));
+        REQUIRE(query.parameters() == 1);
         query.bind(0, data);
         nanodbc::execute(query, 2);
 
@@ -1439,6 +1452,7 @@ struct test_case_fixture : public base_test_fixture
         {
             nanodbc::statement statement(connection);
             prepare(statement, NANODBC_TEXT("insert into test_time(t) values (?);"));
+            REQUIRE(statement.parameters() == 1);
 
             nanodbc::time t{11, 45, 59};
             statement.bind(0, &t);
@@ -1469,6 +1483,8 @@ struct test_case_fixture : public base_test_fixture
 
         nanodbc::statement statement(connection);
         prepare(statement, NANODBC_TEXT("insert into test_transaction (i) values (?);"));
+        REQUIRE(statement.parameters() == 1);
+
 
         static const int elements = 10;
         int data[elements] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
