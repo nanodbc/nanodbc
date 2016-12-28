@@ -1651,6 +1651,21 @@ public:
 
     void reset_parameters() NANODBC_NOEXCEPT { NANODBC_CALL(SQLFreeStmt, stmt_, SQL_RESET_PARAMS); }
 
+    short parameters() const
+    {
+        SQLSMALLINT params;
+        RETCODE rc;
+
+#if defined(NANODBC_DO_ASYNC_IMPL)
+        disable_async();
+#endif
+
+        NANODBC_CALL_RC(SQLNumParams, rc, stmt_, &params);
+        if (!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        return params;
+    }
+
     unsigned long parameter_size(short param_index) const
     {
         RETCODE rc;
@@ -3731,6 +3746,11 @@ long statement::affected_rows() const
 short statement::columns() const
 {
     return impl_->columns();
+}
+
+short statement::parameters() const
+{
+    return impl_->parameters();
 }
 
 void statement::reset_parameters() NANODBC_NOEXCEPT
