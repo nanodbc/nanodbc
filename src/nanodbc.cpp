@@ -1762,8 +1762,6 @@ public:
     template <class T>
     void bind_parameter(bound_parameter const& param, bound_buffer<T>& buffer)
     {
-        NANODBC_ASSERT(param.index_ >= 0);
-
         auto const buffer_size = buffer.value_size_ > 0 ? buffer.value_size_ : param.size_;
 
         RETCODE rc;
