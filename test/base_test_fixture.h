@@ -105,7 +105,9 @@ struct base_test_fixture
             return database_vendor::postgresql;
         else if (contains_string(dbms, NANODBC_TEXT("MySQL")))
             return database_vendor::mysql;
-        else if (contains_string(dbms, NANODBC_TEXT("SQLServer")))
+        else if (
+            contains_string(dbms, NANODBC_TEXT("SQLServer")) ||
+            contains_string(dbms, NANODBC_TEXT("SQL Server")))
             return database_vendor::sqlserver;
         else if (contains_string(dbms, NANODBC_TEXT("Vertica")))
             return database_vendor::vertica;
