@@ -2348,6 +2348,37 @@ public:
         return col.sqltype_;
     }
 
+    string_type column_datatype_name(short column) const
+    {
+        if (column >= bound_columns_size_)
+            throw index_range_error();
+
+        NANODBC_SQLCHAR type_name[256] = {0};
+        SQLSMALLINT len = 0; // total number of bytes
+        RETCODE rc;
+        NANODBC_CALL_RC(
+            SQLColAttribute,
+            rc,
+            stmt_.native_statement_handle(),
+            column + 1,
+            SQL_DESC_TYPE_NAME,
+            type_name,
+            sizeof(type_name) / sizeof(NANODBC_SQLCHAR),
+            &len,
+            nullptr);
+        if (!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
+
+        NANODBC_ASSERT(len % sizeof(NANODBC_SQLCHAR) == 0);
+        len = len / sizeof(NANODBC_SQLCHAR);
+        return string_type(type_name, type_name + len);
+    }
+
+    string_type column_datatype_name(const string_type& column_name) const
+    {
+        return column_datatype_name(this->column(column_name));
+    }
+
     int column_c_datatype(short column) const
     {
         if (column >= bound_columns_size_)
@@ -4543,6 +4574,16 @@ int result::column_datatype(short column) const
 int result::column_datatype(const string_type& column_name) const
 {
     return impl_->column_datatype(column_name);
+}
+
+string_type result::column_datatype_name(short column) const
+{
+    return impl_->column_datatype_name(column);
+}
+
+string_type result::column_datatype_name(const string_type& column_name) const
+{
+    return impl_->column_datatype_name(column_name);
 }
 
 int result::column_c_datatype(short column) const
