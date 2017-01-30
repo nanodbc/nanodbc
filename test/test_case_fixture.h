@@ -745,9 +745,14 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(result.column_name(0) == NANODBC_TEXT("i"));
         REQUIRE(result.column_datatype(0) == SQL_INTEGER);
         if (vendor_ == database_vendor::sqlserver)
+        {
             REQUIRE(result.column_c_datatype(0) == SQL_C_SBIGINT);
+        }
         else if (vendor_ == database_vendor::sqlite)
+        {
+            REQUIRE(result.column_datatype_name(0) == NANODBC_TEXT("int"));
             REQUIRE(result.column_c_datatype(0) == SQL_C_SBIGINT);
+        }
         REQUIRE(result.column_size(0) == 10);
         REQUIRE(result.column_decimal_digits(0) == 0);
         // d decimal(7,3)
@@ -755,6 +760,7 @@ struct test_case_fixture : public base_test_fixture
         if (vendor_ == database_vendor::sqlite)
         {
 #ifdef _WIN32
+            REQUIRE(result.column_datatype_name(1) == NANODBC_TEXT("decimal"));
             REQUIRE(result.column_datatype(1) == -9);   // FIXME: What is this type?
             REQUIRE(result.column_c_datatype(1) == -8); // FIXME: What is this type
             REQUIRE(result.column_size(1) == 7); // FIXME: SQLite ODBC mis-reports decimal digits?
@@ -780,6 +786,7 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(result.column_size(2) == 7);
         if (vendor_ == database_vendor::sqlite)
         {
+            REQUIRE(result.column_datatype_name(2) == NANODBC_TEXT("numeric"));
             REQUIRE(result.column_datatype(2) == 8); // FIXME: What is this type?
             // FIXME: SQLite ODBC mis-reports decimal digits?
             REQUIRE(result.column_decimal_digits(2) == 0);

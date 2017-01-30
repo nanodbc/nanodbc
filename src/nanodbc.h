@@ -1358,6 +1358,24 @@ public:
     /// \brief Returns a identifying integer value representing the SQL type of this column by name.
     int column_datatype(const string_type& column_name) const;
 
+    /// \brief Returns data source–dependent data type name of this column.
+    ///
+    /// The function calls SQLCoLAttribute with the field attribute SQL_DESC_TYPE_NAME to
+    /// obtain the data type name.
+    /// If the type is unknown, an empty string is returned.
+    /// \note Unlike other column metadata functions (eg. column_datatype()),
+    /// this function cost is an extra ODBC API call.
+    string_type column_datatype_name(short column) const;
+
+    /// \brief Returns data source–dependent data type name of this column by name.
+    ///
+    /// The function calls SQLCoLAttribute with the field attribute SQL_DESC_TYPE_NAME to
+    /// obtain the data type name.
+    /// If the type is unknown, an empty string is returned.
+    /// \note Unlike other column metadata functions (eg. column_datatype()),
+    /// this function cost is an extra ODBC API call.
+    string_type column_datatype_name(const string_type& column_name) const;
+
     /// \brief Returns a identifying integer value representing the C type of this column.
     int column_c_datatype(short column) const;
 
