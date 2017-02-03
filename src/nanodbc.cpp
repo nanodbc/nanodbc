@@ -2627,11 +2627,18 @@ private:
                 break;
             case SQL_DOUBLE:
             case SQL_FLOAT:
-            case SQL_DECIMAL:
             case SQL_REAL:
-            case SQL_NUMERIC:
                 col.ctype_ = SQL_C_DOUBLE;
                 col.clen_ = sizeof(double);
+                break;
+            case SQL_DECIMAL:
+            case SQL_NUMERIC:
+                col.ctype_ = SQL_C_CHAR;
+                // SQL column size defines number of digits without the decimal mark
+                // and without minus sign which may also occur.
+                // We need to adjust buffer length allow space for null-termination character
+                // as well as the fractional part separator and the minus sign.
+                col.clen_ = (col.sqlsize_ + 1 + 1 + 1) * sizeof(SQLCHAR);
                 break;
             case SQL_DATE:
             case SQL_TYPE_DATE:

@@ -427,6 +427,86 @@ TEST_CASE_METHOD(mssql_fixture, "test_datetime", "[mssql][datetime]")
     }
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_decimal", "[mssql][decimal]")
+{
+    auto connection = connect();
+    create_table(connection, NANODBC_TEXT("test_decimal"), NANODBC_TEXT("(d decimal(19,4))"));
+
+    // insert
+    {
+        execute(
+            connection,
+            NANODBC_TEXT("insert into test_decimal(d) values (-922337203685477.5808);"));
+        execute(
+            connection,
+            NANODBC_TEXT("insert into test_decimal(d) values (0);"));
+        execute(
+            connection,
+            NANODBC_TEXT("insert into test_decimal(d) values (1.23);"));
+        execute(
+            connection,
+            NANODBC_TEXT("insert into test_decimal(d) values (922337203685477.5807);"));
+    }
+
+    // select
+    {
+        auto result =
+            execute(connection, NANODBC_TEXT("select d from test_decimal order by d asc;"));
+        REQUIRE(result.next());
+        auto d = result.get<nanodbc::string_type>(0);
+        REQUIRE(d == NANODBC_TEXT("-922337203685477.5808")); // Min value of SQL data type
+        REQUIRE(result.next());
+        d = result.get<nanodbc::string_type>(0);
+        REQUIRE(d == NANODBC_TEXT(".0000"));
+        REQUIRE(result.next());
+        d = result.get<nanodbc::string_type>(0);
+        REQUIRE(d == NANODBC_TEXT("1.2300"));
+        REQUIRE(result.next());
+        d = result.get<nanodbc::string_type>(0);
+        REQUIRE(d == NANODBC_TEXT("922337203685477.5807")); // Max value of SQL data type MONEY
+    }
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_money", "[mssql][decimal][money]")
+{
+    auto connection = connect();
+    create_table(connection, NANODBC_TEXT("test_money"), NANODBC_TEXT("(d money)"));
+
+    // insert
+    {
+        execute(
+            connection,
+            NANODBC_TEXT("insert into test_money(d) values (-922337203685477.5808);"));
+        execute(
+            connection,
+            NANODBC_TEXT("insert into test_money(d) values (0);"));
+        execute(
+            connection,
+            NANODBC_TEXT("insert into test_money(d) values (1.23);"));
+        execute(
+            connection,
+            NANODBC_TEXT("insert into test_money(d) values (922337203685477.5807);"));
+    }
+
+    // select
+    {
+        auto result =
+            execute(connection, NANODBC_TEXT("select d from test_money order by d asc;"));
+        REQUIRE(result.next());
+        auto d = result.get<nanodbc::string_type>(0);
+        REQUIRE(d == NANODBC_TEXT("-922337203685477.5808")); // Min value of SQL data type MONEY
+        REQUIRE(result.next());
+        d = result.get<nanodbc::string_type>(0);
+        REQUIRE(d == NANODBC_TEXT(".0000"));
+        REQUIRE(result.next());
+        d = result.get<nanodbc::string_type>(0);
+        REQUIRE(d == NANODBC_TEXT("1.2300"));
+        REQUIRE(result.next());
+        d = result.get<nanodbc::string_type>(0);
+        REQUIRE(d == NANODBC_TEXT("922337203685477.5807")); // Max value of SQL data type MONEY
+    }
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_datetime2", "[mssql][datetime]")
 {
     auto connection = connect();

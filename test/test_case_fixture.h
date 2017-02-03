@@ -777,12 +777,11 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(
                 (result.column_datatype(1) == SQL_DECIMAL ||
                  result.column_datatype(1) == SQL_NUMERIC));
-            REQUIRE(result.column_c_datatype(1) == SQL_C_DOUBLE);
+            REQUIRE(result.column_c_datatype(1) == SQL_C_CHAR);
         }
         REQUIRE(result.column_size(1) == 7);
         // n numeric(7,3)
         REQUIRE(result.column_name(2) == NANODBC_TEXT("n"));
-        REQUIRE(result.column_c_datatype(2) == SQL_C_DOUBLE);
         REQUIRE(result.column_size(2) == 7);
         if (vendor_ == database_vendor::sqlite)
         {
@@ -790,6 +789,7 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(result.column_datatype(2) == 8); // FIXME: What is this type?
             // FIXME: SQLite ODBC mis-reports decimal digits?
             REQUIRE(result.column_decimal_digits(2) == 0);
+            REQUIRE(result.column_c_datatype(2) == SQL_C_DOUBLE);
         }
         else
         {
@@ -797,6 +797,7 @@ struct test_case_fixture : public base_test_fixture
                 (result.column_datatype(2) == SQL_DECIMAL ||
                  result.column_datatype(2) == SQL_NUMERIC));
             REQUIRE(result.column_decimal_digits(2) == 3);
+            REQUIRE(result.column_c_datatype(2) == SQL_C_CHAR);
         }
     }
 
