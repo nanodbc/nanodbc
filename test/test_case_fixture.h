@@ -988,7 +988,6 @@ struct test_case_fixture : public base_test_fixture
         prepare(statement, NANODBC_TEXT("insert into test_integral (i, f, d) values (?, ?, ?);"));
         REQUIRE(statement.parameters() == 3);
 
-
         std::minstd_rand nanodbc_rand;
         const T i = nanodbc_rand() % 100; // also tests if bind(T) is defined
         const float f = nanodbc_rand() / (nanodbc_rand() + 1.0);
@@ -1492,7 +1491,6 @@ struct test_case_fixture : public base_test_fixture
         nanodbc::statement statement(connection);
         prepare(statement, NANODBC_TEXT("insert into test_transaction (i) values (?);"));
         REQUIRE(statement.parameters() == 1);
-
 
         static const int elements = 10;
         int data[elements] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
