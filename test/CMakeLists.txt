@@ -9,7 +9,7 @@ endif()
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") 
   if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.8)
     # Workaround for Travis CI + Catch: `suggest parentheses around comparison in operand of '=='`
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=parenthesis")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=parentheses")
     endif()
 endif()
 

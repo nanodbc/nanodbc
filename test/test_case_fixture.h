@@ -8,12 +8,6 @@
 #pragma warning(disable : 4244) // conversion from 'T1' to 'T2' possible loss of data
 #endif
 
-#ifdef __GNUC__
-#if __GNUC__ == 4 && __GNUC_MINOR__ >= 4 && __GNUC_MINOR__ <= 7
-#pragma GCC diagnostic ignored "-Wparentheses"
-#endif
-#endif
-
 struct test_case_fixture : public base_test_fixture
 {
     // To invoke a unit test over all integral types, use:
