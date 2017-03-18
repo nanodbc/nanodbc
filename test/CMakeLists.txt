@@ -7,8 +7,8 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.8)
-    # Workaround for Travis CI + Catch: `suggest parentheses around comparison in operand of '=='`
+  if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.8 OR MINGW)
+    # Workaround for Travis CI|AppVeyor + Catch: `suggest parentheses around comparison in operand of '=='`
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=parentheses")
     endif()
 endif()
