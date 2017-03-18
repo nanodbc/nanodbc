@@ -11,11 +11,6 @@ option(NANODBC_TEST "build tests" ON)
 option(NANODBC_INSTALL "generate install target" ON)
 option(NANODBC_ENABLE_LIBCXX "Use libc++ if available." ON)
 
-if(APPLE)
-  message(STATUS "OS X rpath: Turned on")
-  set(CMAKE_MACOSX_RPATH ON)
-endif()
-
 ########################################
 ## require and enable C++0x/11/14
 ########################################
@@ -26,13 +21,13 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
   CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
   CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
   if(COMPILER_SUPPORTS_CXX14)
-    message(STATUS "C++ Standard: C++14")
+    message(STATUS "nanodbc build: C++ Standard: C++14")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
   elseif(COMPILER_SUPPORTS_CXX11)
-    message(STATUS "C++ Standard: C++11")
+    message(STATUS "nanodbc build: C++ Standard: C++11")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
   elseif(COMPILER_SUPPORTS_CXX0X)
-    message(STATUS "C++ Standard: C++0x")
+    message(STATUS "nanodbc build: C++ Standard: C++0x")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
   else()
     message(WARNING "Compiler ${CMAKE_CXX_COMPILER} has no C++ 0x/11/14 support.")
@@ -40,14 +35,12 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
   if(NANODBC_ENABLE_LIBCXX)
     check_cxx_compiler_flag("-stdlib=libc++" CXX_SUPPORTS_STDLIB)
     if(CXX_SUPPORTS_STDLIB)
-      message(STATUS "Using libc++: Yes")
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
       set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
       set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -stdlib=libc++")
       set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -stdlib=libc++")
-    else()
-      message(STATUS "Using libc++: No")
     endif()
+    message(STATUS "nanodbc build: Using libc++ - ${CXX_SUPPORTS_STDLIB}")
   endif()
 elseif(MSVC OR CMAKE_CXX_COMPILER_ID MATCHES "Intel")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /WX")
@@ -58,13 +51,13 @@ elseif(MSVC OR CMAKE_CXX_COMPILER_ID MATCHES "Intel")
 		set(CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG} 	/Od")
 		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O3")
 		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Qipo")
-		message(STATUS "C++ Standard: C++17")
+		message(STATUS "nanodbc build: C++ Standard: C++17")
 	else()
 		if(NOT (MSVC_VERSION LESS 1700))
-			message(STATUS "C++ Standard: C++0x")
+			message(STATUS "nanodbc build: C++ Standard: C++0x")
 			set(COMPILER_SUPPORTS_CXX0X TRUE)
 		elseif(NOT (MSVC_VERSION LESS 1900))
-			message(STATUS "C++ Standard: C++11")
+			message(STATUS "nanodbc build: C++ Standard: C++11")
 			set(COMPILER_SUPPORTS_CXX11 TRUE)
 		endif()
 	endif()
@@ -78,7 +71,7 @@ if(UNIX)
   find_program(ODBC_CONFIG odbc_config
     $ENV{ODBC_PATH}/bin /usr/bin /usr/local/bin PATHS)
   if(ODBC_CONFIG)
-    message(STATUS "ODBC: unixODBC")
+    message(STATUS "nanodbc build: ODBC on Unix - unixODBC")
     set(ODBCLIB odbc)
     execute_process(COMMAND ${ODBC_CONFIG} --include-prefix
       OUTPUT_VARIABLE ODBC_INCLUDE_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -99,7 +92,7 @@ if(UNIX)
       /usr/local/include/libodbc)
     if(UnixODBC_INCLUDE_DIR)
       set(ODBC_CONFIG 1)
-      message(STATUS "ODBC: unixODBC")
+      message(STATUS "nanodbc build: ODBC on Unix - unixODBC")
       set(ODBCLIB odbc)
       set(ODBC_CFLAGS "-I${UnixODBC_INCLUDE_DIR} -DHAVE_UNISTD_H -DHAVE_PWD_H -DHAVE_SYS_TYPES_H -DHAVE_LONG_LONG -DSIZEOF_LONG_INT=8")
     endif()
@@ -110,7 +103,7 @@ if(UNIX)
     find_program(ODBC_CONFIG iodbc-config
       $ENV{ODBC_PATH}/bin /usr/bin /usr/local/bin PATHS)
     if(ODBC_CONFIG)
-      message(STATUS "ODBC: iODBC")
+      message(STATUS "nanodbc build: ODBC on Unix - iODBC")
       set(ODBCLIB iodbc)
       execute_process(COMMAND ${ODBC_CONFIG} --cflags
         OUTPUT_VARIABLE ODBC_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -132,46 +125,39 @@ if(UNIX)
 endif()
 
 ########################################
-## build options
+## nanodbc features
 ########################################
 IF(NOT DEFINED NANODBC_ODBC_VERSION)
-  message(STATUS "ODBC Version Override: Turned off")
+  message(STATUS "nanodbc feature: ODBC Version Override - OFF")
 else()
-  message(STATUS "ODBC Version Override: ${NANODBC_ODBC_VERSION}")
+  message(STATUS "nanodbc feature: ODBC Version Override - ${NANODBC_ODBC_VERSION}")
   add_definitions(-DNANODBC_ODBC_VERSION=${NANODBC_ODBC_VERSION})
 endif()
 
 if(NANODBC_USE_UNICODE)
-  message(STATUS "Unicode support: Turned on")
   add_definitions(-DNANODBC_USE_UNICODE)
   if(MSVC)
     # Sets "Use Unicode Character Set" property in Visual Studio projects
     add_definitions(-DUNICODE -D_UNICODE)
   endif()
-else()
-  message(STATUS "Unicode support: Turned off")
 endif()
+message(STATUS "nanodbc feature: Unicode support - ${NANODBC_USE_UNICODE}")
 
 if(NANODBC_USE_BOOST_CONVERT)
-  message(STATUS "Boost string convert: Turned on")
   add_definitions(-DNANODBC_USE_BOOST_CONVERT)
-else()
-  message(STATUS "Boost string convert: Turned off")
 endif()
+message(STATUS "nanodbc feature: Boost string convert - ${NANODBC_USE_BOOST_CONVERT}")
 
 if(NANODBC_HANDLE_NODATA_BUG)
-  message(STATUS "Handle SQL_NO_DATA bug: Turned on")
   add_definitions(-DNANODBC_HANDLE_NODATA_BUG)
-else()
-  message(STATUS "Handle SQL_NO_DATA bug: Turned off")
 endif()
+message(STATUS "nanodbc feature: Handle SQL_NO_DATA bug - ${NANODBC_HANDLE_NODATA_BUG}")
 
 if(NANODBC_DISABLE_ASYNC)
   message(STATUS "Disable async features: Yes")
   add_definitions(-DNANODBC_DISABLE_ASYNC)
-else()
-  message(STATUS "Disable async features: No")
 endif()
+message(STATUS "nanodbc feature: Disable async features - ${NANODBC_DISABLE_ASYNC}")
 
 ########################################
 ## find Boost if necessary
@@ -201,15 +187,23 @@ elseif(MINGW)
 endif()
 
 ########################################
+## Mac OS X specifics
+########################################
+if(APPLE)
+  set(CMAKE_MACOSX_RPATH ON)
+  message(STATUS "Use rpaths on Mac OS X - ${CMAKE_MACOSX_RPATH}")
+endif()
+
+########################################
 ## nanodbc library target
 ########################################
 if(NANODBC_STATIC)
   add_library(nanodbc STATIC src/nanodbc.cpp src/nanodbc.h)
-  message(STATUS "Build target: STATIC")
+  message(STATUS "nanodbc build: Enable library target - STATIC")
 else()
   add_library(nanodbc SHARED src/nanodbc.cpp src/nanodbc.h)
   target_link_libraries(nanodbc ${Boost_LIBRARIES} ${ODBC_LIBRARIES})
-  message(STATUS "Build target: SHARED")
+  message(STATUS "nanodbc build: Enable library target - SHARED")
 endif()
 
 if(UNIX)
@@ -230,10 +224,8 @@ if(NANODBC_INSTALL)
       LIBRARY DESTINATION lib
       ARCHIVE DESTINATION lib)
   endif()
-  message(STATUS "Target install: Turned on")
-else()
-  message(STATUS "Target install: Turned off")
 endif()
+message(STATUS "nanodbc build: Enable install target - ${NANODBC_INSTALL}")
 
 ########################################
 ## unit tests
@@ -244,17 +236,13 @@ if(NANODBC_TEST)
   add_custom_target(check
     COMMAND ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure
     DEPENDS tests)
-  message(STATUS "Target test: Turned on")
-else()
-  message(STATUS "Target test: Turned off")
 endif()
+message(STATUS "nanodbc build: Enable test target - ${NANODBC_TEST}")
 
 ########################################
 ## examples
 ########################################
 if(NANODBC_EXAMPLES)
   add_subdirectory(examples)
-  message(STATUS "Examples: Turned on")
-else()
-  message(STATUS "Examples: Turned off")
 endif()
+message(STATUS "nanodbc build: Enable examples target - ${NANODBC_EXAMPLES}")
