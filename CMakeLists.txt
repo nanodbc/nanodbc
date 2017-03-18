@@ -43,7 +43,6 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
     message(STATUS "nanodbc build: Using libc++ - ${CXX_SUPPORTS_STDLIB}")
   endif()
 elseif(MSVC OR CMAKE_CXX_COMPILER_ID MATCHES "Intel")
-  set(CMAKE_CXX_FLAGS "/nologo ${CMAKE_CXX_FLAGS}")
   # Force to always compile with W4
   if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
     string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
@@ -205,11 +204,11 @@ endif()
 ########################################
 if(NANODBC_STATIC)
   add_library(nanodbc STATIC src/nanodbc.cpp src/nanodbc.h)
-  message(STATUS "nanodbc build: Enable library target - STATIC")
+  message(STATUS "nanodbc build: Enable nanodbc target - STATIC")
 else()
   add_library(nanodbc SHARED src/nanodbc.cpp src/nanodbc.h)
   target_link_libraries(nanodbc ${Boost_LIBRARIES} ${ODBC_LIBRARIES})
-  message(STATUS "nanodbc build: Enable library target - SHARED")
+  message(STATUS "nanodbc build: Enable nanodbc target - SHARED")
 endif()
 
 # target_include_directories(nanodbc INTERFACE
