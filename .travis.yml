@@ -22,7 +22,10 @@ matrix:
         apt:
           sources: &sources
             - ubuntu-toolchain-r-test
+            - george-edison55-precise-backports
           packages:
+            - cmake
+            - cmake-data
             - g++-5
             - unixodbc
             - unixodbc-dev
@@ -42,8 +45,11 @@ matrix:
         apt:
           sources: &sources-boost
             - ubuntu-toolchain-r-test
+            - george-edison55-precise-backports
             - boost-latest
           packages:
+            - cmake
+            - cmake-data
             - g++-5
             - libboost-locale1.55-dev
             - unixodbc
@@ -56,6 +62,8 @@ matrix:
         apt:
           sources: *sources
           packages:
+            - cmake
+            - cmake-data
             - g++-5
             - unixodbc
             - unixodbc-dev
@@ -68,6 +76,8 @@ matrix:
         apt:
           sources: *sources-boost
           packages:
+            - cmake
+            - cmake-data
             - g++-5
             - unixodbc
             - unixodbc-dev
@@ -87,6 +97,8 @@ matrix:
         apt:
           sources: *sources
           packages:
+            - cmake
+            - cmake-data
             - g++-5
             - unixodbc
             - unixodbc-dev
@@ -98,6 +110,8 @@ matrix:
         apt:
           sources: *sources
           packages:
+            - cmake
+            - cmake-data
             - g++-5
             - unixodbc
             - unixodbc-dev
@@ -108,6 +122,8 @@ matrix:
         apt:
           sources: *sources
           packages:
+            - cmake
+            - cmake-data
             - g++-5
             - unixodbc
             - unixodbc-dev
