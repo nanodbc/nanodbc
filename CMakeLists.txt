@@ -64,6 +64,41 @@ elseif(MSVC OR CMAKE_CXX_COMPILER_ID MATCHES "Intel")
 endif()
 
 ########################################
+## nanodbc features
+########################################
+IF(NOT DEFINED NANODBC_ODBC_VERSION)
+  message(STATUS "nanodbc feature: ODBC Version Override - OFF")
+else()
+  message(STATUS "nanodbc feature: ODBC Version Override - ${NANODBC_ODBC_VERSION}")
+  add_definitions(-DNANODBC_ODBC_VERSION=${NANODBC_ODBC_VERSION})
+endif()
+
+if(NANODBC_USE_UNICODE)
+  add_definitions(-DNANODBC_USE_UNICODE)
+  if(MSVC)
+    # Sets "Use Unicode Character Set" property in Visual Studio projects
+    add_definitions(-DUNICODE -D_UNICODE)
+  endif()
+endif()
+message(STATUS "nanodbc feature: Unicode support - ${NANODBC_USE_UNICODE}")
+
+if(NANODBC_USE_BOOST_CONVERT)
+  add_definitions(-DNANODBC_USE_BOOST_CONVERT)
+endif()
+message(STATUS "nanodbc feature: Boost string convert - ${NANODBC_USE_BOOST_CONVERT}")
+
+if(NANODBC_HANDLE_NODATA_BUG)
+  add_definitions(-DNANODBC_HANDLE_NODATA_BUG)
+endif()
+message(STATUS "nanodbc feature: Handle SQL_NO_DATA bug - ${NANODBC_HANDLE_NODATA_BUG}")
+
+if(NANODBC_DISABLE_ASYNC)
+  message(STATUS "Disable async features: Yes")
+  add_definitions(-DNANODBC_DISABLE_ASYNC)
+endif()
+message(STATUS "nanodbc feature: Disable async features - ${NANODBC_DISABLE_ASYNC}")
+
+########################################
 ## find unixODBC or iODBC config binary
 ########################################
 if(UNIX)
@@ -125,39 +160,16 @@ if(UNIX)
 endif()
 
 ########################################
-## nanodbc features
+## find ODBC libraries to link
 ########################################
-IF(NOT DEFINED NANODBC_ODBC_VERSION)
-  message(STATUS "nanodbc feature: ODBC Version Override - OFF")
-else()
-  message(STATUS "nanodbc feature: ODBC Version Override - ${NANODBC_ODBC_VERSION}")
-  add_definitions(-DNANODBC_ODBC_VERSION=${NANODBC_ODBC_VERSION})
+if(UNIX)
+  set(ODBC_LIBRARIES ${ODBCLIB})
+  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${ODBC_LINK_FLAGS}")
+elseif(MSVC OR CMAKE_CXX_COMPILER_ID MATCHES "Intel")
+  set(ODBC_LIBRARIES odbc32.lib odbccp32.lib Ws2_32.lib)
+elseif(MINGW)
+  set(ODBC_LIBRARIES odbc32 odbccp32)
 endif()
-
-if(NANODBC_USE_UNICODE)
-  add_definitions(-DNANODBC_USE_UNICODE)
-  if(MSVC)
-    # Sets "Use Unicode Character Set" property in Visual Studio projects
-    add_definitions(-DUNICODE -D_UNICODE)
-  endif()
-endif()
-message(STATUS "nanodbc feature: Unicode support - ${NANODBC_USE_UNICODE}")
-
-if(NANODBC_USE_BOOST_CONVERT)
-  add_definitions(-DNANODBC_USE_BOOST_CONVERT)
-endif()
-message(STATUS "nanodbc feature: Boost string convert - ${NANODBC_USE_BOOST_CONVERT}")
-
-if(NANODBC_HANDLE_NODATA_BUG)
-  add_definitions(-DNANODBC_HANDLE_NODATA_BUG)
-endif()
-message(STATUS "nanodbc feature: Handle SQL_NO_DATA bug - ${NANODBC_HANDLE_NODATA_BUG}")
-
-if(NANODBC_DISABLE_ASYNC)
-  message(STATUS "Disable async features: Yes")
-  add_definitions(-DNANODBC_DISABLE_ASYNC)
-endif()
-message(STATUS "nanodbc feature: Disable async features - ${NANODBC_DISABLE_ASYNC}")
 
 ########################################
 ## find Boost if necessary
@@ -175,19 +187,7 @@ if(NANODBC_USE_BOOST_CONVERT)
 endif()
 
 ########################################
-## setup ODBC link libraries
-########################################
-if(UNIX)
-  set(ODBC_LIBRARIES ${ODBCLIB})
-  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${ODBC_LINK_FLAGS}")
-elseif(MSVC OR CMAKE_CXX_COMPILER_ID MATCHES "Intel")
-  set(ODBC_LIBRARIES odbc32.lib odbccp32.lib Ws2_32.lib)
-elseif(MINGW)
-  set(ODBC_LIBRARIES odbc32 odbccp32)
-endif()
-
-########################################
-## Mac OS X specifics
+## Mac OS X specifics for targets
 ########################################
 if(APPLE)
   set(CMAKE_MACOSX_RPATH ON)
@@ -195,7 +195,7 @@ if(APPLE)
 endif()
 
 ########################################
-## nanodbc library target
+## library targets
 ########################################
 if(NANODBC_STATIC)
   add_library(nanodbc STATIC src/nanodbc.cpp src/nanodbc.h)
@@ -228,7 +228,7 @@ endif()
 message(STATUS "nanodbc build: Enable install target - ${NANODBC_INSTALL}")
 
 ########################################
-## unit tests
+## tests targets
 ########################################
 if(NANODBC_TEST)
   enable_testing()
@@ -240,7 +240,7 @@ endif()
 message(STATUS "nanodbc build: Enable test target - ${NANODBC_TEST}")
 
 ########################################
-## examples
+## examples targets
 ########################################
 if(NANODBC_EXAMPLES)
   add_subdirectory(examples)
