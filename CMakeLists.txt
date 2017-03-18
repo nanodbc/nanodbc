@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.7)
+cmake_minimum_required(VERSION 3.0.0)
 project(nanodbc CXX)
 
 option(NANODBC_USE_UNICODE "build with unicode support turned on" OFF)
