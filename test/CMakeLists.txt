@@ -1,9 +1,16 @@
 cmake_minimum_required(VERSION 2.8.7)
 include(ExternalProject)
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
-  # Workaround for a Travis-CI + Catch build issue: `error: ignoring #pragma gcc diagnostic`
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
+  # Workaround for Travis CI + Catch: `error: ignoring #pragma gcc diagnostic`
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
+endif()
+
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") 
+  if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.8)
+    # Workaround for Travis CI + Catch: `suggest parentheses around comparison in operand of '=='`
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=parenthesis")
+    endif()
 endif()
 
 find_package(Git REQUIRED)
