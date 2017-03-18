@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.7)
-project(nanodbc)
+project(nanodbc CXX)
 
 option(NANODBC_USE_UNICODE "build with unicode support turned on" OFF)
 option(NANODBC_USE_BOOST_CONVERT "build using Boost.Locale for string convert" OFF)
