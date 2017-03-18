@@ -179,7 +179,7 @@ if(NANODBC_USE_BOOST_CONVERT)
   set(Boost_USE_MULTITHREADED ON)
   find_package(Boost COMPONENTS locale REQUIRED)
   if(Boost_FOUND)
-    include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/src ${Boost_INCLUDE_DIRS})
+    include_directories(${Boost_INCLUDE_DIRS})
     link_directories(${CMAKE_BINARY_DIR}/lib ${Boost_LIBRARY_DIRS})
   else()
     message(FATAL_ERROR "can not find boost")
@@ -206,14 +206,20 @@ else()
   message(STATUS "nanodbc build: Enable library target - SHARED")
 endif()
 
+# target_include_directories(nanodbc INTERFACE
+#   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+#   $<INSTALL_INTERFACE:include/nanodbc>) # <prefix>/include/nanodbc
+
 if(UNIX)
   set_target_properties(nanodbc PROPERTIES
     COMPILE_FLAGS "${ODBC_CFLAGS}"
     LIBRARY_OUTPUT_DIRECTORY "lib")
 endif()
 
+########################################
+## install targets
+########################################
 if(NANODBC_INSTALL)
-  install(FILES src/nanodbc.h DESTINATION include)
   if(NANODBC_STATIC)
     install(TARGETS nanodbc
       ARCHIVE DESTINATION lib
@@ -224,6 +230,7 @@ if(NANODBC_INSTALL)
       LIBRARY DESTINATION lib
       ARCHIVE DESTINATION lib)
   endif()
+  install(FILES src/nanodbc.h DESTINATION include)
 endif()
 message(STATUS "nanodbc build: Enable install target - ${NANODBC_INSTALL}")
 
@@ -237,7 +244,7 @@ if(NANODBC_TEST)
     COMMAND ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure
     DEPENDS tests)
 endif()
-message(STATUS "nanodbc build: Enable test target - ${NANODBC_TEST}")
+message(STATUS "nanodbc build: Enable tests target - ${NANODBC_TEST}")
 
 ########################################
 ## examples targets
