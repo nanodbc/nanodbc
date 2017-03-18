@@ -170,8 +170,15 @@ test_script:
 after_test:
   - ps: |
       if ($env:GENERATOR -Match "NMake") {
-        'Write-Host "Running install:" -ForegroundColor Magenta'
+        Write-Host "Running install:" -ForegroundColor Magenta
         cmake --build . --target install
+      }
+  - ps: |
+      if ($env:GENERATOR -Match "NMake") {
+        Write-Host "Building examples/client based on nanodbc package configuration:" -ForegroundColor Magenta
+        cd $env:APPVEYOR_BUILD_FOLDER\examples\client
+        cmake.exe -G $env:GENERATOR -DCMAKE_BUILD_TYPE=Release .
+        cmake --build . --config Release
       }
 
 # If you need to debug AppVeyor session (https://www.appveyor.com/docs/how-to/rdp-to-build-worker), then:
