@@ -236,16 +236,6 @@ else()
 endif()
 
 ########################################
-## examples
-########################################
-if(NANODBC_EXAMPLES)
-  add_subdirectory(examples)
-  message(STATUS "Examples: Turned on")
-else()
-  message(STATUS "Examples: Turned off")
-endif()
-
-########################################
 ## unit tests
 ########################################
 if(NANODBC_TEST)
@@ -257,4 +247,14 @@ if(NANODBC_TEST)
   message(STATUS "Target test: Turned on")
 else()
   message(STATUS "Target test: Turned off")
+endif()
+
+########################################
+## examples
+########################################
+if(NANODBC_EXAMPLES)
+  add_subdirectory(examples)
+  message(STATUS "Examples: Turned on")
+else()
+  message(STATUS "Examples: Turned off")
 endif()
