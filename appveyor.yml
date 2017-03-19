@@ -109,7 +109,7 @@ install:
       }
 
 before_build:
-  - ps: 'Write-Host "Running cmake:" -ForegroundColor Magenta'
+  - ps: 'Write-Host "Running cmake: $env:GENERATOR" -ForegroundColor Magenta'
   - cmake.exe -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=Release -DNANODBC_USE_BOOST_CONVERT=%USE_BOOST_CONVERT% -DNANODBC_USE_UNICODE=%USE_UNICODE% -DNANODBC_DISABLE_ASYNC=%DISABLE_ASYNC% -DNANODBC_STATIC=ON -DNANODBC_HANDLE_NODATA_BUG=OFF -DNANODBC_INSTALL=OFF %APPVEYOR_BUILD_FOLDER%
 
 build_script:
@@ -166,6 +166,13 @@ test_script:
       $cmd = 'ctest -V --output-on-failure -C ' + $Env:CONFIGURATION + ' -R ' + $test_name
       iex "& $cmd"
       if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
+
+after_test:
+  - ps: |
+      if ($env:GENERATOR -Match "NMake") {
+        'Write-Host "Running install:" -ForegroundColor Magenta'
+        cmake --build . --target install
+      }
 
 # If you need to debug AppVeyor session (https://www.appveyor.com/docs/how-to/rdp-to-build-worker), then:
 # 1. Uncomment the on_finish section below:
