@@ -203,13 +203,13 @@ endif()
 ## library targets
 ########################################
 # On Windows, force stateic library, shared library (DLL) not supported
-if(NOT NANODBC_STATIC OR WIN32)
+if(NANODBC_STATIC OR WIN32)
+  add_library(nanodbc STATIC src/nanodbc.cpp src/nanodbc.h)
+  message(STATUS "nanodbc build: Enable nanodbc target - STATIC")
+else()
   add_library(nanodbc SHARED src/nanodbc.cpp src/nanodbc.h)
   target_link_libraries(nanodbc ${Boost_LIBRARIES} ${ODBC_LIBRARIES})
   message(STATUS "nanodbc build: Enable nanodbc target - SHARED")
-else()
-  add_library(nanodbc STATIC src/nanodbc.cpp src/nanodbc.h)
-  message(STATUS "nanodbc build: Enable nanodbc target - STATIC")
 endif()
 
 if(UNIX)
