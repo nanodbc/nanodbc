@@ -17,6 +17,20 @@ clone_depth: 5
 
 environment:
   matrix:
+    - DB: SQLite
+      GENERATOR: "Visual Studio 14 2015"
+      USE_UNICODE: OFF
+      USE_BOOST_CONVERT: OFF
+    - DB: SQLite
+      GENERATOR: "Visual Studio 14 2015 Win64"
+      USE_UNICODE: OFF
+      USE_BOOST_CONVERT: OFF
+    - DB: SQLite
+      GENERATOR: "NMake Makefiles"
+      PLATFORM: x86-32
+      USE_UNICODE: OFF
+      USE_BOOST_CONVERT: OFF
+      DISABLE_ASYNC: ON
     - DB: MSSQL2016
       GENERATOR: "Visual Studio 14 2015 Win64"
       USE_UNICODE: OFF
@@ -41,20 +55,6 @@ environment:
       GENERATOR: "Visual Studio 14 2015 Win64"
       USE_UNICODE: OFF
       USE_BOOST_CONVERT: OFF
-    - DB: SQLite
-      GENERATOR: "Visual Studio 14 2015"
-      USE_UNICODE: OFF
-      USE_BOOST_CONVERT: OFF
-    - DB: SQLite
-      GENERATOR: "Visual Studio 14 2015 Win64"
-      USE_UNICODE: OFF
-      USE_BOOST_CONVERT: OFF
-    - DB: SQLite
-      GENERATOR: "NMake Makefiles"
-      PLATFORM: x86-32
-      USE_UNICODE: OFF
-      USE_BOOST_CONVERT: OFF
-      DISABLE_ASYNC: ON
     - DB: SQLite
       GENERATOR: "MinGW Makefiles"
       PLATFORM: x86-32
