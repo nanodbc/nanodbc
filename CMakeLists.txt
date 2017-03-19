@@ -202,7 +202,7 @@ endif()
 ########################################
 ## library targets
 ########################################
-# On Windows, force stateic library, shared library (DLL) not supported
+# On Windows, force static library, shared library (DLL) not supported
 if(NANODBC_STATIC OR WIN32)
   add_library(nanodbc STATIC src/nanodbc.cpp src/nanodbc.h)
   message(STATUS "nanodbc build: Enable nanodbc target - STATIC")
