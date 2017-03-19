@@ -5,7 +5,7 @@ option(NANODBC_USE_UNICODE "build with unicode support turned on" OFF)
 option(NANODBC_USE_BOOST_CONVERT "build using Boost.Locale for string convert" OFF)
 option(NANODBC_HANDLE_NODATA_BUG "enable special handling for SQL_NO_DATA (required for vertica)" OFF)
 option(NANODBC_DISABLE_ASYNC "disable async features entirely (may help resolve issues in VS2015 builds)" OFF)
-option(NANODBC_STATIC "build static instead of shared library" OFF)
+option(NANODBC_STATIC "build static instead of shared library (not supported on Windows)" OFF)
 option(NANODBC_EXAMPLES "build examples" ON)
 option(NANODBC_TEST "build tests" ON)
 option(NANODBC_INSTALL "generate install target" ON)
@@ -202,18 +202,15 @@ endif()
 ########################################
 ## library targets
 ########################################
-if(NANODBC_STATIC)
-  add_library(nanodbc STATIC src/nanodbc.cpp src/nanodbc.h)
-  message(STATUS "nanodbc build: Enable nanodbc target - STATIC")
-else()
+# On Windows, force stateic library, shared library (DLL) not supported
+if(NOT NANODBC_STATIC OR WIN32)
   add_library(nanodbc SHARED src/nanodbc.cpp src/nanodbc.h)
   target_link_libraries(nanodbc ${Boost_LIBRARIES} ${ODBC_LIBRARIES})
   message(STATUS "nanodbc build: Enable nanodbc target - SHARED")
+else()
+  add_library(nanodbc STATIC src/nanodbc.cpp src/nanodbc.h)
+  message(STATUS "nanodbc build: Enable nanodbc target - STATIC")
 endif()
-
-# target_include_directories(nanodbc INTERFACE
-#   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
-#   $<INSTALL_INTERFACE:include/nanodbc>) # <prefix>/include/nanodbc
 
 if(UNIX)
   set_target_properties(nanodbc PROPERTIES
