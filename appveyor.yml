@@ -79,14 +79,8 @@ init:
   - ps: |
       Write-Host "Build worker environment variables:" -ForegroundColor Magenta
       Get-ChildItem Env: | %{"{0}={1}" -f $_.Name,$_.Value}
-  - ps: |
-      if ($env:GENERATOR -Match "NMake") {
-        if ($env:PLATFORM -Match "x86-32") {
-          C:\"Program Files (x86)"\"Microsoft Visual Studio 14.0"\VC\vcvarsall.bat x86
-        } else {
-          C:\"Program Files (x86)"\"Microsoft Visual Studio 14.0"\VC\vcvarsall.bat x64
-        }
-      }
+  - if "%GENERATOR%"=="NMake Makefiles" if "%PLATFORM%"=="x86-32" call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86
+  - if "%GENERATOR%"=="NMake Makefiles" if "%PLATFORM%"=="x86-64" "C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x64
 
 install:
   - ps: |
