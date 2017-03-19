@@ -50,6 +50,12 @@ environment:
       USE_UNICODE: OFF
       USE_BOOST_CONVERT: OFF
     - DB: SQLite
+      GENERATOR: "NMake Makefiles"
+      PLATFORM: x86-32
+      USE_UNICODE: OFF
+      USE_BOOST_CONVERT: OFF
+      DISABLE_ASYNC: ON
+    - DB: SQLite
       GENERATOR: "MinGW Makefiles"
       PLATFORM: x86-32
       USE_UNICODE: OFF
@@ -73,6 +79,14 @@ init:
   - ps: |
       Write-Host "Build worker environment variables:" -ForegroundColor Magenta
       Get-ChildItem Env: | %{"{0}={1}" -f $_.Name,$_.Value}
+  - ps: |
+      if ($env:GENERATOR -Match "NMake") {
+        if ($env:PLATFORM -Match "x86-32") {
+          C:\"Program Files (x86)"\"Microsoft Visual Studio 14.0"\VC\vcvarsall.bat x86
+        } else {
+          C:\"Program Files (x86)"\"Microsoft Visual Studio 14.0"\VC\vcvarsall.bat x64
+        }
+      }
 
 install:
   - ps: |
