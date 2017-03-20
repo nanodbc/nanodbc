@@ -14,13 +14,8 @@
 
 /.vagrant
 /.vscode
-/_build/
-/_build32/
-/_build64/
-/build/
-/build32/
-/build64/
-/build.local.bat
+/*build*/
+/*.local.bat
 /doc
 /docker_build/
 example
