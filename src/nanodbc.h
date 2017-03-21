@@ -1358,7 +1358,7 @@ public:
     /// \brief Returns a identifying integer value representing the SQL type of this column by name.
     int column_datatype(const string_type& column_name) const;
 
-    /// \brief Returns data source–dependent data type name of this column.
+    /// \brief Returns data source dependent data type name of this column.
     ///
     /// The function calls SQLCoLAttribute with the field attribute SQL_DESC_TYPE_NAME to
     /// obtain the data type name.
@@ -1367,7 +1367,7 @@ public:
     /// this function cost is an extra ODBC API call.
     string_type column_datatype_name(short column) const;
 
-    /// \brief Returns data source–dependent data type name of this column by name.
+    /// \brief Returns data source dependent data type name of this column by name.
     ///
     /// The function calls SQLCoLAttribute with the field attribute SQL_DESC_TYPE_NAME to
     /// obtain the data type name.
