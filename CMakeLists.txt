@@ -208,9 +208,14 @@ if(NANODBC_STATIC OR WIN32)
   message(STATUS "nanodbc build: Enable nanodbc target - STATIC")
 else()
   add_library(nanodbc SHARED src/nanodbc.cpp src/nanodbc.h)
-  target_link_libraries(nanodbc ${Boost_LIBRARIES} ${ODBC_LIBRARIES})
   message(STATUS "nanodbc build: Enable nanodbc target - SHARED")
 endif()
+
+target_link_libraries(nanodbc ${Boost_LIBRARIES} ${ODBC_LIBRARIES})
+
+target_include_directories(nanodbc INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+  $<INSTALL_INTERFACE:include>) # <prefix>/include
 
 if(UNIX)
   set_target_properties(nanodbc PROPERTIES
@@ -222,17 +227,30 @@ endif()
 ## install targets
 ########################################
 if(NANODBC_INSTALL)
+  set(NANODBC_CONFIG nanodbc-config)
+  # 'make install' to the correct location
   if(NANODBC_STATIC)
     install(TARGETS nanodbc
-      ARCHIVE DESTINATION lib
-      LIBRARY DESTINATION lib)
-  else()
-    install(TARGETS nanodbc
-      RUNTIME DESTINATION bin
+      EXPORT ${NANODBC_CONFIG} # associate installed target files with export
+      INCLUDES DESTINATION include
       LIBRARY DESTINATION lib
       ARCHIVE DESTINATION lib)
+  else()
+    install(TARGETS nanodbc
+      EXPORT ${NANODBC_CONFIG} # associate installed target files with export
+      INCLUDES DESTINATION include
+      LIBRARY DESTINATION lib
+      ARCHIVE DESTINATION lib
+      RUNTIME DESTINATION bin) # for Windows
   endif()
+  # Install public include headers
   install(FILES src/nanodbc.h DESTINATION include)
+  # Make project importable from the install directory
+  ## Generate and install *-config.cmake exporting targets from install tree.
+  install(EXPORT ${NANODBC_CONFIG} DESTINATION cmake)
+  # Make project importable from the build directory
+  ## Generate file *-config.cmake exporting targets from build tree.
+  export(TARGETS nanodbc FILE ${NANODBC_CONFIG}.cmake)
 endif()
 message(STATUS "nanodbc build: Enable install target - ${NANODBC_INSTALL}")
 
