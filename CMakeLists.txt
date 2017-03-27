@@ -5,7 +5,6 @@ option(NANODBC_USE_UNICODE "build with unicode support turned on" OFF)
 option(NANODBC_USE_BOOST_CONVERT "build using Boost.Locale for string convert" OFF)
 option(NANODBC_HANDLE_NODATA_BUG "enable special handling for SQL_NO_DATA (required for vertica)" OFF)
 option(NANODBC_DISABLE_ASYNC "disable async features entirely (may help resolve issues in VS2015 builds)" OFF)
-option(NANODBC_STATIC "build static instead of shared library (not supported on Windows)" OFF)
 option(NANODBC_EXAMPLES "build examples" ON)
 option(NANODBC_TEST "build tests" ON)
 option(NANODBC_INSTALL "generate install target" ON)
@@ -200,16 +199,27 @@ if(APPLE)
 endif()
 
 ########################################
-## library targets
+## library target
 ########################################
-# On Windows, force static library, shared library (DLL) not supported
-if(NANODBC_STATIC OR WIN32)
-  add_library(nanodbc STATIC src/nanodbc.cpp src/nanodbc.h)
-  message(STATUS "nanodbc build: Enable nanodbc target - STATIC")
-else()
-  add_library(nanodbc SHARED src/nanodbc.cpp src/nanodbc.h)
+if(BUILD_SHARED_LIBS)
   message(STATUS "nanodbc build: Enable nanodbc target - SHARED")
+else()
+  message(STATUS "nanodbc build: Enable nanodbc target - STATIC")
 endif()
+
+if(WIN32 AND NOT MINGW AND BUILD_SHARED_LIBS)
+  message(FATAL_ERROR "Building shared libraries on Windows needs MinGW")
+endif()
+
+add_library(nanodbc src/nanodbc.cpp src/nanodbc.h)
+
+# TODO: Consider version/soverson support
+# if(BUILD_SHARED_LIBS)
+#   set_target_properties(nanodbc PROPERTIES
+#     VERSION ${PROJECT_VERSION}
+#     SOVERSION ${SHARED_LIBRARY_VERSION}
+#     COMPILE_DEFINITIONS freetype_EXPORTS)
+# endif()
 
 target_link_libraries(nanodbc ${Boost_LIBRARIES} ${ODBC_LIBRARIES})
 
@@ -229,19 +239,19 @@ endif()
 if(NANODBC_INSTALL)
   set(NANODBC_CONFIG nanodbc-config)
   # 'make install' to the correct location
-  if(NANODBC_STATIC)
-    install(TARGETS nanodbc
-      EXPORT ${NANODBC_CONFIG} # associate installed target files with export
-      INCLUDES DESTINATION include
-      LIBRARY DESTINATION lib
-      ARCHIVE DESTINATION lib)
-  else()
+  if(BUILD_SHARED_LIBS)
     install(TARGETS nanodbc
       EXPORT ${NANODBC_CONFIG} # associate installed target files with export
       INCLUDES DESTINATION include
       LIBRARY DESTINATION lib
       ARCHIVE DESTINATION lib
       RUNTIME DESTINATION bin) # for Windows
+  else()
+    install(TARGETS nanodbc
+      EXPORT ${NANODBC_CONFIG} # associate installed target files with export
+      INCLUDES DESTINATION include
+      LIBRARY DESTINATION lib
+      ARCHIVE DESTINATION lib)
   endif()
   # Install public include headers
   install(FILES src/nanodbc.h DESTINATION include)

@@ -118,10 +118,11 @@ flags yourself. You will need to configure your build to use [boost][boost] if y
 | `NANODBC_HANDLE_NODATA_BUG`           | `OFF` or `ON`         | `OFF`         | Provided to resolve issue [#33](https://github.com/lexicalunit/nanodbc/issues/33), details [in this commit](https://github.com/lexicalunit/nanodbc/commit/918d73cdf12d5903098381344eecde8e7d5d896e). |
 | `NANODBC_INSTALL`                     | `OFF` or `ON`         | `ON`          | Enables install target. |
 | `NANODBC_ODBC_VERSION`                | `SQL_OV_ODBC3[...]`   | See Details   | **[Optional]** Sets the ODBC version macro for nanodbc to use. Default is `SQL_OV_ODBC3_80` if available, otherwise `SQL_OV_ODBC3`. |
-| `NANODBC_STATIC`                      | `OFF` or `ON`         | `OFF`         | Enables building a static library, otherwise the build process produces a shared library. |
 | `NANODBC_TEST`                        | `OFF` or `ON`         | `ON`          | Enables tests target (alias `check`). |
 | `NANODBC_USE_BOOST_CONVERT`           | `OFF` or `ON`         | `OFF`         | Provided as workaround to issue [#44](https://github.com/lexicalunit/nanodbc/issues/44). |
 | `NANODBC_USE_UNICODE`                 | `OFF` or `ON`         | `OFF`         | Enables full unicode support. `nanodbc::string` becomes `std::u16string` or `std::u32string`. |
+
+Use the standard CMake option `-DBUILD_SHARED_LIBS=ON` to build nanodbc as shared library.
 
 ## Note About iODBC
 
