@@ -458,12 +458,15 @@ struct test_case_fixture : public base_test_fixture
                  columns.sql_data_type() == SQL_BINARY));        // SQLite
             // SQL Server: if n is not specified in [var]binary(n), the default length is 1
             // PostgreSQL: bytea default length is reported as 255,
-            // unless ByteaAsLongVarBinary=1 option is specified in connection string.
+            // unless ByteaAsLongVarBinary=1 (default) option is specified in connection string.
+            // See https://github.com/lexicalunit/nanodbc/issues/249
             // Vertica: column size is 80
             if (contains_string(dbms, NANODBC_TEXT("SQLite")))
                 REQUIRE(columns.column_size() == 0);
             else
-                REQUIRE(columns.column_size() > 0); // no need to test exact value
+                REQUIRE(
+                    (columns.column_size() > 0 ||
+                     columns.column_size() == SQL_NO_TOTAL)); // no need to test exact value
 
             // expect no more records
             REQUIRE(!columns.next());
