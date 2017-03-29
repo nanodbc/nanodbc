@@ -9,27 +9,73 @@ branches:
     - release
     - coverity_scan
 
+git:
+  depth: 10
+
+notifications:
+  email:
+    on_success: never
+    on_failure: change
+
 env:
   global:
     # COVERITY_SCAN_TOKEN
-    - secure: "o08nQFKhuSrBTX4FJO22YZ4h+igFq+Hgtz1bUW8wjKVNo83GTqJ2Z/gZfxSlxXBypJtz24Z14NsgCrb3XYrXwuMpTTsKK1SCzTHzmaf8BqZ1qJ9hYFtuX/Q8YInL1c27g5FUfvAWO1SlBAMOLuk+OqrX3lYb/yzf+3O1Ndvn2JRMx5QaONUd7jTWs04VXZzvBpNfZOPU0ypKm6NEIvN/Wjak979iSLnW7O/HjpsOgdXEAzpIqb/xRaoDtrKPIkPwoDbi2kbrZcw+/ile3iZ2m1l9MP4s79WDn/v1FtFBv+C4GI7ikXPG6qQ8J6yWyrOcnt1HZ9u+gdJ9E8rsZpMDSaR2rSB70rJMCGXzeG14dRUCzZsnumJ55+aY6rr/TDljOCOHQdHYofg0v6p82aojhtUo35EmedYbwkrIc7E2QzfGuKL2qpBjsXFnXrTRRuwtY+XQI/YF6nGECHSD/3JQTEZv14ICPh6IiWF2fMqLvsxEBIk5sZahyBCyY1peQqb7CvxG4v1nNy3M9hS+k3L7Si541UpborI03sWgEUKWl9dBOxAwdYBaI6o4o+NvfpRbBY8rZLaEy+hKn+UuglQBeunMB54dvZxpS7zbPkWgBrnhIWMz89Rx6DT97OsHJdgDNcUOPv1b6xRAQqs+Zd3+nZ2vQIkvZJU5FwljLRWCfdg="
+    - secure: "o08nQFKhuSrBTX4FJO22YZ4h+igFq+Hgtz1bUW8wjKVNo83GTqJ2Z/gZfxSlxXBypJtz24Z14NsgCrb3XYrX
+               wuMpTTsKK1SCzTHzmaf8BqZ1qJ9hYFtuX/Q8YInL1c27g5FUfvAWO1SlBAMOLuk+OqrX3lYb/yzf+3O1Ndvn\
+               2JRMx5QaONUd7jTWs04VXZzvBpNfZOPU0ypKm6NEIvN/Wjak979iSLnW7O/HjpsOgdXEAzpIqb/xRaoDtrKP\
+               IkPwoDbi2kbrZcw+/ile3iZ2m1l9MP4s79WDn/v1FtFBv+C4GI7ikXPG6qQ8J6yWyrOcnt1HZ9u+gdJ9E8rs\
+               ZpMDSaR2rSB70rJMCGXzeG14dRUCzZsnumJ55+aY6rr/TDljOCOHQdHYofg0v6p82aojhtUo35EmedYbwkrI\
+               c7E2QzfGuKL2qpBjsXFnXrTRRuwtY+XQI/YF6nGECHSD/3JQTEZv14ICPh6IiWF2fMqLvsxEBIk5sZahyBCy\
+               Y1peQqb7CvxG4v1nNy3M9hS+k3L7Si541UpborI03sWgEUKWl9dBOxAwdYBaI6o4o+NvfpRbBY8rZLaEy+hK\
+               n+UuglQBeunMB54dvZxpS7zbPkWgBrnhIWMz89Rx6DT97OsHJdgDNcUOPv1b6xRAQqs+Zd3+nZ2vQIkvZJU5\
+               FwljLRWCfdg="
+
+ref:
+  sources: &sources
+    - boost-latest
+    - george-edison55-precise-backports
+    - ubuntu-toolchain-r-test
+  packages: &packages
+    - cmake
+    - cmake-data
+    - g++-5
+    - libboost-locale1.55-dev
+    - libmyodbc
+    - libsqliteodbc
+    - mysql-client
+    - odbc-postgresql
+    - unixodbc
+    - unixodbc-dev
+  sqlite: &sqlite
+    apt:
+      sources: *sources
+      packages: *packages
+  mysql: &mysql
+    mysql: "5.5"
+    apt:
+      sources: *sources
+      packages: *packages
+  postgresql: &postgresql
+    postgresql: "9.1"
+    apt:
+      sources: *sources
+      packages: *packages
+  mariadb: &mariadb
+    mariadb: "10.0"
+    apt:
+      sources: *sources
+      packages: *packages
+  vertica: &vertica
+    apt:
+      sources: *sources
+      packages: *packages
 
 matrix:
   include:
-    - env: DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=OFF COVERITY=ON
-      compiler: gcc
-      addons: &sqlite
+    - addons:
         apt:
-          sources: &sources
-            - ubuntu-toolchain-r-test
-            - george-edison55-precise-backports
-          packages:
-            - cmake
-            - cmake-data
-            - g++-5
-            - unixodbc
-            - unixodbc-dev
-            - libsqliteodbc
+          sources: *sources
+          packages: *packages
         # The single build job that submits the Coverity Scan file
         coverity_scan:
           project:
@@ -39,153 +85,67 @@ matrix:
           build_command_prepend: mkdir -p build.coverity && pushd build.coverity && cmake -DCMAKE_BUILD_TYPE=Debug .. && popd
           build_command: cmake --build ./build.coverity
           branch_pattern: coverity_scan
-    - env: DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=OFF BUILD_SHARED_LIBS=ON
       compiler: gcc
-      addons:
-        apt:
-          sources: &sources-boost
-            - ubuntu-toolchain-r-test
-            - george-edison55-precise-backports
-            - boost-latest
-          packages:
-            - cmake
-            - cmake-data
-            - g++-5
-            - libboost-locale1.55-dev
-            - unixodbc
-            - unixodbc-dev
-            - libsqliteodbc
-    - env: DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=ON
+      env: DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=OFF COVERITY=ON ENABLE_LIBCXX=OFF
+      os: linux
+    - addons: *sqlite
       compiler: gcc
-      addons:
-        apt:
-          sources: &sources-boost
-            - ubuntu-toolchain-r-test
-            - george-edison55-precise-backports
-            - boost-latest
-          packages:
-            - cmake
-            - cmake-data
-            - g++-5
-            - libboost-locale1.55-dev
-            - unixodbc
-            - unixodbc-dev
-            - libsqliteodbc
-    - env: DB=mysql USE_UNICODE=OFF USE_BOOST_CONVERT=OFF
+      env: DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=OFF BUILD_SHARED_LIBS=ON ENABLE_LIBCXX=OFF
+      os: linux
+    - addons: *sqlite
       compiler: gcc
-      addons: &mysql
-        mysql: "5.5"
-        apt:
-          sources: *sources
-          packages:
-            - cmake
-            - cmake-data
-            - g++-5
-            - unixodbc
-            - unixodbc-dev
-            - libmyodbc
-            - mysql-client
-    - env: DB=mysql USE_UNICODE=OFF USE_BOOST_CONVERT=ON
+      env: DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=ON ENABLE_LIBCXX=OFF
+      os: linux
+    - addons: *mysql
       compiler: gcc
-      addons: &mysql-boost
-        mysql: "5.5"
-        apt:
-          sources: *sources-boost
-          packages:
-            - cmake
-            - cmake-data
-            - g++-5
-            - unixodbc
-            - unixodbc-dev
-            - libboost-locale1.55-dev
-            - libmyodbc
-            - mysql-client
-    - env: DB=mysql USE_UNICODE=ON USE_BOOST_CONVERT=OFF
+      env: DB=mysql USE_UNICODE=OFF USE_BOOST_CONVERT=OFF ENABLE_LIBCXX=OFF
+      os: linux
+    - addons: *mysql
       compiler: gcc
-      addons: *mysql
-    - env: DB=mysql USE_UNICODE=ON USE_BOOST_CONVERT=ON
+      env: DB=mysql USE_UNICODE=OFF USE_BOOST_CONVERT=ON ENABLE_LIBCXX=OFF
+      os: linux
+    - addons: *mysql
       compiler: gcc
-      addons: *mysql-boost
-    - env: DB=postgresql USE_UNICODE=OFF USE_BOOST_CONVERT=OFF
+      env: DB=mysql USE_UNICODE=ON USE_BOOST_CONVERT=OFF ENABLE_LIBCXX=OFF
+      os: linux
+    - addons: *mysql
       compiler: gcc
-      addons: &postgresql
-        postgresql: "9.1"
-        apt:
-          sources: *sources
-          packages:
-            - cmake
-            - cmake-data
-            - g++-5
-            - unixodbc
-            - unixodbc-dev
-            - odbc-postgresql
-    - env: DB=mariadb USE_UNICODE=OFF USE_BOOST_CONVERT=OFF
+      env: DB=mysql USE_UNICODE=ON USE_BOOST_CONVERT=ON ENABLE_LIBCXX=OFF
+      os: linux
+    - addons: *postgresql
       compiler: gcc
-      addons:
-        mariadb: "10.0"
-        apt:
-          sources: *sources
-          packages:
-            - cmake
-            - cmake-data
-            - g++-5
-            - unixodbc
-            - unixodbc-dev
-            - libmyodbc
-    - env: DB=vertica USE_UNICODE=OFF USE_BOOST_CONVERT=OFF
+      env: DB=postgresql USE_UNICODE=OFF USE_BOOST_CONVERT=OFF ENABLE_LIBCXX=OFF
+      os: linux
+    - addons: *mariadb
       compiler: gcc
-      addons: &vertica
-        apt:
-          sources: *sources
-          packages:
-            - cmake
-            - cmake-data
-            - g++-5
-            - unixodbc
-            - unixodbc-dev
+      env: DB=mariadb USE_UNICODE=OFF USE_BOOST_CONVERT=OFF ENABLE_LIBCXX=OFF
+      os: linux
+    - addons: *vertica
+      compiler: gcc
+      env: DB=vertica USE_UNICODE=OFF USE_BOOST_CONVERT=OFF ENABLE_LIBCXX=OFF
+      os: linux
+    - compiler: clang
+      env: DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=OFF ENABLE_LIBCXX=ON
+      os: osx
+    - compiler: clang
+      env: DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=ON ENABLE_LIBCXX=ON
+      os: osx
   allow_failures:
-    - env: DB=mariadb USE_UNICODE=OFF USE_BOOST_CONVERT=OFF
+    - env: DB=mariadb USE_UNICODE=OFF USE_BOOST_CONVERT=OFF ENABLE_LIBCXX=OFF
 
 # before_install runs after matrix.addons.apt installation targets in the matrix
 before_install:
-  - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 20
-  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 20
-  - sudo update-alternatives --config gcc
-  - sudo update-alternatives --config g++
-  - if [[ "$DB" == "vertica" ]]; then sudo wget -nv https://s3.amazonaws.com/circle-support-bucket/vertica_7.0.1-0_amd64.deb; fi
-  - if [[ "$DB" == "vertica" ]]; then sudo dpkg -i vertica_7.0.1-0_amd64.deb; fi
-  - if [[ "$DB" == "vertica" ]]; then sudo /opt/vertica/sbin/install_vertica --failure-threshold HALT --accept-eula --dba-user-password dbadmin --license CE -s localhost; fi
-  - if [[ "$DB" == "vertica" ]]; then sudo -u dbadmin /opt/vertica/bin/adminTools -t create_db --database ci -s localhost -p dbadmin; fi
-  - if [[ "$DB" == "vertica" ]]; then sudo -u dbadmin openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /home/dbadmin/ci/v_ci_node0001_catalog/server.key -out /home/dbadmin/ci/v_ci_node0001_catalog/server.crt -batch; fi
-  - if [[ "$DB" == "vertica" ]]; then sudo -u dbadmin chmod 600 /home/dbadmin/ci/v_ci_node0001_catalog/server.key /home/dbadmin/ci/v_ci_node0001_catalog/server.crt; fi
-  - if [[ "$DB" == "vertica" ]]; then sudo -u dbadmin /opt/vertica/bin/adminTools -t stop_db --database ci -p dbadmin; fi
-  - if [[ "$DB" == "vertica" ]]; then sudo -u dbadmin sh -c 'echo "EnableSSL = 1" > /home/dbadmin/ci/v_ci_node0001_catalog/vertica.conf'; fi
-  - if [[ "$DB" == "vertica" ]]; then sudo -u dbadmin /opt/vertica/bin/adminTools -t start_db --database ci -p dbadmin; fi
+  - ${TRAVIS_BUILD_DIR}/scripts/ci/travis/before_install.$TRAVIS_OS_NAME.sh
+  - ${TRAVIS_BUILD_DIR}/scripts/ci/travis/before_install.vertica.sh
 
 before_script:
+  - source "${TRAVIS_BUILD_DIR}/scripts/ci/travis/before_script.$DB.sh"
+  - if [[ -z ${BUILD_SHARED_LIBS+x} ]]; then export BUILD_SHARED_LIBS=OFF; fi
   - if [[ -f /etc/odbcinst.ini ]]; then export ODBCSYSINI=/etc; fi
   - if [[ -f /etc/odbc.ini ]]; then export ODBCINI=/etc/odbc.ini; fi
-  - if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then sudo odbcinst -i -d -f /usr/share/libmyodbc/odbcinst.ini; fi
-  - if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then mysql -e "DROP DATABASE IF EXISTS nanodbc_tests; CREATE DATABASE IF NOT EXISTS nanodbc_tests;" -uroot; fi
-  - if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost';" -uroot; fi
-  - if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then export NANODBC_TEST_CONNSTR_MYSQL="Driver=MySQL;Server=localhost;Database=nanodbc_tests;User=root;Password=;Option=3;big_packets=1;"; fi
-  - if [[ "$DB" == "postgresql" ]]; then sudo odbcinst -i -d -f /usr/share/psqlodbc/odbcinst.ini.template; fi
-  - if [[ "$DB" == "postgresql" ]]; then psql -c "CREATE DATABASE nanodbc_tests;" -U postgres; fi
-  - if [[ "$DB" == "postgresql" ]]; then export NANODBC_TEST_CONNSTR_PGSQL="DRIVER={PostgreSQL ANSI};Server=localhost;Port=5432;Database=nanodbc_tests;UID=postgres;"; fi
-  - if [[ "$DB" == "sqlite" ]]; then sudo odbcinst -i -d -f /usr/share/sqliteodbc/unixodbc.ini; fi
-  - if [[ "$DB" == "vertica" ]]; then sudo cp ${TRAVIS_BUILD_DIR}/scripts/ci/odbcinst.ini.vertica /etc/odbcinst.ini; fi
-  - if [[ "$DB" == "vertica" ]]; then sudo cp ${TRAVIS_BUILD_DIR}/scripts/ci/vertica.ini.vertica /etc/vertica.ini; fi
-  - if [[ "$DB" == "vertica" ]]; then export NANODBC_TEST_CONNSTR_VERTICA="DRIVER={Vertica};ServerName=localhost;Port=5433;Database=ci;UID=dbadmin;PWD=dbadmin;"; fi
-  - if [[ -f /etc/vertica.ini ]]; then export VERTICAINI=/etc/vertica.ini; fi
   - odbcinst -j
   - if [[ -f "$ODBCSYSINI/odbcinst.ini" ]]; then odbcinst -q -d; fi
   - if [[ -s "$ODBCINI" ]]; then odbcinst -q -s; fi
-  - if [[ -z ${BUILD_SHARED_LIBS+x} ]]; then export BUILD_SHARED_LIBS=OFF; fi
 
 script:
-  - mkdir -p build && cd build
-  - cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} -DNANODBC_USE_UNICODE=${USE_UNICODE} -DNANODBC_USE_BOOST_CONVERT=${USE_BOOST_CONVERT} -DNANODBC_ENABLE_LIBCXX=NO ..
-  - make
-  - cd test
-  - make ${DB}_tests
-  - ctest -VV --output-on-failure -R ${DB}_tests
+  - ${TRAVIS_BUILD_DIR}/scripts/ci/travis/script.sh
