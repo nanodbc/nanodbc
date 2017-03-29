@@ -200,6 +200,10 @@ endif()
 if(APPLE)
   set(CMAKE_MACOSX_RPATH ON)
   message(STATUS "Use rpaths on Mac OS X - ${CMAKE_MACOSX_RPATH}")
+
+  # AppleClang complains of unused `-I/path/` arguments.
+  # These are harmless and can be safely ignored.
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-command-line-argument")
 endif()
 
 ########################################
