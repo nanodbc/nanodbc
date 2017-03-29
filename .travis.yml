@@ -39,6 +39,22 @@ matrix:
           build_command_prepend: mkdir -p build.coverity && pushd build.coverity && cmake -DCMAKE_BUILD_TYPE=Debug .. && popd
           build_command: cmake --build ./build.coverity
           branch_pattern: coverity_scan
+    - env: DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=OFF BUILD_SHARED_LIBS=ON
+      compiler: gcc
+      addons:
+        apt:
+          sources: &sources-boost
+            - ubuntu-toolchain-r-test
+            - george-edison55-precise-backports
+            - boost-latest
+          packages:
+            - cmake
+            - cmake-data
+            - g++-5
+            - libboost-locale1.55-dev
+            - unixodbc
+            - unixodbc-dev
+            - libsqliteodbc
     - env: DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=ON
       compiler: gcc
       addons:
@@ -164,10 +180,11 @@ before_script:
   - odbcinst -j
   - if [[ -f "$ODBCSYSINI/odbcinst.ini" ]]; then odbcinst -q -d; fi
   - if [[ -s "$ODBCINI" ]]; then odbcinst -q -s; fi
+  - if [[ -z ${BUILD_SHARED_LIBS+x} ]]; then export BUILD_SHARED_LIBS=OFF; fi
 
 script:
   - mkdir -p build && cd build
-  - cmake -DCMAKE_BUILD_TYPE=Release -DNANODBC_USE_UNICODE=${USE_UNICODE} -DNANODBC_USE_BOOST_CONVERT=${USE_BOOST_CONVERT} -DNANODBC_ENABLE_LIBCXX=NO ..
+  - cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} -DNANODBC_USE_UNICODE=${USE_UNICODE} -DNANODBC_USE_BOOST_CONVERT=${USE_BOOST_CONVERT} -DNANODBC_ENABLE_LIBCXX=NO ..
   - make
   - cd test
   - make ${DB}_tests

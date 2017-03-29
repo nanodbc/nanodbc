@@ -17,7 +17,6 @@ set NANODBC_TEST_CONNSTR_MSSQL=Driver={ODBC Driver 11 for SQL Server};Server=(lo
 set NANODBC_TEST_CONNSTR_MYSQL=Driver={MySQL ODBC 5.3 Unicode Driver};Database=vagrant;Server=localhost;User=vagrant;Password=vagrant;Option=3;
 set NANODBC_TEST_CONNSTR_PGSQL=Driver={PostgreSQL Unicode(x64)};Server=localhost;Database=vagrant;UID=vagrant;PWD=vagrant;
 setlocal
-set NANODBC_STATIC=ON
 set NANODBC_INSTALL=OFF
 set BOOST_ROOT=C:/local/boost_1_59_0
 rem #######################################################
@@ -46,7 +45,6 @@ mkdir %BUILDDIR%
 pushd %BUILDDIR%
 "C:\Program Files\CMake\bin\cmake.exe" ^
     -G %GENERATOR% ^
-    -DNANODBC_STATIC=%NANODBC_STATIC% ^
     -DNANODBC_USE_UNICODE=ON ^
     -DNANODBC_TEST=ON ^
     -DNANODBC_INSTALL=%NANODBC_INSTALL% ^
