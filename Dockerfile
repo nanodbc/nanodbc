@@ -1,12 +1,6 @@
-# FROM ubuntu:latest
-# RUN DEBIAN_FRONTEND=noninteractive apt-get -qqy update \
-#  && DEBIAN_FRONTEND=noninteractive apt-get -qqy install software-properties-common
-
-# travis-ci unit tests run using ubuntu:precise, but development is often
-# far less painful using ubuntu:latest instead. In future we can drop precise.
-FROM ubuntu:precise
-RUN DEBIAN_FRONTEND=noninteractive apt-get update -qqy \
- && DEBIAN_FRONTEND=noninteractive apt-get -qqy install python-software-properties
+FROM ubuntu:latest
+RUN DEBIAN_FRONTEND=noninteractive apt-get -qqy update \
+ && DEBIAN_FRONTEND=noninteractive apt-get -qqy install software-properties-common
 
 RUN DEBIAN_FRONTEND=noninteractive add-apt-repository -y ppa:ubuntu-toolchain-r/test
 RUN DEBIAN_FRONTEND=noninteractive apt-get update -qqy \
@@ -16,8 +10,6 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -qqy \
         doxygen \
         g++-5 \
         git \
-        libmyodbc \
-        libsqliteodbc \
         make \
         mysql-client \
         mysql-server \
@@ -29,7 +21,11 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -qqy \
 # Might not be available, but install it if it is.
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install jekyll || true
 
-RUN odbcinst -i -d -f /usr/share/libmyodbc/odbcinst.ini
+# NOTE: `libmyodbc`, the package for MySQL ODBC support, is no longer available directly via a
+# simple `apt-get install libmyodbc` command. Instead, you must install it manually. The following
+# blog post provides step-by-step instructions.
+# https://www.datasunrise.com/blog/how-to-install-the-mysql-odbc-driver-on-ubuntu-16-04/
+
 RUN odbcinst -i -d -f /usr/share/sqliteodbc/unixodbc.ini
 
 ENV CXX g++-5
