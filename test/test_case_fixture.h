@@ -374,10 +374,14 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(columns.column_name() == NANODBC_TEXT("c3"));
             if (vendor_ == database_vendor::sqlite)
             {
-#ifdef _WIN32
+                // FIXME: SQLite ODBC mis-reports decimal digits? Causing
+                //        columns.column_size() == 3.
+#if defined _WIN32
                 REQUIRE(columns.sql_data_type() == -9); // FIXME: What is this type?
-                REQUIRE(
-                    columns.column_size() == 3); // FIXME: SQLite ODBC mis-reports decimal digits?
+                REQUIRE(columns.column_size() == 3);
+#elif defined __APPLE__
+                REQUIRE(columns.sql_data_type() == SQL_VARCHAR);
+                REQUIRE(columns.column_size() == 3);
 #else
                 REQUIRE(columns.sql_data_type() == SQL_VARCHAR);
                 REQUIRE(columns.column_size() == 9);
