@@ -18,60 +18,60 @@ clone_depth: 5
 environment:
   matrix:
     - DB: SQLite
-      GENERATOR: "Visual Studio 14 2015"
-      USE_UNICODE: OFF
-      USE_BOOST_CONVERT: OFF
+      G: "Visual Studio 14 2015"
+      UNICODE: OFF
+      BOOST: OFF
     - DB: SQLite
-      GENERATOR: "Visual Studio 14 2015 Win64"
-      USE_UNICODE: OFF
-      USE_BOOST_CONVERT: OFF
+      G: "Visual Studio 14 2015 Win64"
+      UNICODE: OFF
+      BOOST: OFF
     - DB: SQLite
-      GENERATOR: "NMake Makefiles"
-      PLATFORM: x86-32
-      USE_UNICODE: OFF
-      USE_BOOST_CONVERT: OFF
-      DISABLE_ASYNC: ON
+      G: "NMake Makefiles"
+      P: x86-32
+      UNICODE: OFF
+      BOOST: OFF
+      NO_ASUN: ON
     - DB: MSSQL2016
-      GENERATOR: "Visual Studio 14 2015 Win64"
-      USE_UNICODE: OFF
-      USE_BOOST_CONVERT: OFF
+      G: "Visual Studio 14 2015 Win64"
+      UNICODE: OFF
+      BOOST: OFF
     - DB: MSSQL2016
-      GENERATOR: "Visual Studio 14 2015 Win64"
-      USE_UNICODE: ON
-      USE_BOOST_CONVERT: OFF
+      G: "Visual Studio 14 2015 Win64"
+      UNICODE: ON
+      BOOST: OFF
     - DB: MSSQL2014
-      GENERATOR: "Visual Studio 14 2015 Win64"
-      USE_UNICODE: OFF
-      USE_BOOST_CONVERT: OFF
+      G: "Visual Studio 14 2015 Win64"
+      UNICODE: OFF
+      BOOST: OFF
     - DB: MSSQL2008
-      GENERATOR: "Visual Studio 14 2015 Win64"
-      USE_UNICODE: OFF
-      USE_BOOST_CONVERT: OFF
+      G: "Visual Studio 14 2015 Win64"
+      UNICODE: OFF
+      BOOST: OFF
     - DB: MySQL
-      GENERATOR: "Visual Studio 14 2015 Win64"
-      USE_UNICODE: OFF
-      USE_BOOST_CONVERT: OFF
+      G: "Visual Studio 14 2015 Win64"
+      UNICODE: OFF
+      BOOST: OFF
     - DB: PostgreSQL
-      GENERATOR: "Visual Studio 14 2015 Win64"
-      USE_UNICODE: OFF
-      USE_BOOST_CONVERT: OFF
+      G: "Visual Studio 14 2015 Win64"
+      UNICODE: OFF
+      BOOST: OFF
     - DB: SQLite
-      GENERATOR: "MinGW Makefiles"
-      PLATFORM: x86-32
-      USE_UNICODE: OFF
-      USE_BOOST_CONVERT: OFF
-      DISABLE_ASYNC: ON
+      G: "MinGW Makefiles"
+      P: x86-32
+      UNICODE: OFF
+      BOOST: OFF
+      NO_ASYNC: ON
     - DB: SQLite
-      GENERATOR: "MinGW Makefiles"
-      PLATFORM: x86-64
-      USE_UNICODE: OFF
-      USE_BOOST_CONVERT: OFF
-      DISABLE_ASYNC: ON
+      G: "MinGW Makefiles"
+      P: x86-64
+      UNICODE: OFF
+      BOOST: OFF
+      NO_ASYNC: ON
 
 matrix:
   allow_failures:
-    - GENERATOR: "MinGW Makefiles"
-      PLATFORM: x86-32
+    - G: "MinGW Makefiles"
+      P: x86-32
 
 init:
   # For MinGW make to work correctly sh.exe must NOT be in your path.
@@ -79,8 +79,8 @@ init:
   - ps: |
       Write-Host "Build worker environment variables:" -ForegroundColor Magenta
       Get-ChildItem Env: | %{"{0}={1}" -f $_.Name,$_.Value}
-  - if "%GENERATOR%"=="NMake Makefiles" if "%PLATFORM%"=="x86-32" call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86
-  - if "%GENERATOR%"=="NMake Makefiles" if "%PLATFORM%"=="x86-64" "C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x64
+  - if "%G%"=="NMake Makefiles" if "%P%"=="x86-32" call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86
+  - if "%G%"=="NMake Makefiles" if "%P%"=="x86-64" "C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x64
 
 install:
   - ps: |
@@ -99,8 +99,8 @@ install:
       Write-Host "Installed ODBC drivers:" -ForegroundColor Magenta
       Get-OdbcDriver -Platform 64-bit | Select-Object -ExpandProperty Name
   - ps: |
-      if ($env:GENERATOR -Match "MinGW") {
-        if ($env:PLATFORM -Match "x86-32") {
+      if ($env:G -Match "MinGW") {
+        if ($env:P -Match "x86-32") {
           $env:Path += ";C:\MinGW\bin"
         } else {
           $env:Path += ";C:\mingw-w64\i686-5.3.0-posix-dwarf-rt_v4-rev0\mingw32\bin"
@@ -109,8 +109,8 @@ install:
       }
 
 before_build:
-  - ps: 'Write-Host "Running cmake: $env:GENERATOR" -ForegroundColor Magenta'
-  - cmake.exe -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=Release -DNANODBC_USE_BOOST_CONVERT=%USE_BOOST_CONVERT% -DNANODBC_USE_UNICODE=%USE_UNICODE% -DNANODBC_DISABLE_ASYNC=%DISABLE_ASYNC% -DNANODBC_HANDLE_NODATA_BUG=OFF -DNANODBC_INSTALL=ON %APPVEYOR_BUILD_FOLDER%
+  - ps: 'Write-Host "Running cmake: $env:G" -ForegroundColor Magenta'
+  - cmake.exe -G "%G%" -DCMAKE_BUILD_TYPE=Release -DNANODBC_USE_BOOST_CONVERT=%BOOST% -DNANODBC_USE_UNICODE=%UNICODE% -DNANODBC_DISABLE_ASYNC=%NO_ASYNC% -DNANODBC_HANDLE_NODATA_BUG=OFF -DNANODBC_INSTALL=ON %APPVEYOR_BUILD_FOLDER%
 
 build_script:
   - ps: 'Write-Host "Running cmake --build:" -ForegroundColor Magenta'
@@ -169,15 +169,15 @@ test_script:
 
 after_test:
   - ps: |
-      if ($env:GENERATOR -Match "NMake") {
+      if ($env:G -Match "NMake") {
         Write-Host "Running install:" -ForegroundColor Magenta
         cmake --build . --target install
       }
   - ps: |
-      if ($env:GENERATOR -Match "NMake") {
+      if ($env:G -Match "NMake") {
         Write-Host "Building examples/client based on nanodbc package configuration:" -ForegroundColor Magenta
         cd $env:APPVEYOR_BUILD_FOLDER\examples\client
-        cmake.exe -G $env:GENERATOR -DCMAKE_BUILD_TYPE=Release .
+        cmake.exe -G $env:G -DCMAKE_BUILD_TYPE=Release .
         cmake --build . --config Release
       }
 
