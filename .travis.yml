@@ -135,6 +135,13 @@ matrix:
 
 # before_install runs after matrix.addons.apt installation targets in the matrix
 before_install:
+  # Skip build if the commit message contains [skip travis] or [travis skip]
+  # https://github.com/travis-ci/travis-ci/issues/5032
+  - >
+      echo "$TRAVIS_COMMIT_MESSAGE"
+      | grep -E  '\[(skip travis|travis skip)\]'
+      && echo "[skip travis] has been found, exiting."
+      && exit 0
   - ${TRAVIS_BUILD_DIR}/scripts/ci/travis/before_install.$TRAVIS_OS_NAME.sh
   - ${TRAVIS_BUILD_DIR}/scripts/ci/travis/before_install.vertica.sh
 
