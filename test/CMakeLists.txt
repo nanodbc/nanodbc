@@ -25,7 +25,7 @@ ExternalProject_Add(
 ExternalProject_Get_Property(catch source_dir)
 set(CATCH_INCLUDE_DIR ${source_dir}/include CACHE INTERNAL "Path to include folder for Catch")
 
-include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/src ${CATCH_INCLUDE_DIR} ${ODBC_INCLUDE_DIR})
+include_directories(${CMAKE_SOURCE_DIR} ${CATCH_INCLUDE_DIR} ${ODBC_INCLUDE_DIR})
 link_directories(${CMAKE_BINARY_DIR}/lib)
 file(GLOB headers *.h *.hpp)
 add_custom_target(tests DEPENDS tests catch)

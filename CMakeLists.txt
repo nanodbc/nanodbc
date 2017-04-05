@@ -199,7 +199,7 @@ if(WIN32 AND NOT MINGW AND BUILD_SHARED_LIBS)
   message(FATAL_ERROR "Building shared libraries on Windows needs MinGW")
 endif()
 
-add_library(nanodbc src/nanodbc.cpp src/nanodbc.h)
+add_library(nanodbc nanodbc/nanodbc.cpp nanodbc/nanodbc.h)
 
 # TODO: Consider version/soverson support
 # if(BUILD_SHARED_LIBS)
@@ -211,9 +211,9 @@ add_library(nanodbc src/nanodbc.cpp src/nanodbc.h)
 
 target_link_libraries(nanodbc ${Boost_LIBRARIES} ${ODBC_LIBRARIES})
 
-target_include_directories(nanodbc INTERFACE
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
-  $<INSTALL_INTERFACE:include>) # <prefix>/include
+target_include_directories(nanodbc PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+  $<INSTALL_INTERFACE:include/nanodbc>) # <prefix>/include/nanodbc
 
 if(UNIX)
   set_target_properties(nanodbc PROPERTIES
@@ -242,7 +242,7 @@ if(NANODBC_INSTALL)
       ARCHIVE DESTINATION lib)
   endif()
   # Install public include headers
-  install(FILES src/nanodbc.h DESTINATION include)
+  install(FILES nanodbc/nanodbc.h DESTINATION include/nanodbc)
   # Make project importable from the install directory
   ## Generate and install *-config.cmake exporting targets from install tree.
   install(EXPORT ${NANODBC_CONFIG} DESTINATION cmake)
@@ -268,6 +268,6 @@ message(STATUS "nanodbc build: Enable tests target - ${NANODBC_TEST}")
 ## examples targets
 ########################################
 if(NANODBC_EXAMPLES)
-  add_subdirectory(examples)
+  add_subdirectory(example)
 endif()
 message(STATUS "nanodbc build: Enable examples target - ${NANODBC_EXAMPLES}")

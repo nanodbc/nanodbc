@@ -1,5 +1,6 @@
-#include "nanodbc.h"
 #include "example_unicode_utils.h"
+#include <nanodbc/nanodbc.h>
+
 #include <iostream>
 using namespace std;
 using namespace nanodbc;

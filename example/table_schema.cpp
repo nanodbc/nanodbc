@@ -1,5 +1,5 @@
 #include "example_unicode_utils.h"
-#include "nanodbc.h"
+#include <nanodbc/nanodbc.h>
 
 #include <algorithm>
 #include <array>
@@ -16,7 +16,7 @@
 #endif
 #include <windows.h> // SQLLEN, SQLULEN, SQLHWND
 #endif
-#include "nanodbc.h"
+#include <nanodbc/nanodbc.h>
 #include <sql.h>
 #include <sqlext.h>
 using namespace std;

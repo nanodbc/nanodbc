@@ -13,7 +13,7 @@
 #pragma warning(disable : 4996) // warning about deprecated declaration
 #endif
 
-#include "nanodbc.h"
+#include <nanodbc/nanodbc.h>
 
 #include <algorithm>
 #include <clocale>
@@ -28,7 +28,7 @@
 #include <cstdint>
 #endif
 
-// User may redefine NANODBC_ASSERT macro in nanodbc.h
+// User may redefine NANODBC_ASSERT macro in nanodbc/nanodbc.h
 #ifndef NANODBC_ASSERT
 #include <cassert>
 #define NANODBC_ASSERT(expr) assert(expr)

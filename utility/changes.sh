@@ -14,7 +14,7 @@ if echo "$*" | egrep -q -- "--help|-h"; then
 fi
 
 pushd "$(git rev-parse --show-toplevel)" >/dev/null
-source scripts/shell_control.sh
+source utility/shell_control.sh
 
 if [[ -n "$(git status -s)" ]]; then
     abort "changes exist in workspace, please commit or stash them first."

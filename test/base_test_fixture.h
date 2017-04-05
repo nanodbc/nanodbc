@@ -1,7 +1,8 @@
 #ifndef NANODBC_TEST_BASE_FIXTURE_H
 #define NANODBC_TEST_BASE_FIXTURE_H
 
-#include "nanodbc.h"
+#include <nanodbc/nanodbc.h>
+
 #include <cassert>
 #include <iostream>
 #include <random>

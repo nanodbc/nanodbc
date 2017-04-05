@@ -14,9 +14,9 @@ if echo "$*" | egrep -q -- "--help|-h"; then
 fi
 
 pushd "$(git rev-parse --show-toplevel)" >/dev/null
-source scripts/shell_control.sh
+source utility/shell_control.sh
 
-for I in src/*.{h,cpp}; do
+for I in nanodbc/*.{h,cpp}; do
     clang-format -i "$I"
 done
 
@@ -24,6 +24,6 @@ for I in test/*.{h,cpp}; do
     clang-format -i "$I"
 done
 
-for I in examples/*.{h,cpp}; do
+for I in example/*.{h,cpp}; do
     clang-format -i "$I"
 done
