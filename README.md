@@ -146,7 +146,7 @@ _disabling_ unicode mode to avoid `wchar_t` issues.
 [`clang-format`][clang-format] handles all C++ code formatting for nanodbc. This utility is
 [brew-installable][brew] on OS X (`brew install clang-format`) and is available on all major
 platforms. See our `.clang-format` configuration file for details on the style. The script
-`scripts/style.sh` formats all code in the repository automatically. To run `clang-format` on a
+`utility/style.sh` formats all code in the repository automatically. To run `clang-format` on a
 single file use the following.
 
 ```shell
@@ -226,13 +226,13 @@ If a feature requires a database-specific test case for each database, then skip
 ## Publish and Release Process
 
 Once your local `master` branch is ready for publishing
-(i.e. [semantic versioning][semver]), use the `scripts/publish.sh` script. This script
+(i.e. [semantic versioning][semver]), use the `utility/publish.sh` script. This script
 bumps the major, minor, or patch version, then updates the repository's `VERSION` file, adds a
 "Preparing" commit, and creates git tags appropriately. For example to make a minor update you
-would run `./scripts/publish.sh minor`.
+would run `./utility/publish.sh minor`.
 
 > **Important:** Always update [`CHANGELOG.md`](CHANGELOG.md) with information about new changes,
-                 bug fixes, and features when making a new release. Use the `./scripts/changes.sh`
+                 bug fixes, and features when making a new release. Use the `./utility/changes.sh`
                  script to aid in your composition of this document. The publish script itself will
                  attempt to verify that the changelog file has been properly updated.
 
@@ -248,7 +248,7 @@ To do this manually instead, use the following steps &mdash; for example a minor
 
 ### Release Process
 
-Release nanodbc with the `scripts/release.sh` script. All this script does is push out the `master`
+Release nanodbc with the `utility/release.sh` script. All this script does is push out the `master`
 branch to the `release` branch, indicating that a new "stable" published version of nanodbc exists.
 To do so manually, execute `git push -f origin master:release`. **Caution: Do this for versions
 deemed "stable" based on suitable criteria.**

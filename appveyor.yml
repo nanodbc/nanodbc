@@ -175,8 +175,8 @@ after_test:
       }
   - ps: |
       if ($env:G -Match "NMake") {
-        Write-Host "Building examples/client based on nanodbc package configuration:" -ForegroundColor Magenta
-        cd $env:APPVEYOR_BUILD_FOLDER\examples\client
+        Write-Host "Building example/client based on nanodbc package configuration:" -ForegroundColor Magenta
+        cd $env:APPVEYOR_BUILD_FOLDER\example\client
         cmake.exe -G $env:G -DCMAKE_BUILD_TYPE=Release .
         cmake --build . --config Release
       }

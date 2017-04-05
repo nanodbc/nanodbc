@@ -1,7 +1,7 @@
 #ifndef NANODBC_UNICODE_UTILS_H
 #define NANODBC_UNICODE_UTILS_H
 
-#include "nanodbc.h"
+#include <nanodbc/nanodbc.h>
 
 #include <codecvt>
 #include <locale>

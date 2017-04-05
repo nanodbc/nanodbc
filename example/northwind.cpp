@@ -1,5 +1,5 @@
 #include "example_unicode_utils.h"
-#include "nanodbc.h"
+#include <nanodbc/nanodbc.h>
 
 #include <iostream>
 #include <stdexcept>

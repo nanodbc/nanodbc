@@ -1,7 +1,8 @@
+#include <nanodbc/nanodbc.h>
+
 #include <cstdlib>
 #include <exception>
 #include <iostream>
-#include <nanodbc.h>
 
 int main(int argc, char* argv[]) try
 {
