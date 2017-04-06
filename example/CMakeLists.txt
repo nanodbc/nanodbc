@@ -1,4 +1,4 @@
-add_custom_target(examples DEPENDS examplesae)
+add_custom_target(examples DEPENDS example)
 set(examples northwind usage rowset_iteration table_schema)
 
 include_directories(${CMAKE_SOURCE_DIR} ${ODBC_INCLUDE_DIR})
