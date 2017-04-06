@@ -15,6 +15,13 @@ branches:
 shallow_clone: true
 clone_depth: 5
 
+notifications:
+  - provider: Webhook
+    url: https://webhooks.gitter.im/e/a99ae9a5f4a75cd2893f
+    on_build_success: true
+    on_build_failure: true
+    on_build_status_changed: true
+
 environment:
   matrix:
     - DB: SQLite
