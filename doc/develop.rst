@@ -44,6 +44,11 @@ To run ``clang-format`` on a single file use the following.
 
 .. important:: Please auto-format all code submitted in Pull Requests.
 
+`.editorconfig <http://editorconfig.org>`_ file is provided to automatically
+tell popular code editors about the preferred basic style settings like
+indentation, whitespacesm end of line and such for distinguished types of
+plain text files.
+
 ******************************************************************************
 Environments
 ******************************************************************************
@@ -100,7 +105,7 @@ Documentation
 *TODO*: How to generate and publish documentation
 
 ******************************************************************************
-Future 
+Future
 ******************************************************************************
 
 Good to Have / Want Someday
@@ -109,7 +114,7 @@ Good to Have / Want Someday
 * Update codebase to use more C++14 idioms and patterns.
 * Write more tests with the goal to have much higher code coverage.
 * More tests for a large variety of drivers. Include performance tests.
-* Clean up bind_* family of functions, reduce any duplication.
+* Clean up ``bind_*`` family of functions, reduce any duplication.
 * Improve documentation: The main website and API docs should be more responsive.
 * Provide more examples in documentation, more details, and point out any gotchas.
 * Versioned generated source level API documentation for release and latest. For each major and minor published versions too?

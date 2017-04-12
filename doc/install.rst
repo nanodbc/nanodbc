@@ -1,3 +1,5 @@
+.. _install:
+
 ##############################################################################
 Install
 ##############################################################################
@@ -31,15 +33,17 @@ Requirements
 
 * C++ compiler with C++11/C++14 support
 * `CMake`_ 3.0.0 or later
-* ODBC SDK (unixODBC, iODBC, Windows SDK)
+* ODBC SDK (`unixODBC`_, `iODBC`_, Windows SDK)
 
 Optionally, you will also need:
 
 * ODBC drivers, depending on DBMS you want to target (eg. running tests).
-* Boost, `Boost.Locale`_ as alternative for Unicode conversions.
+* `Boost.Locale`_, alternative for Unicode conversion routines.
 * `libc++`_, alternative C++11 and later implementation.
 
-Building
+.. _build:
+
+Build
 ==============================================================================
 
 Although detailed build process depends on CMake generator used,
@@ -109,34 +113,20 @@ BUILD_SHARED_LIBS : boolean
 If you are not using CMake to build nanodbc, you will need to set the options,
 using the corresponding names, as preprocessor defines yourself.
 
-iODBC and unixODBC
-------------------------------------------------------------------------------
-
-Notes about using nanodbc with iODBC and unixODBC in Unix systems.
-
-On Windows, ``sizeof(wchar_t) == sizeof(SQLWCHAR) == 2``.
-On Unix, ``sizeof(wchar_t) == 4``.
-
-On unixODBC, ``sizeof(SQLWCHAR) == 2``.
-On iODBC, ``sizeof(SQLWCHAR) == sizeof(wchar_t) == 4``.
-
-This leads to incompatible ABIs between applications and drivers.
-If building against iODBC and the build option ``NANODBC_USE_UNICODE``
-is ``ON``, then ``nanodbc::string_type`` will be ``std::u32string``.
-
-In ALL other cases it will be ``std::u16string``.
-
-The nanodbc continuous integration tests run on `Travis CI`_.
-The build platform does not make available a Unicode-enabled iODBC driver.
-As such there is no guarantee that tests will pass in entirety on a system using iODBC.
-Our recommendation is to use unixODBC.
-
-If you must use iODBC, consider disabling unicode mode to avoid ``wchar_t`` issues.
-
 Test
 ==============================================================================
 
-*TODO*: How to test your nanodbc build
+Tests use the `Catch <https://github.com/philsquared/Catch>`_ test framework.
+CMake automatically fetches the latest version of Catch for you at build time.
+
+Once nanodbc build is ready, use `ctest`_ to run tests in
+CMake generator-agnostic way:
+
+.. code-block:: console
+
+  ctest -V --output-on-failure
+
+Alternatively, build `test` target (eg. `make test`).
 
 ******************************************************************************
 Binaries
@@ -155,6 +145,8 @@ Windows
 
 .. _`CMake`: https://cmake.org
 .. _`CMake option`: https://cmake.org/cmake/help/latest/command/option.html
+.. _`ctest`: https://cmake.org/cmake/help/latest/manual/ctest.1.html
+.. _`iODBC`: http://www.iodbc.org
+.. _`unixODBC`: http://www.unixodbc.org
 .. _`Boost.Locale`: https://www.boost.org/doc/libs/release/libs/locale/
 .. _`libc++`: https://libcxx.llvm.org
-.. _`Travis CI`: https://travis-ci.org/lexicalunit/nanodbc

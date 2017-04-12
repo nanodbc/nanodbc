@@ -65,7 +65,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'nanodbc'
-copyright = '2016, Amy Troschinetz, Mateusz Łoskot and others.'
+copyright = '2016, Amy Troschinetz and others.'
 author = 'Amy Troschinetz'
 
 # The version info for the project you're documenting, acts as replacement for
