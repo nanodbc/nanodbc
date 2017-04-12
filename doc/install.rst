@@ -61,36 +61,50 @@ For example, CMake configuration using Makefiles generator:
   make examples # builds all the example programs
   make install  # installs nanodbc.h and shared library
 
-CMake Options
-------------------------------------------------------------------------------
+List of `CMake option`_ and cache entry variables are available to specify
+with ``-D`` switch to enable or disable nanodbc built-in features:
 
-The following build options are available via CMake command-line
-option ``-D``.
+NANODBC_DISABLE_ASYNC : *boolean*
+    Disables all async features. Can resolve build issues in older ODBC versions.
+    Default value is OFF.
 
-Use the standard CMake option ``-DBUILD_SHARED_LIBS=ON`` to build nanodbc
-as shared library.
+NANODBC_ENABLE_LIBCXX : *boolean*
+    Enables usage of libc++ if found on the system.
+    Default value is ON.
 
-List of nanodbc-specific options
+NANODBC_EXAMPLES : *boolean*
+    Enables building of examples.
+    Default value is ON.
 
-* ``NANODBC_DISABLE_ASYNC`` - ``ON|OFF``, default is ``OFF``.
-  Disables all async features. Can resolve build issues in older ODBC versions.
-* ``NANODBC_ENABLE_LIBCXX`` - ``ON|OFF``, default is ``ON``.
-  Enables usage of libc++ if found on the system.
-* ``NANODBC_EXAMPLES`` - ``ON|OFF``, default is ``ON``.
-  Enables building of examples.
-* ``NANODBC_HANDLE_NODATA_BUG`` - ``ON|OFF``, default is ``OFF``.
-  Provided to resolve issue `#33 <https://github.com/lexicalunit/nanodbc/issues/33>`_.
-* ``NANODBC_INSTALL`` - ``ON|OFF``, default is ``ON``.
-  Enables install target.
-* ``NANODBC_ODBC_VERSION`` - ``SQL_OV_ODBC3`` or ``SQL_OV_ODBC3_80``,
-  default is ``SQL_OV_ODBC3_80``, if available.
-  Sets the ODBC version macro for nanodbc to use.
-* ``NANODBC_TEST`` - ``ON|OFF``, default is ``ON``.
+NANODBC_HANDLE_NODATA_BUG : *boolean*
+    Provided to resolve issue `#33 <https://github.com/lexicalunit/nanodbc/issues/33>`_.
+    Default value is OFF.
+
+NANODBC_INSTALL : *boolean*
+    Enables install target. Default value is ON.
+
+NANODBC_ODBC_VERSION : *string*
+    Sets the ODBC version macro for nanodbc to use.
+    Possible values are ``SQL_OV_ODBC3`` or ``SQL_OV_ODBC3_80``.
+    Default value is ``SQL_OV_ODBC3_80``, if available.
+
+NANODBC_TEST : *boolean*
   Enables tests target (alias ``check``).
-* ``NANODBC_USE_BOOST_CONVERT`` - ``ON|OFF``, default is ``OFF``.
-  Provided as workaround to issue `#44 <https://github.com/lexicalunit/nanodbc/issues/44>`_.
-* ``NANODBC_USE_UNICODE`` - ``ON|OFF``, default is ``OFF``.
+  Default value is ON.
+
+NANODBC_USE_BOOST_CONVERT : *boolean*
+    Provided as workaround to issue `#44 <https://github.com/lexicalunit/nanodbc/issues/44>`_.
+    Default value is OFF;
+
+NANODBC_USE_UNICODE : *boolean*
   Enables full unicode support. ``nanodbc::string`` becomes ``std::u16string`` or ``std::u32string``.
+  Default value is OFF.
+
+Standard `CMake`_ options are also available, for example:
+
+BUILD_SHARED_LIBS : boolean
+    Build nanodbc as A shared library.
+    Default value is OFF.
 
 If you are not using CMake to build nanodbc, you will need to set the options,
 using the corresponding names, as preprocessor defines yourself.
@@ -140,6 +154,7 @@ Windows
 * vcpkg `port of nanodbc <https://github.com/Microsoft/vcpkg/tree/master/ports/nanodbc>`_
 
 .. _`CMake`: https://cmake.org
+.. _`CMake option`: https://cmake.org/cmake/help/latest/command/option.html
 .. _`Boost.Locale`: https://www.boost.org/doc/libs/release/libs/locale/
 .. _`libc++`: https://libcxx.llvm.org
 .. _`Travis CI`: https://travis-ci.org/lexicalunit/nanodbc
