@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(nanodbc CXX)
 
+option(BUILD_SHARED_LIBS "Build shared library" OFF)
 option(NANODBC_USE_UNICODE "build with unicode support turned on" OFF)
 option(NANODBC_USE_BOOST_CONVERT "build using Boost.Locale for string convert" OFF)
 option(NANODBC_HANDLE_NODATA_BUG "enable special handling for SQL_NO_DATA (required for vertica)" OFF)
@@ -9,6 +10,7 @@ option(NANODBC_EXAMPLES "build examples" ON)
 option(NANODBC_TEST "build tests" ON)
 option(NANODBC_INSTALL "generate install target" ON)
 option(NANODBC_ENABLE_LIBCXX "Use libc++ if available." ON)
+
 
 ########################################
 ## require and enable C++0x/11/14
