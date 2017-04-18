@@ -3,6 +3,15 @@
 A small C++ wrapper for the native C ODBC API. Please see the [online documentation][nanodbc] for
 user information, example usage, propaganda, and detailed source level documentation.
 
+[![Gitter](https://img.shields.io/gitter/room/lexicalunit/nanodbc.svg?style=flat-square)](https://gitter.im/nanodbc-help/Lobby)
+[![GitHub release](https://img.shields.io/github/tag/lexicalunit/nanodbc.svg)]()
+[![GitHub commits](https://img.shields.io/github/commits-since/lexicalunit/nanodbc/v2.12.4.svg?style=flat-square)]()
+[![License](https://img.shields.io/github/license/lexicalunit/nanodbc.svg?style=flat-square)]()
+
+[![Travis](https://img.shields.io/travis/lexicalunit/nanodbc.svg?style=flat-square)](https://travis-ci.org/lexicalunit/nanodbc)
+[![AppVeyor](https://img.shields.io/appveyor/ci/lexicalunit/nanodbc.svg?style=flat-square)](https://ci.appveyor.com/project/lexicalunit/nanodbc)
+[![Coverity Scan](https://img.shields.io/coverity/scan/7437.svg?style=flat-square)](https://scan.coverity.com/projects/lexicalunit-nanodbc)
+
 ## Philosophy
 
 The native C API for working with ODBC is exorbitantly verbose, ridiculously complicated, and
