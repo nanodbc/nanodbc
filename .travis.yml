@@ -91,52 +91,52 @@ matrix:
           build_command: cmake --build ./build.coverity
           branch_pattern: coverity_scan
       compiler: gcc
-      env: DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=OFF COVERITY=ON ENABLE_LIBCXX=OFF
+      env: DB=sqlite DISABLE_LIBCXX=ON COVERITY=ON
       os: linux
     - addons: *sqlite
       compiler: gcc
-      env: DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=OFF BUILD_SHARED_LIBS=ON ENABLE_LIBCXX=OFF
+      env: DB=sqlite BUILD_SHARED_LIBS=ON DISABLE_LIBCXX=ON
       os: linux
     - addons: *sqlite
       compiler: gcc
-      env: DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=ON ENABLE_LIBCXX=OFF
+      env: DB=sqlite ENABLE_BOOST=ON DISABLE_LIBCXX=ON
       os: linux
     - addons: *mysql
       compiler: gcc
-      env: DB=mysql USE_UNICODE=OFF USE_BOOST_CONVERT=OFF ENABLE_LIBCXX=OFF
+      env: DB=mysql DISABLE_LIBCXX=ON
       os: linux
     - addons: *mysql
       compiler: gcc
-      env: DB=mysql USE_UNICODE=OFF USE_BOOST_CONVERT=ON ENABLE_LIBCXX=OFF
+      env: DB=mysql ENABLE_BOOST=ON DISABLE_LIBCXX=ON
       os: linux
     - addons: *mysql
       compiler: gcc
-      env: DB=mysql USE_UNICODE=ON USE_BOOST_CONVERT=OFF ENABLE_LIBCXX=OFF
+      env: DB=mysql ENABLE_UNICODE=ON DISABLE_LIBCXX=ON
       os: linux
     - addons: *mysql
       compiler: gcc
-      env: DB=mysql USE_UNICODE=ON USE_BOOST_CONVERT=ON ENABLE_LIBCXX=OFF
+      env: DB=mysql ENABLE_UNICODE=ON ENABLE_BOOST=ON DISABLE_LIBCXX=ON
       os: linux
     - addons: *postgresql
       compiler: gcc
-      env: DB=postgresql USE_UNICODE=OFF USE_BOOST_CONVERT=OFF ENABLE_LIBCXX=OFF
+      env: DB=postgresql DISABLE_LIBCXX=ON
       os: linux
     - addons: *mariadb
       compiler: gcc
-      env: DB=mariadb USE_UNICODE=OFF USE_BOOST_CONVERT=OFF ENABLE_LIBCXX=OFF
+      env: DB=mariadb DISABLE_LIBCXX=ON
       os: linux
     - addons: *vertica
       compiler: gcc
-      env: DB=vertica USE_UNICODE=OFF USE_BOOST_CONVERT=OFF ENABLE_LIBCXX=OFF
+      env: DB=vertica DISABLE_LIBCXX=ON
       os: linux
     - compiler: clang
-      env: DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=OFF ENABLE_LIBCXX=ON
+      env: DB=sqlite
       os: osx
     - compiler: clang
-      env: DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=ON ENABLE_LIBCXX=ON
+      env: DB=sqlite ENABLE_BOOST=ON
       os: osx
   allow_failures:
-    - env: DB=mariadb USE_UNICODE=OFF USE_BOOST_CONVERT=OFF ENABLE_LIBCXX=OFF
+    - env: DB=mariadb DISABLE_LIBCXX=ON
 
 # before_install runs after matrix.addons.apt installation targets in the matrix
 before_install:
@@ -151,7 +151,6 @@ before_install:
 
 before_script:
   - source "${TRAVIS_BUILD_DIR}/utility/ci/travis/before_script.$DB.sh"
-  - if [[ -z ${BUILD_SHARED_LIBS+x} ]]; then export BUILD_SHARED_LIBS=OFF; fi
   - if [[ -f /etc/odbcinst.ini ]]; then export ODBCSYSINI=/etc; fi
   - if [[ -f /etc/odbc.ini ]]; then export ODBCINI=/etc/odbc.ini; fi
   - odbcinst -j

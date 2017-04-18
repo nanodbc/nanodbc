@@ -137,9 +137,9 @@ namespace nanodbc
 
 /// @}
 
-// You must explicitly request Unicode support by defining NANODBC_USE_UNICODE at compile time.
+// You must explicitly request Unicode support by defining NANODBC_ENABLE_UNICODE at compile time.
 #ifndef DOXYGEN
-#ifdef NANODBC_USE_UNICODE
+#ifdef NANODBC_ENABLE_UNICODE
 #ifdef NANODBC_USE_IODBC_WIDE_STRINGS
 #define NANODBC_TEXT(s) U##s
 typedef std::u32string string_type;
@@ -172,14 +172,14 @@ typedef long null_type;
 /// \brief Creates a string literal of the type corresponding to `nanodbc::string_type`.
 ///
 /// By default, the macro maps to an unprefixed string literal.
-/// If building with options NANODBC_USE_UNICODE=ON and
+/// If building with options NANODBC_ENABLE_UNICODE=ON and
 /// NANODBC_USE_IODBC_WIDE_STRINGS=ON specified, then it prefixes a literal with U"...".
-/// If only NANODBC_USE_UNICODE=ON is specified, then:
+/// If only NANODBC_ENABLE_UNICODE=ON is specified, then:
 ///   * If building with Visual Studio, then the macro prefixes a literal with L"...".
 ///   * Otherwise, it prefixes a literal with u"...".
 #define NANODBC_TEXT(s) s
 
-/// \c string_type will be \c std::u16string or \c std::32string if \c NANODBC_USE_UNICODE defined.
+/// \c string_type will be \c std::u16string or \c std::32string if \c NANODBC_ENABLE_UNICODE defined.
 ///
 /// Otherwise it will be \c std::string.
 typedef unspecified - type string_type;

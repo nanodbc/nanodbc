@@ -1,15 +1,20 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(nanodbc CXX)
 
+# NOTE: All options follow CMake convention:
+#       If no initial value is provided, OFF is used.
+
+# CMake standard options
 option(BUILD_SHARED_LIBS "Build shared library" OFF)
-option(NANODBC_USE_UNICODE "build with unicode support turned on" OFF)
-option(NANODBC_USE_BOOST_CONVERT "build using Boost.Locale for string convert" OFF)
-option(NANODBC_HANDLE_NODATA_BUG "enable special handling for SQL_NO_DATA (required for vertica)" OFF)
-option(NANODBC_DISABLE_ASYNC "disable async features entirely (may help resolve issues in VS2015 builds)" OFF)
-option(NANODBC_EXAMPLES "build examples" ON)
-option(NANODBC_TEST "build tests" ON)
-option(NANODBC_INSTALL "generate install target" ON)
-option(NANODBC_ENABLE_LIBCXX "Use libc++ if available." ON)
+# nanodbc specific options
+option(NANODBC_DISABLE_ASYNC "Disable async features entirely" OFF)
+option(NANODBC_DISABLE_EXAMPLES "Do not build examples" OFF)
+option(NANODBC_DISABLE_INSTALL "Do not generate install target" OFF)
+option(NANODBC_DISABLE_LIBCXX "Do not use libc++, if available." OFF)
+option(NANODBC_DISABLE_TESTS "Do not build tests" OFF)
+option(NANODBC_ENABLE_BOOST "Use Boost for Unicode string convertions (requires Boost.Locale)" OFF)
+option(NANODBC_ENABLE_UNICODE "Enable Unicode support" OFF)
+option(NANODBC_ENABLE_WORKAROUND_NODATA "Enable SQL_NO_DATA workaround (see Issue #33)" OFF)
 
 ########################################
 ## nanodbc version
@@ -30,7 +35,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
   include(CheckCXXCompilerFlag)
-  if(NANODBC_ENABLE_LIBCXX)
+  if(NOT NANODBC_DISABLE_LIBCXX)
     check_cxx_compiler_flag("-stdlib=libc++" CXX_SUPPORTS_STDLIB)
     if(CXX_SUPPORTS_STDLIB)
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
@@ -71,30 +76,29 @@ else()
   add_definitions(-DNANODBC_ODBC_VERSION=${NANODBC_ODBC_VERSION})
 endif()
 
-if(NANODBC_USE_UNICODE)
-  add_definitions(-DNANODBC_USE_UNICODE)
+if(NANODBC_DISABLE_ASYNC)
+  add_definitions(-DNANODBC_DISABLE_ASYNC)
+endif()
+message(STATUS "nanodbc feature: Disable async features - ${NANODBC_DISABLE_ASYNC}")
+
+if(NANODBC_ENABLE_UNICODE)
+  add_definitions(-DNANODBC_ENABLE_UNICODE)
   if(MSVC)
     # Sets "Use Unicode Character Set" property in Visual Studio projects
     add_definitions(-DUNICODE -D_UNICODE)
   endif()
 endif()
-message(STATUS "nanodbc feature: Unicode support - ${NANODBC_USE_UNICODE}")
+message(STATUS "nanodbc feature: Enable Unicode - ${NANODBC_ENABLE_UNICODE}")
 
-if(NANODBC_USE_BOOST_CONVERT)
-  add_definitions(-DNANODBC_USE_BOOST_CONVERT)
+if(NANODBC_ENABLE_BOOST)
+  add_definitions(-DNANODBC_ENABLE_BOOST)
 endif()
-message(STATUS "nanodbc feature: Boost string convert - ${NANODBC_USE_BOOST_CONVERT}")
+message(STATUS "nanodbc feature: Enable Boost - ${NANODBC_ENABLE_BOOST}")
 
-if(NANODBC_HANDLE_NODATA_BUG)
-  add_definitions(-DNANODBC_HANDLE_NODATA_BUG)
+if(NANODBC_ENABLE_WORKAROUND_NODATA)
+  add_definitions(-DNANODBC_ENABLE_WORKAROUND_NODATA)
 endif()
-message(STATUS "nanodbc feature: Handle SQL_NO_DATA bug - ${NANODBC_HANDLE_NODATA_BUG}")
-
-if(NANODBC_DISABLE_ASYNC)
-  message(STATUS "Disable async features: Yes")
-  add_definitions(-DNANODBC_DISABLE_ASYNC)
-endif()
-message(STATUS "nanodbc feature: Disable async features - ${NANODBC_DISABLE_ASYNC}")
+message(STATUS "nanodbc feature: Enable SQL_NO_DATA bug workaround - ${NANODBC_ENABLE_WORKAROUND_NODATA}")
 
 ########################################
 ## find unixODBC or iODBC config binary
@@ -143,7 +147,7 @@ if(UNIX)
       set(CMAKE_FLAGS "${CMAKE_FLAGS} ${ODBC_CFLAGS}")
       execute_process(COMMAND ${ODBC_CONFIG} --libs
         OUTPUT_VARIABLE ODBC_LINK_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-      if(NANODBC_USE_UNICODE)
+      if(NANODBC_ENABLE_UNICODE)
         add_definitions(-DNANODBC_USE_IODBC_WIDE_STRINGS)
       endif()
     endif()
@@ -172,7 +176,7 @@ endif()
 ########################################
 ## find Boost if necessary
 ########################################
-if(NANODBC_USE_BOOST_CONVERT)
+if(NANODBC_ENABLE_BOOST)
   set(Boost_USE_STATIC_LIBS ON)
   set(Boost_USE_MULTITHREADED ON)
   find_package(Boost COMPONENTS locale REQUIRED)
@@ -231,7 +235,7 @@ endif()
 ########################################
 ## install targets
 ########################################
-if(NANODBC_INSTALL)
+if(NOT NANODBC_DISABLE_INSTALL)
   set(NANODBC_CONFIG nanodbc-config)
   # 'make install' to the correct location
   if(BUILD_SHARED_LIBS)
@@ -257,24 +261,24 @@ if(NANODBC_INSTALL)
   ## Generate file *-config.cmake exporting targets from build tree.
   export(TARGETS nanodbc FILE ${NANODBC_CONFIG}.cmake)
 endif()
-message(STATUS "nanodbc build: Enable install target - ${NANODBC_INSTALL}")
+message(STATUS "nanodbc build: Disable install target - ${NANODBC_DISABLE_INSTALL}")
 
 ########################################
 ## tests targets
 ########################################
-if(NANODBC_TEST)
+if(NOT NANODBC_DISABLE_TESTS)
   enable_testing()
   add_subdirectory(test)
   add_custom_target(check
     COMMAND ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure
     DEPENDS tests)
 endif()
-message(STATUS "nanodbc build: Enable tests target - ${NANODBC_TEST}")
+message(STATUS "nanodbc build: Disable tests target - ${NANODBC_DISABLE_TESTS}")
 
 ########################################
 ## examples targets
 ########################################
-if(NANODBC_EXAMPLES)
+if(NOT NANODBC_DISABLE_EXAMPLES)
   add_subdirectory(example)
 endif()
-message(STATUS "nanodbc build: Enable examples target - ${NANODBC_EXAMPLES}")
+message(STATUS "nanodbc build: Disable examples target - ${NANODBC_DISABLE_EXAMPLES}")

@@ -17,7 +17,7 @@
 #define NANODBC_OVERRIDE override
 #endif
 
-#ifdef NANODBC_USE_BOOST_CONVERT
+#ifdef NANODBC_ENABLE_BOOST
 #include <boost/locale/encoding_utf.hpp>
 #else
 #include <codecvt>
@@ -37,8 +37,8 @@ struct TestConfig
 {
     nanodbc::string_type get_connection_string() const
     {
-#ifdef NANODBC_USE_UNICODE
-#ifdef NANODBC_USE_BOOST_CONVERT
+#ifdef NANODBC_ENABLE_UNICODE
+#ifdef NANODBC_ENABLE_BOOST
         using boost::locale::conv::utf_to_utf;
         return utf_to_utf<char16_t>(
             connection_string_.c_str(), connection_string_.c_str() + connection_string_.size());
@@ -273,8 +273,8 @@ struct base_test_fixture
         value = env_value;
 #endif
 
-#ifdef NANODBC_USE_UNICODE
-#ifdef NANODBC_USE_BOOST_CONVERT
+#ifdef NANODBC_ENABLE_UNICODE
+#ifdef NANODBC_ENABLE_BOOST
         using boost::locale::conv::utf_to_utf;
         return utf_to_utf<char16_t>(value.c_str(), value.c_str() + value.size());
 // Workaround for confirmed bug in VS2015.

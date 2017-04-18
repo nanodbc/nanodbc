@@ -34,7 +34,7 @@
 #define NANODBC_ASSERT(expr) assert(expr)
 #endif
 
-#ifdef NANODBC_USE_BOOST_CONVERT
+#ifdef NANODBC_ENABLE_BOOST
 #include <boost/locale/encoding_utf.hpp>
 #else
 #include <codecvt>
@@ -113,7 +113,7 @@
 // MARK: Unicode -
 // clang-format on
 
-#ifdef NANODBC_USE_UNICODE
+#ifdef NANODBC_ENABLE_UNICODE
 #define NANODBC_FUNC(f) f##W
 #define NANODBC_SQLCHAR SQLWCHAR
 #else
@@ -136,8 +136,8 @@ typedef std::u16string wide_string_type;
 typedef wide_string_type::value_type wide_char_t;
 
 #if defined(_MSC_VER)
-#ifndef NANODBC_USE_UNICODE
-// Disable unicode in sqlucode.h on Windows when NANODBC_USE_UNICODE
+#ifndef NANODBC_ENABLE_UNICODE
+// Disable unicode in sqlucode.h on Windows when NANODBC_ENABLE_UNICODE
 // is not defined. This is required because unicode is enabled by
 // default on many Windows systems.
 #define SQL_NOUNICODEMAP
@@ -256,7 +256,7 @@ inline std::size_t strarrlen(T (&a)[N])
 
 inline void convert(const wide_string_type& in, std::string& out)
 {
-#ifdef NANODBC_USE_BOOST_CONVERT
+#ifdef NANODBC_ENABLE_BOOST
     using boost::locale::conv::utf_to_utf;
     out = utf_to_utf<char>(in.c_str(), in.c_str() + in.size());
 #else
@@ -273,10 +273,10 @@ inline void convert(const wide_string_type& in, std::string& out)
 #endif
 }
 
-#ifdef NANODBC_USE_UNICODE
+#ifdef NANODBC_ENABLE_UNICODE
 inline void convert(const std::string& in, wide_string_type& out)
 {
-#ifdef NANODBC_USE_BOOST_CONVERT
+#ifdef NANODBC_ENABLE_BOOST
     using boost::locale::conv::utf_to_utf;
     out = utf_to_utf<wide_char_t>(in.c_str(), in.c_str() + in.size());
 // Workaround for confirmed bug in VS2015. See:
@@ -579,7 +579,7 @@ struct sql_ctype<double>
 template <>
 struct sql_ctype<nanodbc::string_type::value_type>
 {
-#ifdef NANODBC_USE_UNICODE
+#ifdef NANODBC_ENABLE_UNICODE
     static const SQLSMALLINT value = SQL_C_WCHAR;
 #else
     static const SQLSMALLINT value = SQL_C_CHAR;
@@ -589,7 +589,7 @@ struct sql_ctype<nanodbc::string_type::value_type>
 template <>
 struct sql_ctype<nanodbc::string_type>
 {
-#ifdef NANODBC_USE_UNICODE
+#ifdef NANODBC_ENABLE_UNICODE
     static const SQLSMALLINT value = SQL_C_WCHAR;
 #else
     static const SQLSMALLINT value = SQL_C_CHAR;
@@ -1480,7 +1480,7 @@ public:
         long timeout,
         statement& statement)
     {
-#ifdef NANODBC_HANDLE_NODATA_BUG
+#ifdef NANODBC_ENABLE_WORKAROUND_NODATA
         const RETCODE rc = just_execute_direct(conn, query, batch_operations, timeout, statement);
         if (rc == SQL_NO_DATA)
             return result();
@@ -1530,7 +1530,7 @@ public:
 
     result execute(long batch_operations, long timeout, statement& statement)
     {
-#ifdef NANODBC_HANDLE_NODATA_BUG
+#ifdef NANODBC_ENABLE_WORKAROUND_NODATA
         const RETCODE rc = just_execute(batch_operations, timeout, statement);
         if (rc == SQL_NO_DATA)
             return result();
@@ -2020,7 +2020,7 @@ void statement::statement_impl::bind_strings(
         {
             const string_type s_lhs(values + i * value_size, values + (i + 1) * value_size);
             const string_type s_rhs(null_sentry);
-#if NANODBC_USE_UNICODE
+#if NANODBC_ENABLE_UNICODE
             std::string narrow_lhs;
             narrow_lhs.reserve(s_lhs.size());
             convert(s_lhs, narrow_lhs);

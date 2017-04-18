@@ -117,22 +117,25 @@ make install # installs nanodbc.h and shared library
 
 The following build options are available via [CMake command-line option][cmake-docs] `-D`. If you
 are not using CMake to build nanodbc, you will need to set the corresponding `-D` compile define
-flags yourself. You will need to configure your build to use [boost][boost] if you want to use the
-`NANODBC_USE_BOOST_CONVERT` option.
+flags yourself.
 
-| CMake&nbsp;Option                     | Possible&nbsp;Values  | Default       | Details |
-| ------------------------------------- | --------------------- | ------------- | ------- |
-| `NANODBC_DISABLE_ASYNC`               | `OFF` or `ON`         | `OFF`         | Disables all async features. Can resolve build issues in older ODBC versions. |
-| `NANODBC_ENABLE_LIBCXX`               | `OFF` or `ON`         | `ON`          | Enables usage of libc++ if found on the system. |
-| `NANODBC_EXAMPLES`                    | `OFF` or `ON`         | `ON`          | Enables building of examples. |
-| `NANODBC_HANDLE_NODATA_BUG`           | `OFF` or `ON`         | `OFF`         | Provided to resolve issue [#33](https://github.com/lexicalunit/nanodbc/issues/33), details [in this commit](https://github.com/lexicalunit/nanodbc/commit/918d73cdf12d5903098381344eecde8e7d5d896e). |
-| `NANODBC_INSTALL`                     | `OFF` or `ON`         | `ON`          | Enables install target. |
-| `NANODBC_ODBC_VERSION`                | `SQL_OV_ODBC3[...]`   | See Details   | **[Optional]** Sets the ODBC version macro for nanodbc to use. Default is `SQL_OV_ODBC3_80` if available, otherwise `SQL_OV_ODBC3`. |
-| `NANODBC_TEST`                        | `OFF` or `ON`         | `ON`          | Enables tests target (alias `check`). |
-| `NANODBC_USE_BOOST_CONVERT`           | `OFF` or `ON`         | `OFF`         | Provided as workaround to issue [#44](https://github.com/lexicalunit/nanodbc/issues/44). |
-| `NANODBC_USE_UNICODE`                 | `OFF` or `ON`         | `OFF`         | Enables full unicode support. `nanodbc::string` becomes `std::u16string` or `std::u32string`. |
+All boolean options follow the CMake [OPTION][cmake-option] default value convention: if no initial value is provided, `OFF` is used.
 
 Use the standard CMake option `-DBUILD_SHARED_LIBS=ON` to build nanodbc as shared library.
+
+If you need to use the `NANODBC_ENABLE_BOOST=ON` option, you will have to configure your environment to use [Boost][boost].
+
+| CMake&nbsp;Option                  | Possible&nbsp;Values | Details |
+| -----------------------------------| ---------------------| ------- |
+| `NANODBC_DISABLE_ASYNC`            | `OFF` or `ON`        | Disable all async features. May resolve build issues in older ODBC versions. |
+| `NANODBC_DISABLE_EXAMPLES`         | `OFF` or `ON`        | Do not build examples. |
+| `NANODBC_DISABLE_INSTALL`          | `OFF` or `ON`        | Do not generate install target. |
+| `NANODBC_DISABLE_LIBCXX`           | `OFF` or `ON`        | Do not use libc++, if available on the system. |
+| `NANODBC_DISABLE_TESTS`            | `OFF` or `ON`        | Do not build tests. |
+| `NANODBC_ENABLE_BOOST`             | `OFF` or `ON`        | Use Boost for Unicode string convertions (requires [Boost.Locale][boost-locale]). Workaround to issue [#44](https://github.com/lexicalunit/nanodbc/issues/44). |
+| `NANODBC_ENABLE_UNICODE`           | `OFF` or `ON`        | Enable Unicode support. `nanodbc::string` becomes `std::u16string` or `std::u32string`. |
+| `NANODBC_ENABLE_WORKAROUND_NODATA` | `OFF` or `ON`        | Enable `SQL_NO_DATA` workaround to issue [#33](https://github.com/lexicalunit/nanodbc/issues/33). |
+| `NANODBC_ODBC_VERSION`             | `SQL_OV_ODBC3[...]`  | Forces ODBC version to use. Default is `SQL_OV_ODBC3_80` if available, otherwise `SQL_OV_ODBC3`. |
 
 ## Note About iODBC
 
@@ -294,11 +297,13 @@ deemed "stable" based on suitable criteria.**
 [nanodbc-releases]:     https://github.com/lexicalunit/nanodbc/releases
 
 [boost]:        http://www.boost.org/
+[boost-locale]: http://www.boost.org/doc/libs/release/libs/locale/
 [brew]:         http://brew.sh/
 [catch]:        https://github.com/philsquared/Catch
 [clang-format]: http://clang.llvm.org/docs/ClangFormat.html
 [cmake-docs]:   https://cmake.org/cmake/help/latest/manual/cmake.1.html
 [cmake]:        http://www.cmake.org/
+[cmake-option]: http://cmake.org/cmake/help/latest/command/option.html
 [cpp-core]:     https://github.com/isocpp/CppCoreGuidelines
 [cpp-std]:      https://isocpp.org/std/status
 [docker]:       https://www.docker.com/

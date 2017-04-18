@@ -11,12 +11,12 @@
 #error Examples do not support the iODBC wide strings
 #endif
 
-#ifdef NANODBC_USE_UNICODE
+#ifdef NANODBC_ENABLE_UNICODE
 inline nanodbc::string_type convert(std::string const& in)
 {
     static_assert(
         sizeof(nanodbc::string_type::value_type) > 1,
-        "NANODBC_USE_UNICODE mode requires wide string_type");
+        "NANODBC_ENABLE_UNICODE mode requires wide string_type");
     nanodbc::string_type out;
 // Workaround for confirmed bug in VS2015.
 // See: https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481
