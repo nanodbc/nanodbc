@@ -10,24 +10,40 @@ root = true
 charset = utf-8
 indent_style = space
 indent_size = 4
-insert_final_newline = true
 max_line_length = 100
+insert_final_newline = true
+trim_trailing_whitespace = true
 
 # CMake configuration files
 [{CMakeLists.txt,*.cmake}]
 indent_size = 2
 indent_style = space
+trim_trailing_whitespace = true
 
 # CI configuration files
 [{.travis.yml,appveyor.yml,Vagrantfile}]
 indent_size = 2
 indent_style = space
+trim_trailing_whitespace = true
 
 # Markdown/reStructuredText documentation files
 [*.{md,markdown,rst}]
 indent_size = 2
 indent_style = space
+trim_trailing_whitespace = true
 
-[**.{cmd,bat,ps1}]
+# Windows shell scripts
+[*.{cmd,bat,ps1}]
 end_of_line = crlf
+indent_size = 4
+indent_style = space
 insert_final_newline = false
+trim_trailing_whitespace = true
+
+# Unix shell scripts
+[*.sh]
+end_of_line = lf
+indent_size = 4
+indent_style = space
+insert_final_newline = false
+trim_trailing_whitespace = true
