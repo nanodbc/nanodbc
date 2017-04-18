@@ -4,9 +4,9 @@ A small C++ wrapper for the native C ODBC API. Please see the [online documentat
 user information, example usage, propaganda, and detailed source level documentation.
 
 [![Gitter](https://img.shields.io/gitter/room/lexicalunit/nanodbc.svg?style=flat-square)](https://gitter.im/nanodbc-help/Lobby)
-[![GitHub release](https://img.shields.io/github/tag/lexicalunit/nanodbc.svg)]()
-[![GitHub commits](https://img.shields.io/github/commits-since/lexicalunit/nanodbc/v2.12.4.svg?style=flat-square)]()
-[![License](https://img.shields.io/github/license/lexicalunit/nanodbc.svg?style=flat-square)]()
+[![GitHub release](https://img.shields.io/github/tag/lexicalunit/nanodbc.svg)](https://github.com/lexicalunit/nanodbc/releases)
+[![GitHub commits](https://img.shields.io/github/commits-since/lexicalunit/nanodbc/v2.12.4.svg?style=flat-square)](https://github.com/lexicalunit/nanodbc/releases/tag/v2.12.4)
+[![License](https://img.shields.io/github/license/lexicalunit/nanodbc.svg?style=flat-square)](https://github.com/lexicalunit/nanodbc/blob/master/LICENSE)
 
 [![Travis](https://img.shields.io/travis/lexicalunit/nanodbc.svg?style=flat-square)](https://travis-ci.org/lexicalunit/nanodbc)
 [![AppVeyor](https://img.shields.io/appveyor/ci/lexicalunit/nanodbc.svg?style=flat-square)](https://ci.appveyor.com/project/lexicalunit/nanodbc)
