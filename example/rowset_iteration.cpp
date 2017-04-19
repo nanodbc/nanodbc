@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
         {
             try
             {
-                // XXX: SQL Server <= 2014 does not support "if exists"
+                // SQL Server <= 2014 does not support "if exists"
                 execute(conn, NANODBC_TEXT("drop table rowset_iteration;"));
             }
             catch (runtime_error const&)
