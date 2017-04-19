@@ -11,6 +11,7 @@ user information, example usage, propaganda, and detailed source level documenta
 [![Travis](https://img.shields.io/travis/lexicalunit/nanodbc.svg?style=flat-square)](https://travis-ci.org/lexicalunit/nanodbc)
 [![AppVeyor](https://img.shields.io/appveyor/ci/lexicalunit/nanodbc.svg?style=flat-square)](https://ci.appveyor.com/project/lexicalunit/nanodbc)
 [![Coverity Scan](https://img.shields.io/coverity/scan/7437.svg?style=flat-square)](https://scan.coverity.com/projects/lexicalunit-nanodbc)
+[![CodeClimate Issue Count](https://codeclimate.com/github/lexicalunit/nanodbc/badges/issue_count.svg)](https://codeclimate.com/github/lexicalunit/nanodbc)
 
 ## Philosophy
 
