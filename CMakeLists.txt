@@ -11,6 +11,14 @@ option(NANODBC_TEST "build tests" ON)
 option(NANODBC_INSTALL "generate install target" ON)
 option(NANODBC_ENABLE_LIBCXX "Use libc++ if available." ON)
 
+########################################
+## nanodbc version
+########################################
+file(STRINGS VERSION NANODBC_VERSION REGEX "[0-9]+\\.[0-9]+\\.[0-9]+")
+string(REGEX REPLACE "^([0-9]+)\\.[0-9]+\\.[0-9]+" "\\1" NANODBC_VERSION_MAJOR "${NANODBC_VERSION}")
+string(REGEX REPLACE "^[0-9]+\\.([0-9])+\\.[0-9]+" "\\1" NANODBC_VERSION_MINOR "${NANODBC_VERSION}")
+string(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]+)" "\\1" NANODBC_VERSION_PATCH "${NANODBC_VERSION}")
+message(STATUS "nanodbc version: ${NANODBC_VERSION}")
 
 ########################################
 ## require and enable C++0x/11/14
@@ -203,14 +211,6 @@ endif()
 
 add_library(nanodbc nanodbc/nanodbc.cpp nanodbc/nanodbc.h)
 
-# TODO: Consider version/soverson support
-# if(BUILD_SHARED_LIBS)
-#   set_target_properties(nanodbc PROPERTIES
-#     VERSION ${PROJECT_VERSION}
-#     SOVERSION ${SHARED_LIBRARY_VERSION}
-#     COMPILE_DEFINITIONS freetype_EXPORTS)
-# endif()
-
 target_link_libraries(nanodbc ${Boost_LIBRARIES} ${ODBC_LIBRARIES})
 
 target_include_directories(nanodbc PUBLIC
@@ -221,6 +221,11 @@ if(UNIX)
   set_target_properties(nanodbc PROPERTIES
     COMPILE_FLAGS "${ODBC_CFLAGS}"
     LIBRARY_OUTPUT_DIRECTORY "lib")
+endif()
+
+if(BUILD_SHARED_LIBS)
+  set_target_properties(nanodbc PROPERTIES
+    VERSION ${NANODBC_VERSION})
 endif()
 
 ########################################

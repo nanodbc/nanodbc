@@ -39,6 +39,9 @@ foreach(test_item ${test_list})
   else()
     target_link_libraries(${test_name} nanodbc ${ODBC_LIBRARIES})
   endif()
+  set_target_properties(${test_name}
+    PROPERTIES
+    VERSION ${NANODBC_VERSION})
   add_test(NAME ${test_name} COMMAND ${test_name})
   add_custom_target(${test_item}_test
     COMMAND ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure -R ${test_name})

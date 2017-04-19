@@ -12,6 +12,10 @@ foreach(example ${examples})
     target_link_libraries(example_${example} nanodbc ${ODBC_LIBRARIES})
   endif()
   add_dependencies(examples example_${example})
+
+  set_target_properties(example_${example}
+    PROPERTIES
+    VERSION ${NANODBC_VERSION})
 endforeach()
 
 set(example_empty ${CMAKE_CURRENT_SOURCE_DIR}/empty.cpp)
@@ -25,3 +29,7 @@ else()
   target_link_libraries(example_empty nanodbc ${ODBC_LIBRARIES})
 endif()
 add_dependencies(examples example_empty)
+
+set_target_properties(example_empty
+  PROPERTIES
+  VERSION ${NANODBC_VERSION})
