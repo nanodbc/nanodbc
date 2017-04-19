@@ -1689,7 +1689,7 @@ public:
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
         NANODBC_ASSERT(
-            parameter_size <= static_cast<SQLULEN>(std::numeric_limits<unsigned long>::max()));
+            parameter_size < static_cast<SQLULEN>(std::numeric_limits<unsigned long>::max()));
         return static_cast<unsigned long>(parameter_size);
     }
 
@@ -2250,7 +2250,7 @@ public:
         if (pos == 0 || pos == static_cast<SQLULEN>(SQL_ROW_NUMBER_UNKNOWN))
             return 0;
 
-        NANODBC_ASSERT(pos <= static_cast<SQLULEN>(std::numeric_limits<unsigned long>::max()));
+        NANODBC_ASSERT(pos < static_cast<SQLULEN>(std::numeric_limits<unsigned long>::max()));
         return static_cast<unsigned long>(pos) + rowset_position_;
     }
 
