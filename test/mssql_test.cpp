@@ -415,6 +415,11 @@ TEST_CASE_METHOD(mssql_fixture, "test_datetime", "[mssql][datetime]")
     // select
     {
         auto result = execute(connection, NANODBC_TEXT("select d from test_datetime;"));
+
+        REQUIRE(result.column_name(0) == NANODBC_TEXT("d"));
+        REQUIRE(result.column_datatype(0) == SQL_TYPE_TIMESTAMP);
+        REQUIRE(result.column_datatype_name(0) == NANODBC_TEXT("datetime"));
+
         REQUIRE(result.next());
         auto t = result.get<nanodbc::timestamp>(0);
         REQUIRE(t.year == 2006);
@@ -512,6 +517,11 @@ TEST_CASE_METHOD(mssql_fixture, "test_datetime2", "[mssql][datetime]")
     // select
     {
         auto result = execute(connection, NANODBC_TEXT("select d from test_datetime2;"));
+
+        REQUIRE(result.column_name(0) == NANODBC_TEXT("d"));
+        REQUIRE(result.column_datatype(0) == SQL_TYPE_TIMESTAMP);
+        REQUIRE(result.column_datatype_name(0) == NANODBC_TEXT("datetime2"));
+
         REQUIRE(result.next());
         auto t = result.get<nanodbc::timestamp>(0);
         REQUIRE(t.year == 2006);
@@ -539,6 +549,14 @@ TEST_CASE_METHOD(mssql_fixture, "test_datetimeoffset", "[mssql][datetime]")
     // select
     {
         auto result = execute(connection, NANODBC_TEXT("select d from test_datetimeoffset;"));
+
+#ifndef SQL_SS_TIMESTAMPOFFSET
+#define SQL_SS_TIMESTAMPOFFSET (-155)
+#endif
+        REQUIRE(result.column_name(0) == NANODBC_TEXT("d"));
+        REQUIRE(result.column_datatype(0) == SQL_SS_TIMESTAMPOFFSET);
+        REQUIRE(result.column_datatype_name(0) == NANODBC_TEXT("datetimeoffset"));
+
         REQUIRE(result.next());
         auto t = result.get<nanodbc::timestamp>(0);
         REQUIRE(t.year == 2006);
