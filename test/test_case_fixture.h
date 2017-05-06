@@ -829,7 +829,15 @@ struct test_case_fixture : public base_test_fixture
             auto result = execute(connection, NANODBC_TEXT("select d from test_date;"));
 
             REQUIRE(result.column_name(0) == NANODBC_TEXT("d"));
-            REQUIRE(result.column_datatype(0) == SQL_DATE);
+            if (vendor_ == database_vendor::sqlite)
+            {
+                // NOTE: SQLite ODBC reports values inconsistent with table definition
+                REQUIRE(result.column_datatype(0) == 91); // FIXME: What is this type?
+            }
+            else
+            {
+                REQUIRE(result.column_datatype(0) == SQL_DATE);
+            }
             REQUIRE(result.column_datatype_name(0) == NANODBC_TEXT("date"));
 
             REQUIRE(result.next());
