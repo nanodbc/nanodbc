@@ -26,54 +26,33 @@ environment:
   matrix:
     - DB: SQLite
       G: "Visual Studio 14 2015"
-      UNICODE: OFF
-      BOOST: OFF
     - DB: SQLite
       G: "Visual Studio 14 2015 Win64"
-      UNICODE: OFF
-      BOOST: OFF
     - DB: SQLite
       G: "NMake Makefiles"
       P: x86-32
-      UNICODE: OFF
-      BOOST: OFF
-      NO_ASYNC: ON
+      DISABLE_ASYNC: ON
     - DB: MSSQL2016
       G: "Visual Studio 14 2015 Win64"
-      UNICODE: OFF
-      BOOST: OFF
     - DB: MSSQL2016
       G: "Visual Studio 14 2015 Win64"
-      UNICODE: ON
-      BOOST: OFF
+      ENABLE_UNICODE: ON
     - DB: MSSQL2014
       G: "Visual Studio 14 2015 Win64"
-      UNICODE: OFF
-      BOOST: OFF
     - DB: MSSQL2008
       G: "Visual Studio 14 2015 Win64"
-      UNICODE: OFF
-      BOOST: OFF
     - DB: MySQL
       G: "Visual Studio 14 2015 Win64"
-      UNICODE: OFF
-      BOOST: OFF
     - DB: PostgreSQL
       G: "Visual Studio 14 2015 Win64"
-      UNICODE: OFF
-      BOOST: OFF
     - DB: SQLite
       G: "MinGW Makefiles"
       P: x86-32
-      UNICODE: OFF
-      BOOST: OFF
-      NO_ASYNC: ON
+      DISABLE_ASYNC: ON
     - DB: SQLite
       G: "MinGW Makefiles"
       P: x86-64
-      UNICODE: OFF
-      BOOST: OFF
-      NO_ASYNC: ON
+      DISABLE_ASYNC: ON
 
 matrix:
   allow_failures:
@@ -116,10 +95,13 @@ install:
       }
 
 before_build:
-  - ps: 'Write-Host "Running cmake: $env:G" -ForegroundColor Magenta'
-  - cmake.exe -G "%G%" -DCMAKE_BUILD_TYPE=Release -DNANODBC_USE_BOOST_CONVERT=%BOOST% -DNANODBC_USE_UNICODE=%UNICODE% -DNANODBC_DISABLE_ASYNC=%NO_ASYNC% -DNANODBC_HANDLE_NODATA_BUG=OFF -DNANODBC_INSTALL=ON %APPVEYOR_BUILD_FOLDER%
+  - ps: if (-not $env:DISABLE_ASYNC) { $env:DISABLE_ASYNC="OFF" }
+  - ps: if (-not $env:ENABLE_BOOST)   { $env:ENABLE_BOOST="OFF" }
+  - ps: if (-not $env:ENABLE_UNICODE) { $env:ENABLE_UNICODE="OFF" }
 
 build_script:
+  - ps: 'Write-Host "Running cmake: $env:G" -ForegroundColor Magenta'
+  - cmake.exe -G "%G%" -DCMAKE_BUILD_TYPE=Release -DNANODBC_ENABLE_BOOST=%ENABLE_BOOST% -DNANODBC_ENABLE_UNICODE=%ENABLE_UNICODE% -DNANODBC_DISABLE_ASYNC=%DISABLE_ASYNC% %APPVEYOR_BUILD_FOLDER%
   - ps: 'Write-Host "Running cmake --build:" -ForegroundColor Magenta'
   - cmake --build . --config Release
 

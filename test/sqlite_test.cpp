@@ -53,7 +53,7 @@ struct sqlite_fixture : public test_case_fixture
 // https://github.com/lexicalunit/nanodbc/pull/154
 // https://groups.google.com/forum/#!msg/catch-forum/7tIpgm8SvDA/1QZZESIuCQAJ
 // TODO: Uncomment as soon as the SIGSEGV issue has been fixed.
-#ifndef NANODBC_USE_UNICODE
+#ifndef NANODBC_ENABLE_UNICODE
 TEST_CASE_METHOD(sqlite_fixture, "test_affected_rows", "[sqlite][affected_rows]")
 {
     nanodbc::connection conn = connect();

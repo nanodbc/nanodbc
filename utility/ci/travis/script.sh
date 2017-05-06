@@ -1,12 +1,28 @@
 #!/bin/bash -ue
 
+if [[ -z ${BUILD_SHARED_LIBS+v} ]]; then
+    export BUILD_SHARED_LIBS=OFF
+fi
+
+if [[ -z ${ENABLE_UNICODE+v} ]]; then
+    export ENABLE_UNICODE=OFF
+fi
+
+if [[ -z ${ENABLE_BOOST+v} ]]; then
+    export ENABLE_BOOST=OFF
+fi
+
+if [[ -z ${DISABLE_LIBCXX+v} ]]; then
+    export DISABLE_LIBCXX=OFF
+fi
+
 mkdir -p build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release \
       -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} \
-      -DNANODBC_USE_UNICODE=${USE_UNICODE} \
-      -DNANODBC_USE_BOOST_CONVERT=${USE_BOOST_CONVERT} \
-      -DNANODBC_ENABLE_LIBCXX=${ENABLE_LIBCXX} \
+      -DNANODBC_ENABLE_UNICODE=${ENABLE_UNICODE} \
+      -DNANODBC_ENABLE_BOOST=${ENABLE_BOOST} \
+      -DNANODBC_DISABLE_LIBCXX=${DISABLE_LIBCXX} \
       ..
 make
 cd test
