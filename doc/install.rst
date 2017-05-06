@@ -65,44 +65,43 @@ For example, CMake configuration using Makefiles generator:
   make examples # builds all the example programs
   make install  # installs nanodbc.h and shared library
 
-List of `CMake option`_ and cache entry variables are available to specify
-with ``-D`` switch to enable or disable nanodbc built-in features:
+`CMake OPTION`_ and cache entry variables are available to specify
+with ``-D`` switch to enable or disable nanodbc built-in features.
+
+All boolean options follow the `CMake OPTION`_ default value convention:
+if no initial value is provided, `OFF` is used.
+
+List of CMake options specific to nanodbc, in alphabetical order:
 
 NANODBC_DISABLE_ASYNC : *boolean*
-    Disables all async features. Can resolve build issues in older ODBC versions.
-    Default value is OFF.
+    Disable all async features. May resolve build issues in older ODBC versions.
 
-NANODBC_ENABLE_LIBCXX : *boolean*
-    Enables usage of libc++ if found on the system.
-    Default value is ON.
+NANODBC_DISABLE_EXAMPLES : *boolean*
+    Do not build examples.
 
-NANODBC_EXAMPLES : *boolean*
-    Enables building of examples.
-    Default value is ON.
+NANODBC_DISABLE_INSTALL : *boolean*
+    Do not generate install target.
 
-NANODBC_HANDLE_NODATA_BUG : *boolean*
-    Provided to resolve issue `#33 <https://github.com/lexicalunit/nanodbc/issues/33>`_.
-    Default value is OFF.
+NANODBC_DISABLE_LIBCXX : *boolean*
+    Do not use libc++, if available on the system.
 
-NANODBC_INSTALL : *boolean*
-    Enables install target. Default value is ON.
+NANODBC_DISABLE_TESTS : *boolean*
+    Do not build tests. Do not generate ``test`` and ``check`` targets.
+
+NANODBC_ENABLE_BOOST : *boolean*
+    Use Boost for Unicode string convertions (requires `Boost.Locale`_). Workaround to issue `#44 <https://github.com/lexicalunit/nanodbc/issues/44>`_.
+
+NANODBC_ENABLE_UNICODE : *boolean*
+    Enable Unicode support. ``nanodbc::string`` becomes ``std::u16string`` or ``std::u32string``.
+
+NANODBC_ENABLE_WORKAROUND_NODATA : *boolean*
+    Enable ``SQL_NO_DATA`` workaround `#33 <https://github.com/lexicalunit/nanodbc/issues/33>`_.
 
 NANODBC_ODBC_VERSION : *string*
-    Sets the ODBC version macro for nanodbc to use.
+    Force ODBC version to use.
     Possible values are ``SQL_OV_ODBC3`` or ``SQL_OV_ODBC3_80``.
     Default value is ``SQL_OV_ODBC3_80``, if available.
 
-NANODBC_TEST : *boolean*
-  Enables tests target (alias ``check``).
-  Default value is ON.
-
-NANODBC_USE_BOOST_CONVERT : *boolean*
-    Provided as workaround to issue `#44 <https://github.com/lexicalunit/nanodbc/issues/44>`_.
-    Default value is OFF;
-
-NANODBC_USE_UNICODE : *boolean*
-  Enables full unicode support. ``nanodbc::string`` becomes ``std::u16string`` or ``std::u32string``.
-  Default value is OFF.
 
 Standard `CMake`_ options are also available, for example:
 
@@ -144,7 +143,7 @@ Windows
 * vcpkg `port of nanodbc <https://github.com/Microsoft/vcpkg/tree/master/ports/nanodbc>`_
 
 .. _`CMake`: https://cmake.org
-.. _`CMake option`: https://cmake.org/cmake/help/latest/command/option.html
+.. _`CMake OPTION`: https://cmake.org/cmake/help/latest/command/option.html
 .. _`ctest`: https://cmake.org/cmake/help/latest/manual/ctest.1.html
 .. _`iODBC`: http://www.iodbc.org
 .. _`unixODBC`: http://www.unixodbc.org
