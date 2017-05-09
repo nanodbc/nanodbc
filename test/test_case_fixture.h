@@ -1429,6 +1429,45 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(results.is_null(2));
     }
 
+    void test_string_vector_null_vector()
+    {
+        nanodbc::connection connection = connect();
+        REQUIRE(connection.native_dbc_handle() != nullptr);
+        REQUIRE(connection.native_env_handle() != nullptr);
+        REQUIRE(connection.transactions() == std::size_t(0));
+
+        const std::vector<nanodbc::string_type> name = {
+            NANODBC_TEXT("foo"), NANODBC_TEXT("bar")};
+
+        drop_table(connection, NANODBC_TEXT("test_string_vector_null_vector"));
+        execute(
+            connection,
+            NANODBC_TEXT("create table test_string_vector_null_vector (name varchar(10));"));
+
+        nanodbc::statement query(connection);
+        prepare(
+            query,
+            NANODBC_TEXT("insert into test_string_vector_null_vector(name) values(?)"));
+        REQUIRE(query.parameters() == 1);
+
+        // With null vector, we need to use `std::vector<uint8_t>` instead of
+        // `std::vector<bool>` because the latter is a space efficient
+        // specialization that does not have a `data()` method.
+        std::vector<uint8_t> nulls = {false, false, true};
+        query.bind_strings(1, name, reinterpret_cast<bool*>(nulls.data()));
+
+        nanodbc::execute(query, 3);
+
+        nanodbc::result results =
+            execute(connection, NANODBC_TEXT("select name from test_string_vector_null_vector"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("foo"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("bar"));
+        REQUIRE(results.next());
+        REQUIRE(results.is_null(0));
+    }
+
     void test_batch_binary()
     {
         nanodbc::connection connection = connect();
