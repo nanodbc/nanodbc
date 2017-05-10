@@ -1,4 +1,4 @@
-#ifndef NANODBC_TEST_BASE_FIXTURE_H
+﻿#ifndef NANODBC_TEST_BASE_FIXTURE_H
 #define NANODBC_TEST_BASE_FIXTURE_H
 
 #include <nanodbc/nanodbc.h>
@@ -42,9 +42,9 @@ struct TestConfig
         using boost::locale::conv::utf_to_utf;
         return utf_to_utf<char16_t>(
             connection_string_.c_str(), connection_string_.c_str() + connection_string_.size());
-// Workaround for confirmed bug in VS2015.
-// See: https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481
-#elif defined(_MSC_VER) && (_MSC_VER == 1900)
+// Workaround for confirmed bug in VS2015 and VS2017 too
+// See: https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
+#elif defined(_MSC_VER) && (_MSC_VER >= 1900)
         auto s = std::wstring_convert<std::codecvt_utf8_utf16<int16_t>, int16_t>().from_bytes(
             connection_string_);
         auto p = reinterpret_cast<char16_t const*>(s.data());
@@ -277,9 +277,9 @@ struct base_test_fixture
 #ifdef NANODBC_ENABLE_BOOST
         using boost::locale::conv::utf_to_utf;
         return utf_to_utf<char16_t>(value.c_str(), value.c_str() + value.size());
-// Workaround for confirmed bug in VS2015.
-// See: https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481
-#elif defined(_MSC_VER) && (_MSC_VER == 1900)
+// Workaround for confirmed bug in VS2015 and VS2017 too
+// See: https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
+#elif defined(_MSC_VER) && (_MSC_VER >= 1900)
         auto s =
             std::wstring_convert<std::codecvt_utf8_utf16<int16_t>, int16_t>().from_bytes(value);
         auto p = reinterpret_cast<char16_t const*>(s.data());

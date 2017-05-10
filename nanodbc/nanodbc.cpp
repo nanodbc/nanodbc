@@ -1,4 +1,4 @@
-/// \file nanodbc.cpp Implementation details.
+﻿/// \file nanodbc.cpp Implementation details.
 #ifndef DOXYGEN
 
 // ASCII art banners are helpful for code editors with a minimap display.
@@ -260,10 +260,9 @@ inline void convert(const wide_string_type& in, std::string& out)
     using boost::locale::conv::utf_to_utf;
     out = utf_to_utf<char>(in.c_str(), in.c_str() + in.size());
 #else
-// Workaround for confirmed bug in VS2015. See:
-// https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
-// https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481
-#if defined(_MSC_VER) && (_MSC_VER == 1900)
+// Workaround for confirmed bug in VS2015 and VS2017 too
+// See: https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
+#if defined(_MSC_VER) && (_MSC_VER >= 1900)
     auto p = reinterpret_cast<unsigned short const*>(in.data());
     out = std::wstring_convert<NANODBC_CODECVT_TYPE<unsigned short>, unsigned short>().to_bytes(
         p, p + in.size());
@@ -279,10 +278,9 @@ inline void convert(const std::string& in, wide_string_type& out)
 #ifdef NANODBC_ENABLE_BOOST
     using boost::locale::conv::utf_to_utf;
     out = utf_to_utf<wide_char_t>(in.c_str(), in.c_str() + in.size());
-// Workaround for confirmed bug in VS2015. See:
-// https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
-// https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481
-#elif defined(_MSC_VER) && (_MSC_VER == 1900)
+// Workaround for confirmed bug in VS2015 and VS2017 too
+// See: https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
+#elif defined(_MSC_VER) && (_MSC_VER >= 1900)
     auto s =
         std::wstring_convert<NANODBC_CODECVT_TYPE<unsigned short>, unsigned short>().from_bytes(in);
     auto p = reinterpret_cast<wide_char_t const*>(s.data());
