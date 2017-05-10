@@ -24,14 +24,20 @@ notifications:
 
 environment:
   matrix:
-    - DB: SQLite
-      G: "Visual Studio 14 2015"
-    - DB: SQLite
-      G: "Visual Studio 14 2015 Win64"
-    - DB: SQLite
-      G: "NMake Makefiles"
-      P: x86-32
-      DISABLE_ASYNC: ON
+    - DB: MSSQL2016
+      G: "Visual Studio 15 2017"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    - DB: MSSQL2016
+      G: "Visual Studio 15 2017"
+      ENABLE_UNICODE: ON
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    - DB: MSSQL2016
+      G: "Visual Studio 15 2017 Win64"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    - DB: MSSQL2016
+      G: "Visual Studio 15 2017 Win64"
+      ENABLE_UNICODE: ON
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     - DB: MSSQL2016
       G: "Visual Studio 14 2015 Win64"
     - DB: MSSQL2016
@@ -46,12 +52,20 @@ environment:
     - DB: PostgreSQL
       G: "Visual Studio 14 2015 Win64"
     - DB: SQLite
-      G: "MinGW Makefiles"
+      G: "Visual Studio 14 2015"
+    - DB: SQLite
+      G: "Visual Studio 14 2015 Win64"
+    - DB: SQLite
+      G: "NMake Makefiles"
       P: x86-32
       DISABLE_ASYNC: ON
     - DB: SQLite
       G: "MinGW Makefiles"
       P: x86-64
+      DISABLE_ASYNC: ON
+    - DB: SQLite
+      G: "MinGW Makefiles"
+      P: x86-32
       DISABLE_ASYNC: ON
 
 matrix:
