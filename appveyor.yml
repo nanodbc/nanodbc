@@ -42,15 +42,21 @@ environment:
       ENABLE_UNICODE: ON
       DISABLE_EXAMPLES: OFF
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-    - DB: MSSQL2016
+    - DB: MSSQL2014
       G: "Visual Studio 14 2015 Win64"
-    - DB: MSSQL2016
+    - DB: MSSQL2014
       G: "Visual Studio 14 2015 Win64"
       ENABLE_UNICODE: ON
-    - DB: MSSQL2014
+    - DB: MSSQL2012
+      G: "Visual Studio 14 2015 Win64"
+    - DB: MSSQL2012
+      G: "Visual Studio 14 2015 Win64"
+      ENABLE_UNICODE: ON
+    - DB: MSSQL2008
       G: "Visual Studio 14 2015 Win64"
     - DB: MSSQL2008
       G: "Visual Studio 14 2015 Win64"
+      ENABLE_UNICODE: ON
     - DB: MySQL
       G: "Visual Studio 14 2015 Win64"
     - DB: PostgreSQL
@@ -129,6 +135,8 @@ before_test:
   - ps: |
       if ($env:DB -Match "MSSQL2008") {
         Start-Service 'MSSQL$SQL2008R2SP2'
+      } elseif ($env:DB -Match "MSSQL2012") {
+        Start-Service 'MSSQL$SQL2012SP1'
       } elseif ($env:DB -Match "MSSQL2014") {
         Start-Service 'MSSQL$SQL2014'
       } elseif ($env:DB -Match "MSSQL2016") {
@@ -151,6 +159,9 @@ test_script:
   - ps: |
       if ($env:DB -Match "MSSQL2008") {
         $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 11 for SQL Server};Server=(local)\SQL2008R2SP2;Database=master;UID=sa;PWD=Password12!;"
+        $test_name = "mssql_test"
+      } elseif ($env:DB -Match "MSSQL2012") {
+        $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 11 for SQL Server};Server=(local)\SQL2012SP1;Database=master;UID=sa;PWD=Password12!;"
         $test_name = "mssql_test"
       } elseif ($env:DB -Match "MSSQL2014") {
         $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 11 for SQL Server};Server=(local)\SQL2014;Database=master;UID=sa;PWD=Password12!;"
