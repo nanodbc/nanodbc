@@ -1,4 +1,4 @@
-/// \file nanodbc.h The entirety of nanodbc can be found within this file and nanodbc.cpp.
+﻿/// \file nanodbc.h The entirety of nanodbc can be found within this file and nanodbc.cpp.
 
 /// \mainpage
 ///
@@ -179,7 +179,8 @@ typedef long null_type;
 ///   * Otherwise, it prefixes a literal with u"...".
 #define NANODBC_TEXT(s) s
 
-/// \c string_type will be \c std::u16string or \c std::32string if \c NANODBC_ENABLE_UNICODE defined.
+/// \c string_type will be \c std::u16string or \c std::32string if \c NANODBC_ENABLE_UNICODE
+/// defined.
 ///
 /// Otherwise it will be \c std::string.
 typedef unspecified - type string_type;

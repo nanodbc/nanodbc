@@ -1,4 +1,4 @@
-#ifndef NANODBC_TEST_CASE_FIXTURE_H
+﻿#ifndef NANODBC_TEST_CASE_FIXTURE_H
 #define NANODBC_TEST_CASE_FIXTURE_H
 
 #include "base_test_fixture.h"
@@ -372,10 +372,9 @@ struct test_case_fixture : public base_test_fixture
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c3"));
+            // FIXME: SQLite ODBC mis-reports decimal digits? Causing columns.column_size() == 3.
             if (vendor_ == database_vendor::sqlite)
             {
-                // FIXME: SQLite ODBC mis-reports decimal digits? Causing
-                //        columns.column_size() == 3.
 #if defined _WIN32
                 REQUIRE(columns.sql_data_type() == -9); // FIXME: What is this type?
                 REQUIRE(columns.column_size() == 3);
@@ -1436,8 +1435,7 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(connection.native_env_handle() != nullptr);
         REQUIRE(connection.transactions() == std::size_t(0));
 
-        const std::vector<nanodbc::string_type> name = {
-            NANODBC_TEXT("foo"), NANODBC_TEXT("bar")};
+        const std::vector<nanodbc::string_type> name = {NANODBC_TEXT("foo"), NANODBC_TEXT("bar")};
 
         drop_table(connection, NANODBC_TEXT("test_string_vector_null_vector"));
         execute(
@@ -1445,9 +1443,7 @@ struct test_case_fixture : public base_test_fixture
             NANODBC_TEXT("create table test_string_vector_null_vector (name varchar(10));"));
 
         nanodbc::statement query(connection);
-        prepare(
-            query,
-            NANODBC_TEXT("insert into test_string_vector_null_vector(name) values(?)"));
+        prepare(query, NANODBC_TEXT("insert into test_string_vector_null_vector(name) values(?)"));
         REQUIRE(query.parameters() == 1);
 
         // With null vector, we need to use `std::vector<uint8_t>` instead of
