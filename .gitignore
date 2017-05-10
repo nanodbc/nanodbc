@@ -13,7 +13,7 @@
 *.a
 
 /.vagrant
-/.vscode
+/.vs*
 /*build*/
 /*.local.bat
 /doc
