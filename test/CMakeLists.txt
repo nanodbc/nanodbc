@@ -29,7 +29,26 @@ include_directories(${CMAKE_SOURCE_DIR} ${CATCH_INCLUDE_DIR} ${ODBC_INCLUDE_DIR}
 link_directories(${CMAKE_BINARY_DIR}/lib)
 file(GLOB headers *.h *.hpp)
 add_custom_target(tests DEPENDS tests catch)
-set(test_list mssql mysql odbc postgresql sqlite vertica)
+set(test_list mssql mysql postgresql sqlite vertica) # odbc_test.cpp is a dummy
+
+# Travis CI and AppVeyor set common environment variable CI
+# and nanodbc-specific DB (in CI build configuration).
+# The CI builds enable DB test for DB specified in build job configuration.
+if (DEFINED ENV{CI} AND DEFINED ENV{DB})
+  if ($ENV{CI})
+    foreach(test_item ${test_list})
+      string(TOLOWER $ENV{DB} test_db)
+      string(FIND ${test_db} ${test_item} test_found)
+      if (test_found LESS 0)
+        list(REMOVE_ITEM test_list ${test_item})
+      endif()
+    endforeach()
+    if (NOT test_list)
+      message(FATAL_ERROR "CI build misconfigured: no tests specified")
+    endif()
+  endif()
+endif()
+
 foreach(test_item ${test_list})
   set(test_name ${test_item}_tests)
   add_executable(${test_name} main.cpp ${test_item}_test.cpp ${headers})
