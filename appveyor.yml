@@ -120,7 +120,7 @@ before_build:
 
 build_script:
   - ps: 'Write-Host "Running cmake: $env:G" -ForegroundColor Magenta'
-  - cmake.exe -G "%G%" -DCMAKE_BUILD_TYPE=Release -DNANODBC_ENABLE_BOOST=%ENABLE_BOOST% -DNANODBC_ENABLE_UNICODE=%ENABLE_UNICODE% -DNANODBC_DISABLE_ASYNC=%DISABLE_ASYNC% %APPVEYOR_BUILD_FOLDER%
+  - cmake.exe -G "%G%" -DCMAKE_BUILD_TYPE=Release -DNANODBC_ENABLE_BOOST=%ENABLE_BOOST% -DNANODBC_ENABLE_UNICODE=%ENABLE_UNICODE% -DNANODBC_DISABLE_ASYNC=%DISABLE_ASYNC% -DNANODBC_DISABLE_EXAMPLES=%DISABLE_EXAMPLES% %APPVEYOR_BUILD_FOLDER%
   - ps: 'Write-Host "Running cmake --build:" -ForegroundColor Magenta'
   - cmake --build . --config Release
 
