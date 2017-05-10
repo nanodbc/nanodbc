@@ -26,17 +26,21 @@ environment:
   matrix:
     - DB: MSSQL2016
       G: "Visual Studio 15 2017"
+      DISABLE_EXAMPLES: OFF
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     - DB: MSSQL2016
       G: "Visual Studio 15 2017"
       ENABLE_UNICODE: ON
+      DISABLE_EXAMPLES: OFF
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     - DB: MSSQL2016
       G: "Visual Studio 15 2017 Win64"
+      DISABLE_EXAMPLES: OFF
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     - DB: MSSQL2016
       G: "Visual Studio 15 2017 Win64"
       ENABLE_UNICODE: ON
+      DISABLE_EXAMPLES: OFF
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     - DB: MSSQL2016
       G: "Visual Studio 14 2015 Win64"
@@ -112,6 +116,7 @@ before_build:
   - ps: if (-not $env:DISABLE_ASYNC) { $env:DISABLE_ASYNC="OFF" }
   - ps: if (-not $env:ENABLE_BOOST)   { $env:ENABLE_BOOST="OFF" }
   - ps: if (-not $env:ENABLE_UNICODE) { $env:ENABLE_UNICODE="OFF" }
+  - ps: if (-not $env:DISABLE_EXAMPLES) { $env:DISABLE_EXAMPLES="ON" }
 
 build_script:
   - ps: 'Write-Host "Running cmake: $env:G" -ForegroundColor Magenta'

@@ -91,7 +91,7 @@ matrix:
           build_command: cmake --build ./build.coverity
           branch_pattern: coverity_scan
       compiler: gcc
-      env: DB=sqlite DISABLE_LIBCXX=ON COVERITY=ON
+      env: DB=sqlite COVERITY=ON DISABLE_LIBCXX=ON DISABLE_EXAMPLES=OFF
       os: linux
     - addons: *sqlite
       compiler: gcc
@@ -111,11 +111,11 @@ matrix:
       os: linux
     - addons: *mysql
       compiler: gcc
-      env: DB=mysql ENABLE_UNICODE=ON DISABLE_LIBCXX=ON
+      env: DB=mysql ENABLE_UNICODE=ON DISABLE_LIBCXX=ON DISABLE_EXAMPLES=OFF
       os: linux
     - addons: *mysql
       compiler: gcc
-      env: DB=mysql ENABLE_UNICODE=ON ENABLE_BOOST=ON DISABLE_LIBCXX=ON
+      env: DB=mysql ENABLE_UNICODE=ON ENABLE_BOOST=ON DISABLE_LIBCXX=ON DISABLE_EXAMPLES=OFF
       os: linux
     - addons: *postgresql
       compiler: gcc

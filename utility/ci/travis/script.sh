@@ -16,6 +16,10 @@ if [[ -z ${DISABLE_LIBCXX+v} ]]; then
     export DISABLE_LIBCXX=OFF
 fi
 
+if [[ -z ${DISABLE_EXAMPLES+v} ]]; then
+    export DISABLE_EXAMPLES=ON
+fi
+
 mkdir -p build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release \
@@ -23,6 +27,7 @@ cmake -DCMAKE_BUILD_TYPE=Release \
       -DNANODBC_ENABLE_UNICODE=${ENABLE_UNICODE} \
       -DNANODBC_ENABLE_BOOST=${ENABLE_BOOST} \
       -DNANODBC_DISABLE_LIBCXX=${DISABLE_LIBCXX} \
+      -DNANODBC_DISABLE_EXAMPLES=${DISABLE_EXAMPLES} \
       ..
 make
 cd test
