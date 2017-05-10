@@ -77,11 +77,21 @@ environment:
       G: "MinGW Makefiles"
       P: x86-32
       DISABLE_ASYNC: ON
+    - G: "Visual Studio 15 2017"
+      ANALYSIS: "/p:RunCodeAnalysis=true"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    - G: "Visual Studio 15 2017 Win64"
+      ANALYSIS: "/p:RunCodeAnalysis=true"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
 
 matrix:
   allow_failures:
     - G: "MinGW Makefiles"
       P: x86-32
+    - G: "Visual Studio 15 2017"
+      ANALYSIS: "/p:RunCodeAnalysis=true"
+    - G: "Visual Studio 15 2017 Win64"
+      ANALYSIS: "/p:RunCodeAnalysis=true"
 
 init:
   # For MinGW make to work correctly sh.exe must NOT be in your path.
@@ -123,68 +133,84 @@ before_build:
   - ps: if (-not $env:ENABLE_BOOST)   { $env:ENABLE_BOOST="OFF" }
   - ps: if (-not $env:ENABLE_UNICODE) { $env:ENABLE_UNICODE="OFF" }
   - ps: if (-not $env:DISABLE_EXAMPLES) { $env:DISABLE_EXAMPLES="ON" }
+  - ps: if (-not $env:DISABLE_TESTS) { $env:DISABLE_TESTS="OFF" }
+  - ps: if (-not $env:DISABLE_INSTALL) { $env:DISABLE_INSTALL="ON" }
+  - ps: if ($env:G -Match "NMake") { $env:DISABLE_INSTALL="OFF" }
+  - ps: |
+      if ($env:ANALYSIS) {
+        $env:MSBUILD_ARGS="/warnaserror $env:ANALYSIS"
+        $env:DISABLE_EXAMPLES="ON"
+        $env:DISABLE_TESTS="ON"
+      }
 
 build_script:
   - ps: 'Write-Host "Running cmake: $env:G" -ForegroundColor Magenta'
-  - cmake.exe -G "%G%" -DCMAKE_BUILD_TYPE=Release -DNANODBC_ENABLE_BOOST=%ENABLE_BOOST% -DNANODBC_ENABLE_UNICODE=%ENABLE_UNICODE% -DNANODBC_DISABLE_ASYNC=%DISABLE_ASYNC% -DNANODBC_DISABLE_EXAMPLES=%DISABLE_EXAMPLES% %APPVEYOR_BUILD_FOLDER%
+  - cmake.exe -G "%G%" -DCMAKE_BUILD_TYPE=Release -DNANODBC_ENABLE_BOOST=%ENABLE_BOOST% -DNANODBC_ENABLE_UNICODE=%ENABLE_UNICODE% -DNANODBC_DISABLE_ASYNC=%DISABLE_ASYNC% -DNANODBC_DISABLE_EXAMPLES=%DISABLE_EXAMPLES% -DNANODBC_DISABLE_TESTS=%DISABLE_TESTS% -DNANODBC_DISABLE_INSTALL=%DISABLE_INSTALL% %APPVEYOR_BUILD_FOLDER%
   - ps: 'Write-Host "Running cmake --build:" -ForegroundColor Magenta'
-  - cmake --build . --config Release
+  - cmake --build . --config Release -- %MSBUILD_ARGS%
 
 before_test:
-  - ps: 'Write-Host Configuring $env:DB service -ForegroundColor Magenta'
   - ps: |
-      if ($env:DB -Match "MSSQL2008") {
-        Start-Service 'MSSQL$SQL2008R2SP2'
-      } elseif ($env:DB -Match "MSSQL2012") {
-        Start-Service 'MSSQL$SQL2012SP1'
-      } elseif ($env:DB -Match "MSSQL2014") {
-        Start-Service 'MSSQL$SQL2014'
-      } elseif ($env:DB -Match "MSSQL2016") {
-        Start-Service 'MSSQL$SQL2016'
-      } elseif ($env:DB -Match "MySQL") {
-        Start-Service MySQL57
-        $env:MYSQL_PWD="Password12!"
-        $cmd = '"C:\Program Files\MySQL\MySQL Server 5.7\bin\mysql" -e "create database nanodbc_test;" --user=root'
-        iex "& $cmd"
-      } elseif ($env:DB -Match "PostgreSQL") {
-        Start-Service postgresql-x64-9.5
-        $env:PGUSER="postgres"
-        $env:PGPASSWORD="Password12!"
-        $cmd = '"C:\Program Files\PostgreSQL\9.3\bin\createdb" nanodbc_test'
-        iex "& $cmd"
+      if ($env:ANALYSIS) {
+        Write-Host "Skipping database services configuration" -ForegroundColor Magenta
+      } else {
+        Write-Host "Configuring $env:DB service" -ForegroundColor Magenta
+        if ($env:DB -Match "MSSQL2008") {
+          Start-Service 'MSSQL$SQL2008R2SP2'
+        } elseif ($env:DB -Match "MSSQL2012") {
+          Start-Service 'MSSQL$SQL2012SP1'
+        } elseif ($env:DB -Match "MSSQL2014") {
+          Start-Service 'MSSQL$SQL2014'
+        } elseif ($env:DB -Match "MSSQL2016") {
+          Start-Service 'MSSQL$SQL2016'
+        } elseif ($env:DB -Match "MySQL") {
+          Start-Service MySQL57
+          $env:MYSQL_PWD="Password12!"
+          $cmd = '"C:\Program Files\MySQL\MySQL Server 5.7\bin\mysql" -e "create database nanodbc_test;" --user=root'
+          iex "& $cmd"
+        } elseif ($env:DB -Match "PostgreSQL") {
+          Start-Service postgresql-x64-9.5
+          $env:PGUSER="postgres"
+          $env:PGPASSWORD="Password12!"
+          $cmd = '"C:\Program Files\PostgreSQL\9.3\bin\createdb" nanodbc_test'
+          iex "& $cmd"
+        }
       }
       if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
 
 test_script:
   - ps: |
-      if ($env:DB -Match "MSSQL2008") {
-        $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 11 for SQL Server};Server=(local)\SQL2008R2SP2;Database=master;UID=sa;PWD=Password12!;"
-        $test_name = "mssql_test"
-      } elseif ($env:DB -Match "MSSQL2012") {
-        $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 11 for SQL Server};Server=(local)\SQL2012SP1;Database=master;UID=sa;PWD=Password12!;"
-        $test_name = "mssql_test"
-      } elseif ($env:DB -Match "MSSQL2014") {
-        $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 11 for SQL Server};Server=(local)\SQL2014;Database=master;UID=sa;PWD=Password12!;"
-        $test_name = "mssql_test"
-      } elseif ($env:DB -Match "MSSQL2016") {
-        $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 11 for SQL Server};Server=(local)\SQL2016;Database=master;UID=sa;PWD=Password12!;"
-        $test_name = "mssql_test"
-      } elseif ($env:DB -Match "MySQL") {
-        $env:NANODBC_TEST_CONNSTR_MYSQL="Driver={MySQL ODBC 5.3 ANSI Driver};Server=127.0.0.1;Database=nanodbc_test;User=root;Password=Password12!;big_packets=1;"
-        $test_name = "mysql_test"
-      } elseif ($env:DB -Match "PostgreSQL") {
-        $env:NANODBC_TEST_CONNSTR_PGSQL="Driver={PostgreSQL ANSI(x64)};Server=127.0.0.1;Port=5432;Database=nanodbc_test;Uid=postgres;Pwd=Password12!;"
-        $test_name = "postgresql_test"
-      } elseif ($env:DB -Match "SQLite") {
-        $test_name = "sqlite_test"
+      if ($env:ANALYSIS) {
+        Write-Host "Skipping tests" -ForegroundColor Magenta
       } else {
-        throw 'Database ' + $env:DB + ' not configured yet'
+        if ($env:DB -Match "MSSQL2008") {
+          $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 11 for SQL Server};Server=(local)\SQL2008R2SP2;Database=master;UID=sa;PWD=Password12!;"
+          $test_name = "mssql_test"
+        } elseif ($env:DB -Match "MSSQL2012") {
+          $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 11 for SQL Server};Server=(local)\SQL2012SP1;Database=master;UID=sa;PWD=Password12!;"
+          $test_name = "mssql_test"
+        } elseif ($env:DB -Match "MSSQL2014") {
+          $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 11 for SQL Server};Server=(local)\SQL2014;Database=master;UID=sa;PWD=Password12!;"
+          $test_name = "mssql_test"
+        } elseif ($env:DB -Match "MSSQL2016") {
+          $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 11 for SQL Server};Server=(local)\SQL2016;Database=master;UID=sa;PWD=Password12!;"
+          $test_name = "mssql_test"
+        } elseif ($env:DB -Match "MySQL") {
+          $env:NANODBC_TEST_CONNSTR_MYSQL="Driver={MySQL ODBC 5.3 ANSI Driver};Server=127.0.0.1;Database=nanodbc_test;User=root;Password=Password12!;big_packets=1;"
+          $test_name = "mysql_test"
+        } elseif ($env:DB -Match "PostgreSQL") {
+          $env:NANODBC_TEST_CONNSTR_PGSQL="Driver={PostgreSQL ANSI(x64)};Server=127.0.0.1;Port=5432;Database=nanodbc_test;Uid=postgres;Pwd=Password12!;"
+          $test_name = "postgresql_test"
+        } elseif ($env:DB -Match "SQLite") {
+          $test_name = "sqlite_test"
+        } else {
+          throw 'Database ' + $env:DB + ' not configured yet'
+        }
+        Write-Host "Running $Env:CONFIGURATION build test: $test_name" -ForegroundColor Magenta
+        $cmd = 'ctest -V --output-on-failure -C ' + $Env:CONFIGURATION + ' -R ' + $test_name
+        iex "& $cmd"
+        if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
       }
-      Write-Host Running $Env:CONFIGURATION build test: $test_name -ForegroundColor Magenta
-  - ps: |
-      $cmd = 'ctest -V --output-on-failure -C ' + $Env:CONFIGURATION + ' -R ' + $test_name
-      iex "& $cmd"
-      if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
 
 after_test:
   - ps: |
