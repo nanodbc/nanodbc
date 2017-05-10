@@ -1,4 +1,4 @@
-#include "example_unicode_utils.h"
+﻿#include "example_unicode_utils.h"
 #include <nanodbc/nanodbc.h>
 
 #include <iostream>
@@ -21,8 +21,8 @@ int main()
 
         for (int i = 1; row.next(); ++i)
         {
-            cout << i << " :" << convert(row.get<string_type>(0)) << " "
-                 << convert(row.get<string_type>(1)) << " " << convert(row.get<string_type>(2))
+            cout << i << " :" << convert(row.get<nanodbc::string>(0)) << " "
+                 << convert(row.get<nanodbc::string>(1)) << " " << convert(row.get<nanodbc::string>(2))
                  << " " << endl;
         }
     }

@@ -1,4 +1,4 @@
-#include "example_unicode_utils.h"
+﻿#include "example_unicode_utils.h"
 #include <nanodbc/nanodbc.h>
 
 #include <algorithm>
@@ -12,7 +12,7 @@
 using namespace std;
 using namespace nanodbc;
 
-void usage(ostream& out, string const& binary_name)
+void usage(ostream& out, std::string const& binary_name)
 {
     out << "usage: " << binary_name << " connection_string" << endl;
 }
@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
         // "Driver={ODBC Driver 11 for SQL Server};
         //  Server=xxx.sqlserver.net;Database=mydb;UID=joe;PWD=secret;"
         auto const connection_string(convert(argv[1]));
-        connection conn(connection_string);
+        nanodbc::connection conn(connection_string);
 
         // Create table
         {

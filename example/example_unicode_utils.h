@@ -12,16 +12,16 @@
 #endif
 
 #ifdef NANODBC_ENABLE_UNICODE
-inline nanodbc::string_type convert(std::string const& in)
+inline nanodbc::string convert(std::string const& in)
 {
     static_assert(
-        sizeof(nanodbc::string_type::value_type) > 1,
-        "NANODBC_ENABLE_UNICODE mode requires wide string_type");
-    nanodbc::string_type out;
+        sizeof(nanodbc::string::value_type) > 1,
+        "NANODBC_ENABLE_UNICODE mode requires wide string");
+    nanodbc::string out;
 // Workaround for confirmed bug in VS2015 and VS2017 too
 // See: https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
 #if defined(_MSC_VER) && (_MSC_VER >= 1900)
-    using wide_char_t = nanodbc::string_type::value_type;
+    using wide_char_t = nanodbc::string::value_type;
     auto s =
         std::wstring_convert<std::codecvt_utf8_utf16<wide_char_t>, wide_char_t>().from_bytes(in);
     auto p = reinterpret_cast<wide_char_t const*>(s.data());
@@ -32,14 +32,14 @@ inline nanodbc::string_type convert(std::string const& in)
     return out;
 }
 
-inline std::string convert(nanodbc::string_type const& in)
+inline std::string convert(nanodbc::string const& in)
 {
-    static_assert(sizeof(nanodbc::string_type::value_type) > 1, "string_type must be wide");
+    static_assert(sizeof(nanodbc::string::value_type) > 1, "string must be wide");
     std::string out;
 // Workaround for confirmed bug in VS2015 and VS2017 too
 // See: https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
 #if defined(_MSC_VER) && (_MSC_VER >= 1900)
-    using wide_char_t = nanodbc::string_type::value_type;
+    using wide_char_t = nanodbc::string::value_type;
     std::wstring_convert<std::codecvt_utf8_utf16<wide_char_t>, wide_char_t> convert;
     auto p = reinterpret_cast<const wide_char_t*>(in.data());
     out = convert.to_bytes(p, p + in.size());
@@ -49,7 +49,7 @@ inline std::string convert(nanodbc::string_type const& in)
     return out;
 }
 #else
-inline nanodbc::string_type convert(std::string const& in)
+inline nanodbc::string convert(std::string const& in)
 {
     return in;
 }
@@ -62,7 +62,7 @@ inline std::string any_to_string(T const& t)
 }
 
 template <>
-inline std::string any_to_string<nanodbc::string_type>(nanodbc::string_type const& t)
+inline std::string any_to_string<nanodbc::string>(nanodbc::string const& t)
 {
     return convert(t);
 }

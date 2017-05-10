@@ -147,13 +147,13 @@ int main(int argc, char* argv[])
         //  Server=xxx.sqlserver.net;Database=mydb;UID=joe;PWD=secret;"
         auto const connection_string(convert(argv[1]));
         auto const table_name(convert(argv[2]));
-        nanodbc::string_type schema_name;
+        nanodbc::string schema_name;
         if (argc == 4)
             schema_name = convert(argv[3]);
 
         connection conn(connection_string);
         catalog cat(conn);
-        auto cols = cat.find_columns(nanodbc::string_type(), table_name, schema_name);
+        auto cols = cat.find_columns(nanodbc::string(), table_name, schema_name);
         while (cols.next())
         {
             if (cols.ordinal_position() == 1)

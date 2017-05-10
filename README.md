@@ -143,7 +143,7 @@ Under Windows `sizeof(wchar_t) == sizeof(SQLWCHAR) == 2`, yet on Unix systems
 `sizeof(wchar_t) == 4`. On unixODBC, `sizeof(SQLWCHAR) == 2` while on iODBC,
 `sizeof(SQLWCHAR) == sizeof(wchar_t) == 4`. This leads to incompatible ABIs between applications
 and drivers. If building against iODBC and the build option `NANODBC_USE_UNICODE` is `ON`, then
-`nanodbc::string_type` will be `std::u32string`. In **ALL** other cases it will be `std::u16string`.
+`nanodbc::string` will be `std::u32string`. In **ALL** other cases it will be `std::u16string`.
 
 Continuous integration tests run on [Travis-CI][travis]. The build platform does not make available
 a Unicode-enabled iODBC driver. As such there is no guarantee that tests will pass in entirety on a
