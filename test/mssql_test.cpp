@@ -146,7 +146,7 @@ TEST_CASE_METHOD(
     "test_blob_with_varchar",
     "[mssql][blob][binary][varbinary][varchar]")
 {
-    nanodbc::string_type s = NANODBC_TEXT(
+    nanodbc::string s = NANODBC_TEXT(
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
         "AAAAAAAAABBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
         "BBBBBBBBBBBBBBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"
@@ -188,7 +188,7 @@ TEST_CASE_METHOD(
     nanodbc::result results =
         nanodbc::execute(connection, NANODBC_TEXT("select data from test_blob_with_varchar;"));
     REQUIRE(results.next());
-    REQUIRE(results.get<nanodbc::string_type>(0) == s);
+    REQUIRE(results.get<nanodbc::string>(0) == s);
 }
 
 TEST_CASE_METHOD(
@@ -215,10 +215,10 @@ TEST_CASE_METHOD(
     nanodbc::result results = nanodbc::execute(
         conn, NANODBC_TEXT("select i, s from test_variable_string order by i;"), rowset_size);
     REQUIRE(results.next());
-    REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("this is a shorter text"));
+    REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("this is a shorter text"));
     REQUIRE(results.next());
     REQUIRE(
-        results.get<nanodbc::string_type>(1) ==
+        results.get<nanodbc::string>(1) ==
         NANODBC_TEXT("this is a longer text of the two texts in the table"));
     REQUIRE(!results.next());
 }
@@ -244,11 +244,11 @@ TEST_CASE_METHOD(
     REQUIRE(results.next());
     REQUIRE(results.is_null(1));
     REQUIRE(
-        results.get<nanodbc::string_type>(1, NANODBC_TEXT("nothing")) == NANODBC_TEXT("nothing"));
+        results.get<nanodbc::string>(1, NANODBC_TEXT("nothing")) == NANODBC_TEXT("nothing"));
     REQUIRE(results.next());
     REQUIRE(!results.is_null(1));
     REQUIRE(
-        results.get<nanodbc::string_type>(1) ==
+        results.get<nanodbc::string>(1) ==
         NANODBC_TEXT("this is a longer text of the two texts in the table"));
     REQUIRE(!results.next());
 }
@@ -272,11 +272,11 @@ TEST_CASE_METHOD(
         conn, NANODBC_TEXT("select i, s from test_variable_string order by i;"), rowset_size);
     REQUIRE(results.next());
     REQUIRE(!results.is_null(1));
-    REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("this is a shorter text"));
+    REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("this is a shorter text"));
     REQUIRE(results.next());
     REQUIRE(results.is_null(1));
     REQUIRE(
-        results.get<nanodbc::string_type>(1, NANODBC_TEXT("nothing")) == NANODBC_TEXT("nothing"));
+        results.get<nanodbc::string>(1, NANODBC_TEXT("nothing")) == NANODBC_TEXT("nothing"));
     REQUIRE(!results.next());
 }
 
@@ -453,16 +453,16 @@ TEST_CASE_METHOD(mssql_fixture, "test_decimal", "[mssql][decimal]")
         auto result =
             execute(connection, NANODBC_TEXT("select d from test_decimal order by d asc;"));
         REQUIRE(result.next());
-        auto d = result.get<nanodbc::string_type>(0);
+        auto d = result.get<nanodbc::string>(0);
         REQUIRE(d == NANODBC_TEXT("-922337203685477.5808")); // Min value of SQL data type
         REQUIRE(result.next());
-        d = result.get<nanodbc::string_type>(0);
+        d = result.get<nanodbc::string>(0);
         REQUIRE(d == NANODBC_TEXT(".0000"));
         REQUIRE(result.next());
-        d = result.get<nanodbc::string_type>(0);
+        d = result.get<nanodbc::string>(0);
         REQUIRE(d == NANODBC_TEXT("1.2300"));
         REQUIRE(result.next());
-        d = result.get<nanodbc::string_type>(0);
+        d = result.get<nanodbc::string>(0);
         REQUIRE(d == NANODBC_TEXT("922337203685477.5807")); // Max value of SQL data type MONEY
     }
 }
@@ -486,16 +486,16 @@ TEST_CASE_METHOD(mssql_fixture, "test_money", "[mssql][decimal][money]")
     {
         auto result = execute(connection, NANODBC_TEXT("select d from test_money order by d asc;"));
         REQUIRE(result.next());
-        auto d = result.get<nanodbc::string_type>(0);
+        auto d = result.get<nanodbc::string>(0);
         REQUIRE(d == NANODBC_TEXT("-922337203685477.5808")); // Min value of SQL data type MONEY
         REQUIRE(result.next());
-        d = result.get<nanodbc::string_type>(0);
+        d = result.get<nanodbc::string>(0);
         REQUIRE(d == NANODBC_TEXT(".0000"));
         REQUIRE(result.next());
-        d = result.get<nanodbc::string_type>(0);
+        d = result.get<nanodbc::string>(0);
         REQUIRE(d == NANODBC_TEXT("1.2300"));
         REQUIRE(result.next());
-        d = result.get<nanodbc::string_type>(0);
+        d = result.get<nanodbc::string>(0);
         REQUIRE(d == NANODBC_TEXT("922337203685477.5807")); // Max value of SQL data type MONEY
     }
 }
@@ -678,11 +678,11 @@ TEST_CASE_METHOD(mssql_fixture, "test_bind_variant", "[mssql][variant]")
         {
             REQUIRE(result.get<std::int32_t>(0) == static_cast<std::int32_t>(v_i));
             REQUIRE(result.get<double>(1) == static_cast<double>(v_f));
-            REQUIRE(result.get<nanodbc::string_type>(2) == v_s.bstrVal);
+            REQUIRE(result.get<nanodbc::string>(2) == v_s.bstrVal);
             v_d.ChangeType(VT_BSTR);
             REQUIRE(
-                result.get<nanodbc::string_type>(3) ==
-                nanodbc::string_type(v_d.bstrVal).substr(0, 5));
+                result.get<nanodbc::string>(3) ==
+                nanodbc::string(v_d.bstrVal).substr(0, 5));
             REQUIRE(result.get<std::vector<std::uint8_t>>(4) == bytes);
             ++i;
         }

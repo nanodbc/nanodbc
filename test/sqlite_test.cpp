@@ -13,7 +13,7 @@ struct sqlite_fixture : public test_case_fixture
     {
         // According to the sqliteodbc documentation,
         // driver name is different on Windows and Unix.
-        nanodbc::string_type const driver_name =
+        nanodbc::string const driver_name =
 #ifdef _WIN32
             (NANODBC_TEXT("SQLite3 ODBC Driver"));
 #else
@@ -224,16 +224,16 @@ TEST_CASE_METHOD(sqlite_fixture, "test_decimal_conversion", "[sqlite][decimal][c
         execute(connection, NANODBC_TEXT("select * from test_decimal_conversion order by 1 desc;"));
 
     REQUIRE(results.next());
-    REQUIRE(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("12345.987"));
+    REQUIRE(results.get<nanodbc::string>(0) == NANODBC_TEXT("12345.987"));
 
     REQUIRE(results.next());
-    REQUIRE(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("5.6"));
+    REQUIRE(results.get<nanodbc::string>(0) == NANODBC_TEXT("5.6"));
 
     REQUIRE(results.next());
-    REQUIRE(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("1"));
+    REQUIRE(results.get<nanodbc::string>(0) == NANODBC_TEXT("1"));
 
     REQUIRE(results.next());
-    REQUIRE(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("-1.333"));
+    REQUIRE(results.get<nanodbc::string>(0) == NANODBC_TEXT("-1.333"));
 }
 
 TEST_CASE_METHOD(sqlite_fixture, "test_exception", "[sqlite][exception]")
@@ -313,10 +313,10 @@ TEST_CASE_METHOD(sqlite_fixture, "test_integral_boundary", "[sqlite][integral]")
     // min
     REQUIRE(result.next());
     // All of string converted values are incorrect
-    // auto si1min = result.get<nanodbc::string_type>(0);
-    // auto si2min = result.get<nanodbc::string_type>(1);
-    // auto si4min = result.get<nanodbc::string_type>(2);
-    // auto si8min = result.get<nanodbc::string_type>(3);
+    // auto si1min = result.get<nanodbc::string>(0);
+    // auto si2min = result.get<nanodbc::string>(1);
+    // auto si4min = result.get<nanodbc::string>(2);
+    // auto si8min = result.get<nanodbc::string>(3);
     REQUIRE(result.get<std::int16_t>(0) == static_cast<std::int16_t>(i1min));
     REQUIRE(result.get<std::int16_t>(1) == i2min);
     REQUIRE(result.get<std::int32_t>(2) == i4min);
@@ -367,24 +367,24 @@ TEST_CASE_METHOD(sqlite_fixture, "test_integral_to_string_conversion", "[sqlite]
         NANODBC_TEXT("select * from test_integral_to_string_conversion order by i asc;"));
 
     REQUIRE(results.next());
-    REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("0"));
+    REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("0"));
     REQUIRE(results.next());
-    REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("255"));
+    REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("255"));
     REQUIRE(results.next());
-    REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("-128"));
+    REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("-128"));
     REQUIRE(results.next());
-    REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("127"));
+    REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("127"));
     REQUIRE(results.next());
-    REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("-32768"));
+    REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("-32768"));
     REQUIRE(results.next());
-    REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("32767"));
+    REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("32767"));
     REQUIRE(results.next());
     // FIXME: SQLite ODBC driver reports column size of 10 leading to truncation
     // "-214748364" == "-2147483648"
     // The driver bug?
-    // REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("-2147483648"));
+    // REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("-2147483648"));
     REQUIRE(results.next());
-    REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("2147483647"));
+    REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("2147483647"));
 }
 
 TEST_CASE_METHOD(sqlite_fixture, "test_move", "[sqlite][move]")

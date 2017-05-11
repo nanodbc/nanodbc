@@ -1,4 +1,4 @@
-#include "example_unicode_utils.h"
+﻿#include "example_unicode_utils.h"
 #include <nanodbc/nanodbc.h>
 
 #include <algorithm>
@@ -10,7 +10,7 @@ using namespace nanodbc;
 
 void show(nanodbc::result& results);
 
-void run_test(nanodbc::string_type const& connection_string)
+void run_test(nanodbc::string const& connection_string)
 {
     // Establishing connections
     nanodbc::connection connection(connection_string);
@@ -39,7 +39,7 @@ void run_test(nanodbc::string_type const& connection_string)
             connection,
             NANODBC_TEXT("select a as first, b as second from simple_test where a = 1;"));
         results.next();
-        auto const value = results.get<nanodbc::string_type>(1);
+        auto const value = results.get<nanodbc::string>(1);
         cout << endl << results.get<int>(NANODBC_TEXT("first")) << ", " << convert(value) << endl;
     }
 
@@ -51,7 +51,7 @@ void run_test(nanodbc::string_type const& connection_string)
         prepare(statement, NANODBC_TEXT("insert into simple_test (a, b) values (?, ?);"));
         const int eight_int = 8;
         statement.bind(0, &eight_int);
-        nanodbc::string_type const eight_str = NANODBC_TEXT("eight");
+        nanodbc::string const eight_str = NANODBC_TEXT("eight");
         statement.bind(1, eight_str.c_str());
         execute(statement);
 
@@ -97,11 +97,11 @@ void run_test(nanodbc::string_type const& connection_string)
 
         const size_t elements = 4;
 
-        nanodbc::string_type::value_type xdata[elements][10] = {
+        nanodbc::string::value_type xdata[elements][10] = {
             NANODBC_TEXT("this"), NANODBC_TEXT("is"), NANODBC_TEXT("a"), NANODBC_TEXT("test")};
         statement.bind_strings(0, xdata);
 
-        std::vector<nanodbc::string_type> x2data(xdata, xdata + elements);
+        std::vector<nanodbc::string> x2data(xdata, xdata + elements);
         statement.bind_strings(1, x2data);
 
         int ydata[elements] = {1, 2, 3, 4};
@@ -143,9 +143,9 @@ void run_test(nanodbc::string_type const& connection_string)
 
         const int elements = 5;
         const int a_null = 0;
-        nanodbc::string_type::value_type const* b_null = NANODBC_TEXT("");
+        nanodbc::string::value_type const* b_null = NANODBC_TEXT("");
         int a_data[elements] = {0, 88, 0, 0, 0};
-        nanodbc::string_type::value_type b_data[elements][10] = {NANODBC_TEXT(""),
+        nanodbc::string::value_type b_data[elements][10] = {NANODBC_TEXT(""),
                                                                  NANODBC_TEXT("non-null"),
                                                                  NANODBC_TEXT(""),
                                                                  NANODBC_TEXT(""),
@@ -167,7 +167,7 @@ void run_test(nanodbc::string_type const& connection_string)
 
         const int elements = 2;
         int a_data[elements] = {0, 42};
-        nanodbc::string_type::value_type b_data[elements][10] = {
+        nanodbc::string::value_type b_data[elements][10] = {
             NANODBC_TEXT(""), NANODBC_TEXT("every")};
         bool nulls[elements] = {true, false};
 
@@ -199,20 +199,20 @@ void show(nanodbc::result& results)
     cout << endl;
 
     // show the column data for each row
-    nanodbc::string_type const null_value = NANODBC_TEXT("null");
+    nanodbc::string const null_value = NANODBC_TEXT("null");
     while (results.next())
     {
         cout << rows_displayed++ << "\t";
         for (short col = 0; col < columns; ++col)
         {
-            auto const value = results.get<nanodbc::string_type>(col, null_value);
+            auto const value = results.get<nanodbc::string>(col, null_value);
             cout << "(" << convert(value) << ")\t";
         }
         cout << endl;
     }
 }
 
-void usage(ostream& out, string const& binary_name)
+void usage(ostream& out, std::string const& binary_name)
 {
     out << "usage: " << binary_name << " connection_string" << endl;
 }

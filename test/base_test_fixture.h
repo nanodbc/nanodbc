@@ -35,7 +35,7 @@
 
 struct TestConfig
 {
-    nanodbc::string_type get_connection_string() const
+    nanodbc::string get_connection_string() const
     {
 #ifdef NANODBC_ENABLE_UNICODE
 #ifdef NANODBC_ENABLE_BOOST
@@ -48,7 +48,7 @@ struct TestConfig
         auto s = std::wstring_convert<std::codecvt_utf8_utf16<int16_t>, int16_t>().from_bytes(
             connection_string_);
         auto p = reinterpret_cast<char16_t const*>(s.data());
-        return nanodbc::string_type(p, p + s.size());
+        return nanodbc::string(p, p + s.size());
 #else
         return std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>().from_bytes(
             connection_string_);
@@ -91,11 +91,11 @@ struct base_test_fixture
 
     // Utilities
 
-    nanodbc::string_type connection_string_;
+    nanodbc::string connection_string_;
 
     database_vendor vendor_ = database_vendor::unknown;
 
-    database_vendor get_vendor(nanodbc::string_type const& dbms)
+    database_vendor get_vendor(nanodbc::string const& dbms)
     {
         REQUIRE(!dbms.empty());
         if (contains_string(dbms, NANODBC_TEXT("Oracle")))
@@ -116,7 +116,7 @@ struct base_test_fixture
             return database_vendor::unknown;
     }
 
-    nanodbc::string_type get_binary_type_name()
+    nanodbc::string get_binary_type_name()
     {
         switch (vendor_)
         {
@@ -130,7 +130,7 @@ struct base_test_fixture
         }
     }
 
-    nanodbc::string_type get_text_type_name()
+    nanodbc::string get_text_type_name()
     {
         switch (vendor_)
         {
@@ -141,7 +141,7 @@ struct base_test_fixture
         }
     }
 
-    nanodbc::string_type get_primary_key_name(nanodbc::string_type const& assumed)
+    nanodbc::string get_primary_key_name(nanodbc::string const& assumed)
     {
         switch (vendor_)
         {
@@ -154,7 +154,7 @@ struct base_test_fixture
         }
     }
 
-    void check_data_type_size(nanodbc::string_type const& name, int column_size, short radix = -1)
+    void check_data_type_size(nanodbc::string const& name, int column_size, short radix = -1)
     {
         if (name == NANODBC_TEXT("float"))
         {
@@ -206,12 +206,12 @@ struct base_test_fixture
         return connection;
     }
 
-    nanodbc::string_type connection_string_parameter(nanodbc::string_type const& keyword)
+    nanodbc::string connection_string_parameter(nanodbc::string const& keyword)
     {
         // Find given keyword in the semi-colon-separated keyword=value pairs
         // of connection string and return its value, strippng `{` and `}` wrappers.
         if (connection_string_.empty())
-            return nanodbc::string_type();
+            return nanodbc::string();
 
         auto beg = connection_string_.begin();
         auto const end = connection_string_.end();
@@ -236,7 +236,7 @@ struct base_test_fixture
 
             beg = pair_end + 1;
         }
-        return nanodbc::string_type();
+        return nanodbc::string();
     }
 
     static void check_rows_equal(nanodbc::result results, int rows)
@@ -254,7 +254,7 @@ struct base_test_fixture
         return ss.str();
     }
 
-    nanodbc::string_type get_env(char const* var) const
+    nanodbc::string get_env(char const* var) const
     {
         char* env_value = nullptr;
         std::string value;
@@ -269,7 +269,7 @@ struct base_test_fixture
 #else
         env_value = std::getenv(var);
         if (!env_value)
-            return nanodbc::string_type();
+            return nanodbc::string();
         value = env_value;
 #endif
 
@@ -283,7 +283,7 @@ struct base_test_fixture
         auto s =
             std::wstring_convert<std::codecvt_utf8_utf16<int16_t>, int16_t>().from_bytes(value);
         auto p = reinterpret_cast<char16_t const*>(s.data());
-        return nanodbc::string_type(p, p + s.size());
+        return nanodbc::string(p, p + s.size());
 #else
         return std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>().from_bytes(
             value);
@@ -293,22 +293,22 @@ struct base_test_fixture
 #endif
     }
 
-    bool contains_string(nanodbc::string_type const& str, nanodbc::string_type const& sub)
+    bool contains_string(nanodbc::string const& str, nanodbc::string const& sub)
     {
         if (str.empty() || sub.empty())
             return false;
 
-        return str.find(sub) != nanodbc::string_type::npos;
+        return str.find(sub) != nanodbc::string::npos;
     }
 
     bool iequals_string(
-        nanodbc::string_type const& lhs,
-        nanodbc::string_type const& rhs,
+        nanodbc::string const& lhs,
+        nanodbc::string const& rhs,
         std::locale const& loc = std::locale())
     {
         struct is_iequal
         {
-            using char_type = typename nanodbc::string_type::value_type;
+            using char_type = typename nanodbc::string::value_type;
 
             is_iequal(std::locale const& loc)
                 : loc_(loc)
@@ -341,8 +341,8 @@ struct base_test_fixture
     // `def` is a comma separated column definitions, trailing '(' and ')' are optional.
     void create_table(
         nanodbc::connection& connection,
-        nanodbc::string_type const& name,
-        nanodbc::string_type def) const
+        nanodbc::string const& name,
+        nanodbc::string def) const
     {
         if (def.front() != NANODBC_TEXT('('))
             def.insert(0, 1, NANODBC_TEXT('('));
@@ -350,7 +350,7 @@ struct base_test_fixture
         if (def.back() != NANODBC_TEXT(')'))
             def.push_back(NANODBC_TEXT(')'));
 
-        nanodbc::string_type sql(NANODBC_TEXT("CREATE TABLE "));
+        nanodbc::string sql(NANODBC_TEXT("CREATE TABLE "));
         sql += name;
         sql += NANODBC_TEXT(" ");
         sql += def;
@@ -360,7 +360,7 @@ struct base_test_fixture
         execute(connection, sql);
     }
 
-    virtual void drop_table(nanodbc::connection& connection, nanodbc::string_type const& name) const
+    virtual void drop_table(nanodbc::connection& connection, nanodbc::string const& name) const
     {
         bool table_exists = true;
         try
