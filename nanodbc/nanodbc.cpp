@@ -764,11 +764,7 @@ public:
         allocate_handle(env_, conn_);
     }
 
-    connection_impl(
-        const string& dsn,
-        const string& user,
-        const string& pass,
-        long timeout)
+    connection_impl(const string& dsn, const string& user, const string& pass, long timeout)
         : env_(0)
         , conn_(0)
         , connected_(false)
@@ -1919,11 +1915,11 @@ void statement::statement_impl::bind_parameter<string::value_type>(
     NANODBC_CALL_RC(
         SQLBindParameter,
         rc,
-        stmt_,                                     // handle
-        param.index_ + 1,                          // parameter number
-        param.iotype_,                             // input or output type
+        stmt_,                                // handle
+        param.index_ + 1,                     // parameter number
+        param.iotype_,                        // input or output type
         sql_ctype<string::value_type>::value, // value type
-        param.type_,                               // parameter type
+        param.type_,                          // parameter type
         param.size_,                // column size ignored for many types, but needed for strings
         param.scale_,               // decimal digits
         (SQLPOINTER)buffer.values_, // parameter value
@@ -2923,8 +2919,7 @@ inline void result::result_impl::get_ref_impl<string>(short column, string& resu
             // Type is unicode in the database, convert if necessary
             const SQLWCHAR* s =
                 reinterpret_cast<SQLWCHAR*>(col.pdata_ + rowset_position_ * col.clen_);
-            const string::size_type str_size =
-                col.cbdata_[rowset_position_] / sizeof(SQLWCHAR);
+            const string::size_type str_size = col.cbdata_[rowset_position_] / sizeof(SQLWCHAR);
             wide_string temp(s, s + str_size);
             convert(temp, result);
         }
@@ -3362,11 +3357,7 @@ void connection::swap(connection& rhs) NANODBC_NOEXCEPT
     swap(impl_, rhs.impl_);
 }
 
-connection::connection(
-    const string& dsn,
-    const string& user,
-    const string& pass,
-    long timeout)
+connection::connection(const string& dsn, const string& user, const string& pass, long timeout)
     : impl_(new connection_impl(dsn, user, pass, timeout))
 {
 }
@@ -3380,11 +3371,7 @@ connection::~connection() NANODBC_NOEXCEPT
 {
 }
 
-void connection::connect(
-    const string& dsn,
-    const string& user,
-    const string& pass,
-    long timeout)
+void connection::connect(const string& dsn, const string& user, const string& pass, long timeout)
 {
     impl_->connect(dsn, user, pass, timeout);
 }
@@ -3405,10 +3392,7 @@ bool connection::async_connect(
     return impl_->connect(dsn, user, pass, timeout, event_handle) == SQL_STILL_EXECUTING;
 }
 
-bool connection::async_connect(
-    const string& connection_string,
-    void* event_handle,
-    long timeout)
+bool connection::async_connect(const string& connection_string, void* event_handle, long timeout)
 {
     return impl_->connect(connection_string, timeout, event_handle) == SQL_STILL_EXECUTING;
 }
@@ -4252,10 +4236,8 @@ catalog::tables catalog::find_tables(
     return catalog::tables(find_result);
 }
 
-catalog::table_privileges catalog::find_table_privileges(
-    const string& catalog,
-    const string& table,
-    const string& schema)
+catalog::table_privileges
+catalog::find_table_privileges(const string& catalog, const string& table, const string& schema)
 {
     // Passing a null pointer to a search pattern argument does not
     // constrain the search for that argument; that is, a null pointer and
@@ -4310,10 +4292,8 @@ catalog::columns catalog::find_columns(
     return catalog::columns(find_result);
 }
 
-catalog::primary_keys catalog::find_primary_keys(
-    const string& table,
-    const string& schema,
-    const string& catalog)
+catalog::primary_keys
+catalog::find_primary_keys(const string& table, const string& schema, const string& catalog)
 {
     statement stmt(conn_);
     RETCODE rc;
@@ -4695,8 +4675,7 @@ template void result::get_ref(const string&, timestamp&) const;
 template void result::get_ref(const string&, std::vector<std::uint8_t>&) const;
 
 // The following are the only supported instantiations of result::get_ref() with fallback.
-template void
-result::get_ref(short, const string::value_type&, string::value_type&) const;
+template void result::get_ref(short, const string::value_type&, string::value_type&) const;
 template void result::get_ref(short, const short&, short&) const;
 template void result::get_ref(short, const unsigned short&, unsigned short&) const;
 template void result::get_ref(short, const int&, int&) const;
@@ -4714,15 +4693,13 @@ template void result::get_ref(short, const timestamp&, timestamp&) const;
 template void
 result::get_ref(short, const std::vector<std::uint8_t>&, std::vector<std::uint8_t>&) const;
 
-template void
-result::get_ref(const string&, const string::value_type&, string::value_type&) const;
+template void result::get_ref(const string&, const string::value_type&, string::value_type&) const;
 template void result::get_ref(const string&, const short&, short&) const;
 template void result::get_ref(const string&, const unsigned short&, unsigned short&) const;
 template void result::get_ref(const string&, const int&, int&) const;
 template void result::get_ref(const string&, const unsigned int&, unsigned int&) const;
 template void result::get_ref(const string&, const long int&, long int&) const;
-template void
-result::get_ref(const string&, const unsigned long int&, unsigned long int&) const;
+template void result::get_ref(const string&, const unsigned long int&, unsigned long int&) const;
 template void result::get_ref(const string&, const long long int&, long long int&) const;
 template void
 result::get_ref(const string&, const unsigned long long int&, unsigned long long int&) const;
@@ -4732,10 +4709,8 @@ template void result::get_ref(const string&, const string&, string&) const;
 template void result::get_ref(const string&, const date&, date&) const;
 template void result::get_ref(const string&, const time&, time&) const;
 template void result::get_ref(const string&, const timestamp&, timestamp&) const;
-template void result::get_ref(
-    const string&,
-    const std::vector<std::uint8_t>&,
-    std::vector<std::uint8_t>&) const;
+template void
+result::get_ref(const string&, const std::vector<std::uint8_t>&, std::vector<std::uint8_t>&) const;
 
 // The following are the only supported instantiations of result::get().
 template string::value_type result::get(short) const;
@@ -4790,8 +4765,7 @@ template time result::get(short, const time&) const;
 template timestamp result::get(short, const timestamp&) const;
 template std::vector<std::uint8_t> result::get(short, const std::vector<std::uint8_t>&) const;
 
-template string::value_type
-result::get(const string&, const string::value_type&) const;
+template string::value_type result::get(const string&, const string::value_type&) const;
 template short result::get(const string&, const short&) const;
 template unsigned short result::get(const string&, const unsigned short&) const;
 template int result::get(const string&, const int&) const;
@@ -4799,8 +4773,7 @@ template unsigned int result::get(const string&, const unsigned int&) const;
 template long int result::get(const string&, const long int&) const;
 template unsigned long int result::get(const string&, const unsigned long int&) const;
 template long long int result::get(const string&, const long long int&) const;
-template unsigned long long int
-result::get(const string&, const unsigned long long int&) const;
+template unsigned long long int result::get(const string&, const unsigned long long int&) const;
 template float result::get(const string&, const float&) const;
 template double result::get(const string&, const double&) const;
 template string result::get(const string&, const string&) const;
