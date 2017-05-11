@@ -269,9 +269,11 @@ message(STATUS "nanodbc build: Disable install target - ${NANODBC_DISABLE_INSTAL
 if(NOT NANODBC_DISABLE_TESTS)
   enable_testing()
   add_subdirectory(test)
-  add_custom_target(check
-    COMMAND ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure
-    DEPENDS tests)
+  if(NOT CMAKE_GENERATOR MATCHES "^Visual Studio")
+    add_custom_target(check
+      COMMAND ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure
+      DEPENDS tests)
+  endif()
 endif()
 message(STATUS "nanodbc build: Disable tests target - ${NANODBC_DISABLE_TESTS}")
 

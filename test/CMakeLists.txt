@@ -62,10 +62,13 @@ foreach(test_item ${test_list})
     PROPERTIES
     VERSION ${NANODBC_VERSION})
   add_test(NAME ${test_name} COMMAND ${test_name})
-  add_custom_target(${test_item}_test
-    COMMAND ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure -R ${test_name})
-  add_custom_target(${test_item}_check
-    COMMAND ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure -R ${test_name}
-    DEPENDS ${test_name})
+
+  if(NOT CMAKE_GENERATOR MATCHES "^Visual Studio")
+    add_custom_target(${test_item}_test
+      COMMAND ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure -R ${test_name})
+    add_custom_target(${test_item}_check
+      COMMAND ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure -R ${test_name}
+      DEPENDS ${test_name})
+  endif()
   add_dependencies(tests ${test_name})
 endforeach()
