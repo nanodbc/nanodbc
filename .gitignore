@@ -15,6 +15,10 @@
 /.vagrant
 /.vs*
 /*build*/
+/[Dd]ebug
+/[Rr]elease
+/x64
+/*.dir
 /*.local.bat
 /doc
 /docker_build/
