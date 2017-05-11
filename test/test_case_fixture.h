@@ -1,4 +1,4 @@
-﻿#ifndef NANODBC_TEST_CASE_FIXTURE_H
+#ifndef NANODBC_TEST_CASE_FIXTURE_H
 #define NANODBC_TEST_CASE_FIXTURE_H
 
 #include "base_test_fixture.h"
@@ -402,9 +402,8 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(columns.column_name() == NANODBC_TEXT("c4"));
             if (contains_string(dbms, NANODBC_TEXT("SQLite")))
             {
-                // NOTE: SQLite ODBC reports values inconsistent with table definition
-                REQUIRE(columns.sql_data_type() == 91); // FIXME: What is this type?
-                REQUIRE(columns.column_size() == 0);    // DATE has size Zero?
+                REQUIRE(columns.sql_data_type() == SQL_TYPE_DATE);
+                REQUIRE(columns.column_size() == 0); // DATE has size Zero?
             }
             else
             {
@@ -534,8 +533,7 @@ struct test_case_fixture : public base_test_fixture
 
         // Find a multi-column primary key for table with known name
         {
-            nanodbc::string const table_name(
-                NANODBC_TEXT("test_catalog_primary_keys_composite"));
+            nanodbc::string const table_name(NANODBC_TEXT("test_catalog_primary_keys_composite"));
             drop_table(connection, table_name);
             execute(
                 connection,
@@ -668,8 +666,7 @@ struct test_case_fixture : public base_test_fixture
 
             // Use SQLTables pattern search by name inside given schema
             // TODO: Target other databases where INFORMATION_SCHEMA support is available.
-            if (connection.dbms_name().find(NANODBC_TEXT("SQL Server")) !=
-                nanodbc::string::npos)
+            if (connection.dbms_name().find(NANODBC_TEXT("SQL Server")) != nanodbc::string::npos)
             {
                 nanodbc::string const view_name(NANODBC_TEXT("TABLE_PRIVILEGES"));
                 nanodbc::string const schema_name(NANODBC_TEXT("INFORMATION_SCHEMA"));
@@ -828,15 +825,11 @@ struct test_case_fixture : public base_test_fixture
             auto result = execute(connection, NANODBC_TEXT("select d from test_date;"));
 
             REQUIRE(result.column_name(0) == NANODBC_TEXT("d"));
-            if (vendor_ == database_vendor::sqlite)
-            {
-                // NOTE: SQLite ODBC reports values inconsistent with table definition
-                REQUIRE(result.column_datatype(0) == 91); // FIXME: What is this type?
-            }
-            else
-            {
-                REQUIRE(result.column_datatype(0) == SQL_DATE);
-            }
+#if (ODBCVER > SQL_OV_ODBC2)
+            REQUIRE(result.column_datatype(0) == SQL_TYPE_DATE);
+#else
+            REQUIRE(result.column_datatype(0) == SQL_DATE);
+#endif
             REQUIRE(result.column_datatype_name(0) == NANODBC_TEXT("date"));
 
             REQUIRE(result.next());
@@ -1279,8 +1272,7 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(results.is_null(NANODBC_TEXT("a")));
             REQUIRE(results.get<int>(0, -1) == -1);
             REQUIRE(results.get<int>(NANODBC_TEXT("a"), -1) == -1);
-            REQUIRE(
-                results.get<nanodbc::string>(0, NANODBC_TEXT("null")) == NANODBC_TEXT("null"));
+            REQUIRE(results.get<nanodbc::string>(0, NANODBC_TEXT("null")) == NANODBC_TEXT("null"));
             REQUIRE(
                 results.get<nanodbc::string>(NANODBC_TEXT("a"), NANODBC_TEXT("null")) ==
                 NANODBC_TEXT("null"));
@@ -1296,8 +1288,7 @@ struct test_case_fixture : public base_test_fixture
             nanodbc::string ref_str;
             results.get_ref<nanodbc::string>(0, NANODBC_TEXT("null"), ref_str);
             REQUIRE(ref_str == NANODBC_TEXT("null"));
-            results.get_ref<nanodbc::string>(
-                NANODBC_TEXT("a"), NANODBC_TEXT("null2"), ref_str);
+            results.get_ref<nanodbc::string>(NANODBC_TEXT("a"), NANODBC_TEXT("null2"), ref_str);
             REQUIRE(ref_str == NANODBC_TEXT("null2"));
 
             // :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1318,8 +1309,7 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(results_copy.get<int>(0, -1) == 2);
             REQUIRE(results_copy.get<int>(NANODBC_TEXT("a"), -1) == 2);
             REQUIRE(results_copy.get<nanodbc::string>(1) == NANODBC_TEXT("two"));
-            REQUIRE(
-                results_copy.get<nanodbc::string>(NANODBC_TEXT("b")) == NANODBC_TEXT("two"));
+            REQUIRE(results_copy.get<nanodbc::string>(NANODBC_TEXT("b")) == NANODBC_TEXT("two"));
 
             // FIXME: not supported by the default SQL_CURSOR_FORWARD_ONLY
             // and will require SQL_ATTR_CURSOR_TYPE set to SQL_CURSOR_STATIC at least.

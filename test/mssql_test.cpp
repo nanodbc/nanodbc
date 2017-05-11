@@ -243,8 +243,7 @@ TEST_CASE_METHOD(
         conn, NANODBC_TEXT("select i, s from test_variable_string order by i;"), rowset_size);
     REQUIRE(results.next());
     REQUIRE(results.is_null(1));
-    REQUIRE(
-        results.get<nanodbc::string>(1, NANODBC_TEXT("nothing")) == NANODBC_TEXT("nothing"));
+    REQUIRE(results.get<nanodbc::string>(1, NANODBC_TEXT("nothing")) == NANODBC_TEXT("nothing"));
     REQUIRE(results.next());
     REQUIRE(!results.is_null(1));
     REQUIRE(
@@ -275,8 +274,7 @@ TEST_CASE_METHOD(
     REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("this is a shorter text"));
     REQUIRE(results.next());
     REQUIRE(results.is_null(1));
-    REQUIRE(
-        results.get<nanodbc::string>(1, NANODBC_TEXT("nothing")) == NANODBC_TEXT("nothing"));
+    REQUIRE(results.get<nanodbc::string>(1, NANODBC_TEXT("nothing")) == NANODBC_TEXT("nothing"));
     REQUIRE(!results.next());
 }
 
@@ -396,6 +394,11 @@ TEST_CASE_METHOD(mssql_fixture, "test_batch_binary", "[mssql][binary]")
 TEST_CASE_METHOD(mssql_fixture, "test_time", "[mssql][time]")
 {
     test_time();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_date", "[mssql][date]")
+{
+    test_date();
 }
 
 TEST_CASE_METHOD(mssql_fixture, "test_datetime", "[mssql][datetime]")
@@ -680,9 +683,7 @@ TEST_CASE_METHOD(mssql_fixture, "test_bind_variant", "[mssql][variant]")
             REQUIRE(result.get<double>(1) == static_cast<double>(v_f));
             REQUIRE(result.get<nanodbc::string>(2) == v_s.bstrVal);
             v_d.ChangeType(VT_BSTR);
-            REQUIRE(
-                result.get<nanodbc::string>(3) ==
-                nanodbc::string(v_d.bstrVal).substr(0, 5));
+            REQUIRE(result.get<nanodbc::string>(3) == nanodbc::string(v_d.bstrVal).substr(0, 5));
             REQUIRE(result.get<std::vector<std::uint8_t>>(4) == bytes);
             ++i;
         }
