@@ -263,9 +263,7 @@ inline void convert(const wide_string& in, std::string& out)
     using boost::locale::conv::utf_to_utf;
     out = utf_to_utf<char>(in.c_str(), in.c_str() + in.size());
 #elif defined(__GNUC__) && (__GNUC__ < 5)
-    std::vector<wchar_t> characters(in.length());
-    for (size_t i=0; i<in.length(); i++)
-        characters[i] = in[i];
+    std::vector<wchar_t> characters(in.begin(), in.end());
     const wchar_t * source = characters.data();
     size_t size = wcsnrtombs(nullptr, &source, characters.size(), 0, nullptr);
     if (size == std::string::npos)
@@ -296,9 +294,7 @@ inline void convert(const std::string& in, wide_string& out)
     std::vector<wchar_t> characters(size);
     const char * source = in.data();
     mbsnrtowcs(&characters[0], &source, in.length(), characters.size(), nullptr);
-    out.resize(size);
-    for (size_t i=0; i<in.length(); i++)
-        out[i] = characters[i];
+    out = std::string(characters.begin(), characters.end());
 #elif defined(_MSC_VER) && (_MSC_VER >= 1900)
     // Workaround for confirmed bug in VS2015 and VS2017 too
     // See: https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
