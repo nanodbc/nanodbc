@@ -37,8 +37,7 @@
 
 #ifdef NANODBC_ENABLE_BOOST
 #include <boost/locale/encoding_utf.hpp>
-#elif defined(__GNUC__) && __GNUC__ < 5
-#define NANODBC_USE_STDLIB
+#elif defined(__GNUC__) && (__GNUC__ < 5)
 #include <cwchar>
 #else
 #include <codecvt>
@@ -263,7 +262,7 @@ inline void convert(const wide_string& in, std::string& out)
 #ifdef NANODBC_ENABLE_BOOST
     using boost::locale::conv::utf_to_utf;
     out = utf_to_utf<char>(in.c_str(), in.c_str() + in.size());
-#elif defined(NANODBC_USE_STDLIB)
+#elif defined(__GNUC__) && (__GNUC__ < 5)
     std::vector<wchar_t> characters(in.length());
     for (size_t i=0; i<in.length(); i++)
         characters[i] = in[i];
@@ -290,7 +289,7 @@ inline void convert(const std::string& in, wide_string& out)
 #ifdef NANODBC_ENABLE_BOOST
     using boost::locale::conv::utf_to_utf;
     out = utf_to_utf<wide_char_t>(in.c_str(), in.c_str() + in.size());
-#elif defined(NANODBC_USE_STDLIB)
+#elif defined(__GNUC__) && (__GNUC__ < 5)
     size_t size = mbsnrtowcs(nullptr, in.data(), in.length(), 0, nullptr);
     if (size == std::string::npos)
         throw std::range_error("UTF-8 -> UTF-16 conversion error");
