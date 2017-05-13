@@ -3,7 +3,6 @@
 
 #include <algorithm>
 #include <array>
-#include <codecvt>
 #include <cstring>
 #include <iomanip>
 #include <iostream>
