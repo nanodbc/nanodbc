@@ -18,11 +18,11 @@
 #endif
 
 #ifdef NANODBC_ENABLE_BOOST
-#   include <boost/locale/encoding_utf.hpp>
+#include <boost/locale/encoding_utf.hpp>
 #elif defined(__GNUC__) && __GNUC__ < 5
-#   include <cstdlib>
+#include <cstdlib>
 #else
-#   include <codecvt>
+#include <codecvt>
 #endif
 
 #ifdef _WIN32
