@@ -38,7 +38,7 @@
 #   include <boost/locale/encoding_utf.hpp>
 #elif defined(__GNUC__) && __GNUC__ < 5
 #   define NANODBC_USE_STDLIB
-#   include <cstdlib>
+#   include <cwchar>
 #else
 #   include <codecvt>
 #endif
@@ -266,11 +266,12 @@ inline void convert(const wide_string& in, std::string& out)
     std::vector<wchar_t> characters(in.length());
     for (size_t i=0; i<in.length(); i++)
         characters[i] = in[i];
-    size_t size = wcstombs(nullptr, characters.data(), 0);
+    const wchar_t * source = characters.data();
+    size_t size = wcsnrtombs(nullptr, &source, characters.size(), 0, nullptr);
     if (size == std::string::npos)
-        throw std::range_error("UTF-16 -> UTF8 conversion error");
+        throw std::range_error("UTF-16 -> UTF-8 conversion error");
     out.resize(size);
-    wcstombs(&out[0], characters.data(), out.length());
+    wcsnrtombs(&out[0], &source, characters.size(), out.length(), nullptr);
 #elif defined(_MSC_VER) && (_MSC_VER >= 1900)
     // Workaround for confirmed bug in VS2015 and VS2017 too
     // See: https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
@@ -289,11 +290,12 @@ inline void convert(const std::string& in, wide_string& out)
     using boost::locale::conv::utf_to_utf;
     out = utf_to_utf<wide_char_t>(in.c_str(), in.c_str() + in.size());
 #elif defined(NANODBC_USE_STDLIB)
-    size_t size = mbstowcs(nullptr, in.data(), 0);
+    size_t size = mbsnrtowcs(nullptr, in.data(), in.length(), 0, nullptr);
     if (size == std::string::npos)
-        throw std::range_error("UTF-8 -> UTF16 conversion error");
+        throw std::range_error("UTF-8 -> UTF-16 conversion error");
     std::vector<wchar_t> characters(size);
-    mbstowcs(&characters[0], in.data(), characters.size());
+    const char * source = in.data();
+    mbsnrtowcs(&characters[0], &source, in.length(), characters.size(), nullptr);
     out.resize(size);
     for (size_t i=0; i<in.length(); i++)
         out[i] = characters[i];
