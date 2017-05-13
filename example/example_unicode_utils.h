@@ -3,7 +3,11 @@
 
 #include <nanodbc/nanodbc.h>
 
-#include <codecvt>
+#if defined(__GNUC__) && __GNUC__ < 5
+#   include <cstdlib>
+#else
+#   include <codecvt>
+#endif
 #include <locale>
 #include <string>
 
@@ -18,9 +22,18 @@ inline nanodbc::string convert(std::string const& in)
         sizeof(nanodbc::string::value_type) > 1,
         "NANODBC_ENABLE_UNICODE mode requires wide string");
     nanodbc::string out;
-// Workaround for confirmed bug in VS2015 and VS2017 too
-// See: https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
-#if defined(_MSC_VER) && (_MSC_VER >= 1900)
+#if defined(__GNUC__) && __GNUC__ < 5
+    std::vector<wchar_t> characters(in.length());
+    for (size_t i=0; i<in.length(); i++)
+        characters[i] = in[i];
+    size_t size = wcstombs(nullptr, characters.data(), 0);
+    if (size == std::string::npos)
+        throw std::range_error("UTF-16 -> UTF8 conversion error");
+    out.resize(size);
+    wcstombs(&out[0], characters.data(), out.length());
+#elif defined(_MSC_VER) && (_MSC_VER >= 1900)
+    // Workaround for confirmed bug in VS2015 and VS2017 too
+    // See: https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
     using wide_char_t = nanodbc::string::value_type;
     auto s =
         std::wstring_convert<std::codecvt_utf8_utf16<wide_char_t>, wide_char_t>().from_bytes(in);
@@ -36,9 +49,18 @@ inline std::string convert(nanodbc::string const& in)
 {
     static_assert(sizeof(nanodbc::string::value_type) > 1, "string must be wide");
     std::string out;
-// Workaround for confirmed bug in VS2015 and VS2017 too
-// See: https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
-#if defined(_MSC_VER) && (_MSC_VER >= 1900)
+#if defined(__GNUC__) && __GNUC__ < 5
+    size_t size = mbstowcs(nullptr, in.data(), 0);
+    if (size == std::string::npos)
+        throw std::range_error("UTF-8 -> UTF16 conversion error");
+    std::vector<wchar_t> characters(size);
+    mbstowcs(&characters[0], in.data(), characters.size());
+    out.resize(size);
+    for (size_t i=0; i<in.length(); i++)
+        out[i] = characters[i];
+#elif defined(_MSC_VER) && (_MSC_VER >= 1900)
+    // Workaround for confirmed bug in VS2015 and VS2017 too
+    // See: https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
     using wide_char_t = nanodbc::string::value_type;
     std::wstring_convert<std::codecvt_utf8_utf16<wide_char_t>, wide_char_t> convert;
     auto p = reinterpret_cast<const wide_char_t*>(in.data());
