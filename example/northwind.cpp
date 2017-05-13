@@ -22,8 +22,8 @@ int main()
         for (int i = 1; row.next(); ++i)
         {
             cout << i << " :" << convert(row.get<nanodbc::string>(0)) << " "
-                 << convert(row.get<nanodbc::string>(1)) << " " << convert(row.get<nanodbc::string>(2))
-                 << " " << endl;
+                 << convert(row.get<nanodbc::string>(1)) << " "
+                 << convert(row.get<nanodbc::string>(2)) << " " << endl;
         }
     }
     catch (runtime_error const& e)

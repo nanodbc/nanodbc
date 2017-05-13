@@ -967,11 +967,7 @@ public:
     /// \param timeout Seconds before connection timeout. Default 0 meaning no timeout.
     /// \throws database_error
     /// \see connected(), connect()
-    connection(
-        const string& dsn,
-        const string& user,
-        const string& pass,
-        long timeout = 0);
+    connection(const string& dsn, const string& user, const string& pass, long timeout = 0);
 
     /// \brief Create new connection object and immediately connect using the given connection
     /// string.
@@ -994,11 +990,7 @@ public:
     /// \param timeout Seconds before connection timeout. Default is 0 indicating no timeout.
     /// \throws database_error
     /// \see connected()
-    void connect(
-        const string& dsn,
-        const string& user,
-        const string& pass,
-        long timeout = 0);
+    void connect(const string& dsn, const string& user, const string& pass, long timeout = 0);
 
     /// \brief Connect using the given connection string.
     /// \param connection_string The connection string for establishing a connection.
@@ -1516,7 +1508,7 @@ public:
     class tables
     {
     public:
-        bool next();                       ///< Move to the next result in the result set.
+        bool next();                  ///< Move to the next result in the result set.
         string table_catalog() const; ///< Fetch table catalog.
         string table_schema() const;  ///< Fetch table schema.
         string table_name() const;    ///< Fetch table name.
@@ -1534,19 +1526,19 @@ public:
     {
     public:
         bool next();                           ///< Move to the next result in the result set.
-        string table_catalog() const;     ///< Fetch table catalog.
-        string table_schema() const;      ///< Fetch table schema.
-        string table_name() const;        ///< Fetch table name.
-        string column_name() const;       ///< Fetch column name.
+        string table_catalog() const;          ///< Fetch table catalog.
+        string table_schema() const;           ///< Fetch table schema.
+        string table_name() const;             ///< Fetch table name.
+        string column_name() const;            ///< Fetch column name.
         short data_type() const;               ///< Fetch column data type.
-        string type_name() const;         ///< Fetch column type name.
+        string type_name() const;              ///< Fetch column type name.
         long column_size() const;              ///< Fetch column size.
         long buffer_length() const;            ///< Fetch buffer length.
         short decimal_digits() const;          ///< Fetch decimal digits.
         short numeric_precision_radix() const; ///< Fetch numeric precission.
         short nullable() const;                ///< True iff column is nullable.
-        string remarks() const;           ///< Fetch column remarks.
-        string column_default() const;    ///< Fetch column's default.
+        string remarks() const;                ///< Fetch column remarks.
+        string column_default() const;         ///< Fetch column's default.
         short sql_data_type() const;           ///< Fetch column's SQL data type.
         short sql_datetime_subtype() const;    ///< Fetch datetime subtype of column.
         long char_octet_length() const;        ///< Fetch char octet length.
@@ -1573,7 +1565,7 @@ public:
     class primary_keys
     {
     public:
-        bool next();                       ///< Move to the next result in the result set.
+        bool next();                  ///< Move to the next result in the result set.
         string table_catalog() const; ///< Fetch table catalog.
         string table_schema() const;  ///< Fetch table schema.
         string table_name() const;    ///< Fetch table name.
@@ -1598,7 +1590,7 @@ public:
     class table_privileges
     {
     public:
-        bool next();                       ///< Move to the next result in the result set
+        bool next();                  ///< Move to the next result in the result set
         string table_catalog() const; ///< Fetch table catalog.
         string table_schema() const;  ///< Fetch table schema.
         string table_name() const;    ///< Fetch table name.
@@ -1721,7 +1713,7 @@ struct driver
         nanodbc::string value;   ///< Driver attribute value.
     };
 
-    nanodbc::string name;       ///< Driver name.
+    nanodbc::string name;            ///< Driver name.
     std::list<attribute> attributes; ///< List of driver attributes.
 };
 
@@ -1739,8 +1731,7 @@ std::list<driver> list_drivers();
 /// \attention You will want to use transactions if you are doing batch operations because it will
 ///            prevent auto commits from occurring after each individual operation is executed.
 /// \see open(), prepare(), execute(), result, transaction
-result
-execute(connection& conn, const string& query, long batch_operations = 1, long timeout = 0);
+result execute(connection& conn, const string& query, long batch_operations = 1, long timeout = 0);
 
 /// \brief Opens, prepares, and executes query directly without creating result object.
 /// \param conn The connection where the statement will be executed.
