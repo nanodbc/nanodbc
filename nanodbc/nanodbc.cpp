@@ -36,12 +36,12 @@
 #endif
 
 #ifdef NANODBC_ENABLE_BOOST
-#   include <boost/locale/encoding_utf.hpp>
+#include <boost/locale/encoding_utf.hpp>
 #elif defined(__GNUC__) && __GNUC__ < 5
-#   define NANODBC_USE_STDLIB
-#   include <cwchar>
+#define NANODBC_USE_STDLIB
+#include <cwchar>
 #else
-#   include <codecvt>
+#include <codecvt>
 #endif
 
 #ifdef __APPLE__

@@ -4,9 +4,9 @@
 #include <nanodbc/nanodbc.h>
 
 #if defined(__GNUC__) && __GNUC__ < 5
-#   include <cwchar>
+#include <cwchar>
 #else
-#   include <codecvt>
+#include <codecvt>
 #endif
 #include <locale>
 #include <string>
