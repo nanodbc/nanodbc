@@ -78,10 +78,10 @@ environment:
       P: x86-32
       DISABLE_ASYNC: ON
     - G: "Visual Studio 15 2017"
-      ANALYSIS: "/p:RunCodeAnalysis=true"
+      ANALYSIS: "/p:RunCodeAnalysis=true /p:EnableCppCoreCheck=true"
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     - G: "Visual Studio 15 2017 Win64"
-      ANALYSIS: "/p:RunCodeAnalysis=true"
+      ANALYSIS: "/p:RunCodeAnalysis=true /p:EnableCppCoreCheck=true"
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
 
 matrix:
@@ -89,9 +89,9 @@ matrix:
     - G: "MinGW Makefiles"
       P: x86-32
     - G: "Visual Studio 15 2017"
-      ANALYSIS: "/p:RunCodeAnalysis=true"
+      ANALYSIS: "/p:RunCodeAnalysis=true /p:EnableCppCoreCheck=true"
     - G: "Visual Studio 15 2017 Win64"
-      ANALYSIS: "/p:RunCodeAnalysis=true"
+      ANALYSIS: "/p:RunCodeAnalysis=true /p:EnableCppCoreCheck=true"
 
 init:
   # For MinGW make to work correctly sh.exe must NOT be in your path.
