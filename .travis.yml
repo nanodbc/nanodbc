@@ -24,16 +24,9 @@ notifications:
 
 env:
   global:
-    # COVERITY_SCAN_TOKEN
-    - secure: "o08nQFKhuSrBTX4FJO22YZ4h+igFq+Hgtz1bUW8wjKVNo83GTqJ2Z/gZfxSlxXBypJtz24Z14NsgCrb3XYrX
-               wuMpTTsKK1SCzTHzmaf8BqZ1qJ9hYFtuX/Q8YInL1c27g5FUfvAWO1SlBAMOLuk+OqrX3lYb/yzf+3O1Ndvn\
-               2JRMx5QaONUd7jTWs04VXZzvBpNfZOPU0ypKm6NEIvN/Wjak979iSLnW7O/HjpsOgdXEAzpIqb/xRaoDtrKP\
-               IkPwoDbi2kbrZcw+/ile3iZ2m1l9MP4s79WDn/v1FtFBv+C4GI7ikXPG6qQ8J6yWyrOcnt1HZ9u+gdJ9E8rs\
-               ZpMDSaR2rSB70rJMCGXzeG14dRUCzZsnumJ55+aY6rr/TDljOCOHQdHYofg0v6p82aojhtUo35EmedYbwkrI\
-               c7E2QzfGuKL2qpBjsXFnXrTRRuwtY+XQI/YF6nGECHSD/3JQTEZv14ICPh6IiWF2fMqLvsxEBIk5sZahyBCy\
-               Y1peQqb7CvxG4v1nNy3M9hS+k3L7Si541UpborI03sWgEUKWl9dBOxAwdYBaI6o4o+NvfpRbBY8rZLaEy+hK\
-               n+UuglQBeunMB54dvZxpS7zbPkWgBrnhIWMz89Rx6DT97OsHJdgDNcUOPv1b6xRAQqs+Zd3+nZ2vQIkvZJU5\
-               FwljLRWCfdg="
+    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+    #   via the "travis encrypt" command using the project repo's public key
+    - secure: "xxaxm6smYwflaSmHZrr+ztEZj8SW47XniKZglyt26eFrVnvMWOHNIUoJqR59kV36vxX6Agi08mgVKKTrbrZOMzkFWFpNTwPU6eqyYY5UtMiMu4A9LrNfGyL0wPYgMtMVaCMCVDnIa4rh0bv69gheOc/0AwOA0xDfeHwwSvCE1voMK7iNvLcLIIex7QfNJQ2Mtp2w55VzIAoYc4FXPFB4LaBxMOk+VmleKAJxxvjLPBrhtmvcETnwq2dSmAxy8xLZ7OY7Z0bKrmFgQfjmvN1Q7cHBmKxmou0CKx00Ar++jURH18vyiRaN6+kKpLNkYhlbwYnOBM6/YPH79uo90vyNiYBkUfeJr2bBHP8RjEWBU0ZNNgBUm5DsefH6P/BSw02/nEM+wtn3Sfb2IOkHqqr4EfQDhcQMzFh893PqcJCQPbU/sGsCV/+Q/bxKpqOCu1X4jB6DW/ZJ4J5PlN+jpRfymZjG6pARW85eSrG2F3VdAhLsxT2dsDiPioZRshDJ59tPQdH5BTsmwf05c6oCXzzvcn8FHa29Nqo5Fe61QVzsazXgxnJe3KcengMBBdglI3T14SyrIWJAHzKZ/avS/LZ18seI/W8RQW16EyjEsOmK8QxGD0QHavpXLGn/68LJWIJOrwym6JKfxREttQ75gvZBVGU2zlEv77UirS6Zwl9/m1I="
 
 ref:
   sources: &sources
@@ -140,6 +133,7 @@ matrix:
 
 # before_install runs after matrix.addons.apt installation targets in the matrix
 before_install:
+  - if [[ "$COVERITY" == "ON" ]]; then echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca- ; fi
   # Skip build if the commit message contains [skip travis] or [travis skip]
   # https://github.com/travis-ci/travis-ci/issues/5032
   - >
