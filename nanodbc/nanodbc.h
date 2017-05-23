@@ -1063,7 +1063,9 @@ public:
     /// \brief Returns the native ODBC environment handle.
     void* native_env_handle() const;
 
-    /// \brief Returns information from the ODBC connection as a string.
+    /// \brief Returns information from the ODBC connection as a string or fixed-size value.
+    /// The general information about the driver and data source associated
+    /// with a connection is obtained using `SQLGetInfo` function.
     template <class T>
     T get_info(short info_type) const;
 
