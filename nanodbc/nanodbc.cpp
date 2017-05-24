@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <clocale>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <ctime>
 #include <iomanip>
@@ -36,6 +37,8 @@
 
 #ifdef NANODBC_ENABLE_BOOST
 #include <boost/locale/encoding_utf.hpp>
+#elif defined(__GNUC__) && (__GNUC__ < 5)
+#include <cwchar>
 #else
 #include <codecvt>
 #endif
@@ -259,16 +262,22 @@ inline void convert(const wide_string& in, std::string& out)
 #ifdef NANODBC_ENABLE_BOOST
     using boost::locale::conv::utf_to_utf;
     out = utf_to_utf<char>(in.c_str(), in.c_str() + in.size());
-#else
-// Workaround for confirmed bug in VS2015 and VS2017 too
-// See: https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
-#if defined(_MSC_VER) && (_MSC_VER >= 1900)
+#elif defined(__GNUC__) && (__GNUC__ < 5)
+    std::vector<wchar_t> characters(in.begin(), in.end());
+    const wchar_t * source = characters.data();
+    size_t size = wcsnrtombs(nullptr, &source, characters.size(), 0, nullptr);
+    if (size == std::string::npos)
+        throw std::range_error("UTF-16 -> UTF-8 conversion error");
+    out.resize(size);
+    wcsnrtombs(&out[0], &source, characters.size(), out.length(), nullptr);
+#elif defined(_MSC_VER) && (_MSC_VER >= 1900)
+    // Workaround for confirmed bug in VS2015 and VS2017 too
+    // See: https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
     auto p = reinterpret_cast<unsigned short const*>(in.data());
     out = std::wstring_convert<NANODBC_CODECVT_TYPE<unsigned short>, unsigned short>().to_bytes(
         p, p + in.size());
 #else
     out = std::wstring_convert<NANODBC_CODECVT_TYPE<wide_char_t>, wide_char_t>().to_bytes(in);
-#endif
 #endif
 }
 
@@ -278,9 +287,17 @@ inline void convert(const std::string& in, wide_string& out)
 #ifdef NANODBC_ENABLE_BOOST
     using boost::locale::conv::utf_to_utf;
     out = utf_to_utf<wide_char_t>(in.c_str(), in.c_str() + in.size());
-// Workaround for confirmed bug in VS2015 and VS2017 too
-// See: https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
+#elif defined(__GNUC__) && (__GNUC__ < 5)
+    size_t size = mbsnrtowcs(nullptr, in.data(), in.length(), 0, nullptr);
+    if (size == std::string::npos)
+        throw std::range_error("UTF-8 -> UTF-16 conversion error");
+    std::vector<wchar_t> characters(size);
+    const char * source = in.data();
+    mbsnrtowcs(&characters[0], &source, in.length(), characters.size(), nullptr);
+    out = std::string(characters.begin(), characters.end());
 #elif defined(_MSC_VER) && (_MSC_VER >= 1900)
+    // Workaround for confirmed bug in VS2015 and VS2017 too
+    // See: https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
     auto s =
         std::wstring_convert<NANODBC_CODECVT_TYPE<unsigned short>, unsigned short>().from_bytes(in);
     auto p = reinterpret_cast<wide_char_t const*>(s.data());

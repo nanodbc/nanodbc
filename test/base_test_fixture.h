@@ -19,6 +19,8 @@
 
 #ifdef NANODBC_ENABLE_BOOST
 #include <boost/locale/encoding_utf.hpp>
+#elif defined(__GNUC__) && __GNUC__ < 5
+#include <cstdlib>
 #else
 #include <codecvt>
 #endif
