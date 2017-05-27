@@ -17,6 +17,7 @@
 /*build*/
 /[Dd]ebug
 /[Rr]elease
+/[Ww]in32
 /x64
 /*.dir
 /*.local.bat
