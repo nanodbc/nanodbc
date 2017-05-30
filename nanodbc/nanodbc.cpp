@@ -2575,8 +2575,8 @@ private:
 
         RETCODE rc;
         NANODBC_SQLCHAR column_name[1024];
-        SQLSMALLINT sqltype, scale, nullable, len;
-        SQLULEN sqlsize;
+        SQLSMALLINT sqltype = 0, scale = 0, nullable = 0, len = 0;
+        SQLULEN sqlsize = 0;
 
 #if defined(NANODBC_DO_ASYNC_IMPL)
         stmt_.disable_async();
