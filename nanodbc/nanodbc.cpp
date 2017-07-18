@@ -349,7 +349,7 @@ recent_error(SQLHANDLE handle, SQLSMALLINT handle_type, long& native, std::strin
             &total_bytes);
 
         if (success(rc) && total_bytes > 0)
-            sql_message.resize(total_bytes + 1);
+            sql_message.resize(static_cast<std::size_t>(total_bytes) + 1);
 
         if (rc == SQL_NO_DATA)
             break;
@@ -675,10 +675,10 @@ struct bound_parameter
 {
     bound_parameter() = default;
 
+    SQLULEN size_ = 0;       // SQL data size of column or expression inbytes or characters
     SQLUSMALLINT index_ = 0; // Zero-based index of parameter marker
     SQLSMALLINT iotype_ = 0; // Input/Output type of parameter
     SQLSMALLINT type_ = 0;   // SQL data type of parameter
-    SQLULEN size_ = 0;       // SQL data size of column or expression inbytes or characters
     SQLSMALLINT scale_ = 0;  // decimal digits of column or expression
 };
 
@@ -2289,7 +2289,7 @@ public:
         bound_column& col = bound_columns_[column];
         if (rowset_position_ >= rows())
             throw index_range_error();
-        return col.cbdata_[rowset_position_] == SQL_NULL_DATA;
+        return col.cbdata_[static_cast<size_t>(rowset_position_)] == SQL_NULL_DATA;
     }
 
     bool is_null(const string& column_name) const
@@ -2507,7 +2507,7 @@ private:
         for (short i = 0; i < bound_columns_size_; ++i)
         {
             bound_column& col = bound_columns_[i];
-            for (long j = 0; j < rowset_size_; ++j)
+            for (std::size_t j = 0; j < static_cast<size_t>(rowset_size_); ++j)
                 col.cbdata_[j] = 0;
             if (col.blob_ && col.pdata_)
                 release_bound_resources(i);
@@ -2712,7 +2712,7 @@ private:
         for (SQLSMALLINT i = 0; i < n_columns; ++i)
         {
             bound_column& col = bound_columns_[i];
-            col.cbdata_ = new null_type[rowset_size_];
+            col.cbdata_ = new null_type[static_cast<size_t>(rowset_size_)];
             if (col.blob_)
             {
                 NANODBC_CALL_RC(
@@ -2865,7 +2865,7 @@ inline void result::result_impl::get_ref_impl<string>(short column, string& resu
                             ValueLenOrInd,
                             col.ctype_ == SQL_C_BINARY ? buffer_size : buffer_size - 1));
                 else if (ValueLenOrInd == SQL_NULL_DATA)
-                    col.cbdata_[rowset_position_] = (SQLINTEGER)SQL_NULL_DATA;
+                    col.cbdata_[static_cast<size_t>(rowset_position_)] = (SQLINTEGER)SQL_NULL_DATA;
                 // Sequence of successful calls is:
                 // SQL_NO_DATA or SQL_SUCCESS_WITH_INFO followed by SQL_SUCCESS.
             } while (rc == SQL_SUCCESS_WITH_INFO);
@@ -2936,7 +2936,7 @@ inline void result::result_impl::get_ref_impl<string>(short column, string& resu
             // Type is unicode in the database, convert if necessary
             const SQLWCHAR* s =
                 reinterpret_cast<SQLWCHAR*>(col.pdata_ + rowset_position_ * col.clen_);
-            const string::size_type str_size = col.cbdata_[rowset_position_] / sizeof(SQLWCHAR);
+            const string::size_type str_size = col.cbdata_[static_cast<size_t>(rowset_position_)] / sizeof(SQLWCHAR);
             wide_string temp(s, s + str_size);
             convert(temp, result);
         }
@@ -2963,7 +2963,7 @@ inline void result::result_impl::get_ref_impl<string>(short column, string& resu
         if (bytes == -1)
             throw type_incompatible_error();
         else if ((SQLULEN)bytes < column_size)
-            buffer.resize(bytes);
+            buffer.resize(static_cast<size_t>(bytes));
         buffer.resize(std::strlen(buffer.data())); // drop any trailing nulls
         result.reserve(buffer.size() * sizeof(string::value_type));
         convert(buffer, result);
@@ -2985,7 +2985,7 @@ inline void result::result_impl::get_ref_impl<string>(short column, string& resu
         if (bytes == -1)
             throw type_incompatible_error();
         else if ((SQLULEN)bytes < column_size)
-            buffer.resize(bytes);
+            buffer.resize(static_cast<size_t>(bytes));
         buffer.resize(std::strlen(buffer.data())); // drop any trailing nulls
         result.reserve(buffer.size() * sizeof(string::value_type));
         convert(buffer, result);
@@ -3030,7 +3030,7 @@ inline void result::result_impl::get_ref_impl<string>(short column, string& resu
         if (bytes == -1)
             throw type_incompatible_error();
         else if ((SQLULEN)bytes < column_size)
-            buffer.resize(bytes);
+            buffer.resize(static_cast<size_t>(bytes));
         buffer.resize(std::strlen(buffer.data())); // drop any trailing nulls
         result.reserve(buffer.size() * sizeof(string::value_type));
         convert(buffer, result);
@@ -3140,7 +3140,7 @@ inline void result::result_impl::get_ref_impl<std::vector<std::uint8_t>>(
                     out.insert(std::end(out), buffer, buffer + buffer_size_filled);
                 }
                 else if (ValueLenOrInd == SQL_NULL_DATA)
-                    col.cbdata_[rowset_position_] = (SQLINTEGER)SQL_NULL_DATA;
+                    col.cbdata_[static_cast<size_t>(rowset_position_)] = (SQLINTEGER)SQL_NULL_DATA;
                 // Sequence of successful calls is:
                 // SQL_NO_DATA or SQL_SUCCESS_WITH_INFO followed by SQL_SUCCESS.
             } while (rc == SQL_SUCCESS_WITH_INFO);
