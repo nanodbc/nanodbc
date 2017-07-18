@@ -226,17 +226,18 @@ int main(int argc, char* argv[])
         if (0 == strncmp(app_name, "lt-", 3))
             app_name += 3; // remove libtool prefix
         usage(cerr, app_name);
-        return 1;
+        return EXIT_FAILURE;
     }
 
     try
     {
         auto const connection_string(convert(argv[1]));
         run_test(connection_string);
+        return EXIT_SUCCESS;
     }
     catch (const exception& e)
     {
         cerr << e.what() << endl;
-        return 1;
     }
+    return EXIT_FAILURE;
 }
