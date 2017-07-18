@@ -1,5 +1,5 @@
 @echo off
-rem Runs CMake to configure nanodbc (static library) for Visual Studio 2015.
+rem Runs CMake to configure nanodbc (static library) for Visual Studio 2017.
 rem Runs MSBuild to build the generated solution.
 rem
 rem Usage:
@@ -21,7 +21,7 @@ set NANODBC_DISABLE_INSTALL=ON
 set BOOST_ROOT=C:/local/boost_1_59_0
 rem #######################################################
 
-if not defined VS140COMNTOOLS goto :NoVS
+if not defined VS150COMNTOOLS goto :NoVS
 if [%1]==[] goto :Usage
 if [%1]==[32] goto :32
 if [%1]==[64] goto :64
@@ -30,13 +30,13 @@ goto :Usage
 :32
 set NANOP=32
 set MSBUILDP=Win32
-set GENERATOR="Visual Studio 14 2015"
+set GENERATOR="Visual Studio 15 2017"
 goto :Build
 
 :64
 set NANOP=64
 set MSBUILDP=x64
-set GENERATOR="Visual Studio 14 2015 Win64"
+set GENERATOR="Visual Studio 15 2017 Win64"
 goto :Build
 
 :Build
@@ -45,7 +45,7 @@ mkdir %BUILDDIR%
 pushd %BUILDDIR%
 "C:\Program Files\CMake\bin\cmake.exe" ^
     -G %GENERATOR% ^
-    -DNANODBC_ENABLE_UNICODE=ON ^
+    -DNANODBC_ENABLE_UNICODE=OFF ^
     -DNANODBC_DISABLE_INSTALL=%NANODBC_DISABLE_INSTALL% ^
     -DBOOST_ROOT:PATH=%BOOST_ROOT% ^
     -DBOOST_LIBRARYDIR:PATH=%BOOST_ROOT%/lib%NANOP%-msvc-14.0 ^
@@ -57,8 +57,8 @@ goto :EOF
 
 :NoVS
 @echo build.bat
-@echo  Visual Studio 2015 not found
-@echo  "%%VS140COMNTOOLS%%" environment variable not defined
+@echo  Visual Studio 2017 not found
+@echo  "%%VS150COMNTOOLS%%" environment variable not defined
 exit /B 1
 
 :Usage
