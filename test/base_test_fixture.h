@@ -228,10 +228,10 @@ struct base_test_fixture
             {
                 auto beg_value = eq_pos + 1;
                 if (*beg_value == NANODBC_TEXT('{'))
-                    beg_value++;
+                    ++beg_value;
                 auto end_value = pair_end;
                 if (*(end_value - 1) == NANODBC_TEXT('}'))
-                    end_value--;
+                    --end_value;
 
                 return {beg_value, end_value};
             }
