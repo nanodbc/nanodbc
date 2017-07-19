@@ -196,6 +196,19 @@ typedef unspecified - type null_type;
 #define NANODBC_NOEXCEPT noexcept
 #endif
 
+#if __cplusplus >= 201402L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201402L)
+// [[deprecated]] is only available in C++14
+#define NANODBC_DEPRECATED [[deprecated]]
+#else
+#ifdef __GNUC__
+#define NANODBC_DEPRECATED __attribute__((deprecated))
+#elif defined(_MSC_VER)
+#define NANODBC_DEPRECATED __declspec(deprecated)
+#else
+#define NANODBC_DEPRECATED
+#endif
+#endif
+
 // clang-format off
 // 8888888888                                      888    888                        888 888 d8b
 // 888                                             888    888                        888 888 Y8P
@@ -614,8 +627,10 @@ public:
     /// \see async_execute(), async_execute_direct()
     class result complete_execute(long batch_operations = 1);
 
-    /// left for backwards compatibility
-    class result async_complete(long batch_operations = 1);
+    /// \brief Completes a previously initiated asynchronous query execution, returning the result.
+    ///
+    /// \deprecated Use complete_execute instead.
+    NANODBC_DEPRECATED class result async_complete(long batch_operations = 1);
 
     /// undocumented - for internal use only (used from result_impl)
     void enable_async(void* event_handle);
