@@ -12,6 +12,10 @@
 *.la
 *.a
 
+# PVS-Studio logs
+*.plog
+
+# Miscelenaous
 /.vagrant
 /.vs*
 /*build*/
@@ -25,3 +29,4 @@
 example
 example.dSYM/
 /example/empty.cpp
+
