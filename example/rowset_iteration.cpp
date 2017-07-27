@@ -68,9 +68,11 @@ int main(int argc, char* argv[])
             cout << i << "(" << result.rows() << "/" << result.rowset_size() << ":"
                  << result.get<int>(0) << endl;
         }
+        return EXIT_SUCCESS;
     }
     catch (runtime_error const& e)
     {
         cerr << e.what() << endl;
     }
+    return EXIT_FAILURE;
 }

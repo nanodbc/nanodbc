@@ -179,9 +179,11 @@ int main(int argc, char* argv[])
             NANODBC_COLUMN(column_default);
             std::cout << std::endl;
         }
+        return EXIT_SUCCESS;
     }
     catch (std::runtime_error const& e)
     {
         std::cerr << e.what() << std::endl;
     }
+    return EXIT_FAILURE;
 }

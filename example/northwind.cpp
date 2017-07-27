@@ -25,9 +25,11 @@ int main()
                  << convert(row.get<nanodbc::string>(1)) << " "
                  << convert(row.get<nanodbc::string>(2)) << " " << endl;
         }
+        return EXIT_SUCCESS;
     }
     catch (runtime_error const& e)
     {
         cerr << e.what() << endl;
     }
+    return EXIT_FAILURE;
 }
