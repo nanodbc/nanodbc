@@ -15,6 +15,9 @@
 # PVS-Studio logs
 *.plog
 
+# CLion
+/.idea
+
 # Miscelenaous
 /.vagrant
 /.vs*
