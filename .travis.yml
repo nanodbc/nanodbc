@@ -125,9 +125,11 @@ matrix:
     - compiler: clang
       env: DB=sqlite
       os: osx
+      osx_image: xcode8.3
     - compiler: clang
       env: DB=sqlite ENABLE_BOOST=ON
       os: osx
+      osx_image: xcode8.3
   allow_failures:
     - env: DB=mariadb DISABLE_LIBCXX=ON
 
