@@ -312,7 +312,7 @@ struct base_test_fixture
         {
             using char_type = typename nanodbc::string::value_type;
 
-            is_iequal(std::locale const& loc)
+            explicit is_iequal(std::locale const& loc)
                 : loc_(loc)
             {
             }

@@ -1424,7 +1424,7 @@ public:
     result_iterator() = default;
 
     /// Create result iterator for a given result set.
-    result_iterator(result& r)
+    explicit result_iterator(result& r)
         : result_(r)
     {
         ++(*this);
@@ -1624,7 +1624,7 @@ public:
     };
 
     /// \brief Creates catalog operating on database accessible through the specified connection.
-    catalog(connection& conn);
+    explicit catalog(connection& conn);
 
     /// \brief Creates result set with catalogs, schemas, tables, or table types.
     ///
