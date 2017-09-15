@@ -126,7 +126,7 @@ TEST_CASE_METHOD(mssql_fixture, "test_blob", "[mssql][blob][binary][varbinary]")
 
         auto const blob = results.get<std::vector<std::uint8_t>>(0);
         REQUIRE(blob.size() == 21);
-        REQUIRE(to_hex_string(blob) == "010100000000000000000059400000000000005940");
+        REQUIRE(to_hex(blob) == "010100000000000000000059400000000000005940");
     }
 
     // Test data size greater than, but not multiple of, the default size of the internal buffer
@@ -138,6 +138,52 @@ TEST_CASE_METHOD(mssql_fixture, "test_blob", "[mssql][blob][binary][varbinary]")
             nanodbc::execute(connection, NANODBC_TEXT("select data from test_blob;"));
         REQUIRE(results.next());
         REQUIRE(results.get<std::vector<std::uint8_t>>(0).size() == 1579);
+    }
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_large_blob", "[mssql][blob][binary][varbinary]")
+{
+    std::vector<std::uint8_t> blob;
+    {
+        std::string filename{get_data_path("large_binary_object_geometry_wkb.txt")};
+        auto const hex = read_text_file(filename);
+        blob = from_hex(hex);
+    }
+
+    // Test executing prepared statement with size of blbo larger than max (eg. SQL Server 8000 Bytes)
+    auto connection = connect();
+    {
+        create_table(connection, NANODBC_TEXT("test_large_blob"), NANODBC_TEXT("(data varbinary(max))"));
+        nanodbc::statement stmt(connection);
+        prepare(stmt, NANODBC_TEXT("INSERT INTO test_large_blob (data) VALUES (?)"));
+
+        std::vector<std::vector<std::uint8_t>> rows = {blob};
+        stmt.bind(0, rows);
+        execute(stmt);
+    }
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_large_blob_geometry", "[mssql][blob][binary][varbinary][geometry]")
+{
+    // NOTE: SQL Server 2008 or later providers geospatial support with GEOMETRY type
+
+    std::vector<std::uint8_t> blob;
+    {
+        std::string filename{get_data_path("large_binary_object_geometry_wkb.txt")};
+        auto const hex = read_text_file(filename);
+        blob = from_hex(hex);
+    }
+
+    // Test executing prepared statement with size of blbo larger than max (eg. SQL Server 8000 Bytes)
+    auto connection = connect();
+    {
+        create_table(connection, NANODBC_TEXT("test_large_blob_geometry"), NANODBC_TEXT("(data GEOMETRY)"));
+        nanodbc::statement stmt(connection);
+        prepare(stmt, NANODBC_TEXT("INSERT INTO test_large_blob_geometry (data) VALUES (geometry::STGeomFromWKB(?, 0))"));
+
+        std::vector<std::vector<std::uint8_t>> rows = {blob};
+        stmt.bind(0, rows);
+        execute(stmt);
     }
 }
 
