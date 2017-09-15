@@ -23,6 +23,9 @@ rem #######################################################
 
 if not defined VS150COMNTOOLS goto :NoVS
 if [%1]==[] goto :Usage
+
+set NANOU=""
+if /I "%2"=="U"  set NANOU=U
 if [%1]==[32] goto :32
 if [%1]==[64] goto :64
 goto :Usage
@@ -40,18 +43,20 @@ set GENERATOR="Visual Studio 15 2017 Win64"
 goto :Build
 
 :Build
-set BUILDDIR=_build%NANOP%
+set NANODBC_ENABLE_UNICODE=OFF
+if /I "%NANOU%"=="U" set NANODBC_ENABLE_UNICODE=ON
+set BUILDDIR=_build%NANOP%%NANOU%
 mkdir %BUILDDIR%
 pushd %BUILDDIR%
 "C:\Program Files\CMake\bin\cmake.exe" ^
     -G %GENERATOR% ^
-    -DNANODBC_ENABLE_UNICODE=OFF ^
+    -DNANODBC_ENABLE_UNICODE=%NANODBC_ENABLE_UNICODE% ^
     -DNANODBC_DISABLE_INSTALL=%NANODBC_DISABLE_INSTALL% ^
     -DBOOST_ROOT:PATH=%BOOST_ROOT% ^
     -DBOOST_LIBRARYDIR:PATH=%BOOST_ROOT%/lib%NANOP%-msvc-14.0 ^
     ..
-move nanodbc.sln nanodbc%NANOP%.sln
-msbuild.exe nanodbc%NANOP%.sln /p:Configuration=Release /p:Platform=%MSBUILDP%
+move nanodbc.sln nanodbc%NANOP%%NANOU%.sln
+msbuild.exe nanodbc%NANOP%%NANOU%.sln /p:Configuration=Release /p:Platform=%MSBUILDP%
 popd
 goto :EOF
 
@@ -63,5 +68,6 @@ exit /B 1
 
 :Usage
 @echo build.bat
-@echo Usage: build.bat [32 or 64]
+@echo Usage: build.bat (32 or 64) [U]
+@echo        Optional U for Unicode build
 exit /B 1
