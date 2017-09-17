@@ -9,7 +9,7 @@ int main(int /*argc*/, char* /*argv*/[])
 {
     try
     {
-        // TODO: Write your code here and have fun with nanodbc!
+        // Write your code here and have fun with nanodbc!
 
         auto const connection_string = NANODBC_TEXT("");
         connection conn(connection_string);
