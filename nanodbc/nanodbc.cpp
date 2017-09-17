@@ -4365,8 +4365,6 @@ std::list<string> catalog::list_catalogs()
 
 std::list<string> catalog::list_schemas()
 {
-    // TODO: Possible to restrict list of schemas from a specified catalog?
-
     // Special case for list of schemas:
     // all the other arguments must match empty string (""),
     // otherwise pattern-based lookup is performed returning
