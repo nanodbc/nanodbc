@@ -7,7 +7,7 @@
 #include "base_test_fixture.h" // Must be included last!
 // clang-format on
 
-TestConfig cfg;
+nanodbc::test::Config cfg;
 
 int main(int argc, char* argv[])
 {
@@ -15,12 +15,12 @@ int main(int argc, char* argv[])
     {
         // Specify custom command line options
         auto args = Clara::argsToVector(argc, argv);
-        Clara::CommandLine<TestConfig> cli;
+        Clara::CommandLine<nanodbc::test::Config> cli;
         cli["-c"]["--connection-string"]
             .describe("connection string to test database; if not specified, "
                       "an attempt will be made to read it from environment variables: "
                       "NANODBC_TEST_CONNSTR or NANODBC_TEST_CONNSTR_<DB>")
-            .bind(&TestConfig::connection_string_, "string");
+            .bind(&nanodbc::test::Config::connection_string_, "string");
         cli.parseInto(args, cfg);
 
         // Disable custom options to avoid Catch warnings or failures

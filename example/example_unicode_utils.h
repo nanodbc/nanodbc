@@ -15,6 +15,8 @@
 #error Examples do not support the iODBC wide strings
 #endif
 
+// TODO: These convert utils need to be extracted to a private
+//       internal library to share with tests
 #ifdef NANODBC_ENABLE_UNICODE
 inline nanodbc::string convert(std::string const& in)
 {
