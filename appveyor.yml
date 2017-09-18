@@ -197,9 +197,8 @@ test_script:
         $cmd = 'ctest -V --output-on-failure -C ' + $Env:CONFIGURATION + ' -R ' + $test_name
         iex "& $cmd"
         if ($LastExitCode -ne 0) {
+          Write-Host "Tests failure, uploading Testing/Temporary/LastTest.log to artifacts" -ForegroundColor Magenta
           Push-AppveyorArtifact Testing\Temporary\LastTest.log
-          Write-Host "Tests failure, printing Testing/Temporary/LastTest.log" -ForegroundColor Red
-          type Testing\Temporary\LastTest.log
           $host.SetShouldExit($LastExitCode)
         }
       }
