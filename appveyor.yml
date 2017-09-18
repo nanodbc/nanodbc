@@ -205,7 +205,12 @@ test_script:
         Write-Host "Running $Env:CONFIGURATION build test: $test_name" -ForegroundColor Magenta
         $cmd = 'ctest -V --output-on-failure -C ' + $Env:CONFIGURATION + ' -R ' + $test_name
         iex "& $cmd"
-        if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
+        if ($LastExitCode -ne 0) {
+          Push-AppveyorArtifact Testing\Temporary\LastTest.log
+          Write-Host "Tests failure, printing Testing/Temporary/LastTest.log" -ForegroundColor Red
+          type Testing\Temporary\LastTest.log
+          $host.SetShouldExit($LastExitCode)
+        }
       }
 
 after_test:
