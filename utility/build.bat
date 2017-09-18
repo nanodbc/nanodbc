@@ -13,9 +13,11 @@ rem    This will allow to run tests conveniently, without editing projects.
 rem ### CONFIGURATION #####################################
 rem ### Connection strings for tests (alternatively, use command line-c option)
 rem ### For example, SQL Server LocalDB instance, MySQL and PostgreSQL on the nanodbc Vagrant VM.
-set NANODBC_TEST_CONNSTR_MSSQL=Driver={ODBC Driver 11 for SQL Server};Server=(localdb)\MSSQL13DEV;Integrated Security=True;Database=nanodbc;MARS_Connection=Yes;
-set NANODBC_TEST_CONNSTR_MYSQL=Driver={MySQL ODBC 5.3 Unicode Driver};Database=vagrant;Server=localhost;User=vagrant;Password=vagrant;Option=3;
-set NANODBC_TEST_CONNSTR_PGSQL=Driver={PostgreSQL Unicode(x64)};Server=localhost;Database=vagrant;UID=vagrant;PWD=vagrant;
+rem set NANODBC_TEST_CONNSTR_MSSQL=Driver={ODBC Driver 11 for SQL Server};Server=(localdb)\MSSQL13DEV;Integrated Security=True;Database=nanodbc;MARS_Connection=Yes;
+rem Connection strings for nanodbc Vagrant environment
+set NANODBC_TEST_CONNSTR_MSSQL=Driver={ODBC Driver 11 for SQL Server};Server=localhost,2433;Database=vagrant;UID=vagrant;PWD=vagrant;
+set NANODBC_TEST_CONNSTR_MYSQL=Driver={MySQL ODBC 5.3 Unicode Driver};Server=localhost;Port=4306;Database=vagrant;User=vagrant;Password=vagrant;Option=3;
+set NANODBC_TEST_CONNSTR_PGSQL=Driver={PostgreSQL Unicode(x64)};Server=localhost;Port=6432;Database=vagrant;UID=vagrant;PWD=vagrant;
 setlocal
 set NANODBC_DISABLE_INSTALL=ON
 set BOOST_ROOT=C:/local/boost_1_59_0
