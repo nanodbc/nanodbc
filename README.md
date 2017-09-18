@@ -3,14 +3,23 @@
 A small C++ wrapper for the native C ODBC API. Please see the [online documentation][nanodbc] for
 user information, example usage, propaganda, and detailed source level documentation.
 
-[![Gitter](https://img.shields.io/gitter/room/lexicalunit/nanodbc.svg?style=flat-square)](https://gitter.im/nanodbc-help/Lobby)
 [![GitHub release](https://img.shields.io/github/tag/lexicalunit/nanodbc.svg)](https://github.com/lexicalunit/nanodbc/releases)
 [![GitHub commits](https://img.shields.io/github/commits-since/lexicalunit/nanodbc/v2.12.4.svg?style=flat-square)](https://github.com/lexicalunit/nanodbc/releases/tag/v2.12.4)
 [![License](https://img.shields.io/github/license/lexicalunit/nanodbc.svg?style=flat-square)](https://github.com/lexicalunit/nanodbc/blob/master/LICENSE)
 
-[![Travis](https://img.shields.io/travis/lexicalunit/nanodbc.svg?style=flat-square)](https://travis-ci.org/lexicalunit/nanodbc)
-[![AppVeyor](https://img.shields.io/appveyor/ci/lexicalunit/nanodbc.svg?style=flat-square)](https://ci.appveyor.com/project/lexicalunit/nanodbc)
-[![Coverity Scan](https://img.shields.io/coverity/scan/7437.svg?style=flat-square)](https://scan.coverity.com/projects/lexicalunit-nanodbc)
+[![Gitter](https://img.shields.io/gitter/room/lexicalunit/nanodbc.svg?style=flat-square)](https://gitter.im/nanodbc-help/Lobby)
+
+## Build Status
+
+| Branch |  Linux/OSX | Windows | Coverity |
+|:--- |:--- |:--- |:--- |
+| `master`  | [![master][travis-badge-master]][travis] | [![master][appveyor-badge]][appveyor] | [![coverity_scan][coverity-badge]][coverity] |
+| `latest` | [![latest][travis-badge-latest]][travis] | &nbsp; | &nbsp; |
+| `release` | [![release][travis-badge-release]][travis] | &nbsp; | &nbsp; |
+
+> **Note:** The Coverity status uses the [coverity_scan][nanodbc-coverity] branch. When `master`
+            has had a significant amount of work pushed to it, merge those changes into
+            `coverity_scan` as well to keep the status up to date.
 
 ## Philosophy
 
@@ -46,18 +55,6 @@ existing ODBC API calls.
 | `master`  | Contains the latest development code, not yet ready for a published version. |
 | `v2.x.x`  | Targets C++14+. All future development will build upon this version. |
 | `v1.x.x`  | Supports C++03 and optionally C++11. *There is no longer any support for this version.* |
-
-## Build Status
-
-| Branch | Travis CI | AppVeyor | Coverity |
-|:--- |:--- |:--- |:--- |
-| `master`  | [![master][travis-badge-master]][travis] | [![master][appveyor-badge]][appveyor] | [![coverity_scan][coverity-badge]][coverity] |
-| `latest` | [![latest][travis-badge-latest]][travis] | &nbsp; | &nbsp; |
-| `release` | [![release][travis-badge-release]][travis] | &nbsp; | &nbsp; |
-
-> **Note:** The Coverity status uses the [coverity_scan][nanodbc-coverity] branch. When `master`
-            has had a significant amount of work pushed to it, merge those changes into
-            `coverity_scan` as well to keep the status up to date.
 
 # Building
 
