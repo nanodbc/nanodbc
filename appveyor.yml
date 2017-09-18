@@ -26,21 +26,17 @@ environment:
   matrix:
     - DB: MSSQL2016
       G: "Visual Studio 15 2017"
-      DISABLE_EXAMPLES: OFF
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     - DB: MSSQL2016
       G: "Visual Studio 15 2017"
       ENABLE_UNICODE: ON
-      DISABLE_EXAMPLES: OFF
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     - DB: MSSQL2016
       G: "Visual Studio 15 2017 Win64"
-      DISABLE_EXAMPLES: OFF
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     - DB: MSSQL2016
       G: "Visual Studio 15 2017 Win64"
       ENABLE_UNICODE: ON
-      DISABLE_EXAMPLES: OFF
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     - DB: MSSQL2014
       G: "Visual Studio 14 2015 Win64"
