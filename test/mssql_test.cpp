@@ -419,7 +419,7 @@ TEST_CASE_METHOD(mssql_fixture, "test_datetime", "[mssql][datetime]")
     {
         auto result = execute(connection, NANODBC_TEXT("select d from test_datetime;"));
 
-        REQUIRE(result.column_name(0) != NANODBC_TEXT("d"));
+        REQUIRE(result.column_name(0) == NANODBC_TEXT("d"));
         REQUIRE(result.column_datatype(0) == SQL_TYPE_TIMESTAMP);
         REQUIRE(result.column_datatype_name(0) == NANODBC_TEXT("datetime"));
 
