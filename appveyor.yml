@@ -132,14 +132,14 @@ before_build:
 
 build_script:
   - ps: 'Write-Host "Running cmake: $env:G" -ForegroundColor Magenta'
-  - cmake.exe -G "%G%" -DCMAKE_BUILD_TYPE=Release -DNANODBC_ENABLE_BOOST=%ENABLE_BOOST% -DNANODBC_ENABLE_UNICODE=%ENABLE_UNICODE% -DNANODBC_DISABLE_ASYNC=%DISABLE_ASYNC% -DNANODBC_DISABLE_EXAMPLES=%DISABLE_EXAMPLES% -DNANODBC_DISABLE_TESTS=%DISABLE_TESTS% -DNANODBC_DISABLE_INSTALL=%DISABLE_INSTALL% %APPVEYOR_BUILD_FOLDER%
+  - cmake.exe -G "%G%" -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DNANODBC_ENABLE_BOOST=%ENABLE_BOOST% -DNANODBC_ENABLE_UNICODE=%ENABLE_UNICODE% -DNANODBC_DISABLE_ASYNC=%DISABLE_ASYNC% -DNANODBC_DISABLE_EXAMPLES=%DISABLE_EXAMPLES% -DNANODBC_DISABLE_TESTS=%DISABLE_TESTS% -DNANODBC_DISABLE_INSTALL=%DISABLE_INSTALL% %APPVEYOR_BUILD_FOLDER%
   - ps: 'Write-Host "Running cmake --build:" -ForegroundColor Magenta'
-  - cmake --build . --config Release -- %MSBUILD_ARGS%
+  - cmake --build . --config %CONFIGURATION% -- %MSBUILD_ARGS%
 
 before_test:
   - ps: |
       if ($env:ANALYSIS) {
-        Write-Host "Skipping database services configuration" -ForegroundColor Magenta
+        Write-Host "Static analysis, skipping database services configuration" -ForegroundColor Magenta
       } else {
         Write-Host "Configuring $env:DB service" -ForegroundColor Magenta
         if ($env:DB -Match "MSSQL2008") {
@@ -168,7 +168,7 @@ before_test:
 test_script:
   - ps: |
       if ($env:ANALYSIS) {
-        Write-Host "Skipping tests" -ForegroundColor Magenta
+        Write-Host "Static analysis, skipping tests" -ForegroundColor Magenta
       } else {
         if ($env:DB -Match "MSSQL2008") {
           $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 11 for SQL Server};Server=(local)\SQL2008R2SP2;Database=master;UID=sa;PWD=Password12!;"
