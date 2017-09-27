@@ -1,0 +1,54 @@
+# nanodbc development and testing multi-container docker setup
+version: '3'
+services:
+  mysql:
+    image: mysql:5.7
+    container_name: nanomysql
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: &default_credential nanodbc
+      MYSQL_DATABASE: *default_credential
+      MYSQL_USER: *default_credential
+      MYSQL_PASSWORD: *default_credential
+  pgsql:
+    image: postgres:9-alpine
+    container_name: nanopgsql
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER:  *default_credential
+      POSTGRES_PASSWORD:  *default_credential
+      POSTGRES_DB:  *default_credential
+  mssql:
+    image: microsoft/mssql-server-linux
+    container_name: nanomssql
+    restart: unless-stopped
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: Password12! # required, must meet requied password complexity
+  nanodbc:
+    build: .
+    container_name: nanodbc
+    stdin_open: true
+    tty: true
+    depends_on:
+      - pgsql
+      - mysql
+      - mssql
+    environment:
+      # Make client command line friendlier
+      MYSQL_HOST: mysql
+      USER: *default_credential
+      MYSQL_PWD: *default_credential
+      SQLCMDSERVER: mssql
+      SQLCMDUSER: *default_credential
+      SQLCMDPASSWORD: Password12!
+      PGHOST: pgsql
+      PGUSER: *default_credential
+      PGPASSWORD: *default_credential # required, psql no longer accepts passwords from command line
+      PGDATABASE: *default_credential

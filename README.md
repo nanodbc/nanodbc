@@ -183,16 +183,33 @@ Building documentation and gh-pages requires the use of [Doxygen][doxygen] and
 ## Quick Setup for Testing or Development Environments
 
 To get up and running with nanodbc as fast as possible consider using the provided
-[Dockerfile](Dockerfile) or [Vagrantfile](Vagrantfile). For example, to spin up a [docker][docker]
-container suitable for testing and development of nanodbc:
+[Dockerfile](Dockerfile) and [docker-compose.yml](docker-compose.yml) or [Vagrantfile](Vagrantfile).
+
+For example, to spin up a [docker][docker] container suitable for testing and development of nanodbc:
 
 ```shell
 $ cd /path/to/nanodbc
 $ docker build -t nanodbc .
-$ docker run -v "$(pwd)":"/opt/$(basename $(pwd))" -it nanodbc /bin/bash
-root@hash:/# mkdir -p /opt/nanodbc/build && cd /opt/nanodbc/build
-root@hash:/opt/nanodbc/build# cmake ..
-root@hash:/opt/nanodbc/build# make nanodbc
+
+# Use container local nanodbc repository
+$ docker run -it nanodbc /bin/bash
+root@hash:/# mkdir -p /opt/nanodbc/build && cd /opt/nanodbc-host/build
+
+# Alternatively, bind host repository as container volume
+$ docker run -v "$(pwd)":"/opt/$(basename $(pwd))-host" -it nanodbc /bin/bash
+root@hash:/# mkdir -p /opt/nanodbc-host/build && cd /opt/nanodbc-host/build
+
+root@hash:/opt/nanodbc-host/build# cmake ..
+root@hash:/opt/nanodbc-host/build# make nanodbc
+```
+
+Or, spin up the complete multi-container environment with database services:
+
+```shell
+$ cd /path/to/nanodbc
+$ docker-compose build
+$ docker-compose up -d
+$ docker exec -it nanodbc /bin/bash
 ```
 
 Or, to build and ssh into a [vagrant][vagrant] VM (using VirtualBox for example) use:
