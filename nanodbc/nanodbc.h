@@ -976,7 +976,10 @@ public:
     void swap(connection&) NANODBC_NOEXCEPT;
 
     /// \brief Create new connection object and immediately connect to the given data source.
-    /// \param dsn The name of the data source.
+    ///
+    /// The function calls ODBC API SQLConnect.
+    ///
+    /// \param dsn The name of the data source name (DSN).
     /// \param user The username for authenticating to the data source.
     /// \param pass The password for authenticating to the data source.
     /// \param timeout Seconds before connection timeout. Default 0 meaning no timeout.
@@ -986,6 +989,9 @@ public:
 
     /// \brief Create new connection object and immediately connect using the given connection
     /// string.
+    ///
+    /// The function calls ODBC API SQLDriverConnect.
+    ///
     /// \param connection_string The connection string for establishing a connection.
     /// \param timeout Seconds before connection timeout. Default is 0 indicating no timeout.
     /// \throws database_error
