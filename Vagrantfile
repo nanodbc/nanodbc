@@ -1,6 +1,15 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
-
+#
+# Vagrant configuration for nanodbc library development and testing
+#
+# Databases:
+# * PostgreSQL
+# * SQL Server
+# * SQLite
+#
+# Scan the script below and fish for user/password/etc. details.
+#
 Vagrant.configure(2) do |config|
   config.vm.box = "bento/ubuntu-17.04"
   config.vm.network "private_network", type: "dhcp"
