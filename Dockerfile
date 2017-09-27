@@ -1,10 +1,13 @@
 FROM ubuntu:latest
-RUN DEBIAN_FRONTEND=noninteractive apt-get -qqy update \
- && DEBIAN_FRONTEND=noninteractive apt-get -qqy install software-properties-common
 
+RUN DEBIAN_FRONTEND=noninteractive apt-get -qy update \
+ && DEBIAN_FRONTEND=noninteractive apt-get -qy install software-properties-common
+
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys BA9EF27F
 RUN DEBIAN_FRONTEND=noninteractive add-apt-repository -y ppa:ubuntu-toolchain-r/test
-RUN DEBIAN_FRONTEND=noninteractive apt-get update -qqy \
- && DEBIAN_FRONTEND=noninteractive apt-get -qqy install \
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get -qy update \
+ && DEBIAN_FRONTEND=noninteractive apt-get -qy install \
         $(apt-cache -q search "libboost-locale1\..*-dev" | awk '{print $1}' | sort -nr | head -n 1) \
         cmake \
         doxygen \
