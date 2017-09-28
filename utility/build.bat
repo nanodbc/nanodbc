@@ -58,7 +58,10 @@ pushd %BUILDDIR%
     -DBOOST_LIBRARYDIR:PATH=%BOOST_ROOT%/lib%NANOP%-msvc-14.0 ^
     ..
 move nanodbc.sln nanodbc%NANOP%%NANOU%.sln
+rem Build
 msbuild.exe nanodbc%NANOP%%NANOU%.sln /p:Configuration=Release /p:Platform=%MSBUILDP%
+rem Load with Visual Studio Selector
+nanodbc%NANOP%%NANOU%.sln
 popd
 goto :EOF
 
