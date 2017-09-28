@@ -87,7 +87,7 @@ Vagrant.configure(2) do |config|
     echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bash_profile
     echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
     echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> /home/vagrant/.bash_profile
-    echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> /home/vagrantbashrc
+    echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> /home/vagrant/.bashrc
     echo "SQLServer: Running sqlcmd -Q SELECT @@version"
     export PATH="$PATH:/opt/mssql-tools/bin"
     echo "SQLServer: Creating user ${DB_USER}"
