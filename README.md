@@ -279,10 +279,10 @@ deemed "stable" based on suitable criteria.**
 
 ---
 
-[MIT][mit] &copy; [lexicalunit][author] and [contributors][contributors].
+[MIT][mit] &copy; [lexicalunit, mloskot][authors] and [contributors][contributors].
 
 [mit]:              http://opensource.org/licenses/MIT
-[author]:           http://github.com/lexicalunit
+[author]:           http://github.com/nanodbc
 [contributors]:     https://github.com/nanodbc/nanodbc/graphs/contributors
 
 [nanodbc]:              http://nanodbc.io
@@ -318,7 +318,7 @@ deemed "stable" based on suitable criteria.**
 [travis-badge-release]: https://travis-ci.org/nanodbc/nanodbc.svg?branch=release
 
 [appveyor]:         https://ci.appveyor.com/project/nanodbc/nanodbc?branch=master
-[appveyor-badge]:   https://ci.appveyor.com/api/projects/status/71nb7l794n3i8vdj/branch/master?svg=true
+[appveyor-badge]:   https://ci.appveyor.com/api/projects/status/55qg2hx0g7ma5n3r/branch/master?svg=true
 
 [coverity]:         https://scan.coverity.com/projects/nanodbc-nanodbc
 [coverity-badge]:   https://scan.coverity.com/projects/7437/badge.svg

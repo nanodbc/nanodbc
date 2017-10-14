@@ -6,7 +6,7 @@
 /// This library provides a wrapper API for the native ODBC API. It aims to do everything ODBC does,
 /// but with a \b much nicer interface. Anything it doesn't (yet) do can be done by retrieving the
 /// native ODBC handles and dropping down to straight ODBC C API code.
-/// For more propaganda, please see the <a href="http://lexicalunit.github.com/nanodbc/">project
+/// For more propaganda, please see the <a href="http://nanodbc.io/">project
 /// homepage</a>.
 ///
 /// \section toc Table of Contents

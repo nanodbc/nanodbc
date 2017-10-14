@@ -109,7 +109,7 @@ Vagrant.configure(2) do |config|
     # Build in /home/vagrant, but not in the shared /vagrant where CMake will fail)
     echo "Cloning nanodbc into /home/vagrant"
     cd /home/vagrant
-    git clone https://github.com/lexicalunit/nanodbc.git
+    git clone https://github.com/nanodbc/nanodbc.git
     sudo chown -R vagrant:vagrant /home/vagrant/nanodbc
     ############################################################################
     echo "Guest IP address:"
