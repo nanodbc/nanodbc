@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['string_5ftype',['string_type',['../namespacenanodbc.html#a6e7a16135ff41519e7fb4817fa64ccc5',1,'nanodbc']]]
+  ['string',['string',['../namespacenanodbc.html#a0de29d9d1755ed0179195851a26538bd',1,'nanodbc']]]
 ];

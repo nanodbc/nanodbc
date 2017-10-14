@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['is_5fnull',['is_null',['../classnanodbc_1_1result.html#a46777a452792e0184f63bc370c3303a4',1,'nanodbc::result::is_null(short column) const '],['../classnanodbc_1_1result.html#a15ee16345c0e98ababfef409740ab257',1,'nanodbc::result::is_null(const string_type &amp;column_name) const ']]],
-  ['is_5fnullable',['is_nullable',['../classnanodbc_1_1catalog_1_1columns.html#ab6e9818674a3e9591058ba7391b8a229',1,'nanodbc::catalog::columns']]]
+  ['is_5fgrantable',['is_grantable',['../classnanodbc_1_1catalog_1_1table__privileges.html#ae281289d9513f9af912d3de4a7e1f113',1,'nanodbc::catalog::table_privileges']]],
+  ['is_5fnull',['is_null',['../classnanodbc_1_1result.html#a85462f6eaed91a5b03739319bd2712e7',1,'nanodbc::result::is_null(short column) const'],['../classnanodbc_1_1result.html#a9201ef6814bf934ffb9caa7b62f3bad9',1,'nanodbc::result::is_null(const string &amp;column_name) const']]],
+  ['is_5fnullable',['is_nullable',['../classnanodbc_1_1catalog_1_1columns.html#aec69eacef15e7eae155f3267ebad1a78',1,'nanodbc::catalog::columns']]]
 ];
