@@ -3,11 +3,11 @@
 A small C++ wrapper for the native C ODBC API. Please see the [online documentation][nanodbc] for
 user information, example usage, propaganda, and detailed source level documentation.
 
-[![GitHub release](https://img.shields.io/github/tag/lexicalunit/nanodbc.svg)](https://github.com/lexicalunit/nanodbc/releases)
-[![GitHub commits](https://img.shields.io/github/commits-since/lexicalunit/nanodbc/v2.12.4.svg?style=flat-square)](https://github.com/lexicalunit/nanodbc/releases/tag/v2.12.4)
-[![License](https://img.shields.io/github/license/lexicalunit/nanodbc.svg?style=flat-square)](https://github.com/lexicalunit/nanodbc/blob/master/LICENSE)
+[![GitHub release](https://img.shields.io/github/tag/nanodbc/nanodbc.svg)](https://github.com/nanodbc/nanodbc/releases)
+[![GitHub commits](https://img.shields.io/github/commits-since/nanodbc/nanodbc/v2.12.4.svg?style=flat-square)](https://github.com/nanodbc/nanodbc/releases/tag/v2.12.4)
+[![License](https://img.shields.io/github/license/nanodbc/nanodbc.svg?style=flat-square)](https://github.com/nanodbc/nanodbc/blob/master/LICENSE)
 
-[![Gitter](https://img.shields.io/gitter/room/lexicalunit/nanodbc.svg?style=flat-square)](https://gitter.im/nanodbc-help/Lobby)
+[![Gitter](https://img.shields.io/gitter/room/nanodbc/nanodbc.svg?style=flat-square)](https://gitter.im/nanodbc-help/Lobby)
 
 ## Build Status
 
@@ -128,9 +128,9 @@ If you need to use the `NANODBC_ENABLE_BOOST=ON` option, you will have to config
 | `NANODBC_DISABLE_INSTALL`          | `OFF` or `ON`        | Do not generate install target. |
 | `NANODBC_DISABLE_LIBCXX`           | `OFF` or `ON`        | Do not use libc++, if available on the system. |
 | `NANODBC_DISABLE_TESTS`            | `OFF` or `ON`        | Do not build tests. |
-| `NANODBC_ENABLE_BOOST`             | `OFF` or `ON`        | Use Boost for Unicode string convertions (requires [Boost.Locale][boost-locale]). Workaround to issue [#44](https://github.com/lexicalunit/nanodbc/issues/44). |
+| `NANODBC_ENABLE_BOOST`             | `OFF` or `ON`        | Use Boost for Unicode string convertions (requires [Boost.Locale][boost-locale]). Workaround to issue [#24](https://github.com/nanodbc/nanodbc/issues/24). |
 | `NANODBC_ENABLE_UNICODE`           | `OFF` or `ON`        | Enable Unicode support. `nanodbc::string` becomes `std::u16string` or `std::u32string`. |
-| `NANODBC_ENABLE_WORKAROUND_NODATA` | `OFF` or `ON`        | Enable `SQL_NO_DATA` workaround to issue [#33](https://github.com/lexicalunit/nanodbc/issues/33). |
+| `NANODBC_ENABLE_WORKAROUND_NODATA` | `OFF` or `ON`        | Enable `SQL_NO_DATA` workaround to issue [#43](https://github.com/nanodbc/nanodbc/issues/43). |
 | `NANODBC_ODBC_VERSION`             | `SQL_OV_ODBC3[...]`  | Forces ODBC version to use. Default is `SQL_OV_ODBC3_80` if available, otherwise `SQL_OV_ODBC3`. |
 
 ## Note About iODBC
@@ -167,10 +167,10 @@ $ clang-format -i /path/to/file
 ## Source Level Documentation
 
 Source level documentation provided via [GitHub's gh-pages][gh-pages] is available at
-[nanodbc.lexicalunit.com][nanodbc]. To re-build and update it, preform the following steps from the
+[nanodbc.io][nanodbc]. To re-build and update it, preform the following steps from the
 root directory of the repository:
 
-1. `git clone -b gh-pages git@github.com:lexicalunit/nanodbc.git doc` Necessary the first time,
+1. `git clone -b gh-pages git@github.com:nanodbc/nanodbc.git doc` Necessary the first time,
    not subsequently.
 2. `cd doc`
 3. `make` Generates updated documentation locally.
@@ -201,7 +201,7 @@ Or, to build and ssh into a [vagrant][vagrant] VM (using VirtualBox for example)
 $ cd /path/to/nanodbc
 $ vagrant up
 $ vagrant ssh
-vagrant@vagrant-ubuntu-precise-64:~$ git clone https://github.com/lexicalunit/nanodbc.git
+vagrant@vagrant-ubuntu-precise-64:~$ git clone https://github.com/nanodbc/nanodbc.git
 vagrant@vagrant-ubuntu-precise-64:~$ mkdir -p nanodbc/build && cd nanodbc/build
 vagrant@vagrant-ubuntu-precise-64:~$ CXX=g++-5 cmake ..
 vagrant@vagrant-ubuntu-precise-64:~$ make nanodbc
@@ -283,14 +283,14 @@ deemed "stable" based on suitable criteria.**
 
 [mit]:              http://opensource.org/licenses/MIT
 [author]:           http://github.com/lexicalunit
-[contributors]:     https://github.com/lexicalunit/nanodbc/graphs/contributors
+[contributors]:     https://github.com/nanodbc/nanodbc/graphs/contributors
 
-[nanodbc]:              http://lexicalunit.github.com/nanodbc/
+[nanodbc]:              http://nanodbc.io
 [nanodbc-banner]:       https://cloud.githubusercontent.com/assets/1903876/11858632/cc0e21e6-a428-11e5-9a84-39fa27984914.png
-[nanodbc-coverity]:     https://github.com/lexicalunit/nanodbc/tree/coverity_scan
-[nanodbc-makefile]:     https://github.com/lexicalunit/nanodbc/blob/gh-pages/Makefile
-[nanodbc-new-issue]:    https://github.com/lexicalunit/nanodbc/issues/new
-[nanodbc-releases]:     https://github.com/lexicalunit/nanodbc/releases
+[nanodbc-coverity]:     https://github.com/nanodbc/nanodbc/tree/coverity_scan
+[nanodbc-makefile]:     https://github.com/nanodbc/nanodbc/blob/gh-pages/Makefile
+[nanodbc-new-issue]:    https://github.com/nanodbc/nanodbc/issues/new
+[nanodbc-releases]:     https://github.com/nanodbc/nanodbc/releases
 
 [boost]:        http://www.boost.org/
 [boost-locale]: http://www.boost.org/doc/libs/release/libs/locale/
@@ -312,13 +312,13 @@ deemed "stable" based on suitable criteria.**
 [sqliteodbc]:   http://www.ch-werner.de/sqliteodbc/
 [vagrant]:      https://www.vagrantup.com/
 
-[travis]:               https://travis-ci.org/lexicalunit/nanodbc
-[travis-badge-latest]:  https://travis-ci.org/lexicalunit/nanodbc.svg?branch=latest
-[travis-badge-master]:  https://travis-ci.org/lexicalunit/nanodbc.svg?branch=master
-[travis-badge-release]: https://travis-ci.org/lexicalunit/nanodbc.svg?branch=release
+[travis]:               https://travis-ci.org/nanodbc/nanodbc
+[travis-badge-latest]:  https://travis-ci.org/nanodbc/nanodbc.svg?branch=latest
+[travis-badge-master]:  https://travis-ci.org/nanodbc/nanodbc.svg?branch=master
+[travis-badge-release]: https://travis-ci.org/nanodbc/nanodbc.svg?branch=release
 
-[appveyor]:         https://ci.appveyor.com/project/lexicalunit/nanodbc?branch=master
+[appveyor]:         https://ci.appveyor.com/project/nanodbc/nanodbc?branch=master
 [appveyor-badge]:   https://ci.appveyor.com/api/projects/status/71nb7l794n3i8vdj/branch/master?svg=true
 
-[coverity]:         https://scan.coverity.com/projects/lexicalunit-nanodbc
+[coverity]:         https://scan.coverity.com/projects/nanodbc-nanodbc
 [coverity-badge]:   https://scan.coverity.com/projects/7437/badge.svg
