@@ -282,7 +282,7 @@ deemed "stable" based on suitable criteria.**
 [MIT][mit] &copy; [lexicalunit, mloskot][authors] and [contributors][contributors].
 
 [mit]:              http://opensource.org/licenses/MIT
-[author]:           http://github.com/nanodbc
+[authors]:          https://github.com/orgs/nanodbc/people
 [contributors]:     https://github.com/nanodbc/nanodbc/graphs/contributors
 
 [nanodbc]:              http://nanodbc.io
