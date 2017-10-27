@@ -7,6 +7,7 @@
 #include <iostream>
 #include <random>
 #include <tuple>
+#include <locale>
 
 #if defined(_MSC_VER) && _MSC_VER <= 1800
 // These versions of Visual C++ do not yet support noexcept or override.
@@ -34,6 +35,7 @@
 #endif
 #include <sql.h>
 #include <sqlext.h>
+#include <locale>
 
 namespace nanodbc
 {
@@ -49,7 +51,10 @@ inline nanodbc::string convert(std::string const& in)
         sizeof(nanodbc::string::value_type) > 1,
         "NANODBC_ENABLE_UNICODE mode requires wide string");
     nanodbc::string out;
-#if defined(__GNUC__) && __GNUC__ < 5
+#ifdef NANODBC_ENABLE_BOOST
+    using boost::locale::conv::utf_to_utf;
+    out = utf_to_utf<nanodbc::string::value_type>(in.c_str(), in.c_str() + in.size());
+#elif defined(__GNUC__) && __GNUC__ < 5
     std::vector<wchar_t> characters(in.length());
     for (size_t i = 0; i < in.length(); i++)
         characters[i] = in[i];
@@ -77,7 +82,10 @@ inline std::string convert(nanodbc::string const& in)
 {
     static_assert(sizeof(nanodbc::string::value_type) > 1, "string must be wide");
     std::string out;
-#if defined(__GNUC__) && __GNUC__ < 5
+#ifdef NANODBC_ENABLE_BOOST
+    using boost::locale::conv::utf_to_utf;
+    out = utf_to_utf<char>(in.c_str(), in.c_str() + in.size());
+#elif defined(__GNUC__) && __GNUC__ < 5
     size_t size = mbsnrtowcs(nullptr, in.data(), in.length(), 0, nullptr);
     if (size == std::string::npos)
         throw std::range_error("UTF-8 -> UTF-16 conversion error");
@@ -330,22 +338,8 @@ struct base_test_fixture
             return nanodbc::string();
         value = env_value;
 #endif
-
 #ifdef NANODBC_ENABLE_UNICODE
-#ifdef NANODBC_ENABLE_BOOST
-        using boost::locale::conv::utf_to_utf;
-        return utf_to_utf<char16_t>(value.c_str(), value.c_str() + value.size());
-// Workaround for confirmed bug in VS2015 and VS2017 too
-// See: https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
-#elif defined(_MSC_VER) && (_MSC_VER >= 1900)
-        auto s =
-            std::wstring_convert<std::codecvt_utf8_utf16<int16_t>, int16_t>().from_bytes(value);
-        auto p = reinterpret_cast<char16_t const*>(s.data());
-        return nanodbc::string(p, p + s.size());
-#else
-        return std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>().from_bytes(
-            value);
-#endif
+		return nanodbc::test::convert(value);
 #else
         return value;
 #endif

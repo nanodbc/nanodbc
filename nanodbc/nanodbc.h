@@ -157,6 +157,18 @@ typedef std::string string;
 #define NANODBC_TEXT(s) s
 #endif
 
+#ifdef NANODBC_USE_IODBC_WIDE_STRINGS
+typedef std::u32string wide_string;
+#else
+#ifdef _MSC_VER
+typedef std::wstring wide_string;
+#else
+typedef std::u16string wide_string;
+#endif
+#endif
+
+typedef wide_string::value_type wide_char_t;
+
 #if defined(_WIN64)
 // LLP64 machine: Windows
 typedef std::int64_t null_type;
@@ -336,6 +348,28 @@ struct timestamp
     std::int16_t sec;   ///< Seconds after the minute.
     std::int32_t fract; ///< Fractional seconds.
 };
+
+/// \brief A type trait for testing if a type is a std::basic_string compatible with the current
+/// nanodbc configuration
+template <typename T>
+using is_string = std::integral_constant<
+    bool,
+    std::is_same<typename std::decay<T>::type, std::string>::value ||
+        std::is_same<typename std::decay<T>::type, wide_string>::value>;
+
+/// \brief A type trait for testing if a type is a character compatible with the current nanodbc
+/// configuration
+template <typename T>
+using is_character = std::integral_constant<
+    bool,
+    std::is_same<typename std::decay<T>::type, std::string::value_type>::value ||
+        std::is_same<typename std::decay<T>::type, wide_char_t>::value>;
+
+template <typename T>
+using enable_if_string = typename std::enable_if<is_string<T>::value>::type;
+
+template <typename T>
+using enable_if_character = typename std::enable_if<is_character<T>::value>::type;
 
 /// \}
 
@@ -822,9 +856,10 @@ public:
 
     /// \brief Binds multiple string values.
     /// \see bind_strings
+    template <class T, typename = enable_if_character<T>>
     void bind_strings(
         short param_index,
-        string::value_type const* values,
+        T const* values,
         std::size_t value_size,
         std::size_t batch_size,
         param_direction direction = PARAM_IN);
@@ -835,59 +870,71 @@ public:
     /// Longest string in the array determines maximum length of individual value.
     ///
     /// \see bind_strings
+    template <class T, typename = enable_if_string<T>>
     void bind_strings(
         short param_index,
-        std::vector<string> const& values,
+        std::vector<T> const& values,
         param_direction direction = PARAM_IN);
 
     /// \brief Binds multiple string values.
     /// \see bind_strings
-    template <std::size_t BatchSize, std::size_t ValueSize>
+    template <
+        std::size_t BatchSize,
+        std::size_t ValueSize,
+        class T,
+        typename = enable_if_character<T>>
     void bind_strings(
         short param_index,
-        string::value_type const (&values)[BatchSize][ValueSize],
+        T const (&values)[BatchSize][ValueSize],
         param_direction direction = PARAM_IN)
     {
-        auto param_values = reinterpret_cast<string::value_type const*>(values);
+        auto param_values = reinterpret_cast<T const*>(values);
         bind_strings(param_index, param_values, ValueSize, BatchSize, direction);
     }
 
     /// \brief Binds multiple string values.
     /// \see bind_strings
+    template <class T, typename = enable_if_character<T>>
     void bind_strings(
         short param_index,
-        string::value_type const* values,
+        T const* values,
         std::size_t value_size,
         std::size_t batch_size,
-        string::value_type const* null_sentry,
+        T const* null_sentry,
         param_direction direction = PARAM_IN);
 
     /// \brief Binds multiple string values.
     /// \see bind_strings
+    template <class T, typename = enable_if_string<T>>
     void bind_strings(
         short param_index,
-        std::vector<string> const& values,
-        string::value_type const* null_sentry,
+        std::vector<T> const& values,
+        typename T::value_type const* null_sentry,
         param_direction direction = PARAM_IN);
 
     /// \brief Binds multiple string values.
     /// \see bind_strings
-    template <std::size_t BatchSize, std::size_t ValueSize>
+    template <
+        std::size_t BatchSize,
+        std::size_t ValueSize,
+        class T,
+        typename = enable_if_character<T>>
     void bind_strings(
         short param_index,
-        string::value_type const (&values)[BatchSize][ValueSize],
-        string::value_type const* null_sentry,
+        T const (&values)[BatchSize][ValueSize],
+        T const* null_sentry,
         param_direction direction = PARAM_IN)
     {
-        auto param_values = reinterpret_cast<string::value_type const*>(values);
+        auto param_values = reinterpret_cast<T const*>(values);
         bind_strings(param_index, param_values, ValueSize, BatchSize, null_sentry, direction);
     }
 
     /// \brief Binds multiple string values.
     /// \see bind_strings
+    template <class T, typename = enable_if_character<T>>
     void bind_strings(
         short param_index,
-        string::value_type const* values,
+        T const* values,
         std::size_t value_size,
         std::size_t batch_size,
         bool const* nulls,
@@ -895,22 +942,27 @@ public:
 
     /// \brief Binds multiple string values.
     /// \see bind_strings
+    template <class T, typename = enable_if_string<T>>
     void bind_strings(
         short param_index,
-        std::vector<string> const& values,
+        std::vector<T> const& values,
         bool const* nulls,
         param_direction direction = PARAM_IN);
 
     /// \brief Binds multiple string values.
     /// \see bind_strings
-    template <std::size_t BatchSize, std::size_t ValueSize>
+    template <
+        std::size_t BatchSize,
+        std::size_t ValueSize,
+        class T,
+        typename = enable_if_character<T>>
     void bind_strings(
         short param_index,
-        string::value_type const (&values)[BatchSize][ValueSize],
+        T const (&values)[BatchSize][ValueSize],
         bool const* nulls,
         param_direction direction = PARAM_IN)
     {
-        auto param_values = reinterpret_cast<string::value_type const*>(values);
+        auto param_values = reinterpret_cast<T const*>(values);
         bind_strings(param_index, param_values, ValueSize, BatchSize, nulls, direction);
     }
 
