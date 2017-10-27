@@ -877,6 +877,29 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(results.get<nanodbc::string>(0) == NANODBC_TEXT("-1.333"));
     }
 
+    template <class T>
+    void test_decimal_to_integral_conversion_template()
+    {
+        nanodbc::connection connection = connect();
+        nanodbc::result results;
+        drop_table(connection, NANODBC_TEXT("test_decimal_conversion"));
+        execute(
+            connection, NANODBC_TEXT("create table test_decimal_conversion (d decimal(9, 3));"));
+        execute(
+            connection, NANODBC_TEXT("insert into test_decimal_conversion values (12345.987);"));
+        execute(connection, NANODBC_TEXT("insert into test_decimal_conversion values (5.600);"));
+        execute(connection, NANODBC_TEXT("insert into test_decimal_conversion values (1.000);"));
+        results = execute(
+            connection, NANODBC_TEXT("select * from test_decimal_conversion order by 1 desc;"));
+
+        REQUIRE(results.next());
+        REQUIRE(results.get<T>(0) == static_cast<T>(12345.987));
+        REQUIRE(results.next());
+        REQUIRE(results.get<T>(0) == static_cast<T>(5.6));
+        REQUIRE(results.next());
+        REQUIRE(results.get<T>(0) == static_cast<T>(1.0));
+    }
+
     void test_driver()
     {
         auto const driver_name = connection_string_parameter(NANODBC_TEXT("DRIVER"));
@@ -1039,6 +1062,7 @@ struct test_case_fixture : public base_test_fixture
             Fixture fixture;
             using type = typename std::tuple_element<i, TypeList>::type;
             fixture.template test_integral_template<type>();
+            fixture.template test_decimal_to_integral_conversion_template<type>();
             foreach
                 <Fixture, TypeList, i - 1>::run();
         }
@@ -1052,6 +1076,7 @@ struct test_case_fixture : public base_test_fixture
             Fixture fixture;
             using type = typename std::tuple_element<0, TypeList>::type;
             fixture.template test_integral_template<type>();
+            fixture.template test_decimal_to_integral_conversion_template<type>();
         }
     };
 
