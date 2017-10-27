@@ -4,7 +4,9 @@
 #include <nanodbc/nanodbc.h>
 
 #include <cassert>
+#include <fstream>
 #include <iostream>
+#include <sstream>
 #include <random>
 #include <tuple>
 #include <locale>
@@ -122,6 +124,7 @@ struct Config
     }
 
     std::string connection_string_;
+    std::string data_path_;
 };
 
 }} // namespace nanodbc::test
@@ -146,11 +149,16 @@ struct base_test_fixture
     };
 
     base_test_fixture()
-        : connection_string_(cfg.get_connection_string())
+        : connection_string_{cfg.get_connection_string()}
+        , data_path_(cfg.data_path_)
     {
         // Connection string not specified in command line, try environment variable
         if (connection_string_.empty())
             connection_string_ = get_env("TEST_NANODBC_CONNSTR");
+
+        // Path to data folder with data files used in some tests
+        if (data_path_.empty())
+            nanodbc::test::convert(get_env("TEST_NANODBC_DATADIR"));
     }
 
     virtual ~base_test_fixture() NANODBC_NOEXCEPT {}
@@ -158,6 +166,7 @@ struct base_test_fixture
     // Utilities
 
     nanodbc::string connection_string_;
+    std::string data_path_;
 
     database_vendor vendor_ = database_vendor::unknown;
 
@@ -311,7 +320,26 @@ struct base_test_fixture
         REQUIRE(results.get<int>(0) == rows);
     }
 
-    static std::string to_hex_string(std::vector<std::uint8_t> const& bytes)
+    static auto from_hex(std::string const& hex) -> std::vector<std::uint8_t>
+    {
+        if (0 != hex.size() % 2)
+            throw std::runtime_error("invalid lenght of hex string");
+
+        std::string::size_type const nchars = 2;
+        std::string::size_type const nbytes = hex.size() / nchars;
+        std::vector<std::uint8_t> bytes(nbytes);
+        for (std::string::size_type i = 0; i < nbytes; ++i)
+        {
+            std::istringstream iss(hex.substr(i * nchars, nchars));
+            unsigned int n(0);
+            if (!(iss >> std::hex >> n))
+                throw std::runtime_error("hex to binary failed");
+            bytes[i] = static_cast<std::uint8_t>(n);
+        }
+        return bytes;
+    }
+
+    static auto to_hex(std::vector<std::uint8_t> const& bytes) -> std::string
     {
         std::ostringstream ss;
         ss << std::hex << std::setfill('0') << std::uppercase;
@@ -319,6 +347,35 @@ struct base_test_fixture
             ss << std::setw(2) << static_cast<int>(b);
         return ss.str();
     }
+
+    static auto read_text_file(std::string const& filename) -> std::string
+    {
+        std::ifstream infile;
+        infile.open(filename);
+        std::string buffer;
+        infile >> buffer;
+
+        auto beg = buffer.begin();
+        while (*beg == ' ' || *beg == '\0')
+            ++beg;
+        auto end = buffer.end() - 1;
+        while (*end == ' ' || *end == '\0')
+            --end;
+        return {beg, end + 1};
+    }
+
+    auto get_data_path(std::string const& leaf) -> std::string
+    {
+#ifdef _WIN32
+#define NANODBC_SEP '\\'
+#else
+#define NANODBC_SEP '/'
+#endif
+        return data_path_ + NANODBC_SEP + leaf;
+
+#undef NANODBC_SEP
+    }
+
 
     nanodbc::string get_env(char const* var) const
     {

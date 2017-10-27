@@ -93,6 +93,16 @@
 #define SQL_NVARCHAR (-10)
 #endif
 
+// SQL_SS_LENGTH_UNLIMITED is used to describe the max length of
+// VARCHAR(max), VARBINARY(max), NVARCHAR(max), and XML columns
+#ifndef SQL_SS_LENGTH_UNLIMITED
+#define SQL_SS_LENGTH_UNLIMITED (0)
+#endif
+
+// Max length of DBVARBINARY and DBVARCHAR, etc. +1 for zero byte
+// MSDN: Large value data types are those that exceed the maximum row size of 8 KB
+#define SQLSERVER_DBMAXCHAR (8000 + 1)
+
 // Default to ODBC version defined by NANODBC_ODBC_VERSION if provided.
 #ifndef NANODBC_ODBC_VERSION
 #ifdef SQL_OV_ODBC3_80
@@ -1777,7 +1787,25 @@ public:
     template <class T, typename std::enable_if<!is_character<T>::value, int>::type = 0>
     void bind_parameter(bound_parameter const& param, bound_buffer<T>& buffer)
     {
-        auto const buffer_size = buffer.value_size_ > 0 ? buffer.value_size_ : param.size_;
+        NANODBC_ASSERT(buffer.value_size_ > 0 || param.size_ > 0);
+
+        auto value_size{buffer.value_size_};
+        if (value_size == 0)
+            value_size = param.size_;
+
+        auto param_size{param.size_};
+        if (value_size > param_size)
+        {
+            // Parameter size reported by SQLDescribeParam for Large Objects:
+            // - For SQL VARBINARY(MAX), it is Zero which actually means SQL_SS_LENGTH_UNLIMITED.
+            // - For SQL UDT (eg. GEOMETRY), it may be driver-specific max limit (eg. SQL Server is
+            // DBMAXCHAR=8000 bytes).
+            // See MSDN for details
+            // https://docs.microsoft.com/en-us/sql/relational-databases/native-client/odbc/large-clr-user-defined-types-odbc
+            //
+            // If bound value is larger than parameter size, we force SQL_SS_LENGTH_UNLIMITED.
+            param_size = SQL_SS_LENGTH_UNLIMITED;
+        }
 
         RETCODE rc;
         NANODBC_CALL_RC(
@@ -1788,10 +1816,10 @@ public:
             param.iotype_,       // input or output type
             sql_ctype<T>::value, // value type
             param.type_,         // parameter type
-            param.size_,         // column size ignored for many types, but needed for strings
+            param_size,          // column size ignored for many types, but needed for strings
             param.scale_,        // decimal digits
             (SQLPOINTER)buffer.values_, // parameter value
-            buffer_size,                // buffer length
+            value_size,          // buffer length
             bind_len_or_null_[param.index_].data());
 
         if (!success(rc))
