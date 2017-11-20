@@ -28,7 +28,7 @@ message(STATUS "nanodbc version: ${NANODBC_VERSION}")
 ########################################
 ## require and enable C++0x/11/14
 ########################################
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 message(STATUS "nanodbc compile: C++${CMAKE_CXX_STANDARD}")
