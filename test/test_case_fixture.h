@@ -1,6 +1,8 @@
 #ifndef NANODBC_TEST_CASE_FIXTURE_H
 #define NANODBC_TEST_CASE_FIXTURE_H
 
+#include <set>
+
 #include "base_test_fixture.h"
 
 #ifdef _MSC_VER
