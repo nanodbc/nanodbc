@@ -335,7 +335,7 @@ deemed "stable" based on suitable criteria.**
 [travis-badge-release]: https://travis-ci.org/nanodbc/nanodbc.svg?branch=release
 
 [appveyor]:         https://ci.appveyor.com/project/nanodbc/nanodbc?branch=master
-[appveyor-badge]:   https://ci.appveyor.com/api/projects/status/55qg2hx0g7ma5n3r/branch/master?svg=true
+[appveyor-badge]:   https://ci.appveyor.com/api/projects/status/pvgwgg3qgdcnylp1/branch/master?svg=true
 
 [coverity]:         https://scan.coverity.com/projects/nanodbc-nanodbc
 [coverity-badge]:   https://scan.coverity.com/projects/7437/badge.svg
