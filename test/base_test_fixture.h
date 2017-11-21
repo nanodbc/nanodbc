@@ -3,6 +3,8 @@
 
 #include <nanodbc/nanodbc.h>
 
+#include <catch.hpp>
+
 #include <cassert>
 #include <fstream>
 #include <iomanip>
