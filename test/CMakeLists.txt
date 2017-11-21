@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.0.0)
-include(ExternalProject)
+# nanodbc tests build configuration
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
   # Workaround for Travis CI + Catch: `error: ignoring #pragma gcc diagnostic`
@@ -11,21 +10,18 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=parentheses")
 endif()
 
-find_package(Git REQUIRED)
-ExternalProject_Add(
-  catch
-  PREFIX ${CMAKE_BINARY_DIR}/catch
-  GIT_REPOSITORY https://github.com/philsquared/Catch.git
-  TIMEOUT 10
-  UPDATE_COMMAND ${GIT_EXECUTABLE} pull
-  CONFIGURE_COMMAND ""
-  BUILD_COMMAND ""
-  INSTALL_COMMAND ""
-  LOG_DOWNLOAD ON)
-ExternalProject_Get_Property(catch source_dir)
-set(CATCH_INCLUDE_DIR ${source_dir}/include CACHE INTERNAL "Path to include folder for Catch")
+# Download Catch single header
+message(STATUS "nanodbc build: Downloading Catch2 test framework header")
+file(DOWNLOAD
+  https://github.com/catchorg/Catch2/releases/download/v2.0.1/catch.hpp
+  ${CMAKE_BINARY_DIR}/catch/catch.hpp)
 
-include_directories(${CMAKE_SOURCE_DIR} ${CATCH_INCLUDE_DIR} ${ODBC_INCLUDE_DIR})
+# Prepare "Catch" library for other executables
+set(CATCH_INCLUDE_DIR ${CMAKE_BINARY_DIR}/catch)
+add_library(Catch INTERFACE)
+target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
+
+include_directories(${CMAKE_SOURCE_DIR} ${ODBC_INCLUDE_DIR})
 link_directories(${CMAKE_BINARY_DIR}/lib)
 file(GLOB headers *.h *.hpp)
 add_custom_target(tests DEPENDS tests catch)
@@ -52,11 +48,10 @@ endif()
 foreach(test_item ${test_list})
   set(test_name ${test_item}_tests)
   add_executable(${test_name} main.cpp ${test_item}_test.cpp ${headers})
-  add_dependencies(${test_name} catch)
   if (BUILD_SHARED_LIBS)
-    target_link_libraries(${test_name} nanodbc "${ODBC_LINK_FLAGS}")
+    target_link_libraries(${test_name} nanodbc Catch "${ODBC_LINK_FLAGS}")
   else()
-    target_link_libraries(${test_name} nanodbc ${ODBC_LIBRARIES})
+    target_link_libraries(${test_name} nanodbc Catch ${ODBC_LIBRARIES})
   endif()
   set_target_properties(${test_name}
     PROPERTIES

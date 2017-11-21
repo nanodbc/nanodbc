@@ -1,6 +1,5 @@
 #define CATCH_CONFIG_RUNNER
-#include "catch.hpp"
-#include "external/clara.h"
+#include <catch.hpp>
 #include <string>
 
 // clang-format off
@@ -14,14 +13,24 @@ int main(int argc, char* argv[])
     try
     {
         // Specify custom command line options
-        auto args = Clara::argsToVector(argc, argv);
-        Clara::CommandLine<nanodbc::test::Config> cli;
-        cli["-c"]["--connection-string"]
-            .describe("connection string to test database; if not specified, "
-                      "an attempt will be made to read it from environment variables: "
-                      "NANODBC_TEST_CONNSTR or NANODBC_TEST_CONNSTR_<DB>")
-            .bind(&nanodbc::test::Config::connection_string_, "string");
-        cli.parseInto(args, cfg);
+        auto cli
+            = Catch::clara::Help(cfg.show_help_)
+            | Catch::clara::Opt(cfg.connection_string_, "connection")
+                ["-c"]["--connection-string"]
+                ("connection string to test database; if not specified, "
+                "an attempt will be made to read it from environment variables: "
+                 "NANODBC_TEST_CONNSTR or NANODBC_TEST_CONNSTR_<DB>");
+        auto parse_result = cli.parse(Catch::clara::Args(argc, argv));
+        if (!parse_result)
+        {
+            Catch::cerr()
+                << Catch::Colour(Catch::Colour::Red)
+                << "\nError(s) in input:\n"
+                << Catch::Column(parse_result.errorMessage()).indent(2)
+                << "\n\n";
+            Catch::cerr() << "Run with -? for usage\n" << std::endl;
+            return EXIT_FAILURE;
+        }
 
         // Disable custom options to avoid Catch warnings or failures
         for (int i = 1; i < argc; ++i)
@@ -34,25 +43,35 @@ int main(int argc, char* argv[])
         }
 
         Catch::Session session;
-        int result = session.applyCommandLine(argc, argv);
-        if (result != 0)
-            return EXIT_FAILURE;
-
-        if (session.config().showHelp())
+        if (cfg.show_help_)
         {
-            Catch::cerr() << "ERROR: nanodbc test expected connection string\n\n";
-            cli.usage(Catch::cout(), argv[0]);
-            session.showHelp(argv[0]);
+            session.showHelp();
+
+            Catch::cerr()
+                << Catch::Colour(Catch::Colour::Yellow)
+                << "nanodbc\n"
+                << cli << std::endl;
+
             return EXIT_FAILURE;
         }
 
+        if (session.applyCommandLine(argc, argv) != 0)
+            return EXIT_FAILURE;
+
         // Run tests
-        result = session.run(argc, argv);
-        return result;
+        return session.run(argc, argv);
     }
     catch (std::exception const& e)
     {
-        Catch::cerr() << "ERROR: uncaught exception:\n";
-        Catch::cerr() << e.what() << '\n';
+        Catch::cerr()
+            << Catch::Colour(Catch::Colour::Red)
+            << "\nError(s):\n"
+            << e.what() << '\n';
+    }
+    catch (...)
+    {
+        Catch::cerr()
+            << Catch::Colour(Catch::Colour::Red)
+            << "\nError(s): uncaught exception\n";
     }
 }

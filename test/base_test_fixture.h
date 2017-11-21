@@ -5,6 +5,7 @@
 
 #include <cassert>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <random>
@@ -125,6 +126,7 @@ struct Config
 
     std::string connection_string_;
     std::string data_path_;
+    bool show_help_{false};
 };
 
 }} // namespace nanodbc::test
