@@ -1,6 +1,5 @@
-#include "catch.hpp"
+#include "test_case_fixture.h"
 
-#include "test/test_case_fixture.h"
 #include <cstdio>
 #include <cstdlib>
 #include <string>

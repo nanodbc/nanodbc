@@ -1,8 +1,4 @@
-#include "catch.hpp"
-
-#include "test/test_case_fixture.h"
-#include <cstdio>
-#include <cstdlib>
+#include "test_case_fixture.h"
 
 namespace
 {

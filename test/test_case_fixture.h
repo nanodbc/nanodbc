@@ -3,10 +3,13 @@
 
 #include "base_test_fixture.h"
 
-#include <catch.hpp>
-
 #include <algorithm>
+#include <cstdint>
+#include <limits>
+#include <random>
 #include <set>
+#include <tuple>
+#include <vector>
 
 #ifdef _MSC_VER
 #pragma warning(push)

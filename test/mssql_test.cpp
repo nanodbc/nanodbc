@@ -1,8 +1,10 @@
-#include "catch.hpp"
+#include "test_case_fixture.h"
 
-#include "test/test_case_fixture.h"
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <string>
+#include <vector>
 
 #ifdef _MSC_VER
 #include <atlsafe.h>

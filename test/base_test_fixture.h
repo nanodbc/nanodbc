@@ -1,9 +1,9 @@
 ﻿#ifndef NANODBC_TEST_BASE_FIXTURE_H
 #define NANODBC_TEST_BASE_FIXTURE_H
 
-#include <nanodbc/nanodbc.h>
+#include "catch/catch.hpp"
 
-#include <catch.hpp>
+#include <nanodbc/nanodbc.h>
 
 #include <algorithm>
 #include <cassert>
@@ -11,8 +11,6 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <random>
-#include <tuple>
 #include <locale>
 
 #if defined(_MSC_VER) && _MSC_VER <= 1800
