@@ -1,6 +1,6 @@
 version: 1.0.{build}
 
-os: Visual Studio 2015
+os: Visual Studio 2017
 
 platform: x64
 
@@ -26,40 +26,42 @@ environment:
   matrix:
     - DB: MSSQL2016
       G: "Visual Studio 15 2017 Win64"
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     - DB: MSSQL2016
       G: "Visual Studio 15 2017 Win64"
       ENABLE_UNICODE: ON
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
 
     - DB: MSSQL2014
-      G: "Visual Studio 14 2015 Win64"
+      G: "Visual Studio 15 2017 Win64"
     - DB: MSSQL2014
-      G: "Visual Studio 14 2015 Win64"
+      G: "Visual Studio 15 2017 Win64"
       ENABLE_UNICODE: ON
 
     - DB: MSSQL2012
       G: "Visual Studio 14 2015 Win64"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
     - DB: MSSQL2012
       G: "Visual Studio 14 2015 Win64"
       ENABLE_UNICODE: ON
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
 
     - DB: MSSQL2008
       G: "Visual Studio 14 2015 Win64"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
     - DB: MSSQL2008
       G: "Visual Studio 14 2015 Win64"
       ENABLE_UNICODE: ON
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
 
     - DB: MySQL
-      G: "Visual Studio 14 2015 Win64"
+      G: "Visual Studio 15 2017 Win64"
 
     - DB: PostgreSQL
-      G: "Visual Studio 14 2015 Win64"
+      G: "Visual Studio 15 2017 Win64"
 
     - DB: SQLite
-      G: "Visual Studio 14 2015 Win64"
+      G: "Visual Studio 15 2017 Win64"
     - DB: SQLite
-      G: "Visual Studio 14 2015"
+      G: "Visual Studio 15 2017"
 
     - DB: SQLite
       G: "MinGW Makefiles"
@@ -68,10 +70,8 @@ environment:
 
     - G: "Visual Studio 15 2017 Win64"
       ANALYSIS: "/p:RunCodeAnalysis=true /p:EnableCppCoreCheck=true"
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     - G: "Visual Studio 15 2017"
       ANALYSIS: "/p:RunCodeAnalysis=true /p:EnableCppCoreCheck=true"
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
 
 matrix:
   allow_failures:
