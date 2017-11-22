@@ -159,7 +159,7 @@ before_test:
           Start-Service postgresql-x64-9.5
           $env:PGUSER="postgres"
           $env:PGPASSWORD="Password12!"
-          $cmd = '"C:\Program Files\PostgreSQL\9.3\bin\createdb" nanodbc_test'
+          $cmd = '"C:\Program Files\PostgreSQL\9.6\bin\createdb" nanodbc_test'
           iex "& $cmd"
         }
       }
