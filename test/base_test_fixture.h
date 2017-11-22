@@ -5,6 +5,7 @@
 
 #include <catch.hpp>
 
+#include <algorithm>
 #include <cassert>
 #include <fstream>
 #include <iomanip>
