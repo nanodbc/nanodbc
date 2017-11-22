@@ -10,14 +10,8 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=parentheses")
 endif()
 
-# Download Catch single header
-message(STATUS "nanodbc build: Downloading Catch2 test framework header")
-file(DOWNLOAD
-  https://github.com/catchorg/Catch2/releases/download/v2.0.1/catch.hpp
-  ${CMAKE_BINARY_DIR}/catch/catch.hpp)
-
 # Prepare "Catch" library for other executables
-set(CATCH_INCLUDE_DIR ${CMAKE_BINARY_DIR}/catch)
+set(CATCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(Catch INTERFACE)
 target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
 
