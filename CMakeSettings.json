@@ -20,7 +20,7 @@
       "buildRoot": "${env.BuildDir}\\${name}",
       "installRoot": "${env.InstallDir}\\${name}",
       "cmakeCommandArgs": "",
-      "buildCommandArgs": "-v -p:PreferredToolArchitecture=x64",
+      "buildCommandArgs": "-v",
       "ctestCommandArgs": ""
     },
     {
@@ -31,7 +31,7 @@
       "buildRoot": "${env.BuildDir}\\${name}",
       "installRoot": "${env.InstallDir}\\${name}",
       "cmakeCommandArgs": "",
-      "buildCommandArgs": "-v -p:PreferredToolArchitecture=x64",
+      "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
       "variables": [
         {
@@ -48,7 +48,7 @@
       "buildRoot": "${env.BuildDir}\\${name}",
       "installRoot": "${env.InstallDir}\\${name}",
       "cmakeCommandArgs": "",
-      "buildCommandArgs": "-v -p:PreferredToolArchitecture=x64",
+      "buildCommandArgs": "-v",
       "ctestCommandArgs": ""
     },
     {
@@ -59,7 +59,7 @@
       "buildRoot": "${env.BuildDir}\\${name}",
       "installRoot": "${env.InstallDir}\\${name}",
       "cmakeCommandArgs": "",
-      "buildCommandArgs": "-v -p:PreferredToolArchitecture=x64",
+      "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
       "variables": [
         {
@@ -76,7 +76,7 @@
       "buildRoot": "${env.BuildDir}\\${name}",
       "installRoot": "${env.InstallDir}\\${name}",
       "cmakeCommandArgs": "",
-      "buildCommandArgs": "-v -p:PreferredToolArchitecture=x64",
+      "buildCommandArgs": "-v",
       "ctestCommandArgs": ""
     },
     {
@@ -87,7 +87,7 @@
       "buildRoot": "${env.BuildDir}\\${name}",
       "installRoot": "${env.InstallDir}\\${name}",
       "cmakeCommandArgs": "",
-      "buildCommandArgs": "-v -p:PreferredToolArchitecture=x64",
+      "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
       "variables": [
         {
@@ -104,7 +104,7 @@
       "buildRoot": "${env.BuildDir}\\${name}",
       "installRoot": "${env.InstallDir}\\${name}",
       "cmakeCommandArgs": "",
-      "buildCommandArgs": "-v -p:PreferredToolArchitecture=x64",
+      "buildCommandArgs": "-v",
       "ctestCommandArgs": ""
     },
     {
@@ -115,7 +115,7 @@
       "buildRoot": "${env.BuildDir}\\${name}",
       "installRoot": "${env.InstallDir}\\${name}",
       "cmakeCommandArgs": "",
-      "buildCommandArgs": "-v -p:PreferredToolArchitecture=x64",
+      "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
       "variables": [
         {
