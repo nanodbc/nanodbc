@@ -167,7 +167,11 @@ TEST_CASE_METHOD(mssql_fixture, "test_large_blob", "[mssql][blob][binary][varbin
 
 TEST_CASE_METHOD(mssql_fixture, "test_large_blob_geometry", "[mssql][blob][binary][varbinary][geometry]")
 {
-    // NOTE: SQL Server 2008 or later providers geospatial support with GEOMETRY type
+    if (get_env("DB") == NANODBC_TEXT("MSSQL2008"))
+    {
+        WARN("test_large_blob_geometry skipped on AppVeyor with SQL Server 2008");
+        return;
+    }
 
     std::vector<std::uint8_t> blob;
     {
