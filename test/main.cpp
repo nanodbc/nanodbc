@@ -22,7 +22,9 @@ int main(int argc, char* argv[])
                 ["-z"]["--connection-string"]
                 ("connection string to test database; if not specified, "
                 "an attempt will be made to read it from environment variables: "
-                 "NANODBC_TEST_CONNSTR or NANODBC_TEST_CONNSTR_<DB>");
+                 "NANODBC_TEST_CONNSTR or NANODBC_TEST_CONNSTR_<DB>")
+            | Catch::clara::Arg(cfg.test_, "test")
+                ("test name|pattern|tags to run");
         auto parse_result = cli.parse(Catch::clara::Args(argc, argv));
         if (!parse_result)
         {

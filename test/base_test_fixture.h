@@ -127,6 +127,7 @@ struct Config
 
     std::string connection_string_;
     std::string data_path_;
+    std::string test_; // if set, itis test name, pattern or tags
     bool show_help_{false};
 };
 
