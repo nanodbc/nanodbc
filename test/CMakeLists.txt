@@ -55,6 +55,8 @@ foreach(test_item ${test_list})
   set_tests_properties(${test_name} PROPERTIES
     ENVIRONMENT "TEST_NANODBC_DATADIR=${CMAKE_CURRENT_SOURCE_DIR}/data")
 
+  add_definitions(-DNANODBC_TEST_DATA="${CMAKE_CURRENT_SOURCE_DIR}/data")
+
   if(NOT CMAKE_GENERATOR MATCHES "^Visual Studio")
     add_custom_target(${test_item}_test
       COMMAND ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure -R ${test_name})

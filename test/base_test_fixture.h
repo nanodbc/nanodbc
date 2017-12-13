@@ -162,7 +162,7 @@ struct base_test_fixture
 
         // Path to data folder with data files used in some tests
         if (data_path_.empty())
-            nanodbc::test::convert(get_env("TEST_NANODBC_DATADIR"));
+            data_path_ = nanodbc::test::convert(get_env("TEST_NANODBC_DATADIR"));
     }
 
     virtual ~base_test_fixture() NANODBC_NOEXCEPT {}
