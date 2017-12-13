@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
         auto cli
             = Catch::clara::Help(cfg.show_help_)
             | Catch::clara::Opt(cfg.connection_string_, "connection")
-                ["-c"]["--connection-string"]
+                ["-z"]["--connection-string"]
                 ("connection string to test database; if not specified, "
                 "an attempt will be made to read it from environment variables: "
                  "NANODBC_TEST_CONNSTR or NANODBC_TEST_CONNSTR_<DB>");
@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
         // Disable custom options to avoid Catch warnings or failures
         for (int i = 1; i < argc; ++i)
         {
-            if (strcmp(argv[i], "-c") == 0 || strcmp(argv[i], "--connection-string") == 0)
+            if (strcmp(argv[i], "-z") == 0 || strcmp(argv[i], "--connection-string") == 0)
             {
                 *argv[i++] = 0;
                 *argv[i] = 0;
@@ -77,4 +77,5 @@ int main(int argc, char* argv[])
             << Catch::Colour(Catch::Colour::Red)
             << "\nError(s): uncaught exception\n";
     }
+    return EXIT_FAILURE;
 }
