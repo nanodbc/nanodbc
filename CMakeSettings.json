@@ -1,0 +1,128 @@
+{
+  // CMakeSettings.json for CMake integration with Visual Studio 2017
+  // See https://go.microsoft.com//fwlink//?linkid=834763 for more information about this file.
+
+  "environments": [
+    {
+      "BuildDir": "${workspaceRoot}\\_build"
+    },
+    {
+      "InstallDir": "${workspaceRoot}\\_install"
+    }
+  ],
+
+  "configurations": [
+    {
+      "name": "x86-Debug",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "buildRoot": "${env.BuildDir}\\${name}",
+      "installRoot": "${env.InstallDir}\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-v -p:PreferredToolArchitecture=x64",
+      "ctestCommandArgs": ""
+    },
+    {
+      "name": "x86-Debug-Unicode",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "buildRoot": "${env.BuildDir}\\${name}",
+      "installRoot": "${env.InstallDir}\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-v -p:PreferredToolArchitecture=x64",
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "NANODBC_ENABLE_UNICODE",
+          "value": "ON"
+        }
+      ]
+    },
+    {
+      "name": "x86-Release",
+      "generator": "Ninja",
+      "configurationType": "RelWithDebInfo",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "buildRoot": "${env.BuildDir}\\${name}",
+      "installRoot": "${env.InstallDir}\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-v -p:PreferredToolArchitecture=x64",
+      "ctestCommandArgs": ""
+    },
+    {
+      "name": "x86-Release-Unicode",
+      "generator": "Ninja",
+      "configurationType": "RelWithDebInfo",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "buildRoot": "${env.BuildDir}\\${name}",
+      "installRoot": "${env.InstallDir}\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-v -p:PreferredToolArchitecture=x64",
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "NANODBC_ENABLE_UNICODE",
+          "value": "ON"
+        }
+      ]
+    },
+    {
+      "name": "x64-Debug",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "buildRoot": "${env.BuildDir}\\${name}",
+      "installRoot": "${env.InstallDir}\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-v -p:PreferredToolArchitecture=x64",
+      "ctestCommandArgs": ""
+    },
+    {
+      "name": "x64-Debug-Unicode",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "buildRoot": "${env.BuildDir}\\${name}",
+      "installRoot": "${env.InstallDir}\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-v -p:PreferredToolArchitecture=x64",
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "NANODBC_ENABLE_UNICODE",
+          "value": "ON"
+        }
+      ]
+    },
+    {
+      "name": "x64-Release",
+      "generator": "Ninja",
+      "configurationType": "RelWithDebInfo",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "buildRoot": "${env.BuildDir}\\${name}",
+      "installRoot": "${env.InstallDir}\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-v -p:PreferredToolArchitecture=x64",
+      "ctestCommandArgs": ""
+    },
+    {
+      "name": "x64-Release-Unicode",
+      "generator": "Ninja",
+      "configurationType": "RelWithDebInfo",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "buildRoot": "${env.BuildDir}\\${name}",
+      "installRoot": "${env.InstallDir}\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-v -p:PreferredToolArchitecture=x64",
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "NANODBC_ENABLE_UNICODE",
+          "value": "ON"
+        }
+      ]
+    }
+  ]
+}
