@@ -325,7 +325,7 @@ struct base_test_fixture
 
     static auto from_hex(std::string const& hex) -> std::vector<std::uint8_t>
     {
-        if (0 != hex.size() % 2)
+        if (hex.empty() || 0 != hex.size() % 2)
             throw std::runtime_error("invalid lenght of hex string");
 
         std::string::size_type const nchars = 2;
@@ -357,6 +357,7 @@ struct base_test_fixture
         infile.open(filename);
         std::string buffer;
         infile >> buffer;
+        if (buffer.empty()) return {};
 
         auto beg = buffer.begin();
         while (*beg == ' ' || *beg == '\0')
