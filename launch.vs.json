@@ -1,0 +1,39 @@
+{
+  // launch.vs.json with reasonable defaults for CMake integration with Visual Studio 2017
+  // See https://aka.ms/cmake for more information about this file.
+
+  "version": "0.2.1",
+  "defaults": {},
+  "configurations": [
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "mssql_tests.exe (test\\mssql_tests.exe)",
+      "name": "mssql_tests.exe (test\\mssql_tests.exe)",
+      "args": [
+        "-z",
+        "\"Driver={ODBC Driver 11 for SQL Server};Server=(localdb)\\MSSQL13DEV;Integrated Security=True;Database=nanodbc;MARS_Connection=Yes;\""
+      ]
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "postgresql_tests.exe (test\\postgresql_tests.exe)",
+      "name": "postgresql_tests.exe (test\\postgresql_tests.exe)",
+      "args": [
+        "-z",
+        "\"Driver={PostgreSQL Unicode(x64)};Server=localhost;Port=5432;Database=nanodbc;UID=nanodbc;PWD=nanodbc;\""
+      ]
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "mysql_tests.exe (test\\mysql_tests.exe)",
+      "name": "mysql_tests.exe (test\\mysql_tests.exe)",
+      "args": [
+        "-z",
+        "\"Driver={MySQL ODBC 5.3 Unicode Driver};Server=localhost;Port=3306;Database=nanodbc;User=root;Password=nanodbc;Option=3;\""
+      ]
+    }
+  ]
+}
