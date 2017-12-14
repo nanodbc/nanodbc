@@ -67,6 +67,7 @@ environment:
       G: "MinGW Makefiles"
       P: x86-64
       DISABLE_ASYNC: ON
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
 
     - G: "Visual Studio 15 2017 Win64"
       ANALYSIS: "/p:RunCodeAnalysis=true /p:EnableCppCoreCheck=true"
