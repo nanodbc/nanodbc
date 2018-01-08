@@ -20,7 +20,7 @@ You can build nanodbc library, build and run tests using `CMake`_.
 
 .. code-block:: console
 
-  git clone https://github.com/lexicalunit/nanodbc.git
+  git clone https://github.com/nanodbc/nanodbc.git
   cd nanodbc
   mkdir build
   cd build
@@ -135,7 +135,7 @@ This section aim to list all known binary packages of nanodbc.
 
 If you maintain binary package of nanodbc and you'd like to list it here,
 please submit new entry via pull request or
-`open an issue <https://github.com/lexicalunit/nanodbc/issues/new>`_
+`open an issue <https://github.com/nanodbc/nanodbc/issues/new>`_
 
 Windows
 ==============================================================================

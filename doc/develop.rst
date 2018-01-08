@@ -12,9 +12,9 @@ nanodbc is an Open Source Software and very accepting of bug fixes
 and new features.
 
 Please consider contributing any changes you make via
-`pull requests <https://github.com/lexicalunit/nanodbc/pulls>`_
+`pull requests <https://github.com/nanodbc/nanodbc/pulls>`_
 or reporting any
-`issues <https://github.com/lexicalunit/nanodbc/issues>`_ you might have.
+`issues <https://github.com/nanodbc/nanodbc/issues>`_ you might have.
 
 Cheers!
 
@@ -31,10 +31,10 @@ handles all C++ code formatting for nanodbc.
 This utility is `brew-installable <https://brew.sh/>`_ on OS X
 (``brew install clang-format``) and is available on all major platforms.
 
-See our `.clang-format <https://github.com/lexicalunit/nanodbc/blob/master/.clang-format>`_
+See our `.clang-format <https://github.com/nanodbc/nanodbc/blob/master/.clang-format>`_
 configuration file for details on the style.
 
-The script `utility/style.sh <https://github.com/lexicalunit/nanodbc/blob/master/utility/style.sh>`_
+The script `utility/style.sh <https://github.com/nanodbc/nanodbc/blob/master/utility/style.sh>`_
 formats all code in the repository automatically.
 To run ``clang-format`` on a single file use the following.
 
@@ -82,7 +82,7 @@ Launch vagrant VM (using VirtualBox provider for example),
   $ cd /path/to/nanodbc
   $ vagrant up
   $ vagrant ssh
-  vagrant@vagrant-ubuntu-precise-64:~$ git clone https://github.com/lexicalunit/nanodbc.git
+  vagrant@vagrant-ubuntu-precise-64:~$ git clone https://github.com/nanodbc/nanodbc.git
   vagrant@vagrant-ubuntu-precise-64:~$ mkdir -p nanodbc/build && cd nanodbc/build
   vagrant@vagrant-ubuntu-precise-64:~$ CXX=g++-5 cmake ..
   vagrant@vagrant-ubuntu-precise-64:~$ make nanodbc

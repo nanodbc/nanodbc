@@ -109,7 +109,7 @@ Major features beyond what's already supported by ODBC are not within the scope 
 .. _`C++ best practices`: https://github.com/isocpp/CppCoreGuidelines
 .. _`semantic versioning`: http://semver.org
 .. _`pimpl`: http://wiki.c2.com/?PimplIdiom
-.. _`releases`: https://github.com/lexicalunit/nanodbc/releases
+.. _`releases`: https://github.com/nanodbc/nanodbc/releases
 
 .. |travis-master| image:: https://travis-ci.org/lexicalunit/nanodbc.svg?branch=master
     :target: https://travis-ci.org/lexicalunit/nanodbc
