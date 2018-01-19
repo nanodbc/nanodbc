@@ -73,4 +73,4 @@ configuration to avoid ``wchar_t`` issues, see :ref:`build`.
 
 .. _`iODBC`: http://www.iodbc.org
 .. _`unixODBC`: http://www.unixodbc.org
-.. _`Travis CI`: https://travis-ci.org/lexicalunit/nanodbc
+.. _`Travis CI`: https://travis-ci.org/nanodbc/nanodbc

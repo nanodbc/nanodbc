@@ -89,13 +89,13 @@ NANODBC_DISABLE_TESTS : *boolean*
     Do not build tests. Do not generate ``test`` and ``check`` targets.
 
 NANODBC_ENABLE_BOOST : *boolean*
-    Use Boost for Unicode string convertions (requires `Boost.Locale`_). Workaround to issue `#44 <https://github.com/lexicalunit/nanodbc/issues/44>`_.
+    Use Boost for Unicode string convertions (requires `Boost.Locale`_). Workaround to issue `#44 <https://github.com/nanodbc/nanodbc/issues/24>`_.
 
 NANODBC_ENABLE_UNICODE : *boolean*
     Enable Unicode support. ``nanodbc::string`` becomes ``std::u16string`` or ``std::u32string``.
 
 NANODBC_ENABLE_WORKAROUND_NODATA : *boolean*
-    Enable ``SQL_NO_DATA`` workaround `#33 <https://github.com/lexicalunit/nanodbc/issues/33>`_.
+    Enable ``SQL_NO_DATA`` workaround `#33 <https://github.com/nanodbc/nanodbc/issues/60>`_.
 
 NANODBC_ODBC_VERSION : *string*
     Force ODBC version to use.

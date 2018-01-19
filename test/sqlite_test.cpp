@@ -48,6 +48,7 @@ struct sqlite_fixture : public test_case_fixture
 //   SIGSEGV - Segmentation violation signal
 // See discussions at
 // https://github.com/lexicalunit/nanodbc/pull/154
+// (Notice, lexicalunit/nanodbc has been archived now)
 // https://groups.google.com/forum/#!msg/catch-forum/7tIpgm8SvDA/1QZZESIuCQAJ
 // TODO: Uncomment as soon as the SIGSEGV issue has been fixed.
 #ifndef NANODBC_ENABLE_UNICODE
@@ -102,6 +103,7 @@ TEST_CASE_METHOD(sqlite_fixture, "test_driver", "[sqlite][driver]")
 
 // TODO: Investigate why these tests fail on Linux
 // See https://github.com/lexicalunit/nanodbc/pull/220#issuecomment-257029475
+// (Notice, lexicalunit/nanodbc has been archived now)
 #ifdef _WIN32
 TEST_CASE_METHOD(sqlite_fixture, "test_batch_insert_integral", "[sqlite][batch][integral]")
 {

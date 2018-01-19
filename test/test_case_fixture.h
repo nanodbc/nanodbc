@@ -469,7 +469,7 @@ struct test_case_fixture : public base_test_fixture
             // SQL Server: if n is not specified in [var]binary(n), the default length is 1
             // PostgreSQL: bytea default length is reported as 255,
             // unless ByteaAsLongVarBinary=1 (default) option is specified in connection string.
-            // See https://github.com/lexicalunit/nanodbc/issues/249
+            // See https://github.com/nanodbc/nanodbc/issues/131
             // Vertica: column size is 80
             if (contains_string(dbms, NANODBC_TEXT("SQLite")))
                 REQUIRE(columns.column_size() == 0);

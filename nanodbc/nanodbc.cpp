@@ -63,7 +63,7 @@
 // Microsoft has -150 thru -199 reserved for Microsoft SQL Server Native Client driver usage.
 // Originally, defined in sqlncli.h (old SQL Server Native Client driver)
 // and msodbcsql.h (new Microsoft ODBC Driver for SQL Server)
-// See https://github.com/lexicalunit/nanodbc/issues/226
+// See https://github.com/nanodbc/nanodbc/issues/18
 #ifndef SQL_SS_VARIANT
 #define SQL_SS_VARIANT (-150)
 #endif
