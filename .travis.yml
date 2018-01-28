@@ -78,7 +78,7 @@ matrix:
         # The single build job that submits the Coverity Scan file
         coverity_scan:
           project:
-            name: "lexicalunit/nanodbc"
+            name: "nanodbc/nanodbc"
             description: "A small C++ wrapper for ODBC"
           notification_email: mateusz@loskot.net
           build_command_prepend: mkdir -p build.coverity && pushd build.coverity && cmake -DCMAKE_BUILD_TYPE=Debug .. && popd
