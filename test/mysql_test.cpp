@@ -145,6 +145,11 @@ TEST_CASE_METHOD(mysql_fixture, "test_column_descriptor", "[mysql][columns]")
     test_column_descriptor();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_connection_environment", "[mysql][connection]")
+{
+    test_connection_environment();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_dbms_info", "[mysql][dmbs][metadata][info]")
 {
     test_dbms_info();

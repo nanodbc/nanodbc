@@ -49,6 +49,11 @@ TEST_CASE_METHOD(odbc_fixture, "test_catalog_tables", "[odbc][catalog][tables]")
     test_catalog_tables();
 }
 
+TEST_CASE_METHOD(odbc_fixture, "test_connection_environment", "[odbc][connection]")
+{
+    test_connection_environment();
+}
+
 TEST_CASE_METHOD(odbc_fixture, "test_dbms_info", "[odbc][dmbs][metadata][info]")
 {
     test_dbms_info();

@@ -811,6 +811,34 @@ struct test_case_fixture : public base_test_fixture
         }
     }
 
+    void test_connection_environment()
+    {
+        // default constructor
+        {
+            nanodbc::connection c;
+            REQUIRE(c.native_env_handle() == nullptr);
+            REQUIRE(c.native_dbc_handle() == nullptr);
+        }
+
+        // construct with connection string
+        {
+            nanodbc::connection c{connection_string_};
+            REQUIRE(c.native_env_handle() != nullptr);
+            REQUIRE(c.native_dbc_handle() != nullptr);
+        }
+
+        // on-demand environment allocation/deallocation
+        {
+            nanodbc::connection c;
+            c.allocate();
+            REQUIRE(c.native_env_handle() != nullptr);
+            REQUIRE(c.native_dbc_handle() != nullptr);
+            c.deallocate();
+            REQUIRE(c.native_env_handle() == nullptr);
+            REQUIRE(c.native_dbc_handle() == nullptr);
+        }
+    }
+
     void test_date()
     {
         auto connection = connect();
