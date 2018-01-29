@@ -70,7 +70,8 @@ int main(int argc, char* argv[])
             return EXIT_FAILURE;
 
         // Run tests
-        return session.run(argc, argv);
+        if (session.run(argc, argv) == 0)
+            return EXIT_SUCCESS;
     }
     catch (std::exception const& e)
     {
