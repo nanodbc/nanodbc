@@ -213,6 +213,7 @@ using nanodbc::wide_string;
 // MARK: Error Handling -
 // clang-format on
 
+
 namespace
 {
 #ifdef NANODBC_ODBC_API_DEBUG
@@ -249,22 +250,22 @@ inline bool success(RETCODE rc)
     return rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO;
 }
 
-// Returns the array size.
-template <typename T, std::size_t N>
-inline std::size_t arrlen(T (&)[N])
+#if __cpp_lib_nonmember_container_access >= 201411 || _MSC_VER
+using std::size;
+#else
+template <class T, std::size_t N>
+constexpr std::size_t size(const T(&array)[N]) noexcept
 {
     return N;
 }
+#endif
 
-// Operates like strlen() on a character array.
-template <typename T, std::size_t N>
-inline std::size_t strarrlen(T (&a)[N])
+template <std::size_t N>
+inline std::size_t size(NANODBC_SQLCHAR const (&array)[N]) noexcept
 {
-    const T* s = &a[0];
-    std::size_t i = 0;
-    while (*s++ && i < N)
-        i++;
-    return i;
+    auto const n = std::char_traits<NANODBC_SQLCHAR>::length(array);
+    NANODBC_ASSERT(n < N);
+    return n < N ? n : N - 1;
 }
 
 inline void convert(const wide_string& in, std::string& out)
@@ -395,7 +396,7 @@ recent_error(SQLHANDLE handle, SQLSMALLINT handle_type, long& native, std::strin
     } while (rc != SQL_NO_DATA);
 
     convert(result, rvalue);
-    state = std::string(&sql_state[0], &sql_state[arrlen(sql_state) - 1]);
+    state = std::string(&sql_state[0], &sql_state[size(sql_state) - 1]);
     native = native_error;
     std::string status = state;
     status += ": ";
@@ -1025,7 +1026,7 @@ public:
             &length);
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
-        return string(&name[0], &name[strarrlen(name)]);
+        return string(&name[0], &name[size(name)]);
     }
 
     std::size_t ref_transaction() { return ++transactions_; }
@@ -1079,7 +1080,7 @@ string connection::connection_impl::get_info_impl<string>(short info_type) const
         &length);
     if (!success(rc))
         NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
-    return string(&value[0], &value[strarrlen(value)]);
+    return string(&value[0], &value[size(value)]);
 }
 
 string connection::connection_impl::dbms_name() const
@@ -3391,7 +3392,7 @@ std::list<driver> list_drivers()
                 "incompatible SQLCHAR and string::value_type");
 
             driver drv;
-            drv.name = string(&descr[0], &descr[strarrlen(descr)]);
+            drv.name = string(&descr[0], &descr[std::char_traits<NANODBC_SQLCHAR>::length(descr)]);
 
             // Split "Key1=Value1\0Key2=Value2\0\0" into list of key-value pairs
             auto beg = &attrs[0];
