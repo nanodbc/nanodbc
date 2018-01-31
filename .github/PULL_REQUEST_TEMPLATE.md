@@ -8,6 +8,7 @@
  - [ ] Add test case(s)
  - [ ] Review
  - [ ] Adjust for comments
+ - [ ] All CI builds and checks have passed
 
 ## Environment
 
