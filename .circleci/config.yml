@@ -2,7 +2,7 @@ version: 2
 jobs:
   lint:
     docker:
-      - image: circleci/ruby:2.4.1-node
+      - image: circleci/python:2.7
     steps:
       - checkout
       - run:
