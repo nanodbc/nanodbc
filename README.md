@@ -58,7 +58,7 @@ existing ODBC API calls.
 | `v2.x.x`  | Targets C++14+. All future development will build upon this version. |
 | `v1.x.x`  | Supports C++03 and optionally C++11. *There is no longer any support for this version.* |
 
-# Building
+## Building
 
 nanodbc is intentionally small enough that you can drag and drop the header and implementation
 files into your project and run with it. For those that want it, I have also provided
@@ -86,7 +86,7 @@ Driver                  = /usr/lib/libsqlite3odbc-0.93.dylib
 Threading               = 2
 ```
 
-## Example Build Process
+### Example Build Process
 
 It's most convenient to create a build directory for an out of source build, but this isn't
 required. After you've used cmake to generate your Makefiles, `make nanodbc` will build your shared
@@ -111,7 +111,7 @@ make examples # builds all the example programs
 make install # installs nanodbc.h and shared library
 ```
 
-## Build Options
+### Build Options
 
 The following build options are available via [CMake command-line option][cmake-docs] `-D`. If you
 are not using CMake to build nanodbc, you will need to set the corresponding `-D` compile define
@@ -135,7 +135,7 @@ If you need to use the `NANODBC_ENABLE_BOOST=ON` option, you will have to config
 | `NANODBC_ENABLE_WORKAROUND_NODATA` | `OFF` or `ON`        | Enable `SQL_NO_DATA` workaround to issue [#43](https://github.com/nanodbc/nanodbc/issues/43). |
 | `NANODBC_ODBC_VERSION`             | `SQL_OV_ODBC3[...]`  | Forces ODBC version to use. Default is `SQL_OV_ODBC3_80` if available, otherwise `SQL_OV_ODBC3`. |
 
-## Note About iODBC
+### Note About iODBC
 
 Under Windows `sizeof(wchar_t) == sizeof(SQLWCHAR) == 2`, yet on Unix systems
 `sizeof(wchar_t) == 4`. On unixODBC, `sizeof(SQLWCHAR) == 2` while on iODBC,
@@ -150,9 +150,9 @@ _disabling_ unicode mode to avoid `wchar_t` issues.
 
 ---
 
-# Contributing
+## Contributing
 
-## Code Style
+### Code Style
 
 [`clang-format`][clang-format] handles all C++ code formatting for nanodbc. This utility is
 [brew-installable][brew] on OS X (`brew install clang-format`) and is available on all major
@@ -166,7 +166,7 @@ clang-format -i /path/to/file
 
 **Please auto-format all code submitted in Pull Requests.**
 
-## Source Level Documentation
+### Source Level Documentation
 
 Source level documentation provided via [GitHub's gh-pages][gh-pages] is available at
 [nanodbc.io][nanodbc]. To re-build and update it, preform the following steps from the
@@ -182,7 +182,7 @@ root directory of the repository:
 Building documentation and gh-pages requires the use of [Doxygen][doxygen] and
 [jekyll][jekyll]. See the [`Makefile` on the `gh-pages` branch][nanodbc-makefile] for more details.
 
-## Quick Setup for Testing or Development Environments
+### Quick Setup for Testing or Development Environments
 
 To get up and running with nanodbc as fast as possible consider using the provided
 [Dockerfile](Dockerfile) and [docker-compose.yml](docker-compose.yml) or [Vagrantfile](Vagrantfile).
@@ -226,7 +226,7 @@ vagrant@vagrant-ubuntu-precise-64:~$ CXX=g++-5 cmake ..
 vagrant@vagrant-ubuntu-precise-64:~$ make nanodbc
 ```
 
-## Tests
+### Tests
 
 One of important objectives is to maintain nanodbc covered with tests. New contributions
 submitted via Pull Requests must include corresponding tests. This is important to ensure
