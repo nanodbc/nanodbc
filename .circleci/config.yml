@@ -9,13 +9,13 @@ jobs:
       - run:
           name: install markdownlint
           command: |
+            sudo apt-get update -q
+            sudo apt-get install -y npm
             sudo npm install -g markdownlint-cli
             markdownlint --version
       - run:
           name: install restructuredtext_lint
           command: |
-            sudo apt-get update -q
-            sudo apt-get install -y npm
             sudo pip install restructuredtext_lint
             rst-lint --version
       - run:
