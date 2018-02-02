@@ -1,3 +1,5 @@
+# nanodbc
+
 ![nanodbc-banner][nanodbc-banner]
 
 A small C++ wrapper for the native C ODBC API. Please see the [online documentation][nanodbc] for
@@ -17,9 +19,9 @@ user information, example usage, propaganda, and detailed source level documenta
 | `latest` | [![latest][travis-badge-latest]][travis] | &nbsp; | &nbsp; | &nbsp; |
 | `release` | [![release][travis-badge-release]][travis] | &nbsp; | &nbsp; | &nbsp; |
 
-> **Note:** The Coverity status uses the [coverity_scan][nanodbc-coverity] branch. When `master`
-            has had a significant amount of work pushed to it, merge those changes into
-            `coverity_scan` as well to keep the status up to date.
+> **Note:** The Coverity status uses the [coverity_scan][nanodbc-coverity] branch.
+> When `master` has had a significant amount of work pushed to it,
+> merge those changes into `coverity_scan` as well to keep the status up to date.
 
 ## Philosophy
 
@@ -76,7 +78,7 @@ Homebrew as `sqliteobdc`! The tests expect to find a data source named `sqlite` 
 `SQLite3 ODBC Driver` on Windows systems. For example, your `odbcinst.ini` file on OS X must have a
 section like the following.
 
-```
+```ini
 [sqlite]
 Description             = SQLite3 ODBC Driver
 Setup                   = /usr/lib/libsqlite3odbc-0.93.dylib
@@ -92,7 +94,7 @@ object. `make check` will build and run the tests. You can also install nanodbc 
 using `make install`.
 
 If the tests fail, please don't hesitate to [**report it**][nanodbc-new-issue] by creating an issue
-with your detailed test log (prepend your `make` command with `env CTEST_OUTPUT_ON_FAILURE=1 ` to
+with your detailed test log (prepend your `make` command with `env CTEST_OUTPUT_ON_FAILURE=1` to
 enable verbose output please).
 
 ```shell
@@ -159,7 +161,7 @@ platforms. See our `.clang-format` configuration file for details on the style. 
 single file use the following.
 
 ```shell
-$ clang-format -i /path/to/file
+clang-format -i /path/to/file
 ```
 
 **Please auto-format all code submitted in Pull Requests.**
@@ -188,15 +190,15 @@ To get up and running with nanodbc as fast as possible consider using the provid
 For example, to spin up a [docker][docker] container suitable for testing and development of nanodbc:
 
 ```shell
-$ cd /path/to/nanodbc
-$ docker build -t nanodbc .
+cd /path/to/nanodbc
+docker build -t nanodbc .
 
 # Use container local nanodbc repository
-$ docker run -it nanodbc /bin/bash
+docker run -it nanodbc /bin/bash
 root@hash:/# mkdir -p /opt/nanodbc/build && cd /opt/nanodbc-host/build
 
 # Alternatively, bind host repository as container volume
-$ docker run -v "$(pwd)":"/opt/$(basename $(pwd))-host" -it nanodbc /bin/bash
+docker run -v "$(pwd)":"/opt/$(basename $(pwd))-host" -it nanodbc /bin/bash
 root@hash:/# mkdir -p /opt/nanodbc-host/build && cd /opt/nanodbc-host/build
 
 root@hash:/opt/nanodbc-host/build# cmake ..
@@ -206,18 +208,18 @@ root@hash:/opt/nanodbc-host/build# make nanodbc
 Or, spin up the complete multi-container environment with database services:
 
 ```shell
-$ cd /path/to/nanodbc
-$ docker-compose build
-$ docker-compose up -d
-$ docker exec -it nanodbc /bin/bash
+cd /path/to/nanodbc
+docker-compose build
+docker-compose up -d
+docker exec -it nanodbc /bin/bash
 ```
 
 Or, to build and ssh into a [vagrant][vagrant] VM (using VirtualBox for example) use:
 
 ```shell
-$ cd /path/to/nanodbc
-$ vagrant up
-$ vagrant ssh
+cd /path/to/nanodbc
+vagrant up
+vagrant ssh
 vagrant@vagrant-ubuntu-precise-64:~$ git clone https://github.com/nanodbc/nanodbc.git
 vagrant@vagrant-ubuntu-precise-64:~$ mkdir -p nanodbc/build && cd nanodbc/build
 vagrant@vagrant-ubuntu-precise-64:~$ CXX=g++-5 cmake ..
@@ -258,9 +260,9 @@ bumps the major, minor, or patch version, then updates the repository's `VERSION
 would run `./utility/publish.sh minor`.
 
 > **Important:** Always update [`CHANGELOG.md`](CHANGELOG.md) with information about new changes,
-                 bug fixes, and features when making a new release. Use the `./utility/changes.sh`
-                 script to aid in your composition of this document. The publish script itself will
-                 attempt to verify that the changelog file has been properly updated.
+> bug fixes, and features when making a new release.
+> Use the `./utility/changes.sh` script to aid in your composition of this document.
+> The publish script itself will attempt to verify that the changelog file has been properly updated.
 
 To do this manually instead, use the following steps &mdash; for example a minor update from
 `2.9.x` to `2.10.0`:
