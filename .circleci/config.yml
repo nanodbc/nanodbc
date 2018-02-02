@@ -67,4 +67,4 @@ workflows:
 
 notify:
   webhooks:
-    - url: https://webhooks.gitter.im/e/9c376e047374d89cdeac
+    - url: https://webhooks.gitter.im/e/87eb42cf5644824442b1

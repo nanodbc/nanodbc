@@ -17,7 +17,7 @@ clone_depth: 5
 
 notifications:
   - provider: Webhook
-    url: https://webhooks.gitter.im/e/a99ae9a5f4a75cd2893f
+    url: https://webhooks.gitter.im/e/70a268802a5c8a54e09b
     on_build_success: true
     on_build_failure: true
     on_build_status_changed: true

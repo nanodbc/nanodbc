@@ -16,7 +16,7 @@ git:
 notifications:
   webhooks:
     urls:
-      - https://webhooks.gitter.im/e/9c376e047374d89cdeac
+      - https://webhooks.gitter.im/e/92612206d50703891604
     on_success: always # default: always
     on_failure: always # default: always
     on_start: always   # default: never
