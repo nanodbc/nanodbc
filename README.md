@@ -11,11 +11,11 @@ user information, example usage, propaganda, and detailed source level documenta
 
 ## Build Status
 
-| Branch |  Linux/OSX | Windows | Coverity |
-|:--- |:--- |:--- |:--- |
-| `master`  | [![master][travis-badge-master]][travis] | [![master][appveyor-badge]][appveyor] | [![coverity_scan][coverity-badge]][coverity] |
-| `latest` | [![latest][travis-badge-latest]][travis] | &nbsp; | &nbsp; |
-| `release` | [![release][travis-badge-release]][travis] | &nbsp; | &nbsp; |
+| Branch |  Linux/OSX | Windows | Coverity | Documentation |
+|:--- |:--- |:--- |:--- |:---|
+| `master`  | [![master][travis-badge-master]][travis] | [![master][appveyor-badge]][appveyor] | [![coverity_scan][coverity-badge]][coverity] | [![CircleCI](https://circleci.com/gh/nanodbc/nanodbc/tree/master.svg?style=svg)](https://circleci.com/gh/nanodbc/nanodbc/tree/master) |
+| `latest` | [![latest][travis-badge-latest]][travis] | &nbsp; | &nbsp; | &nbsp; |
+| `release` | [![release][travis-badge-release]][travis] | &nbsp; | &nbsp; | &nbsp; |
 
 > **Note:** The Coverity status uses the [coverity_scan][nanodbc-coverity] branch. When `master`
             has had a significant amount of work pushed to it, merge those changes into
