@@ -1,4 +1,5 @@
 version: 2
+
 jobs:
   lint:
     docker:
