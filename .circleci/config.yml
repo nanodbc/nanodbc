@@ -61,6 +61,7 @@ workflows:
                 - master
                 - latest
                 - release
+
 notify:
   webhooks:
     - url: https://webhooks.gitter.im/e/9c376e047374d89cdeac
