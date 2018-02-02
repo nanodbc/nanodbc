@@ -50,7 +50,8 @@ workflows:
             branches:
               only:
                 - master
-                - /release*/
+                - latest
+                - release
       - build-deploy:
           requires:
             - lint
@@ -58,7 +59,8 @@ workflows:
             branches:
               only:
                 - master
-                - /release*/
+                - latest
+                - release
 notify:
   webhooks:
     - url: https://webhooks.gitter.im/e/9c376e047374d89cdeac
