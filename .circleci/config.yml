@@ -14,6 +14,8 @@ jobs:
       - run:
           name: install restructuredtext_lint
           command: |
+            sudo apt-get update -q
+            sudo apt-get install -y npm
             sudo pip install restructuredtext_lint
             rst-lint --version
       - run:
