@@ -13,7 +13,7 @@ jobs:
       - run:
           name: install restructuredtext_lint
           command: |
-            sudo : pip install restructuredtext_lint
+            sudo pip install restructuredtext_lint
             rst-lint --version
       - run:
           name: lint README.md
