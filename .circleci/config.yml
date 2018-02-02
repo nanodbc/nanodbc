@@ -29,7 +29,6 @@ jobs:
   build-deploy:
     docker:
       - image: circleci/python:2.7
-    working_directory: ~/project/doc 
     steps:
       - checkout
       - run:
@@ -39,7 +38,9 @@ jobs:
             sudo apt-get install -y python-sphinx
       - run:
           name: generate docs
-          command: make html
+          command: |
+            cd doc
+            make html
       - run:
           name: deploy docs
           command: echo "TODO"
