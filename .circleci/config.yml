@@ -1,0 +1,64 @@
+version: 2
+jobs:
+  lint:
+    docker:
+      - image: circleci/ruby:2.4.1-node
+    steps:
+      - checkout
+      - run:
+          name: install markdownlint
+          command: |
+            sudo npm install -g markdownlint-cli
+            markdownlint --version
+      - run:
+          name: install restructuredtext_lint
+          command: |
+            sudo : pip install restructuredtext_lint
+            rst-lint --version
+      - run:
+          name: lint README.md
+          command: markdownlint --config .markdownlint.json README.md
+      - run:
+          name: lint docs/
+          command: |
+            cd doc
+            rst-lint index.rst
+  build-deploy:
+    docker:
+      - image: circleci/python:2.7
+    working_directory: ~/project/doc 
+    steps:
+      - checkout
+      - run:
+          name: install sphinx
+          command: |
+            sudo apt-get update -q
+            sudo apt-get install -y python-sphinx
+      - run:
+          name: generate docs
+          command: make html
+      - run:
+          name: deploy docs
+          command: echo "TODO"
+
+workflows:
+  version: 2
+  docs-workflow:
+    jobs:
+      - lint:
+          filters:
+            branches:
+              only:
+                - master
+                - /release*/
+      - build-deploy:
+          requires:
+            - lint
+          filters:
+            branches:
+              only:
+                - master
+                - /release*/
+notify:
+  webhooks:
+    - url: https://webhooks.gitter.im/e/9c376e047374d89cdeac
