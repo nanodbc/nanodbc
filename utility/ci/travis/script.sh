@@ -5,7 +5,6 @@ set -o pipefail
 set -o nounset
 
 if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-    chmod +x ./utility/format.sh
     ./utility/format.sh
 
     MSG="The following files have been modified:"
