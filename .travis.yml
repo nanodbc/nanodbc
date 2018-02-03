@@ -33,8 +33,10 @@ ref:
   sources: &sources
     - boost-latest
     - george-edison55-precise-backports
+    - llvm-toolchain-precise
     - ubuntu-toolchain-r-test
   packages: &packages
+    - clang-format-5.0
     - cmake
     - cmake-data
     - g++-5

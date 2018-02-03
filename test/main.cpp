@@ -16,23 +16,18 @@ int main(int argc, char* argv[])
     try
     {
         // Specify custom command line options
-        auto cli
-            = Catch::clara::Help(cfg.show_help_)
-            | Catch::clara::Opt(cfg.connection_string_, "connection")
-                ["-z"]["--connection-string"]
-                ("connection string to test database; if not specified, "
+        auto cli =
+            Catch::clara::Help(cfg.show_help_) |
+            Catch::clara::Opt(cfg.connection_string_, "connection")["-z"]["--connection-string"](
+                "connection string to test database; if not specified, "
                 "an attempt will be made to read it from environment variables: "
-                 "NANODBC_TEST_CONNSTR or NANODBC_TEST_CONNSTR_<DB>")
-            | Catch::clara::Arg(cfg.test_, "test")
-                ("test name|pattern|tags to run");
+                "NANODBC_TEST_CONNSTR or NANODBC_TEST_CONNSTR_<DB>") |
+            Catch::clara::Arg(cfg.test_, "test")("test name|pattern|tags to run");
         auto parse_result = cli.parse(Catch::clara::Args(argc, argv));
         if (!parse_result)
         {
-            Catch::cerr()
-                << Catch::Colour(Catch::Colour::Red)
-                << "\nError(s) in input:\n"
-                << Catch::Column(parse_result.errorMessage()).indent(2)
-                << "\n\n";
+            Catch::cerr() << Catch::Colour(Catch::Colour::Red) << "\nError(s) in input:\n"
+                          << Catch::Column(parse_result.errorMessage()).indent(2) << "\n\n";
             Catch::cerr() << "Run with -? for usage\n" << std::endl;
             return EXIT_FAILURE;
         }
@@ -52,15 +47,13 @@ int main(int argc, char* argv[])
         {
             session.showHelp();
 
-            Catch::cerr()
-                << Catch::Colour(Catch::Colour::Yellow)
-                << "nanodbc\n"
-                << cli << std::endl;
+            Catch::cerr() << Catch::Colour(Catch::Colour::Yellow) << "nanodbc\n"
+                          << cli << std::endl;
 
             return EXIT_FAILURE;
         }
 
-        // Path to data folder with data files used in some tests
+            // Path to data folder with data files used in some tests
 #ifdef NANODBC_TEST_DATA
         if (cfg.data_path_.empty())
             cfg.data_path_ = std::string(NANODBC_TEST_DATA);
@@ -75,16 +68,11 @@ int main(int argc, char* argv[])
     }
     catch (std::exception const& e)
     {
-        Catch::cerr()
-            << Catch::Colour(Catch::Colour::Red)
-            << "\nError(s):\n"
-            << e.what() << '\n';
+        Catch::cerr() << Catch::Colour(Catch::Colour::Red) << "\nError(s):\n" << e.what() << '\n';
     }
     catch (...)
     {
-        Catch::cerr()
-            << Catch::Colour(Catch::Colour::Red)
-            << "\nError(s): uncaught exception\n";
+        Catch::cerr() << Catch::Colour(Catch::Colour::Red) << "\nError(s): uncaught exception\n";
     }
     return EXIT_FAILURE;
 }

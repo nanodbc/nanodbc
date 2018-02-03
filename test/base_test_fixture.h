@@ -10,8 +10,8 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
 #include <locale>
+#include <sstream>
 
 #if defined(_MSC_VER) && _MSC_VER <= 1800
 // These versions of Visual C++ do not yet support noexcept or override.
@@ -37,9 +37,9 @@
 #endif
 #include <windows.h>
 #endif
+#include <locale>
 #include <sql.h>
 #include <sqlext.h>
-#include <locale>
 
 namespace nanodbc
 {
@@ -120,18 +120,15 @@ inline nanodbc::string convert(std::string const& in)
 
 struct Config
 {
-    nanodbc::string get_connection_string() const
-    {
-        return convert(connection_string_);
-    }
+    nanodbc::string get_connection_string() const { return convert(connection_string_); }
 
     std::string connection_string_;
     std::string data_path_;
     std::string test_; // if set, itis test name, pattern or tags
     bool show_help_{false};
 };
-
-}} // namespace nanodbc::test
+}
+} // namespace nanodbc::test
 
 extern nanodbc::test::Config cfg;
 
@@ -358,7 +355,8 @@ struct base_test_fixture
         infile.open(filename);
         std::string buffer;
         infile >> buffer;
-        if (buffer.empty()) return {};
+        if (buffer.empty())
+            return {};
 
         auto beg = buffer.begin();
         while (*beg == ' ' || *beg == '\0')
@@ -381,7 +379,6 @@ struct base_test_fixture
 #undef NANODBC_SEP
     }
 
-
     nanodbc::string get_env(char const* var) const
     {
         char* env_value = nullptr;
@@ -401,7 +398,7 @@ struct base_test_fixture
         value = env_value;
 #endif
 #ifdef NANODBC_ENABLE_UNICODE
-		return nanodbc::test::convert(value);
+        return nanodbc::test::convert(value);
 #else
         return value;
 #endif

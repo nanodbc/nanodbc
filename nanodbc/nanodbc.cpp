@@ -213,7 +213,6 @@ using nanodbc::wide_string;
 // MARK: Error Handling -
 // clang-format on
 
-
 namespace
 {
 #ifdef NANODBC_ODBC_API_DEBUG
@@ -254,7 +253,7 @@ inline bool success(RETCODE rc)
 using std::size;
 #else
 template <class T, std::size_t N>
-constexpr std::size_t size(const T(&array)[N]) noexcept
+constexpr std::size_t size(const T (&array)[N]) noexcept
 {
     return N;
 }
@@ -1820,7 +1819,7 @@ public:
             param_size,          // column size ignored for many types, but needed for strings
             param.scale_,        // decimal digits
             (SQLPOINTER)buffer.values_, // parameter value
-            value_size,          // buffer length
+            value_size,                 // buffer length
             bind_len_or_null_[param.index_].data());
 
         if (!success(rc))
@@ -2988,7 +2987,8 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
                             ValueLenOrInd / sizeof(wide_char_t),
                             (buffer_size / sizeof(wide_char_t)) - 1));
                 else if (ValueLenOrInd == SQL_NULL_DATA)
-                    col.cbdata_[static_cast<std::size_t>(rowset_position_)] = (SQLINTEGER)SQL_NULL_DATA;
+                    col.cbdata_[static_cast<std::size_t>(rowset_position_)] =
+                        (SQLINTEGER)SQL_NULL_DATA;
                 // Sequence of successful calls is:
                 // SQL_NO_DATA or SQL_SUCCESS_WITH_INFO followed by SQL_SUCCESS.
             } while (rc == SQL_SUCCESS_WITH_INFO);
@@ -3003,7 +3003,8 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
             // Type is unicode in the database, convert if necessary
             const SQLWCHAR* s =
                 reinterpret_cast<SQLWCHAR*>(col.pdata_ + rowset_position_ * col.clen_);
-            const string::size_type str_size = col.cbdata_[static_cast<size_t>(rowset_position_)] / sizeof(SQLWCHAR);
+            const string::size_type str_size =
+                col.cbdata_[static_cast<size_t>(rowset_position_)] / sizeof(SQLWCHAR);
             wide_string temp(s, s + str_size);
             convert(temp, result);
         }
@@ -3493,9 +3494,7 @@ connection::connection(const connection& rhs)
 }
 
 #ifndef NANODBC_NO_MOVE_CTOR
-connection::connection(connection&& rhs) NANODBC_NOEXCEPT : impl_(std::move(rhs.impl_))
-{
-}
+connection::connection(connection&& rhs) NANODBC_NOEXCEPT : impl_(std::move(rhs.impl_)) {}
 #endif
 
 connection& connection::operator=(connection rhs)
@@ -3520,9 +3519,7 @@ connection::connection(const string& connection_string, long timeout)
 {
 }
 
-connection::~connection() NANODBC_NOEXCEPT
-{
-}
+connection::~connection() NANODBC_NOEXCEPT {}
 
 void connection::connect(const string& dsn, const string& user, const string& pass, long timeout)
 {
@@ -3660,9 +3657,7 @@ transaction::transaction(const transaction& rhs)
 }
 
 #ifndef NANODBC_NO_MOVE_CTOR
-transaction::transaction(transaction&& rhs) NANODBC_NOEXCEPT : impl_(std::move(rhs.impl_))
-{
-}
+transaction::transaction(transaction&& rhs) NANODBC_NOEXCEPT : impl_(std::move(rhs.impl_)) {}
 #endif
 
 transaction& transaction::operator=(transaction rhs)
@@ -3677,9 +3672,7 @@ void transaction::swap(transaction& rhs) NANODBC_NOEXCEPT
     swap(impl_, rhs.impl_);
 }
 
-transaction::~transaction() NANODBC_NOEXCEPT
-{
-}
+transaction::~transaction() NANODBC_NOEXCEPT {}
 
 void transaction::commit()
 {
@@ -3739,9 +3732,7 @@ statement::statement(class connection& conn)
 }
 
 #ifndef NANODBC_NO_MOVE_CTOR
-statement::statement(statement&& rhs) NANODBC_NOEXCEPT : impl_(std::move(rhs.impl_))
-{
-}
+statement::statement(statement&& rhs) NANODBC_NOEXCEPT : impl_(std::move(rhs.impl_)) {}
 #endif
 
 statement::statement(class connection& conn, const string& query, long timeout)
@@ -3766,9 +3757,7 @@ void statement::swap(statement& rhs) NANODBC_NOEXCEPT
     swap(impl_, rhs.impl_);
 }
 
-statement::~statement() NANODBC_NOEXCEPT
-{
-}
+statement::~statement() NANODBC_NOEXCEPT {}
 
 void statement::open(class connection& conn)
 {
@@ -4581,9 +4570,7 @@ result::result()
 {
 }
 
-result::~result() NANODBC_NOEXCEPT
-{
-}
+result::~result() NANODBC_NOEXCEPT {}
 
 result::result(statement stmt, long rowset_size)
     : impl_(new result_impl(stmt, rowset_size))
@@ -4591,9 +4578,7 @@ result::result(statement stmt, long rowset_size)
 }
 
 #ifndef NANODBC_NO_MOVE_CTOR
-result::result(result&& rhs) NANODBC_NOEXCEPT : impl_(std::move(rhs.impl_))
-{
-}
+result::result(result&& rhs) NANODBC_NOEXCEPT : impl_(std::move(rhs.impl_)) {}
 #endif
 
 result::result(const result& rhs)

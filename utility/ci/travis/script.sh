@@ -1,5 +1,24 @@
 #!/bin/bash -ue
 
+set -o errexit
+set -o pipefail
+set -o nounset
+
+if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+    chmod +x ./utility/format.sh
+    ./utility/format.sh
+
+    MSG="The following files have been modified:"
+    dirty=$(git ls-files --modified)
+
+    if [[ $dirty ]]; then
+        echo $MSG
+        echo $dirty
+        # TODO: Enable hard error on formating changes
+        #exit 1
+    fi
+fi
+
 if [[ -z ${BUILD_SHARED_LIBS+v} ]]; then
     export BUILD_SHARED_LIBS=OFF
 fi
