@@ -35,7 +35,7 @@ jobs:
           name: install sphinx
           command: |
             sudo apt-get update -q
-            sudo apt-get install -y python-sphinx
+            sudo apt-get install -y python-sphinx doxygen
             sudo pip install sphinx_rtd_theme
             sudo pip install breathe
       - run:
