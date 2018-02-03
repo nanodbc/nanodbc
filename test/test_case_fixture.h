@@ -305,8 +305,7 @@ struct test_case_fixture : public base_test_fixture
                     NANODBC_TEXT("c2 float NULL,") + NANODBC_TEXT("c3 decimal(9, 3),") +
                     NANODBC_TEXT("c4 date,") // seems more portable than datetime (SQL Server),
                                              // timestamp (PostgreSQL, MySQL)
-                    +
-                    NANODBC_TEXT("c5 varchar(60) DEFAULT \'sample value\',") +
+                    + NANODBC_TEXT("c5 varchar(60) DEFAULT \'sample value\',") +
                     NANODBC_TEXT("c6 varchar(120),") + NANODBC_TEXT("c7 ") + text_type_name +
                     NANODBC_TEXT(",") + NANODBC_TEXT("c8 ") + binary_type_name +
                     NANODBC_TEXT(");"));

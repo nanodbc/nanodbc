@@ -152,10 +152,12 @@ TEST_CASE_METHOD(mssql_fixture, "test_large_blob", "[mssql][blob][binary][varbin
         blob = from_hex(hex);
     }
 
-    // Test executing prepared statement with size of blbo larger than max (eg. SQL Server 8000 Bytes)
+    // Test executing prepared statement with size of blbo larger than max (eg. SQL Server 8000
+    // Bytes)
     auto connection = connect();
     {
-        create_table(connection, NANODBC_TEXT("test_large_blob"), NANODBC_TEXT("(data varbinary(max))"));
+        create_table(
+            connection, NANODBC_TEXT("test_large_blob"), NANODBC_TEXT("(data varbinary(max))"));
         nanodbc::statement stmt(connection);
         prepare(stmt, NANODBC_TEXT("INSERT INTO test_large_blob (data) VALUES (?)"));
 
@@ -165,7 +167,10 @@ TEST_CASE_METHOD(mssql_fixture, "test_large_blob", "[mssql][blob][binary][varbin
     }
 }
 
-TEST_CASE_METHOD(mssql_fixture, "test_large_blob_geometry", "[mssql][blob][binary][varbinary][geometry]")
+TEST_CASE_METHOD(
+    mssql_fixture,
+    "test_large_blob_geometry",
+    "[mssql][blob][binary][varbinary][geometry]")
 {
     if (get_env("DB") == NANODBC_TEXT("MSSQL2008"))
     {
@@ -180,12 +185,17 @@ TEST_CASE_METHOD(mssql_fixture, "test_large_blob_geometry", "[mssql][blob][binar
         blob = from_hex(hex);
     }
 
-    // Test executing prepared statement with size of blbo larger than max (eg. SQL Server 8000 Bytes)
+    // Test executing prepared statement with size of blbo larger than max (eg. SQL Server 8000
+    // Bytes)
     auto connection = connect();
     {
-        create_table(connection, NANODBC_TEXT("test_large_blob_geometry"), NANODBC_TEXT("(data GEOMETRY)"));
+        create_table(
+            connection, NANODBC_TEXT("test_large_blob_geometry"), NANODBC_TEXT("(data GEOMETRY)"));
         nanodbc::statement stmt(connection);
-        prepare(stmt, NANODBC_TEXT("INSERT INTO test_large_blob_geometry (data) VALUES (geometry::STGeomFromWKB(?, 0))"));
+        prepare(
+            stmt,
+            NANODBC_TEXT("INSERT INTO test_large_blob_geometry (data) VALUES "
+                         "(geometry::STGeomFromWKB(?, 0))"));
 
         std::vector<std::vector<std::uint8_t>> rows = {blob};
         stmt.bind(0, rows);
