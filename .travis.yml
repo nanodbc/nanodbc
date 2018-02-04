@@ -1,4 +1,4 @@
-dist: precise
+dist: trusty
 sudo: required
 
 language: cpp
@@ -32,18 +32,16 @@ env:
 ref:
   sources: &sources
     - boost-latest
-    - george-edison55-precise-backports
-    - llvm-toolchain-precise
     - ubuntu-toolchain-r-test
   packages: &packages
-    - clang-format-5.0
+    - clang-format-3.8
     - cmake
     - cmake-data
     - g++-5
     - libboost-locale1.55-dev
     - libmyodbc
     - libsqliteodbc
-    - mysql-client
+    - mysql-client-5.6
     - odbc-postgresql
     - unixodbc
     - unixodbc-dev
@@ -52,12 +50,12 @@ ref:
       sources: *sources
       packages: *packages
   mysql: &mysql
-    mysql: "5.5"
+    mysql: "5.6"
     apt:
       sources: *sources
       packages: *packages
   postgresql: &postgresql
-    postgresql: "9.1"
+    postgresql: "9.6"
     apt:
       sources: *sources
       packages: *packages
@@ -135,6 +133,7 @@ matrix:
       osx_image: xcode8.3
   allow_failures:
     - env: DB=mariadb DISABLE_LIBCXX=ON
+    - env: DB=vertica DISABLE_LIBCXX=ON
 
 # before_install runs after matrix.addons.apt installation targets in the matrix
 before_install:
