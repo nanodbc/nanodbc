@@ -71,6 +71,10 @@ ref:
 
 matrix:
   include:
+    - addons: *sqlite
+      compiler: gcc
+      env: DB=sqlite CLANGFORMAT=ON BUILD_SHARED_LIBS=ON DISABLE_LIBCXX=ON
+      os: linux
     - addons:
         apt:
           sources: *sources
@@ -86,10 +90,6 @@ matrix:
           branch_pattern: coverity_scan
       compiler: gcc
       env: DB=sqlite COVERITY=ON DISABLE_LIBCXX=ON DISABLE_EXAMPLES=OFF
-      os: linux
-    - addons: *sqlite
-      compiler: gcc
-      env: DB=sqlite BUILD_SHARED_LIBS=ON DISABLE_LIBCXX=ON
       os: linux
     - addons: *sqlite
       compiler: gcc
