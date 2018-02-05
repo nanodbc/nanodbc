@@ -4,7 +4,8 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+# Verify code formatting only on Linux and with single build job is enough
+if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$COVERITY" == "ON" ]; then
     ./utility/format.sh
 
     MSG="The following files have been modified:"
@@ -13,8 +14,7 @@ if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
     if [[ $dirty ]]; then
         echo $MSG
         echo $dirty
-        # TODO: Enable hard error on formating changes
-        #exit 1
+        exit 1
     fi
 fi
 
