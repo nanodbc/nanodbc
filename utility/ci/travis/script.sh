@@ -5,7 +5,7 @@ set -o pipefail
 set -o nounset
 
 # Verify code formatting only on Linux and with single build job is enough
-if [ ! -z ${$CLANGFORMAT+x} ] && [ "$CLANGFORMAT" == "ON" ]]; then
+if [ ! -z ${CLANGFORMAT+x} ] && [ "$CLANGFORMAT" == "ON" ]]; then
     ./utility/format.sh
 
     MSG="The following files have been modified:"
