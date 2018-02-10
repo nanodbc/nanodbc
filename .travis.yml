@@ -31,14 +31,13 @@ env:
 
 ref:
   sources: &sources
-    - boost-latest
     - ubuntu-toolchain-r-test
   packages: &packages
     - clang-format-3.8
     - cmake
     - cmake-data
     - g++-5
-    - libboost-locale1.55-dev
+    - libboost-locale-dev
     - libmyodbc
     - libsqliteodbc
     - mysql-client-5.6
