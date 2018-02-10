@@ -59,11 +59,6 @@ ref:
     apt:
       sources: *sources
       packages: *packages
-  mariadb: &mariadb
-    mariadb: "10.0"
-    apt:
-      sources: *sources
-      packages: *packages
   vertica: &vertica
     apt:
       sources: *sources
@@ -115,10 +110,6 @@ matrix:
       compiler: gcc
       env: DB=postgresql DISABLE_LIBCXX=ON
       os: linux
-    - addons: *mariadb
-      compiler: gcc
-      env: DB=mariadb DISABLE_LIBCXX=ON
-      os: linux
     - addons: *vertica
       compiler: gcc
       env: DB=vertica DISABLE_LIBCXX=ON
@@ -132,7 +123,6 @@ matrix:
       os: osx
       osx_image: xcode8.3
   allow_failures:
-    - env: DB=mariadb DISABLE_LIBCXX=ON
     - env: DB=vertica DISABLE_LIBCXX=ON
 
 # before_install runs after matrix.addons.apt installation targets in the matrix
