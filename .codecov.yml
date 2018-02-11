@@ -1,0 +1,5 @@
+ignore:
+  - "doc"
+  - "example"
+  - "test/catch"
+  - "utility"
