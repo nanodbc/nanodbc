@@ -1,1 +1,0 @@
-before_script.mysql.sh
