@@ -38,6 +38,7 @@ ref:
     - cmake
     - cmake-data
     - g++-5
+    - lcov
     - libboost-locale-dev
     - libmyodbc
     - libsqliteodbc
