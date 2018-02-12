@@ -197,3 +197,13 @@ after_success:
       lcov --list coverage.info # debug info
       bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
     fi
+
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/92612206d50703891604
+    on_success: always # default: always
+    on_failure: always # default: always
+    on_start: always   # default: never
+    on_cancel: always # default: always
+    on_error: always # default: always
