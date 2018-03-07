@@ -28,7 +28,7 @@ struct mssql_fixture : public test_case_fixture
             connection_string_ = get_env("NANODBC_TEST_CONNSTR_MSSQL");
     }
 };
-}
+} // namespace
 
 TEST_CASE_METHOD(mssql_fixture, "test_driver", "[mssql][driver]")
 {
@@ -441,6 +441,31 @@ TEST_CASE_METHOD(mssql_fixture, "test_simple", "[mssql]")
 TEST_CASE_METHOD(mssql_fixture, "test_string", "[mssql][string]")
 {
     test_string();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_string_with_nvarchar_max", "[mssql][string]")
+{
+    nanodbc::connection connection = connect();
+    drop_table(connection, NANODBC_TEXT("test_string_with_nvarchar_max"));
+    execute(
+        connection, NANODBC_TEXT("create table test_string_with_nvarchar_max (s nvarchar(max));"));
+    execute(
+        connection,
+        NANODBC_TEXT("insert into test_string_with_nvarchar_max(s) ")
+            NANODBC_TEXT("values (REPLICATE(CAST(\'a\' AS nvarchar(MAX)), 15000))"));
+
+    nanodbc::result results =
+        execute(connection, NANODBC_TEXT("select s from test_string_with_nvarchar_max;"));
+    REQUIRE(results.next());
+
+    nanodbc::string select;
+    results.get_ref(0, select);
+    REQUIRE(select.size() == 15000);
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_string_with_varchar_max", "[mssql][string]")
+{
+    test_string_with_varchar_max();
 }
 
 TEST_CASE_METHOD(mssql_fixture, "test_string_vector", "[mssql][string]")

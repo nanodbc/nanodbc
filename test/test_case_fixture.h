@@ -1396,6 +1396,27 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(ref == name);
     }
 
+    void test_string_with_varchar_max()
+    {
+        nanodbc::connection connection = connect();
+        drop_table(connection, NANODBC_TEXT("test_string_with_varchar_max"));
+        execute(
+            connection,
+            NANODBC_TEXT("create table test_string_with_varchar_max (s varchar(max));"));
+        execute(
+            connection,
+            NANODBC_TEXT("insert into test_string_with_varchar_max(s) ")
+                NANODBC_TEXT("values (REPLICATE(CAST(\'a\' AS varchar(MAX)), 15000))"));
+
+        nanodbc::result results =
+            execute(connection, NANODBC_TEXT("select s from test_string_with_varchar_max;"));
+        REQUIRE(results.next());
+
+        nanodbc::string select;
+        results.get_ref(0, select);
+        REQUIRE(select.size() == 15000);
+    }
+
     void test_string_vector()
     {
         nanodbc::connection connection = connect();
