@@ -161,6 +161,7 @@ matrix:
       osx_image: xcode8.3
 
   allow_failures:
+    - os: osx
     - env: DB=sqlite ENABLE_UNICODE=ON
     - env: DB=sqlite ENABLE_UNICODE=ON ENABLE_BOOST=ON
     - env: DB=vertica
