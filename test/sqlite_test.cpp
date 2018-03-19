@@ -80,7 +80,11 @@ TEST_CASE_METHOD(sqlite_fixture, "test_affected_rows", "[sqlite][affected_rows]"
         // then DROP TABLE
         {
             auto result2 = execute(conn, NANODBC_TEXT("DROP TABLE nanodbc_test_temp_table"));
-            REQUIRE(result2.affected_rows() == 2);
+
+            // NOTE: Older SQLite ODBC seem to return value cached from previous executions.
+            //       Since SQLite ODBC 0.9996, this buggy behaviour has been fixed and
+            //       now SQLRowCount always returns 0 for any DLL statement.
+            REQUIRE_THAT(result2.affected_rows(), nanodbc::test::IsAnyOf({0, 2}));
         }
     }
 
@@ -91,7 +95,10 @@ TEST_CASE_METHOD(sqlite_fixture, "test_affected_rows", "[sqlite][affected_rows]"
         execute(conn, NANODBC_TEXT("INSERT INTO nanodbc_test_temp_table VALUES (2)"));
 
         auto result = execute(conn, NANODBC_TEXT("DROP TABLE nanodbc_test_temp_table"));
-        REQUIRE(result.affected_rows() == 1);
+        // NOTE: Older SQLite ODBC seem to return value cached from previous executions.
+        //       Since SQLite ODBC 0.9996, this buggy behaviour has been fixed and
+        //       now SQLRowCount always returns 0 for any DLL statement.
+        REQUIRE_THAT(result.affected_rows(), nanodbc::test::IsAnyOf({0, 1}));
     }
 }
 #endif
