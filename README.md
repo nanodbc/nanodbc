@@ -15,7 +15,7 @@ user information, example usage, propaganda, and detailed source level documenta
 
 | Branch |  Linux/OSX | Windows | Coverage | Coverity | Documentation |
 |:--- |:--- |:--- |:--- |:---|:---|
-| `master`  | [![master][travis-badge-master]][travis] | [![master][appveyor-badge]][appveyor] | [![codecov](https://codecov.io/gh/nanodbc/nanodbc/branch/master/graph/badge.svg)](https://codecov.io/gh/nanodbc/nanodbc) | [![coverity_scan][coverity-badge]][coverity] | [![CircleCI](https://circleci.com/gh/nanodbc/nanodbc/tree/master.svg?style=svg)](https://circleci.com/gh/nanodbc/nanodbc/tree/master) |
+| `master`  | [![master][travis-badge-master]][travis] | [![master][appveyor-badge]][appveyor] | [![codecov](https://codecov.io/gh/nanodbc/nanodbc/branch/master/graph/badge.svg)](https://codecov.io/gh/nanodbc/nanodbc) | [![coverity_scan][coverity-badge]][coverity] | [![CircleCI](https://circleci.com/gh/nanodbc/nanodbc/tree/master.svg?style=shield)](https://circleci.com/gh/nanodbc/nanodbc/tree/master) |
 | `latest` | [![latest][travis-badge-latest]][travis] | &nbsp; | &nbsp; | &nbsp; | &nbsp; |
 | `release` | [![release][travis-badge-release]][travis] | &nbsp; | &nbsp; | &nbsp; | &nbsp; |
 
