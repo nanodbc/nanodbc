@@ -1,7 +1,6 @@
 {
-  // CMakeSettings.json for CMake integration with Visual Studio 2017
-  // See https://go.microsoft.com//fwlink//?linkid=834763 for more information about this file.
-
+  "_comment": "CMakeSettings.json for building Boost.GIL tests and examples. See https://go.microsoft.com//fwlink//?linkid=834763 for more information about CMake integration with Visual Studio 2017 and this file.",
+  
   "environments": [
     {
       "BuildDir": "${workspaceRoot}\\_build"
