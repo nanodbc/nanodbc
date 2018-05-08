@@ -418,7 +418,7 @@ type_incompatible_error::type_incompatible_error()
 {
 }
 
-const char* type_incompatible_error::what() const NANODBC_NOEXCEPT
+const char* type_incompatible_error::what() const noexcept
 {
     return std::runtime_error::what();
 }
@@ -428,7 +428,7 @@ null_access_error::null_access_error()
 {
 }
 
-const char* null_access_error::what() const NANODBC_NOEXCEPT
+const char* null_access_error::what() const noexcept
 {
     return std::runtime_error::what();
 }
@@ -438,7 +438,7 @@ index_range_error::index_range_error()
 {
 }
 
-const char* index_range_error::what() const NANODBC_NOEXCEPT
+const char* index_range_error::what() const noexcept
 {
     return std::runtime_error::what();
 }
@@ -448,7 +448,7 @@ programming_error::programming_error(const std::string& info)
 {
 }
 
-const char* programming_error::what() const NANODBC_NOEXCEPT
+const char* programming_error::what() const noexcept
 {
     return std::runtime_error::what();
 }
@@ -462,17 +462,17 @@ database_error::database_error(void* handle, short handle_type, const std::strin
               recent_error(handle, handle_type, native_error, sql_state);
 }
 
-const char* database_error::what() const NANODBC_NOEXCEPT
+const char* database_error::what() const noexcept
 {
     return message.c_str();
 }
 
-const long database_error::native() const NANODBC_NOEXCEPT
+const long database_error::native() const noexcept
 {
     return native_error;
 }
 
-const std::string database_error::state() const NANODBC_NOEXCEPT
+const std::string database_error::state() const noexcept
 {
     return sql_state;
 }
@@ -833,7 +833,7 @@ public:
         }
     }
 
-    ~connection_impl() NANODBC_NOEXCEPT
+    ~connection_impl() noexcept
     {
         try
         {
@@ -1153,7 +1153,7 @@ public:
         conn_.ref_transaction();
     }
 
-    ~transaction_impl() NANODBC_NOEXCEPT
+    ~transaction_impl() noexcept
     {
         if (!committed_)
         {
@@ -1192,7 +1192,7 @@ public:
         }
     }
 
-    void rollback() NANODBC_NOEXCEPT
+    void rollback() noexcept
     {
         if (committed_)
             return;
@@ -1281,7 +1281,7 @@ public:
         prepare(conn, query, timeout);
     }
 
-    ~statement_impl() NANODBC_NOEXCEPT
+    ~statement_impl() noexcept
     {
         if (open() && connected())
         {
@@ -1674,7 +1674,7 @@ public:
         return cols;
     }
 
-    void reset_parameters() NANODBC_NOEXCEPT { NANODBC_CALL(SQLFreeStmt, stmt_, SQL_RESET_PARAMS); }
+    void reset_parameters() noexcept { NANODBC_CALL(SQLFreeStmt, stmt_, SQL_RESET_PARAMS); }
 
     short parameters() const
     {
@@ -2207,7 +2207,7 @@ public:
         auto_bind();
     }
 
-    ~result_impl() NANODBC_NOEXCEPT { cleanup_bound_columns(); }
+    ~result_impl() noexcept { cleanup_bound_columns(); }
 
     void* native_statement_handle() const { return stmt_.native_statement_handle(); }
 
@@ -2215,7 +2215,7 @@ public:
 
     long affected_rows() const { return stmt_.affected_rows(); }
 
-    long rows() const NANODBC_NOEXCEPT
+    long rows() const noexcept
     {
         NANODBC_ASSERT(row_count_ <= static_cast<SQLULEN>(std::numeric_limits<long>::max()));
         return static_cast<long>(row_count_);
@@ -2322,7 +2322,7 @@ public:
         return static_cast<unsigned long>(pos) + rowset_position_;
     }
 
-    bool at_end() const NANODBC_NOEXCEPT
+    bool at_end() const noexcept
     {
         if (at_end_)
             return true;
@@ -2568,7 +2568,7 @@ private:
     template <class T, typename std::enable_if<is_character<T>::value, int>::type = 0>
     void get_ref_from_string_column(short column, T& result) const;
 
-    void before_move() NANODBC_NOEXCEPT
+    void before_move() noexcept
     {
         for (short i = 0; i < bound_columns_size_; ++i)
         {
@@ -2580,7 +2580,7 @@ private:
         }
     }
 
-    void release_bound_resources(short column) NANODBC_NOEXCEPT
+    void release_bound_resources(short column) noexcept
     {
         NANODBC_ASSERT(column < bound_columns_size_);
         bound_column& col = bound_columns_[column];
@@ -2589,7 +2589,7 @@ private:
         col.clen_ = 0;
     }
 
-    void cleanup_bound_columns() NANODBC_NOEXCEPT
+    void cleanup_bound_columns() noexcept
     {
         before_move();
         delete[] bound_columns_;
@@ -3493,9 +3493,10 @@ connection::connection(const connection& rhs)
 {
 }
 
-#ifndef NANODBC_NO_MOVE_CTOR
-connection::connection(connection&& rhs) NANODBC_NOEXCEPT : impl_(std::move(rhs.impl_)) {}
-#endif
+connection::connection(connection&& rhs) noexcept
+    : impl_(std::move(rhs.impl_))
+{
+}
 
 connection& connection::operator=(connection rhs)
 {
@@ -3503,7 +3504,7 @@ connection& connection::operator=(connection rhs)
     return *this;
 }
 
-void connection::swap(connection& rhs) NANODBC_NOEXCEPT
+void connection::swap(connection& rhs) noexcept
 {
     using std::swap;
     swap(impl_, rhs.impl_);
@@ -3519,7 +3520,7 @@ connection::connection(const string& connection_string, long timeout)
 {
 }
 
-connection::~connection() NANODBC_NOEXCEPT {}
+connection::~connection() noexcept {}
 
 void connection::connect(const string& dsn, const string& user, const string& pass, long timeout)
 {
@@ -3656,9 +3657,10 @@ transaction::transaction(const transaction& rhs)
 {
 }
 
-#ifndef NANODBC_NO_MOVE_CTOR
-transaction::transaction(transaction&& rhs) NANODBC_NOEXCEPT : impl_(std::move(rhs.impl_)) {}
-#endif
+transaction::transaction(transaction&& rhs) noexcept
+    : impl_(std::move(rhs.impl_))
+{
+}
 
 transaction& transaction::operator=(transaction rhs)
 {
@@ -3666,20 +3668,20 @@ transaction& transaction::operator=(transaction rhs)
     return *this;
 }
 
-void transaction::swap(transaction& rhs) NANODBC_NOEXCEPT
+void transaction::swap(transaction& rhs) noexcept
 {
     using std::swap;
     swap(impl_, rhs.impl_);
 }
 
-transaction::~transaction() NANODBC_NOEXCEPT {}
+transaction::~transaction() noexcept {}
 
 void transaction::commit()
 {
     impl_->commit();
 }
 
-void transaction::rollback() NANODBC_NOEXCEPT
+void transaction::rollback() noexcept
 {
     impl_->rollback();
 }
@@ -3731,9 +3733,10 @@ statement::statement(class connection& conn)
 {
 }
 
-#ifndef NANODBC_NO_MOVE_CTOR
-statement::statement(statement&& rhs) NANODBC_NOEXCEPT : impl_(std::move(rhs.impl_)) {}
-#endif
+statement::statement(statement&& rhs) noexcept
+    : impl_(std::move(rhs.impl_))
+{
+}
 
 statement::statement(class connection& conn, const string& query, long timeout)
     : impl_(new statement_impl(conn, query, timeout))
@@ -3751,13 +3754,13 @@ statement& statement::operator=(statement rhs)
     return *this;
 }
 
-void statement::swap(statement& rhs) NANODBC_NOEXCEPT
+void statement::swap(statement& rhs) noexcept
 {
     using std::swap;
     swap(impl_, rhs.impl_);
 }
 
-statement::~statement() NANODBC_NOEXCEPT {}
+statement::~statement() noexcept {}
 
 void statement::open(class connection& conn)
 {
@@ -3913,7 +3916,7 @@ short statement::parameters() const
     return impl_->parameters();
 }
 
-void statement::reset_parameters() NANODBC_NOEXCEPT
+void statement::reset_parameters() noexcept
 {
     impl_->reset_parameters();
 }
@@ -4570,16 +4573,17 @@ result::result()
 {
 }
 
-result::~result() NANODBC_NOEXCEPT {}
+result::~result() noexcept {}
 
 result::result(statement stmt, long rowset_size)
     : impl_(new result_impl(stmt, rowset_size))
 {
 }
 
-#ifndef NANODBC_NO_MOVE_CTOR
-result::result(result&& rhs) NANODBC_NOEXCEPT : impl_(std::move(rhs.impl_)) {}
-#endif
+result::result(result&& rhs) noexcept
+    : impl_(std::move(rhs.impl_))
+{
+}
 
 result::result(const result& rhs)
     : impl_(rhs.impl_)
@@ -4592,7 +4596,7 @@ result& result::operator=(result rhs)
     return *this;
 }
 
-void result::swap(result& rhs) NANODBC_NOEXCEPT
+void result::swap(result& rhs) noexcept
 {
     using std::swap;
     swap(impl_, rhs.impl_);
@@ -4603,7 +4607,7 @@ void* result::native_statement_handle() const
     return impl_->native_statement_handle();
 }
 
-long result::rowset_size() const NANODBC_NOEXCEPT
+long result::rowset_size() const noexcept
 {
     return impl_->rowset_size();
 }
@@ -4613,7 +4617,7 @@ long result::affected_rows() const
     return impl_->affected_rows();
 }
 
-long result::rows() const NANODBC_NOEXCEPT
+long result::rows() const noexcept
 {
     return impl_->rows();
 }
@@ -4670,7 +4674,7 @@ unsigned long result::position() const
     return impl_->position();
 }
 
-bool result::at_end() const NANODBC_NOEXCEPT
+bool result::at_end() const noexcept
 {
     return impl_->at_end();
 }
