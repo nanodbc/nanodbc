@@ -200,14 +200,6 @@ typedef unspecified - type string;
 typedef unspecified - type null_type;
 #endif
 
-#if defined(_MSC_VER) && _MSC_VER <= 1800
-// These versions of Visual C++ do not yet support \c noexcept or \c std::move.
-#define NANODBC_NOEXCEPT
-#define NANODBC_NO_MOVE_CTOR
-#else
-#define NANODBC_NOEXCEPT noexcept
-#endif
-
 #if __cplusplus >= 201402L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201402L)
 // [[deprecated]] is only available in C++14
 #define NANODBC_DEPRECATED [[deprecated]]
@@ -252,7 +244,7 @@ class type_incompatible_error : public std::runtime_error
 {
 public:
     type_incompatible_error();
-    const char* what() const NANODBC_NOEXCEPT;
+    const char* what() const noexcept;
 };
 
 /// \brief Accessed null data.
@@ -261,7 +253,7 @@ class null_access_error : public std::runtime_error
 {
 public:
     null_access_error();
-    const char* what() const NANODBC_NOEXCEPT;
+    const char* what() const noexcept;
 };
 
 /// \brief Index out of range.
@@ -270,7 +262,7 @@ class index_range_error : public std::runtime_error
 {
 public:
     index_range_error();
-    const char* what() const NANODBC_NOEXCEPT;
+    const char* what() const noexcept;
 };
 
 /// \brief Programming logic error.
@@ -279,7 +271,7 @@ class programming_error : public std::runtime_error
 {
 public:
     explicit programming_error(const std::string& info);
-    const char* what() const NANODBC_NOEXCEPT;
+    const char* what() const noexcept;
 };
 
 /// \brief General database error.
@@ -292,9 +284,9 @@ public:
     /// \param handle_type The native ODBC handle type code for the given handle.
     /// \param info Additional info that will be appended to the beginning of the error message.
     database_error(void* handle, short handle_type, const std::string& info = "");
-    const char* what() const NANODBC_NOEXCEPT;
-    const long native() const NANODBC_NOEXCEPT;
-    const std::string state() const NANODBC_NOEXCEPT;
+    const char* what() const noexcept;
+    const long native() const noexcept;
+    const std::string state() const noexcept;
 
 private:
     long native_error;
@@ -404,26 +396,24 @@ public:
     /// Copy constructor.
     transaction(const transaction& rhs);
 
-#ifndef NANODBC_NO_MOVE_CTOR
     /// Move constructor.
-    transaction(transaction&& rhs) NANODBC_NOEXCEPT;
-#endif
+    transaction(transaction&& rhs) noexcept;
 
     /// Assignment.
     transaction& operator=(transaction rhs);
 
     /// Member swap.
-    void swap(transaction& rhs) NANODBC_NOEXCEPT;
+    void swap(transaction& rhs) noexcept;
 
     /// \brief If this transaction has not been committed, will will rollback any modifying ops.
-    ~transaction() NANODBC_NOEXCEPT;
+    ~transaction() noexcept;
 
     /// \brief Commits transaction immediately.
     /// \throws database_error
     void commit();
 
     /// \brief Marks this transaction for rollback.
-    void rollback() NANODBC_NOEXCEPT;
+    void rollback() noexcept;
 
     /// Returns the connection object.
     class connection& connection();
@@ -491,20 +481,18 @@ public:
     /// \brief Copy constructor.
     statement(const statement& rhs);
 
-#ifndef NANODBC_NO_MOVE_CTOR
     /// \brief Move constructor.
-    statement(statement&& rhs) NANODBC_NOEXCEPT;
-#endif
+    statement(statement&& rhs) noexcept;
 
     /// \brief Assignment.
     statement& operator=(statement rhs);
 
     /// \brief Member swap.
-    void swap(statement& rhs) NANODBC_NOEXCEPT;
+    void swap(statement& rhs) noexcept;
 
     /// \brief Closes the statement.
     /// \see close()
-    ~statement() NANODBC_NOEXCEPT;
+    ~statement() noexcept;
 
     /// \brief Creates a statement for the given connection.
     /// \param conn The connection where the statement will be executed.
@@ -731,7 +719,7 @@ public:
     short columns() const;
 
     /// \brief Resets all currently bound parameters.
-    void reset_parameters() NANODBC_NOEXCEPT;
+    void reset_parameters() noexcept;
 
     /// \brief Returns the number of parameters in the statement.
     /// \throws database_error
@@ -1016,16 +1004,14 @@ public:
     /// Copy constructor.
     connection(const connection& rhs);
 
-#ifndef NANODBC_NO_MOVE_CTOR
     /// Move constructor.
-    connection(connection&& rhs) NANODBC_NOEXCEPT;
-#endif
+    connection(connection&& rhs) noexcept;
 
     /// Assignment.
     connection& operator=(connection rhs);
 
     /// Member swap.
-    void swap(connection&) NANODBC_NOEXCEPT;
+    void swap(connection&) noexcept;
 
     /// \brief Create new connection object and immediately connect to the given data source.
     ///
@@ -1054,7 +1040,7 @@ public:
     ///
     /// Will not throw even if disconnecting causes some kind of error and raises an exception.
     /// If you explicitly need to know if disconnect() succeeds, call it directly.
-    ~connection() NANODBC_NOEXCEPT;
+    ~connection() noexcept;
 
     /// \brief Connect to the given data source.
     /// \param dsn The name of the data source.
@@ -1203,34 +1189,32 @@ public:
     result();
 
     /// \brief Free result set.
-    ~result() NANODBC_NOEXCEPT;
+    ~result() noexcept;
 
     /// \brief Copy constructor.
     result(const result& rhs);
 
-#ifndef NANODBC_NO_MOVE_CTOR
     /// \brief Move constructor.
-    result(result&& rhs) NANODBC_NOEXCEPT;
-#endif
+    result(result&& rhs) noexcept;
 
     /// \brief Assignment.
     result& operator=(result rhs);
 
     /// \brief Member swap.
-    void swap(result& rhs) NANODBC_NOEXCEPT;
+    void swap(result& rhs) noexcept;
 
     /// \brief Returns the native ODBC statement handle.
     void* native_statement_handle() const;
 
     /// \brief The rowset size for this result set.
-    long rowset_size() const NANODBC_NOEXCEPT;
+    long rowset_size() const noexcept;
 
     /// \brief Number of affected rows by the request or -1 if the affected rows is not available.
     /// \throws database_error
     long affected_rows() const;
 
     /// \brief Rows in the current rowset or 0 if the number of rows is not available.
-    long rows() const NANODBC_NOEXCEPT;
+    long rows() const noexcept;
 
     /// \brief Returns the number of columns in a result set.
     /// \throws database_error
@@ -1283,7 +1267,7 @@ public:
     unsigned long position() const;
 
     /// \brief Returns true if there are no more results in the current result set.
-    bool at_end() const NANODBC_NOEXCEPT;
+    bool at_end() const noexcept;
 
     /// \brief Gets data from the given column of the current rowset.
     ///

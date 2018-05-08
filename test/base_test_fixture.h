@@ -14,15 +14,6 @@
 #include <locale>
 #include <sstream>
 
-#if defined(_MSC_VER) && _MSC_VER <= 1800
-// These versions of Visual C++ do not yet support noexcept or override.
-#define NANODBC_NOEXCEPT
-#define NANODBC_OVERRIDE
-#else
-#define NANODBC_NOEXCEPT noexcept
-#define NANODBC_OVERRIDE override
-#endif
-
 #ifdef NANODBC_ENABLE_BOOST
 #include <boost/locale/encoding_utf.hpp>
 #elif defined(__GNUC__) && __GNUC__ < 5
@@ -201,7 +192,7 @@ struct base_test_fixture
             data_path_ = nanodbc::test::convert(get_env("TEST_NANODBC_DATADIR"));
     }
 
-    virtual ~base_test_fixture() NANODBC_NOEXCEPT {}
+    virtual ~base_test_fixture() noexcept {}
 
     // Utilities
 

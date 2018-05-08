@@ -23,9 +23,9 @@ struct sqlite_fixture : public test_case_fixture
         sqlite_cleanup(); // in case prior test exited without proper cleanup
     }
 
-    virtual ~sqlite_fixture() NANODBC_NOEXCEPT { sqlite_cleanup(); }
+    virtual ~sqlite_fixture() noexcept { sqlite_cleanup(); }
 
-    void sqlite_cleanup() NANODBC_NOEXCEPT
+    void sqlite_cleanup() noexcept
     {
         int success = std::remove("nanodbc.db");
         (void)success;
