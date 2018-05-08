@@ -1,4 +1,4 @@
-﻿#ifndef NANODBC_TEST_BASE_FIXTURE_H
+#ifndef NANODBC_TEST_BASE_FIXTURE_H
 #define NANODBC_TEST_BASE_FIXTURE_H
 
 #include "catch/catch.hpp"

@@ -1,4 +1,4 @@
-﻿#ifndef NANODBC_UNICODE_UTILS_H
+#ifndef NANODBC_UNICODE_UTILS_H
 #define NANODBC_UNICODE_UTILS_H
 
 #include <nanodbc/nanodbc.h>

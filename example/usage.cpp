@@ -1,4 +1,4 @@
-﻿#include "example_unicode_utils.h"
+#include "example_unicode_utils.h"
 #include <nanodbc/nanodbc.h>
 
 #include <algorithm>
