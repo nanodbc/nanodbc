@@ -1,6 +1,5 @@
 {
-  // launch.vs.json with reasonable defaults for CMake integration with Visual Studio 2017
-  // See https://aka.ms/cmake for more information about this file.
+  "_comment": "launch.vs.json with reasonable defaults for CMake integration with Visual Studio 2017. See https://aka.ms/cmake for more information about this file.",
 
   "version": "0.2.1",
   "defaults": {},
@@ -12,7 +11,7 @@
       "name": "mssql_tests.exe (test\\mssql_tests.exe)",
       "args": [
         "-z",
-        "\"Driver={ODBC Driver 11 for SQL Server};Server=(localdb)\\MSSQL13DEV;Integrated Security=True;Database=nanodbc;MARS_Connection=Yes;\""
+        "\"Driver={ODBC Driver 11 for SQL Server};Server=(localdb)\\MSSQLLocalDB;Integrated Security=True;Database=nanodbc;MARS_Connection=Yes;\""
       ]
     },
     {

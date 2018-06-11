@@ -18,10 +18,14 @@
 # CLion
 /.idea
 
+# VS2017 / VSCode
+/.vs*
+/CMakeSettings.json
+/launch.vs.json
+
 # Miscelenaous
 *.log
 /.vagrant
-/.vs*
 /*build*/
 /[Dd]ebug
 /[Rr]elease
