@@ -11,7 +11,7 @@
       "name": "mssql_tests.exe (test\\mssql_tests.exe)",
       "args": [
         "-z",
-        "\"Driver={ODBC Driver 11 for SQL Server};Server=(localdb)\\MSSQLLocalDB;Integrated Security=True;Database=nanodbc;MARS_Connection=Yes;\""
+        "\"Driver={ODBC Driver 17 for SQL Server};Server=(localdb)\\MSSQLLocalDB;Integrated Security=True;Database=nanodbc;MARS_Connection=Yes;\""
       ]
     },
     {
