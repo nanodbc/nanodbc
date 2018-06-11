@@ -2924,7 +2924,9 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
                     buffer,          // TargetValuePtr
                     buffer_size,     // BufferLength
                     &ValueLenOrInd); // StrLen_or_IndPtr
-                if (ValueLenOrInd > 0)
+                if (ValueLenOrInd == SQL_NO_TOTAL)
+                    out.append(buffer, col.ctype_ == SQL_C_BINARY ? buffer_size : buffer_size - 1);
+                else if (ValueLenOrInd > 0)
                     out.append(
                         buffer,
                         std::min<std::size_t>(
@@ -2980,7 +2982,9 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
                     buffer,          // TargetValuePtr
                     buffer_size,     // BufferLength
                     &ValueLenOrInd); // StrLen_or_IndPtr
-                if (ValueLenOrInd > 0)
+                if (ValueLenOrInd == SQL_NO_TOTAL)
+                    out.append(buffer, (buffer_size / sizeof(wide_char_t)) - 1);
+                else if (ValueLenOrInd > 0)
                     out.append(
                         buffer,
                         std::min<std::size_t>(
@@ -3261,7 +3265,7 @@ auto from_string(std::string const& s, R)
         throw std::range_error("from_string argument out of range");
     return static_cast<R>(integer);
 }
-}
+} // namespace detail
 
 template <typename R>
 auto from_string(std::string const& s) -> R
