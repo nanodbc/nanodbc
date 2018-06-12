@@ -2928,6 +2928,12 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
                 {
                     std::size_t append_size =
                         col.ctype_ == SQL_C_BINARY ? buffer_size : strlen(buffer);
+                    // For some driver and database (e.g. FreeTDS + SQL Server),
+                    // it is likely that rc == SQL_SUCCESS_WITH_INFO is always true,
+                    // causing infinite loop, but buffer is filled
+                    // with all zeros. Sometimes buffer may have multiple trailing zeros.
+                    // Here append_size is used to break potential infinite loop and
+                    // determine the number of chars to append in a more robust manner.
                     if (append_size == 0)
                     {
                         rc = SQL_SUCCESS;
