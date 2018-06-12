@@ -510,10 +510,9 @@ TEST_CASE_METHOD(mssql_fixture, "test_string_with_interrupting_zeros", "[mssql][
     nanodbc::string chunk3 = NANODBC_TEXT("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC");
     nanodbc::result results = execute(
         connection,
-        NANODBC_TEXT(
-            "select cast('" + chunk1 + "' + CHAR(0) + '" + chunk2 +
-            "' + CHAR(0) + CHAR(0) + CHAR(0) + '" + chunk3 +
-            "' + CHAR(0) + CHAR(0) + CHAR(0) as varchar(max)) as v"));
+        NANODBC_TEXT("select cast('") + chunk1 + NANODBC_TEXT("' + CHAR(0) + '") + chunk2 +
+            NANODBC_TEXT("' + CHAR(0) + CHAR(0) + CHAR(0) + '") + chunk3 +
+            NANODBC_TEXT("' + CHAR(0) + CHAR(0) + CHAR(0) as varchar(max)) as v"));
     REQUIRE(results.next());
 
     nanodbc::string select;
