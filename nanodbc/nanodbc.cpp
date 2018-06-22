@@ -337,9 +337,9 @@ recent_error(SQLHANDLE handle, SQLSMALLINT handle_type, long& native, std::strin
     sql_message[0] = '\0';
 
     SQLINTEGER i = 1;
-    SQLINTEGER native_error;
-    SQLSMALLINT total_bytes;
-    NANODBC_SQLCHAR sql_state[6];
+    SQLINTEGER native_error = 0;
+    SQLSMALLINT total_bytes = 0;
+    NANODBC_SQLCHAR sql_state[6] = {0};
     RETCODE rc;
 
     do
@@ -395,7 +395,8 @@ recent_error(SQLHANDLE handle, SQLSMALLINT handle_type, long& native, std::strin
     } while (rc != SQL_NO_DATA);
 
     convert(result, rvalue);
-    state = std::string(&sql_state[0], &sql_state[size(sql_state) - 1]);
+    if (size(sql_state) > 0)
+        state = std::string(&sql_state[0], &sql_state[size(sql_state) - 1]);
     native = native_error;
     std::string status = state;
     status += ": ";
@@ -1319,7 +1320,12 @@ public:
         NANODBC_CALL_RC(SQLAllocHandle, rc, SQL_HANDLE_STMT, conn.native_dbc_handle(), &stmt_);
         open_ = success(rc);
         if (!open_)
-            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        {
+            if (!stmt_)
+                NANODBC_THROW_DATABASE_ERROR(conn.native_dbc_handle(), SQL_HANDLE_DBC);
+            else
+                NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        }
         conn_ = conn;
     }
 
