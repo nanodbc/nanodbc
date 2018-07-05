@@ -11,14 +11,32 @@
 # Scan the script below and fish for user/password/etc. details.
 #
 Vagrant.configure(2) do |config|
-  config.vm.box = "bento/ubuntu-17.04"
-  config.vm.network "private_network", type: "dhcp"
-  config.vm.network :forwarded_port, host: 2433, guest: 1433  # SQLServer
-  config.vm.network :forwarded_port, host: 6432, guest: 5432  # PostgreSQL
-  config.vm.provider "virtualbox" do |vb|
-    vb.memory = "4096"
+  config.vm.box_check_update = true
+
+  config.vm.provider "virtualbox" do |vb, override|
+    vb.name = "vagrant-nanodbc"
+    vb.memory = "2048"
     vb.cpus = 2
+    override.vm.box = "bento/ubuntu-18.04"
+    override.vm.network "private_network", type: "dhcp"
+    override.vm.network :forwarded_port, host: 2433, guest: 1433  # SQLServer
+    override.vm.network :forwarded_port, host: 6432, guest: 5432  # PostgreSQL
   end
+
+  config.vm.provider "hyperv" do |hv, override|
+    hv.vmname = "vagrant-nanodbc"
+    hv.memory = "2048"
+    hv.cpus = 2
+    override.vm.box = "synax/ubuntu-17-10-server"
+    override.vm.synced_folder ".", "/vagrant", disabled: true
+    # Windows (Build 16237+) comes with "Default Switch" to allow VMs to NAT host internet (any!) connection
+    # https://blogs.technet.microsoft.com/virtualization/2017/07/26/hyper-v-virtual-machine-gallery-and-networking-improvements/
+    # Apparently, this is an undocumented workaround to specify Hyper-V network in Vagrantfile.
+    # Otherwise, Vagrant will prompt listing Hyper-V Switch-es to select.
+    #override.vm.network "private_network", bridge: "Default Switch"
+    #override.vm.network "public_network", bridge: "External Switch"
+  end
+
   config.vm.provision "shell", inline: <<-SHELL
     ############################################################################
     # Environment

@@ -16,8 +16,6 @@ user information, example usage, propaganda, and detailed source level documenta
 | Branch |  Linux/OSX | Windows | Coverage | Coverity | Documentation |
 |:--- |:--- |:--- |:--- |:---|:---|
 | `master`  | [![master][travis-badge-master]][travis] | [![master][appveyor-badge]][appveyor] | [![codecov](https://codecov.io/gh/nanodbc/nanodbc/branch/master/graph/badge.svg)](https://codecov.io/gh/nanodbc/nanodbc) | [![coverity_scan][coverity-badge]][coverity] | [![CircleCI](https://circleci.com/gh/nanodbc/nanodbc/tree/master.svg?style=shield)](https://circleci.com/gh/nanodbc/nanodbc/tree/master) |
-| `latest` | [![latest][travis-badge-latest]][travis] | &nbsp; | &nbsp; | &nbsp; | &nbsp; |
-| `release` | [![release][travis-badge-release]][travis] | &nbsp; | &nbsp; | &nbsp; | &nbsp; |
 
 > **Note:** The Coverity status uses the [coverity_scan][nanodbc-coverity] branch.
 > When `master` has had a significant amount of work pushed to it,
@@ -47,16 +45,6 @@ Major features beyond what's already supported by ODBC are not within the scope 
 where the *nano* part of nanodbc becomes relevant: This library is _as minimal as possible_. That
 means no dependencies beyond standard C++ and typical ODBC headers. No features unsupported by
 existing ODBC API calls.
-
-## Branches
-
-| Version | Description |
-|:--- |:--- |
-| `release` | Most recent published version that's deemed "stable". Review the [changelog notes](CHANGELOG.md) to see if this version is right for you. |
-| `latest`  | Latest published version; please use this version if CI tests are all passing. **[See all available versions.][nanodbc-releases]** |
-| `master`  | Contains the latest development code, not yet ready for a published version. |
-| `v2.x.x`  | Targets C++14+. All future development will build upon this version. |
-| `v1.x.x`  | Supports C++03 and optionally C++11. *There is no longer any support for this version.* |
 
 ## Building
 
@@ -272,14 +260,6 @@ To do this manually instead, use the following steps &mdash; for example a minor
 3. `git commit -m "Preparing 2.10.0 release."`
 4. `git tag -f "v2.10.0"`
 5. `git push -f origin "v2.10.0"`
-6. `git push -f origin master:latest`
-
-### Release Process
-
-Release nanodbc with the `utility/release.sh` script. All this script does is push out the `master`
-branch to the `release` branch, indicating that a new "stable" published version of nanodbc exists.
-To do so manually, execute `git push -f origin master:release`. **Caution: Do this for versions
-deemed "stable" based on suitable criteria.**
 
 ## Future work
 
@@ -292,8 +272,7 @@ deemed "stable" based on suitable criteria.**
 - Clean up `bind_*` family of functions, reduce any duplication.
 - Improve documentation: The main website and API docs should be more responsive.
 - Provide more examples in documentation, more details, and point out any gotchas.
-- Versioned generated source level API documentation for `release` and `latest`.
-  For each major and minor published versions too?
+- Versioned generated source level API documentation for `matesr` and previous releases.
 - Add "HOWTO Build" documentation for Windows, OS X, and Linux.
 
 ---
@@ -332,9 +311,7 @@ deemed "stable" based on suitable criteria.**
 [vagrant]:      https://www.vagrantup.com/
 
 [travis]:               https://travis-ci.org/nanodbc/nanodbc
-[travis-badge-latest]:  https://travis-ci.org/nanodbc/nanodbc.svg?branch=latest
 [travis-badge-master]:  https://travis-ci.org/nanodbc/nanodbc.svg?branch=master
-[travis-badge-release]: https://travis-ci.org/nanodbc/nanodbc.svg?branch=release
 
 [appveyor]:         https://ci.appveyor.com/project/nanodbc/nanodbc?branch=master
 [appveyor-badge]:   https://ci.appveyor.com/api/projects/status/pvgwgg3qgdcnylp1/branch/master?svg=true

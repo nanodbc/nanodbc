@@ -2942,12 +2942,27 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
                     buffer,          // TargetValuePtr
                     buffer_size,     // BufferLength
                     &ValueLenOrInd); // StrLen_or_IndPtr
-                if (ValueLenOrInd > 0)
-                    out.append(
-                        buffer,
-                        std::min<std::size_t>(
-                            ValueLenOrInd,
-                            col.ctype_ == SQL_C_BINARY ? buffer_size : buffer_size - 1));
+                if (ValueLenOrInd == SQL_NO_TOTAL || ValueLenOrInd > 0)
+                {
+                    std::size_t append_size =
+                        col.ctype_ == SQL_C_BINARY ? buffer_size : std::strlen(buffer);
+                    // For some driver and database (e.g. FreeTDS + SQL Server),
+                    // it is likely that rc == SQL_SUCCESS_WITH_INFO is always true,
+                    // causing infinite loop, but buffer is filled
+                    // with all zeros. Sometimes buffer may have multiple trailing zeros.
+                    // Here append_size is used to break potential infinite loop and
+                    // determine the number of chars to append in a more robust manner.
+                    if (append_size == 0)
+                    {
+                        rc = SQL_SUCCESS;
+                        break;
+                    }
+                    if (ValueLenOrInd > 0)
+                    {
+                        append_size = std::min<std::size_t>(ValueLenOrInd, append_size);
+                    }
+                    out.append(buffer, append_size);
+                }
                 else if (ValueLenOrInd == SQL_NULL_DATA)
                     col.cbdata_[static_cast<size_t>(rowset_position_)] = (SQLINTEGER)SQL_NULL_DATA;
                 // Sequence of successful calls is:
@@ -2998,7 +3013,9 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
                     buffer,          // TargetValuePtr
                     buffer_size,     // BufferLength
                     &ValueLenOrInd); // StrLen_or_IndPtr
-                if (ValueLenOrInd > 0)
+                if (ValueLenOrInd == SQL_NO_TOTAL)
+                    out.append(buffer, (buffer_size / sizeof(wide_char_t)) - 1);
+                else if (ValueLenOrInd > 0)
                     out.append(
                         buffer,
                         std::min<std::size_t>(
@@ -3279,7 +3296,7 @@ auto from_string(std::string const& s, R)
         throw std::range_error("from_string argument out of range");
     return static_cast<R>(integer);
 }
-}
+} // namespace detail
 
 template <typename R>
 auto from_string(std::string const& s) -> R
