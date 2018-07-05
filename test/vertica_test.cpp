@@ -61,6 +61,11 @@ TEST_CASE_METHOD(vertica_fixture, "test_catalog_tables", "[vertica][catalog][tab
     test_catalog_tables();
 }
 
+TEST_CASE_METHOD(vertica_fixture, "test_connection_environment", "[vertica][connection]")
+{
+    test_connection_environment();
+}
+
 TEST_CASE_METHOD(vertica_fixture, "test_dbms_info", "[vertica][dmbs][metadata][info]")
 {
     test_dbms_info();

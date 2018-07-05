@@ -375,6 +375,11 @@ TEST_CASE_METHOD(mssql_fixture, "test_column_descriptor", "[mssql][columns]")
     test_column_descriptor();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_connection_environment", "[mssql][connection]")
+{
+    test_connection_environment();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_dbms_info", "[mssql][dmbs][metadata][info]")
 {
     test_dbms_info();

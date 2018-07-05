@@ -192,6 +192,11 @@ TEST_CASE_METHOD(sqlite_fixture, "test_column_descriptor", "[sqlite][columns]")
     test_column_descriptor();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "test_connection_environment", "[sqlite][connection]")
+{
+    test_connection_environment();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_date", "[sqlite][date]")
 {
     test_date();

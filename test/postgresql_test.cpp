@@ -83,6 +83,11 @@ TEST_CASE_METHOD(postgresql_fixture, "test_column_descriptor", "[postgresql][col
     test_column_descriptor();
 }
 
+TEST_CASE_METHOD(postgresql_fixture, "test_connection_environment", "[postgresql][connection]")
+{
+    test_connection_environment();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_dbms_info", "[postgresql][dmbs][metadata][info]")
 {
     test_dbms_info();
