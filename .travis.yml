@@ -175,8 +175,8 @@ before_install:
       echo "$TRAVIS_COMMIT_MESSAGE" | grep -E  '\[(skip travis|travis skip)\]'
       && echo "[skip travis] has been found, exiting."
       && exit 0 || true
-  - if [[ -f ${TRAVIS_BUILD_DIR}/utility/ci/travis/before_install.$TRAVIS_OS_NAME.sh ]]; then ${TRAVIS_BUILD_DIR}/utility/ci/travis/before_install.$TRAVIS_OS_NAME.sh; fi
-  - if [[ -f ${TRAVIS_BUILD_DIR}/utility/ci/travis/before_install.$DB.sh ]]; then ${TRAVIS_BUILD_DIR}/utility/ci/travis/before_install.$DB.sh; fi
+  - if [[ -f ${TRAVIS_BUILD_DIR}/utility/ci/travis/before_install.$TRAVIS_OS_NAME.sh ]]; then travis_retry ${TRAVIS_BUILD_DIR}/utility/ci/travis/before_install.$TRAVIS_OS_NAME.sh; fi
+  - if [[ -f ${TRAVIS_BUILD_DIR}/utility/ci/travis/before_install.$DB.sh ]]; then travis_retry ${TRAVIS_BUILD_DIR}/utility/ci/travis/before_install.$DB.sh; fi
 
 before_script:
   - if [[ -f ${TRAVIS_BUILD_DIR}/utility/ci/travis/before_script.$DB.sh ]]; then source ${TRAVIS_BUILD_DIR}/utility/ci/travis/before_script.$DB.sh; fi
@@ -187,7 +187,7 @@ before_script:
   - if [[ -s "$ODBCINI" ]]; then odbcinst -q -s; fi
 
 script:
-  - ${TRAVIS_BUILD_DIR}/utility/ci/travis/script.sh
+  - travis_retry ${TRAVIS_BUILD_DIR}/utility/ci/travis/script.sh
 
 after_success:
   - |
