@@ -722,6 +722,15 @@ TEST_CASE_METHOD(mssql_fixture, "test_datetimeoffset", "[mssql][datetime]")
     }
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_statement_with_empty_connection", "[mssql][statement]")
+{
+    nanodbc::connection c;
+    c.allocate();
+    nanodbc::statement s;
+    REQUIRE_THROWS_AS(s.open(c), nanodbc::database_error);
+    REQUIRE_THROWS_WITH(s.open(c), Catch::Contains("Connection"));
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_transaction", "[mssql][transaction]")
 {
     test_transaction();
