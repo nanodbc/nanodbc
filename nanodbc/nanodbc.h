@@ -113,11 +113,18 @@ namespace nanodbc
 // clang-format on
 
 /// \addtogroup macros Macros
-/// \brief Macros that nanodbc uses, can be overriden by users.
+/// \brief Configuration and utility macros that nanodbc uses, can be overriden by users.
 ///
 /// @{
-
 #ifdef DOXYGEN
+
+/// \def NANODBC_THROW_NO_SOURCE_LOCATION
+/// \brief Configures \c nanodbc::database_error message
+///
+/// If defined, removes source file name and line number from \c nanodbc::database_error message
+/// By default, nanodbc includes source location of exception in the error message.
+#define NANODBC_THROW_NO_SOURCE_LOCATION 1
+
 /// \def NANODBC_ASSERT(expression)
 /// \brief Assertion.
 ///
@@ -133,8 +140,8 @@ namespace nanodbc
 /// #endif
 /// \endcode
 #define NANODBC_ASSERT(expression) assert(expression)
-#endif
 
+#endif
 /// @}
 
 // You must explicitly request Unicode support by defining NANODBC_ENABLE_UNICODE at compile time.
