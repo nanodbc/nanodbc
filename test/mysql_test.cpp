@@ -34,6 +34,7 @@ TEST_CASE_METHOD(mysql_fixture, "test_affected_rows", "[mysql][affected_rows]")
         execute(conn, NANODBC_TEXT("DROP DATABASE IF EXISTS nanodbc_test_temp_db"));
         nanodbc::result result;
         result = execute(conn, NANODBC_TEXT("CREATE DATABASE nanodbc_test_temp_db"));
+        REQUIRE(result.has_affected_rows());
         REQUIRE(result.affected_rows() == 1);
         execute(conn, NANODBC_TEXT("USE nanodbc_test_temp_db"));
         result = execute(conn, NANODBC_TEXT("CREATE TABLE nanodbc_test_temp_table (i int)"));
@@ -43,6 +44,7 @@ TEST_CASE_METHOD(mysql_fixture, "test_affected_rows", "[mysql][affected_rows]")
     {
         nanodbc::result result;
         result = execute(conn, NANODBC_TEXT("INSERT INTO nanodbc_test_temp_table VALUES (1)"));
+        REQUIRE(result.has_affected_rows());
         REQUIRE(result.affected_rows() == 1);
         result = execute(conn, NANODBC_TEXT("INSERT INTO nanodbc_test_temp_table VALUES (2)"));
         REQUIRE(result.affected_rows() == 1);
@@ -50,6 +52,7 @@ TEST_CASE_METHOD(mysql_fixture, "test_affected_rows", "[mysql][affected_rows]")
     // SELECT
     {
         auto result = execute(conn, NANODBC_TEXT("SELECT i FROM nanodbc_test_temp_table"));
+        REQUIRE(result.has_affected_rows());
         REQUIRE(result.affected_rows() == 2);
     }
     // DELETE

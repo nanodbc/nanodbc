@@ -1311,7 +1311,7 @@ struct test_case_fixture : public base_test_fixture
             const bool affected_negative_one = results.affected_rows() == -1;
             const int affected = affected_four + affected_zero + affected_negative_one;
             REQUIRE(affected != 0);
-            if (!affected)
+            if (affected == 0)
             {
                 // Provide more verbose output if one of the above terms is false:
                 CHECK(affected_four);
