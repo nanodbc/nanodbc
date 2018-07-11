@@ -59,12 +59,14 @@ TEST_CASE_METHOD(sqlite_fixture, "test_affected_rows", "[sqlite][affected_rows]"
     // CREATE TABLE  (CREATE DATABASE not supported)
     {
         auto result = execute(conn, NANODBC_TEXT("CREATE TABLE nanodbc_test_temp_table (i int)"));
+        REQUIRE(result.has_affected_rows());
         REQUIRE(result.affected_rows() == 0);
     }
     // INSERT
     {
         nanodbc::result result;
         result = execute(conn, NANODBC_TEXT("INSERT INTO nanodbc_test_temp_table VALUES (1)"));
+        REQUIRE(result.has_affected_rows());
         REQUIRE(result.affected_rows() == 1);
         result = execute(conn, NANODBC_TEXT("INSERT INTO nanodbc_test_temp_table VALUES (2)"));
         REQUIRE(result.affected_rows() == 1);

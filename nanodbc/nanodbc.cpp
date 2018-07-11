@@ -2244,6 +2244,8 @@ public:
 
     long affected_rows() const { return stmt_.affected_rows(); }
 
+    bool has_affected_rows() const { return stmt_.affected_rows() != -1; }
+
     long rows() const noexcept
     {
         NANODBC_ASSERT(row_count_ <= static_cast<SQLULEN>(std::numeric_limits<long>::max()));
@@ -4671,6 +4673,11 @@ long result::rowset_size() const noexcept
 long result::affected_rows() const
 {
     return impl_->affected_rows();
+}
+
+bool result::has_affected_rows() const
+{
+    return impl_->has_affected_rows();
 }
 
 long result::rows() const noexcept

@@ -63,6 +63,7 @@ TEST_CASE_METHOD(mssql_fixture, "test_affected_rows", "[mssql][affected_rows]")
                 "IF DB_ID('nanodbc_test_temp_db') IS NOT NULL DROP DATABASE nanodbc_test_temp_db"));
         nanodbc::result result;
         result = execute(conn, NANODBC_TEXT("CREATE DATABASE nanodbc_test_temp_db"));
+        REQUIRE(!result.has_affected_rows());
         REQUIRE(result.affected_rows() == -1);
         execute(conn, NANODBC_TEXT("USE nanodbc_test_temp_db"));
         result = execute(conn, NANODBC_TEXT("CREATE TABLE nanodbc_test_temp_table (i int)"));
@@ -72,6 +73,7 @@ TEST_CASE_METHOD(mssql_fixture, "test_affected_rows", "[mssql][affected_rows]")
     {
         nanodbc::result result;
         result = execute(conn, NANODBC_TEXT("INSERT INTO nanodbc_test_temp_table VALUES (1)"));
+        REQUIRE(result.has_affected_rows());
         REQUIRE(result.affected_rows() == 1);
         result = execute(conn, NANODBC_TEXT("INSERT INTO nanodbc_test_temp_table VALUES (2)"));
         REQUIRE(result.affected_rows() == 1);
