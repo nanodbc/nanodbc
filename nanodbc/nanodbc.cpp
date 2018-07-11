@@ -482,9 +482,14 @@ const std::string database_error::state() const noexcept
 
 // Throwing exceptions using NANODBC_THROW_DATABASE_ERROR enables file name
 // and line numbers to be inserted into the error message. Useful for debugging.
+#ifdef NANODBC_THROW_NO_SOURCE_LOCATION
+#define NANODBC_THROW_DATABASE_ERROR(handle, handle_type)                                          \
+    throw nanodbc::database_error(handle, handle_type, "ODBC database error: ") /**/
+#else
 #define NANODBC_THROW_DATABASE_ERROR(handle, handle_type)                                          \
     throw nanodbc::database_error(                                                                 \
         handle, handle_type, __FILE__ ":" NANODBC_STRINGIZE(__LINE__) ": ") /**/
+#endif
 
 // clang-format off
 // 8888888b.           888             d8b 888
