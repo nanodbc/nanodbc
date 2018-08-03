@@ -174,8 +174,44 @@ TEST_CASE_METHOD(
     "test_large_blob_geometry",
     "[mssql][blob][binary][varbinary][geometry]")
 {
+    std::string filename{get_data_path("large_binary_object_geometry_wkb.txt")};
+    auto const hex = read_text_file(filename);
+
+    // Test executing direct INSERT statement with blob larger than max (eg. SQL Server 8000
+    // Bytes)
+    auto connection = connect();
+    auto ver = connection.dbms_version();
+    {
+        create_table(
+            connection,
+            NANODBC_TEXT("test_large_blob_geometry"),
+            NANODBC_TEXT("(i int, s nvarchar(256), data GEOMETRY)"));
+
+        nanodbc::string sql = NANODBC_TEXT("INSERT INTO test_large_blob_geometry (data,i,s) VALUES "
+                                           "(geometry::STGeomFromWKB(CONVERT(varbinary(max), '0x");
+        sql += nanodbc::test::convert(hex);
+        sql += NANODBC_TEXT("', 1), 0), 7, 'Fred')");
+
+        nanodbc::execute(connection, sql);
+    }
+}
+
+TEST_CASE_METHOD(
+    mssql_fixture,
+    "test_large_blob_geometry_with_bind_statement",
+    "[mssql][blob][binary][varbinary][geometry]")
+{
     if (get_env("DB") == NANODBC_TEXT("MSSQL2008"))
     {
+        // Batch insert using prepared statement does not work with SQL Server 2008 or earlier
+        // due to a bug in GEOMETRY column parameters handling/binding by the new driver:
+        //   [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]
+        //   The incoming tabular data stream (TDS) remote procedure call (RPC) protocol stream is
+        //   incorrect. Parameter 2 (""): The supplied value is not a valid instance of data type
+        //   geometry.
+        //
+        // The very old Microsoft SQL Server ODBC Driver, Driver={SQL Server}, seems to work with
+        // prepared statements as long as GEOMETRY column occurs last in the list of INSERT columns.
         WARN("test_large_blob_geometry skipped on AppVeyor with SQL Server 2008");
         return;
     }
@@ -187,20 +223,26 @@ TEST_CASE_METHOD(
         blob = from_hex(hex);
     }
 
-    // Test executing prepared statement with size of blbo larger than max (eg. SQL Server 8000
+    // Test executing prepared statement with size of blob larger than max (eg. SQL Server 8000
     // Bytes)
     auto connection = connect();
     {
         create_table(
-            connection, NANODBC_TEXT("test_large_blob_geometry"), NANODBC_TEXT("(data GEOMETRY)"));
+            connection,
+            NANODBC_TEXT("test_large_blob_geometry_with_bind"),
+            NANODBC_TEXT("(i int, s nvarchar(256), data GEOMETRY)"));
         nanodbc::statement stmt(connection);
         prepare(
             stmt,
-            NANODBC_TEXT("INSERT INTO test_large_blob_geometry (data) VALUES "
-                         "(geometry::STGeomFromWKB(?, 0))"));
+            NANODBC_TEXT("INSERT INTO test_large_blob_geometry_with_bind (i,s,data) VALUES "
+                         "(?,?,geometry::STGeomFromWKB(?, 0))"));
 
+        short i{9};
+        std::vector<nanodbc::string> s = {NANODBC_TEXT("Fred")};
         std::vector<std::vector<std::uint8_t>> rows = {blob};
-        stmt.bind(0, rows);
+        stmt.bind(0, &i);
+        stmt.bind_strings(1, s);
+        stmt.bind(2, rows);
         execute(stmt);
     }
 }
