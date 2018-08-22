@@ -56,5 +56,7 @@ cmake -DCMAKE_BUILD_TYPE=Release \
       ..
 make
 cd test
+make utility_tests
+ctest -VV --output-on-failure -R utility_tests
 make ${DB}_tests
 ctest -VV --output-on-failure -R ${DB}_tests

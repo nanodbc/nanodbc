@@ -171,6 +171,15 @@ test_script:
       if ($env:ANALYSIS) {
         Write-Host "Static analysis, skipping tests" -ForegroundColor Magenta
       } else {
+        $test_name = "utility_test"
+        Write-Host "Running $Env:CONFIGURATION build test: $test_name" -ForegroundColor Magenta
+        $cmd = 'ctest -V --output-on-failure -C ' + $Env:CONFIGURATION + ' -R ' + $test_name
+        iex "& $cmd"
+        if ($LastExitCode -ne 0) {
+          Write-Host "Tests failure, uploading Testing/Temporary/LastTest.log to artifacts" -ForegroundColor Magenta
+          Push-AppveyorArtifact Testing\Temporary\LastTest.log
+          $host.SetShouldExit($LastExitCode)
+        }
         if ($env:DB -Match "MSSQL2008") {
           $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 11 for SQL Server};Server=(local)\SQL2008R2SP2;Database=master;UID=sa;PWD=Password12!;"
           $test_name = "mssql_test"

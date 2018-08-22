@@ -267,63 +267,78 @@ inline std::size_t size(NANODBC_SQLCHAR const (&array)[N]) noexcept
     return n < N ? n : N - 1;
 }
 
-inline void convert(const wide_string& in, std::string& out)
+template <class T>
+inline void convert(T const* beg, size_t n, std::basic_string<T>& out)
+{
+    out.assign(beg, n);
+}
+
+inline void convert(wide_char_t const* beg, size_t n, std::string& out)
 {
 #ifdef NANODBC_ENABLE_BOOST
     using boost::locale::conv::utf_to_utf;
-    out = utf_to_utf<char>(in.c_str(), in.c_str() + in.size());
-#elif defined(__GNUC__) && (__GNUC__ < 5)
-    std::vector<wchar_t> characters(in.begin(), in.end());
-    const wchar_t* source = characters.data();
-    size_t size = wcsnrtombs(nullptr, &source, characters.size(), 0, nullptr);
-    if (size == std::string::npos)
-        throw std::range_error("UTF-16 -> UTF-8 conversion error");
-    out.resize(size);
-    wcsnrtombs(&out[0], &source, characters.size(), out.length(), nullptr);
-#elif defined(_MSC_VER) && (_MSC_VER >= 1900)
-    // Workaround for confirmed bug in VS2015 and VS2017 too
-    // See: https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
-    auto p = reinterpret_cast<unsigned short const*>(in.data());
-    out = std::wstring_convert<NANODBC_CODECVT_TYPE<unsigned short>, unsigned short>().to_bytes(
-        p, p + in.size());
+    out = utf_to_utf<char>(beg, beg + n);
+#elif defined(_MSC_VER) && (_MSC_VER == 1900)
+    // Workaround for confirmed bug in VS2015. See:
+    // https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
+    // https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error
+    // Why static? http://stackoverflow.com/questions/26196686/utf8-utf16-codecvt-poor-performance
+    static thread_local std::wstring_convert<NANODBC_CODECVT_TYPE<unsigned short>, unsigned short>
+        converter;
+    out = converter.to_bytes(
+        reinterpret_cast<unsigned short const*>(beg),
+        reinterpret_cast<unsigned short const*>(beg + n));
 #else
-    out = std::wstring_convert<NANODBC_CODECVT_TYPE<wide_char_t>, wide_char_t>().to_bytes(in);
+    static thread_local std::wstring_convert<NANODBC_CODECVT_TYPE<wide_char_t>, wide_char_t>
+        converter;
+    out = converter.to_bytes(beg, beg + n);
 #endif
 }
 
-inline void convert(const std::string& in, wide_string& out)
+inline void convert(char const* beg, size_t n, wide_string& out)
 {
 #ifdef NANODBC_ENABLE_BOOST
     using boost::locale::conv::utf_to_utf;
-    out = utf_to_utf<wide_char_t>(in.c_str(), in.c_str() + in.size());
-#elif defined(__GNUC__) && (__GNUC__ < 5)
-    const char* source = in.data();
-    size_t size = mbsnrtowcs(nullptr, &source, in.length(), 0, nullptr);
-    if (size == std::string::npos)
-        throw std::range_error("UTF-8 -> UTF-16 conversion error");
-    std::vector<wchar_t> characters(size);
-    mbsnrtowcs(&characters[0], &source, in.length(), characters.size(), nullptr);
-    out = wide_string(characters.begin(), characters.end());
-#elif defined(_MSC_VER) && (_MSC_VER >= 1900)
-    // Workaround for confirmed bug in VS2015 and VS2017 too
-    // See: https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
-    auto s =
-        std::wstring_convert<NANODBC_CODECVT_TYPE<unsigned short>, unsigned short>().from_bytes(in);
+    out = utf_to_utf<wide_char_t>(beg, beg + n);
+#elif defined(_MSC_VER) && (_MSC_VER == 1900)
+    // Workaround for confirmed bug in VS2015. See:
+    // https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
+    // https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error
+    // Why static? http://stackoverflow.com/questions/26196686/utf8-utf16-codecvt-poor-performance
+    static thread_local std::wstring_convert<NANODBC_CODECVT_TYPE<unsigned short>, unsigned short>
+        converter;
+    auto s = converter.from_bytes(beg, beg + n);
     auto p = reinterpret_cast<wide_char_t const*>(s.data());
     out.assign(p, p + s.size());
 #else
-    out = std::wstring_convert<NANODBC_CODECVT_TYPE<wide_char_t>, wide_char_t>().from_bytes(in);
+    static thread_local std::wstring_convert<NANODBC_CODECVT_TYPE<wide_char_t>, wide_char_t>
+        converter;
+    out = converter.from_bytes(beg, beg + n);
 #endif
 }
 
-inline void convert(const wide_string& in, wide_string& out)
+template <class T>
+inline void convert(char const* beg, std::basic_string<T>& out)
 {
-    out = in;
+    convert(beg, std::strlen(beg), out);
 }
 
-inline void convert(const std::string& in, std::string& out)
+template <class T>
+inline void convert(wchar_t const* beg, std::basic_string<T>& out)
 {
-    out = in;
+    convert(beg, std::wcslen(beg), out);
+}
+
+template <class T>
+inline void convert(std::basic_string<T>&& in, std::basic_string<T>& out)
+{
+    out.assign(in);
+}
+
+template <class T, class U>
+inline void convert(std::basic_string<T> const& in, std::basic_string<U>& out)
+{
+    convert(in.data(), in.size(), out);
 }
 
 // Attempts to get the most recent ODBC error as a string.
@@ -376,7 +391,7 @@ recent_error(SQLHANDLE handle, SQLSMALLINT handle_type, long& native, std::strin
 
         if (!success(rc))
         {
-            convert(result, rvalue);
+            convert(std::move(result), rvalue);
             return rvalue;
         }
 
@@ -394,7 +409,7 @@ recent_error(SQLHANDLE handle, SQLSMALLINT handle_type, long& native, std::strin
 #endif
     } while (rc != SQL_NO_DATA);
 
-    convert(result, rvalue);
+    convert(std::move(result), rvalue);
     if (size(sql_state) > 0)
         state = std::string(&sql_state[0], &sql_state[size(sql_state) - 1]);
     native = native_error;
@@ -411,6 +426,7 @@ recent_error(SQLHANDLE handle, SQLSMALLINT handle_type, long& native, std::strin
 
 } // namespace
 
+#ifndef NANODBC_DISABLE_NANODBC_NAMESPACE_FOR_INTERNAL_TESTS
 namespace nanodbc
 {
 
@@ -2982,15 +2998,14 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
                 // SQL_NO_DATA or SQL_SUCCESS_WITH_INFO followed by SQL_SUCCESS.
             } while (rc == SQL_SUCCESS_WITH_INFO);
             if (rc == SQL_SUCCESS || rc == SQL_NO_DATA)
-                convert(out, result);
+                convert(std::move(out), result);
             else if (!success(rc))
                 NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
         }
         else
         {
             const char* s = col.pdata_ + rowset_position_ * col.clen_;
-            const std::string::size_type str_size = std::strlen(s);
-            result.assign(s, s + str_size);
+            convert(s, result);
         }
         return;
     }
@@ -3041,7 +3056,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
                 // SQL_NO_DATA or SQL_SUCCESS_WITH_INFO followed by SQL_SUCCESS.
             } while (rc == SQL_SUCCESS_WITH_INFO);
             if (rc == SQL_SUCCESS || rc == SQL_NO_DATA)
-                convert(out, result);
+                convert(std::move(out), result);
             else if (!success(rc))
                 NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
             ;
@@ -3049,12 +3064,13 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
         else
         {
             // Type is unicode in the database, convert if necessary
-            const SQLWCHAR* s =
+            SQLWCHAR const* s =
                 reinterpret_cast<SQLWCHAR*>(col.pdata_ + rowset_position_ * col.clen_);
-            const string::size_type str_size =
+            string::size_type const str_size =
                 col.cbdata_[static_cast<size_t>(rowset_position_)] / sizeof(SQLWCHAR);
-            wide_string temp(s, s + str_size);
-            convert(temp, result);
+            auto const us = reinterpret_cast<wide_char_t const*>(
+                s); // no-op or unsigned short to signed char16_t
+            convert(us, str_size, result);
         }
         return;
     }
@@ -3068,74 +3084,47 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
 
     case SQL_C_LONG:
     {
-        std::string buffer;
-        buffer.reserve(column_size + 1); // ensure terminating null
-        buffer.resize(buffer.capacity());
-        using std::fill;
-        fill(buffer.begin(), buffer.end(), '\0');
-        const int32_t data = *reinterpret_cast<int32_t*>(col.pdata_ + rowset_position_ * col.clen_);
+        std::string buffer(column_size + 1, 0); // ensure terminating null
+        const wide_char_t data =
+            *reinterpret_cast<wide_char_t*>(col.pdata_ + rowset_position_ * col.clen_);
         const int bytes =
             std::snprintf(const_cast<char*>(buffer.data()), column_size + 1, "%d", data);
         if (bytes == -1)
             throw type_incompatible_error();
-        else if ((SQLULEN)bytes < column_size)
-            buffer.resize(static_cast<size_t>(bytes));
-        buffer.resize(std::strlen(buffer.data())); // drop any trailing nulls
-        result.reserve(buffer.size() * sizeof(string::value_type));
-        convert(buffer, result);
+        convert(buffer.data(), result); // passing the C pointer drops trailing nulls
         return;
     }
 
     case SQL_C_SBIGINT:
     {
-        using namespace std; // in case intmax_t is in namespace std
-        std::string buffer;
-        buffer.reserve(column_size + 1); // ensure terminating null
-        buffer.resize(buffer.capacity());
-        using std::fill;
-        fill(buffer.begin(), buffer.end(), '\0');
+        using namespace std;                    // in case intmax_t is in namespace std
+        std::string buffer(column_size + 1, 0); // ensure terminating null
         const intmax_t data =
             (intmax_t) * reinterpret_cast<int64_t*>(col.pdata_ + rowset_position_ * col.clen_);
         const int bytes =
             std::snprintf(const_cast<char*>(buffer.data()), column_size + 1, "%jd", data);
         if (bytes == -1)
             throw type_incompatible_error();
-        else if ((SQLULEN)bytes < column_size)
-            buffer.resize(static_cast<size_t>(bytes));
-        buffer.resize(std::strlen(buffer.data())); // drop any trailing nulls
-        result.reserve(buffer.size() * sizeof(string::value_type));
-        convert(buffer, result);
+        convert(buffer.data(), result); // passing the C pointer drops trailing nulls
         return;
     }
 
     case SQL_C_FLOAT:
     {
-        std::string buffer;
-        buffer.reserve(column_size + 1); // ensure terminating null
-        buffer.resize(buffer.capacity());
-        using std::fill;
-        fill(buffer.begin(), buffer.end(), '\0');
+        std::string buffer(column_size + 1, 0); // ensure terminating null
         const float data = *reinterpret_cast<float*>(col.pdata_ + rowset_position_ * col.clen_);
         const int bytes =
             std::snprintf(const_cast<char*>(buffer.data()), column_size + 1, "%f", data);
         if (bytes == -1)
             throw type_incompatible_error();
-        else if ((SQLULEN)bytes < column_size)
-            buffer.resize(static_cast<std::size_t>(bytes));
-        buffer.resize(std::strlen(buffer.data())); // drop any trailing nulls
-        result.reserve(buffer.size() * sizeof(string::value_type));
-        convert(buffer, result);
+        convert(buffer.data(), result); // passing the C pointer drops trailing nulls
         return;
     }
 
     case SQL_C_DOUBLE:
     {
-        std::string buffer;
         const SQLULEN width = column_size + 2; // account for decimal mark and sign
-        buffer.reserve(width + 1);             // ensure terminating null
-        buffer.resize(buffer.capacity());
-        using std::fill;
-        fill(buffer.begin(), buffer.end(), '\0');
+        std::string buffer(width + 1, 0);      // ensure terminating null
         const double data = *reinterpret_cast<double*>(col.pdata_ + rowset_position_ * col.clen_);
         const int bytes = std::snprintf(
             const_cast<char*>(buffer.data()),
@@ -3145,11 +3134,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
             data);
         if (bytes == -1)
             throw type_incompatible_error();
-        else if ((SQLULEN)bytes < column_size)
-            buffer.resize(static_cast<size_t>(bytes));
-        buffer.resize(std::strlen(buffer.data())); // drop any trailing nulls
-        result.reserve(buffer.size() * sizeof(string::value_type));
-        convert(buffer, result);
+        convert(buffer.data(), result); // passing the C pointer drops trailing nulls
         return;
     }
 
@@ -5032,6 +5017,7 @@ template std::vector<std::uint8_t>
 result::get(const string&, const std::vector<std::uint8_t>&) const;
 
 } // namespace nanodbc
+#endif // NANODBC_DISABLE_NANODBC_NAMESPACE_FOR_INTERNAL_TESTS
 
 #undef NANODBC_THROW_DATABASE_ERROR
 #undef NANODBC_STRINGIZE
