@@ -953,12 +953,18 @@ public:
         allocate_dbc_handle(dbc_, env_);
 
         RETCODE rc;
-        if (timeout != 0) {
+        if (timeout != 0)
+        {
             // Avoid to set the timeout to 0 (no timeout).
             // This is a workaround for the Oracle ODBC Driver (11.1), as this
             // operation is not supported by the Driver.
             NANODBC_CALL_RC(
-                SQLSetConnectAttr, rc, dbc_, SQL_LOGIN_TIMEOUT, (SQLPOINTER)(std::intptr_t)timeout, 0);
+                SQLSetConnectAttr,
+                rc,
+                dbc_,
+                SQL_LOGIN_TIMEOUT,
+                (SQLPOINTER)(std::intptr_t)timeout,
+                0);
             if (!success(rc))
                 NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
         }
@@ -996,12 +1002,18 @@ public:
         allocate_dbc_handle(dbc_, env_);
 
         RETCODE rc;
-        if (timeout != 0) {
+        if (timeout != 0)
+        {
             // Avoid to set the timeout to 0 (no timeout).
             // This is a workaround for the Oracle ODBC Driver (11.1), as this
             // operation is not supported by the Driver.
             NANODBC_CALL_RC(
-                SQLSetConnectAttr, rc, dbc_, SQL_LOGIN_TIMEOUT, (SQLPOINTER)(std::intptr_t)timeout, 0);
+                SQLSetConnectAttr,
+                rc,
+                dbc_,
+                SQL_LOGIN_TIMEOUT,
+                (SQLPOINTER)(std::intptr_t)timeout,
+                0);
             if (!success(rc))
                 NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
         }
