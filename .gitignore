@@ -22,6 +22,9 @@
 /.vs*
 /CMakeSettings.json
 /launch.vs.json
+*.vcxproj
+*.vcxproj.filters
+*.sln
 
 # Miscelenaous
 *.log
@@ -37,4 +40,6 @@
 example
 example.dSYM/
 /example/empty.cpp
+/CMakeFiles/
+cmake_install.cmake
 
