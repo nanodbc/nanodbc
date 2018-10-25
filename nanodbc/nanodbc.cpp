@@ -410,10 +410,12 @@ recent_error(SQLHANDLE handle, SQLSMALLINT handle_type, long& native, std::strin
     } while (rc != SQL_NO_DATA);
 
     convert(std::move(result), rvalue);
-    if (size(sql_state) > 0) {
+    if (size(sql_state) > 0)
+    {
         state.clear();
         state.reserve(size(sql_state) - 1);
-        for (std::size_t idx = 0; idx != size(sql_state) - 1; ++idx) {
+        for (std::size_t idx = 0; idx != size(sql_state) - 1; ++idx)
+        {
             state.push_back(static_cast<char>(sql_state[idx]));
         }
     }
