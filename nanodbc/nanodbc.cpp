@@ -411,7 +411,15 @@ recent_error(SQLHANDLE handle, SQLSMALLINT handle_type, long& native, std::strin
 
     convert(std::move(result), rvalue);
     if (size(sql_state) > 0)
-        state = std::string(&sql_state[0], &sql_state[size(sql_state) - 1]);
+    {
+        state.clear();
+        state.reserve(size(sql_state) - 1);
+        for (std::size_t idx = 0; idx != size(sql_state) - 1; ++idx)
+        {
+            state.push_back(static_cast<char>(sql_state[idx]));
+        }
+    }
+
     native = native_error;
     std::string status = state;
     status += ": ";
