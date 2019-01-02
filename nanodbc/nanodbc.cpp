@@ -2418,8 +2418,7 @@ public:
 
     bool is_null(short column) const
     {
-        if (column >= bound_columns_size_)
-            throw index_range_error();
+        throw_if_column_is_out_of_range(column);
         bound_column& col = bound_columns_[column];
         if (rowset_position_ >= rows())
             throw index_range_error();
@@ -2443,15 +2442,13 @@ public:
 
     string column_name(short column) const
     {
-        if (column >= bound_columns_size_)
-            throw index_range_error();
+        throw_if_column_is_out_of_range(column);
         return bound_columns_[column].name_;
     }
 
     long column_size(short column) const
     {
-        if (column >= bound_columns_size_)
-            throw index_range_error();
+        throw_if_column_is_out_of_range(column);
         bound_column& col = bound_columns_[column];
         NANODBC_ASSERT(col.sqlsize_ <= static_cast<SQLULEN>(std::numeric_limits<long>::max()));
         return static_cast<long>(col.sqlsize_);
@@ -2465,8 +2462,7 @@ public:
 
     int column_decimal_digits(short column) const
     {
-        if (column >= bound_columns_size_)
-            throw index_range_error();
+        throw_if_column_is_out_of_range(column);
         bound_column& col = bound_columns_[column];
         return col.scale_;
     }
@@ -2480,8 +2476,7 @@ public:
 
     int column_datatype(short column) const
     {
-        if (column >= bound_columns_size_)
-            throw index_range_error();
+        throw_if_column_is_out_of_range(column);
         bound_column& col = bound_columns_[column];
         return col.sqltype_;
     }
@@ -2495,8 +2490,7 @@ public:
 
     string column_datatype_name(short column) const
     {
-        if (column >= bound_columns_size_)
-            throw index_range_error();
+        throw_if_column_is_out_of_range(column);
 
         NANODBC_SQLCHAR type_name[256] = {0};
         SQLSMALLINT len = 0; // total number of bytes
@@ -2526,8 +2520,7 @@ public:
 
     int column_c_datatype(short column) const
     {
-        if (column >= bound_columns_size_)
-            throw index_range_error();
+        throw_if_column_is_out_of_range(column);
         bound_column& col = bound_columns_[column];
         return col.ctype_;
     }
@@ -2559,8 +2552,7 @@ public:
     template <class T>
     void get_ref(short column, T& result) const
     {
-        if (column >= bound_columns_size_)
-            throw index_range_error();
+        throw_if_column_is_out_of_range(column);
         if (is_null(column))
             throw null_access_error();
         get_ref_impl<T>(column, result);
@@ -2569,8 +2561,7 @@ public:
     template <class T>
     void get_ref(short column, const T& fallback, T& result) const
     {
-        if (column >= bound_columns_size_)
-            throw index_range_error();
+        throw_if_column_is_out_of_range(column);
         if (is_null(column))
         {
             result = fallback;
@@ -2644,6 +2635,12 @@ private:
 
     template <class T, typename std::enable_if<is_character<T>::value, int>::type = 0>
     void get_ref_from_string_column(short column, T& result) const;
+
+    void throw_if_column_is_out_of_range(short column) const
+    {
+        if ((column < 0) || (column >= bound_columns_size_))
+            throw index_range_error();
+    }
 
     void before_move() noexcept
     {
