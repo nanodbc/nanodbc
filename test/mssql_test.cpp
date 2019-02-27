@@ -517,6 +517,46 @@ TEST_CASE_METHOD(mssql_fixture, "test_string_with_varchar_max", "[mssql][string]
     test_string_with_varchar_max();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_string_with_ntext", "[mssql][string][ntext]")
+{
+    nanodbc::connection connection = connect();
+    drop_table(connection, NANODBC_TEXT("test_string_with_ntext"));
+    execute(
+        connection, NANODBC_TEXT("create table test_string_with_ntext (s ntext);"));
+    execute(
+        connection,
+        NANODBC_TEXT("insert into test_string_with_ntext(s) ")
+            NANODBC_TEXT("values (REPLICATE(CAST(\'a\' AS nvarchar(MAX)), 15000))"));
+
+    nanodbc::result results =
+        execute(connection, NANODBC_TEXT("select s from test_string_with_ntext;"));
+    REQUIRE(results.next());
+
+    nanodbc::string select;
+    results.get_ref(0, select);
+    REQUIRE(select.size() == 15000);
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_string_with_text", "[mssql][string][text]")
+{
+    nanodbc::connection connection = connect();
+    drop_table(connection, NANODBC_TEXT("test_string_with_text"));
+    execute(
+        connection, NANODBC_TEXT("create table test_string_with_text (s text);"));
+    execute(
+        connection,
+        NANODBC_TEXT("insert into test_string_with_text(s) ")
+            NANODBC_TEXT("values (REPLICATE(CAST(\'a\' AS varchar(MAX)), 15000))"));
+
+    nanodbc::result results =
+        execute(connection, NANODBC_TEXT("select s from test_string_with_text;"));
+    REQUIRE(results.next());
+
+    nanodbc::string select;
+    results.get_ref(0, select);
+    REQUIRE(select.size() == 15000);
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_string_vector", "[mssql][string]")
 {
     test_string_vector();
