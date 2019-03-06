@@ -521,8 +521,7 @@ TEST_CASE_METHOD(mssql_fixture, "test_string_with_ntext", "[mssql][string][ntext
 {
     nanodbc::connection connection = connect();
     drop_table(connection, NANODBC_TEXT("test_string_with_ntext"));
-    execute(
-        connection, NANODBC_TEXT("create table test_string_with_ntext (s ntext);"));
+    execute(connection, NANODBC_TEXT("create table test_string_with_ntext (s ntext);"));
     execute(
         connection,
         NANODBC_TEXT("insert into test_string_with_ntext(s) ")
@@ -541,8 +540,7 @@ TEST_CASE_METHOD(mssql_fixture, "test_string_with_text", "[mssql][string][text]"
 {
     nanodbc::connection connection = connect();
     drop_table(connection, NANODBC_TEXT("test_string_with_text"));
-    execute(
-        connection, NANODBC_TEXT("create table test_string_with_text (s text);"));
+    execute(connection, NANODBC_TEXT("create table test_string_with_text (s text);"));
     execute(
         connection,
         NANODBC_TEXT("insert into test_string_with_text(s) ")
