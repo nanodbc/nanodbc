@@ -2829,6 +2829,11 @@ private:
                 col.blob_ = true;
                 col.clen_ = 0;
                 break;
+            case SQL_WLONGVARCHAR:
+                col.ctype_ = sql_ctype<wide_string>::value;
+                col.blob_ = true;
+                col.clen_ = 0;
+                break;
             case SQL_BINARY:
             case SQL_VARBINARY:
             case SQL_LONGVARBINARY:
