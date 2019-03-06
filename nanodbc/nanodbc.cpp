@@ -89,10 +89,6 @@
 #define SQL_SS_UDT (-151) // from sqlncli.h
 #endif
 
-#ifndef SQL_NVARCHAR
-#define SQL_NVARCHAR (-10)
-#endif
-
 // SQL_SS_LENGTH_UNLIMITED is used to describe the max length of
 // VARCHAR(max), VARBINARY(max), NVARCHAR(max), and XML columns
 #ifndef SQL_SS_LENGTH_UNLIMITED
@@ -2810,7 +2806,6 @@ private:
                 break;
             case SQL_CHAR:
             case SQL_VARCHAR:
-            case SQL_NVARCHAR:
                 col.ctype_ = sql_ctype<std::string>::value;
                 col.clen_ = (col.sqlsize_ + 1) * sizeof(SQLCHAR);
                 if (is_blob)
