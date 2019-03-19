@@ -93,16 +93,17 @@ init:
 install:
   - ps: |
       if ($env:DB -Match "SQLite") {
-        Write-Host "Installing SQLite ODBC Driver:" -ForegroundColor Magenta
         $sqliteodbc64Path = "c:\downloads\sqliteodbc_w64.exe"
         $sqliteodbc32Path = "c:\downloads\sqliteodbc.exe"
         if (-not (Test-Path c:\downloads -PathType Container)) {
           New-Item -ItemType Directory -Path c:\downloads
         }
         if (-not (Test-Path $sqliteodbc64Path -PathType Leaf)) {
+          Write-Host "Installing 64-bit SQLite ODBC Driver:" -ForegroundColor Magenta
           (New-Object Net.WebClient).DownloadFile('http://www.ch-werner.de/sqliteodbc/sqliteodbc_w64.exe', $sqliteodbc64Path)
         }
         if (-not (Test-Path $sqliteodbc32Path -PathType Leaf)) {
+          Write-Host "Installing 32-bit SQLite ODBC Driver:" -ForegroundColor Magenta
           (New-Object Net.WebClient).DownloadFile('http://www.ch-werner.de/sqliteodbc/sqliteodbc.exe', $sqliteodbc32Path)
         }
         cmd /c start /wait $sqliteodbc64Path /S
