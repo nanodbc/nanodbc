@@ -87,9 +87,6 @@ cache:
 init:
   # For MinGW make to work correctly sh.exe must NOT be in your path.
   - set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
-  - ps: |
-      Write-Host "Build worker environment variables:" -ForegroundColor Magenta
-      Get-ChildItem Env: | %{"{0}={1}" -f $_.Name,$_.Value}
   - if "%G%"=="NMake Makefiles" if "%P%"=="x86-32" call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86
   - if "%G%"=="NMake Makefiles" if "%P%"=="x86-64" "C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x64
 
