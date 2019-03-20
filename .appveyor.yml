@@ -12,8 +12,7 @@ branches:
     - latest
     - release
 
-shallow_clone: true
-clone_depth: 5
+clone_depth: 1
 
 notifications:
   - provider: Webhook
@@ -99,15 +98,17 @@ install:
           New-Item -ItemType Directory -Path c:\downloads
         }
         if (-not (Test-Path $sqliteodbc64Path -PathType Leaf)) {
-          Write-Host "Installing 64-bit SQLite ODBC Driver:" -ForegroundColor Magenta
+          Write-Host "Downloading 64-bit SQLite ODBC Driver" -ForegroundColor Magenta
           (New-Object Net.WebClient).DownloadFile('http://www.ch-werner.de/sqliteodbc/sqliteodbc_w64.exe', $sqliteodbc64Path)
         }
         if (-not (Test-Path $sqliteodbc32Path -PathType Leaf)) {
-          Write-Host "Installing 32-bit SQLite ODBC Driver:" -ForegroundColor Magenta
+          Write-Host "Downloading 32-bit SQLite ODBC Driver" -ForegroundColor Magenta
           (New-Object Net.WebClient).DownloadFile('http://www.ch-werner.de/sqliteodbc/sqliteodbc.exe', $sqliteodbc32Path)
         }
+        Write-Host "Installing 64-bit SQLite ODBC Driver" -ForegroundColor Magenta
         cmd /c start /wait $sqliteodbc64Path /S
         if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
+        Write-Host "Installing 32-bit SQLite ODBC Driver" -ForegroundColor Magenta
         cmd /c start /wait $sqliteodbc32Path /S
         if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
        }
