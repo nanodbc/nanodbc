@@ -81,23 +81,31 @@ matrix:
     - G: "Visual Studio 15 2017 Win64"
       ANALYSIS: "/p:RunCodeAnalysis=true /p:EnableCppCoreCheck=true"
 
+cache:
+  - c:\downloads\
+
 init:
   # For MinGW make to work correctly sh.exe must NOT be in your path.
   - set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
-  - ps: |
-      Write-Host "Build worker environment variables:" -ForegroundColor Magenta
-      Get-ChildItem Env: | %{"{0}={1}" -f $_.Name,$_.Value}
   - if "%G%"=="NMake Makefiles" if "%P%"=="x86-32" call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86
   - if "%G%"=="NMake Makefiles" if "%P%"=="x86-64" "C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x64
 
 install:
   - ps: |
       if ($env:DB -Match "SQLite") {
-        Write-Host "Installing SQLite ODBC Driver:" -ForegroundColor Magenta
-        $sqliteodbc64Path = "$($env:TEMP)\sqliteodbc_w64.exe"
-        $sqliteodbc32Path = "$($env:TEMP)\sqliteodbc.exe"
-        (New-Object Net.WebClient).DownloadFile('http://www.ch-werner.de/sqliteodbc/sqliteodbc_w64.exe', $sqliteodbc64Path)
-        (New-Object Net.WebClient).DownloadFile('http://www.ch-werner.de/sqliteodbc/sqliteodbc.exe', $sqliteodbc32Path)
+        $sqliteodbc64Path = "c:\downloads\sqliteodbc_w64.exe"
+        $sqliteodbc32Path = "c:\downloads\sqliteodbc.exe"
+        if (-not (Test-Path c:\downloads -PathType Container)) {
+          New-Item -ItemType Directory -Path c:\downloads
+        }
+        if (-not (Test-Path $sqliteodbc64Path -PathType Leaf)) {
+          Write-Host "Installing 64-bit SQLite ODBC Driver:" -ForegroundColor Magenta
+          (New-Object Net.WebClient).DownloadFile('http://www.ch-werner.de/sqliteodbc/sqliteodbc_w64.exe', $sqliteodbc64Path)
+        }
+        if (-not (Test-Path $sqliteodbc32Path -PathType Leaf)) {
+          Write-Host "Installing 32-bit SQLite ODBC Driver:" -ForegroundColor Magenta
+          (New-Object Net.WebClient).DownloadFile('http://www.ch-werner.de/sqliteodbc/sqliteodbc.exe', $sqliteodbc32Path)
+        }
         cmd /c start /wait $sqliteodbc64Path /S
         if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
         cmd /c start /wait $sqliteodbc32Path /S
