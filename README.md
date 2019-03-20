@@ -35,7 +35,8 @@ release notes will clarify required C++ features and/or standards for particular
 ### Design Decisions
 
 All complex objects in nanodbc follow the [pimpl (Pointer to IMPLementation)][pimpl] idiom to
-provide separation between interface and implementation, value semantics, and a clean `nanodbc.h` header file that includes nothing but standard C++ headers.
+provide separation between interface and implementation, value semantics, and a clean `nanodbc.h`
+header file that includes nothing but standard C++ headers.
 
 nanodbc wraps ODBC code, providing a simpler way to do the same thing. We try to be as featureful
 as possible, but I can't guarantee you'll never have to write supporting ODBC code. Personally, I
@@ -50,12 +51,12 @@ existing ODBC API calls.
 
 nanodbc is intentionally small enough that you can drag and drop the header and implementation
 files into your project and run with it. For those that want it, I have also provided
-[CMake][cmake] files which build a library object, or build and run the included tests. The CMake
-files will also support out of source builds.
+[CMake][cmake] files which build a library object, or build and run the included tests.
+The CMake files will also support out of source builds.
 
 Tests use the [Catch][catch] test framework, and CMake will automatically fetch the latest version
-of Catch for you at build time. To build the tests you will also need to have either unixODBC or
-iODBC installed and discoverable by CMake. This is easy on OS X where you can use [Homebrew][brew]
+of Catch for you at build time. To build the tests you will also need to have either [unixODBC] or
+[iODBC] installed and discoverable by CMake. This is easy on OS X where you can use [Homebrew][brew]
 to install unixODBC with `brew install unixodbc`, or use the system provided iODBC if you have OS X
 10.9 or earlier.
 
@@ -105,11 +106,13 @@ The following build options are available via [CMake command-line option][cmake-
 are not using CMake to build nanodbc, you will need to set the corresponding `-D` compile define
 flags yourself.
 
-All boolean options follow the CMake [OPTION][cmake-option] default value convention: if no initial value is provided, `OFF` is used.
+All boolean options follow the CMake [OPTION][cmake-option] default value convention:
+if no initial value is provided, `OFF` is used.
 
 Use the standard CMake option `-DBUILD_SHARED_LIBS=ON` to build nanodbc as shared library.
 
-If you need to use the `NANODBC_ENABLE_BOOST=ON` option, you will have to configure your environment to use [Boost][boost].
+If you need to use the `NANODBC_ENABLE_BOOST=ON` option, you will have to configure your
+environment to use [Boost][boost].
 
 | CMake&nbsp;Option                  | Possible&nbsp;Values | Details |
 | -----------------------------------| ---------------------| ------- |
@@ -145,8 +148,8 @@ _disabling_ unicode mode to avoid `wchar_t` issues.
 [`clang-format`][clang-format] handles all C++ code formatting for nanodbc. This utility is
 [brew-installable][brew] on OS X (`brew install clang-format`) and is available on all major
 platforms. See our `.clang-format` configuration file for details on the style. The script
-`utility/style.sh` formats all code in the repository automatically. To run `clang-format` on a
-single file use the following.
+`utility/style.sh` formats all code in the repository automatically.
+To run `clang-format` on a single file use the following.
 
 ```shell
 clang-format -i /path/to/file
@@ -303,11 +306,13 @@ To do this manually instead, use the following steps &mdash; for example a minor
 [docker]:       https://www.docker.com/
 [doxygen]:      http://www.doxygen.org
 [gh-pages]:     https://help.github.com/articles/what-are-github-pages/
+[iodbc]:        http://www.iodbc.org/
 [jekyll]:       https://jekyllrb.com/
 [pimpl]:        http://c2.com/cgi/wiki?PimplIdiom
 [semver]:       http://semver.org/
 [sqlite]:       https://www.sqlite.org/
 [sqliteodbc]:   http://www.ch-werner.de/sqliteodbc/
+[unixodbc]:     http://www.unixodbc.org/
 [vagrant]:      https://www.vagrantup.com/
 
 [travis]:               https://travis-ci.org/nanodbc/nanodbc
