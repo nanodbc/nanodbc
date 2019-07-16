@@ -293,3 +293,8 @@ TEST_CASE_METHOD(postgresql_fixture, "test_while_next_iteration", "[postgresql][
 {
     test_while_next_iteration();
 }
+
+TEST_CASE_METHOD(postgresql_fixture, "test_statement_prepare_reuse", "[postgresql][looping]")
+{
+    test_statement_prepare_reuse();
+}
