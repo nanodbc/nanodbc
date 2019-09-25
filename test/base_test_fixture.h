@@ -141,7 +141,7 @@ public:
     // include any provided data (the begin/ end in this case) and
     // be written as if it were stating a fact (in the output it will be
     // preceded by the value under test).
-    virtual std::string describe() const
+    virtual std::string describe() const override
     {
         std::ostringstream ss;
         ss << "is not member of values [";
