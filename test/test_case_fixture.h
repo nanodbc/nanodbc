@@ -1705,6 +1705,20 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(results.get<int>(0) == i--);
         }
     }
+
+    void test_statement_prepare_reuse() {
+        nanodbc::connection connection = connect();
+        drop_table(connection, NANODBC_TEXT("test_statement_prepare_reuse"));
+        execute(connection, NANODBC_TEXT("create table test_statement_prepare_reuse (i int);"));
+
+        nanodbc::statement stmt(connection);
+        nanodbc::prepare(stmt, NANODBC_TEXT("insert into test_statement_prepare_reuse values (?);"));
+        for(int i = 0; i < 10; ++i) {
+            stmt.bind(0, &i);
+            nanodbc::result results = stmt.execute();
+            REQUIRE(results.affected_rows() == 1);
+        }
+    }
 };
 
 #ifdef _MSC_VER
