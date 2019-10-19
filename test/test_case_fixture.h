@@ -1705,6 +1705,65 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(results.get<int>(0) == i--);
         }
     }
+
+    void test_batch_insert_param_type_set()
+    {
+        std::size_t const batch_size = 9;
+        int integers[batch_size] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        float floats[batch_size] = {1.123f, 2.345f, 3.1f, 4.5f, 5.678f, 6.f, 7.89f, 8.90f, 9.1234f};
+        std::string trunc_float[batch_size] = {"1.100", "2.300", "3.100", "4.500", "5.700", "6.000", "7.900", "8.900", "9.100"};
+        nanodbc::string::value_type strings[batch_size][60] = {
+            NANODBC_TEXT("first string"),
+            NANODBC_TEXT("second string"),
+            NANODBC_TEXT("third string"),
+            NANODBC_TEXT("this is fourth string"),
+            NANODBC_TEXT("finally, the fifthstring"),
+            NANODBC_TEXT(""),
+            NANODBC_TEXT("sixth string"),
+            NANODBC_TEXT("A"),
+            NANODBC_TEXT("ninth string")};
+
+        auto conn = connect();
+        create_table(
+            conn,
+            NANODBC_TEXT("test_batch_insert_param_type"),
+            NANODBC_TEXT("(i int, s varchar(60), f float, d decimal(9, 3))"));
+        nanodbc::string insert(NANODBC_TEXT("insert into test_batch_insert_param_type (i, s, f, d) values(?, ?, ?, ?)"));
+        nanodbc::statement stmt(conn);
+        prepare(stmt, insert);
+
+        // Set parameter description for 2 of the four parameters
+        // For the int, float, let nanodbc infer parameter meta data
+        // during bind.
+        std::vector<short> idx{1, 3};
+        std::vector<short> type{12, 3};
+        std::vector<unsigned long> size{60, 9};
+        std::vector<short> scale{0, 1}; //round to one decimal
+        stmt.set_param_descr(idx, type, size, scale);
+
+        stmt.bind(0, integers, batch_size);
+        stmt.bind_strings(1, strings);
+        stmt.bind(2, floats, batch_size);
+        stmt.bind(3, floats, batch_size);
+        nanodbc::transact(stmt, batch_size);
+        {
+            auto result = nanodbc::execute(
+                conn,
+                NANODBC_TEXT("select i, f, s, d from test_batch_insert_param_type order by i asc"));
+            std::size_t i = 0;
+            while (result.next())
+            {
+                REQUIRE(result.get<int>(0) == integers[i]);
+                REQUIRE(
+                    result.get<float>(1) ==
+                    floats[i]); // exact test might fail, switch to Approx
+                REQUIRE(result.get<nanodbc::string>(2) == strings[i]);
+                REQUIRE(result.get<nanodbc::string>(3) == NANODBC_TEXT(trunc_float[i]));
+                ++i;
+            }
+            REQUIRE(i == batch_size);
+        }
+    }
 };
 
 #ifdef _MSC_VER
