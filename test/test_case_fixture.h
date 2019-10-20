@@ -1711,8 +1711,15 @@ struct test_case_fixture : public base_test_fixture
         std::size_t const batch_size = 9;
         int integers[batch_size] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
         float floats[batch_size] = {1.123f, 2.345f, 3.1f, 4.5f, 5.678f, 6.f, 7.89f, 8.90f, 9.1234f};
-        std::string trunc_float[batch_size] = {
-            "1.100", "2.300", "3.100", "4.500", "5.700", "6.000", "7.900", "8.900", "9.100"};
+        nanodbc::string::value_type trunc_float[batch_size][6] = {NANODBC_TEXT("1.100"),
+                                                                  NANODBC_TEXT("2.300"),
+                                                                  NANODBC_TEXT("3.100"),
+                                                                  NANODBC_TEXT("4.500"),
+                                                                  NANODBC_TEXT("5.700"),
+                                                                  NANODBC_TEXT("6.000"),
+                                                                  NANODBC_TEXT("7.900"),
+                                                                  NANODBC_TEXT("8.900"),
+                                                                  NANODBC_TEXT("9.100")};
         nanodbc::string::value_type strings[batch_size][60] = {
             NANODBC_TEXT("first string"),
             NANODBC_TEXT("second string"),
