@@ -1746,7 +1746,8 @@ public:
         return cols;
     }
 
-    void reset_parameters() noexcept {
+    void reset_parameters() noexcept
+    {
         param_descr_data_.clear();
         NANODBC_CALL(SQLFreeStmt, stmt_, SQL_RESET_PARAMS);
     }
@@ -2051,14 +2052,14 @@ public:
         NANODBC_ASSERT(idx.size() == size.size());
         NANODBC_ASSERT(idx.size() == scale.size());
 
-        for (std::size_t i = 0; i < idx.size(); ++i) {
+        for (std::size_t i = 0; i < idx.size(); ++i)
+        {
             param_descr_data_[idx[i]].type_ = static_cast<SQLSMALLINT>(type[i]);
             param_descr_data_[idx[i]].size_ = static_cast<SQLULEN>(size[i]);
             param_descr_data_[idx[i]].scale_ = static_cast<SQLSMALLINT>(scale[i]);
             param_descr_data_[idx[i]].index_ = static_cast<SQLUSMALLINT>(i);
             param_descr_data_[idx[i]].iotype_ = PARAM_IN; // not used
         }
-
     }
 
     // comparator for null sentry values

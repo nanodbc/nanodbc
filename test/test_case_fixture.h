@@ -1711,7 +1711,8 @@ struct test_case_fixture : public base_test_fixture
         std::size_t const batch_size = 9;
         int integers[batch_size] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
         float floats[batch_size] = {1.123f, 2.345f, 3.1f, 4.5f, 5.678f, 6.f, 7.89f, 8.90f, 9.1234f};
-        std::string trunc_float[batch_size] = {"1.100", "2.300", "3.100", "4.500", "5.700", "6.000", "7.900", "8.900", "9.100"};
+        std::string trunc_float[batch_size] = {
+            "1.100", "2.300", "3.100", "4.500", "5.700", "6.000", "7.900", "8.900", "9.100"};
         nanodbc::string::value_type strings[batch_size][60] = {
             NANODBC_TEXT("first string"),
             NANODBC_TEXT("second string"),
@@ -1728,7 +1729,8 @@ struct test_case_fixture : public base_test_fixture
             conn,
             NANODBC_TEXT("test_batch_insert_param_type"),
             NANODBC_TEXT("(i int, s varchar(60), f float, d decimal(9, 3))"));
-        nanodbc::string insert(NANODBC_TEXT("insert into test_batch_insert_param_type (i, s, f, d) values(?, ?, ?, ?)"));
+        nanodbc::string insert(NANODBC_TEXT(
+            "insert into test_batch_insert_param_type (i, s, f, d) values(?, ?, ?, ?)"));
         nanodbc::statement stmt(conn);
         prepare(stmt, insert);
 
@@ -1738,7 +1740,7 @@ struct test_case_fixture : public base_test_fixture
         std::vector<short> idx{1, 3};
         std::vector<short> type{12, 3};
         std::vector<unsigned long> size{60, 9};
-        std::vector<short> scale{0, 1}; //round to one decimal
+        std::vector<short> scale{0, 1}; // round to one decimal
         stmt.set_param_descr(idx, type, size, scale);
 
         stmt.bind(0, integers, batch_size);
@@ -1755,8 +1757,7 @@ struct test_case_fixture : public base_test_fixture
             {
                 REQUIRE(result.get<int>(0) == integers[i]);
                 REQUIRE(
-                    result.get<float>(1) ==
-                    floats[i]); // exact test might fail, switch to Approx
+                    result.get<float>(1) == floats[i]); // exact test might fail, switch to Approx
                 REQUIRE(result.get<nanodbc::string>(2) == strings[i]);
                 REQUIRE(result.get<nanodbc::string>(3) == NANODBC_TEXT(trunc_float[i]));
                 ++i;

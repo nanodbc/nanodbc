@@ -1000,7 +1000,6 @@ public:
         const std::vector<unsigned long>& size,
         const std::vector<short>& scale);
 
-
     /// @}
 private:
     typedef std::function<bool(std::size_t)> null_predicate_type;
