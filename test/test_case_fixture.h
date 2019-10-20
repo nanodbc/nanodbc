@@ -1759,7 +1759,7 @@ struct test_case_fixture : public base_test_fixture
                 REQUIRE(
                     result.get<float>(1) == floats[i]); // exact test might fail, switch to Approx
                 REQUIRE(result.get<nanodbc::string>(2) == strings[i]);
-                REQUIRE(result.get<nanodbc::string>(3) == NANODBC_TEXT(trunc_float[i]));
+                REQUIRE(result.get<nanodbc::string>(3) == trunc_float[i]);
                 ++i;
             }
             REQUIRE(i == batch_size);
