@@ -2048,9 +2048,8 @@ public:
         const std::vector<short>& scale)
     {
 
-        NANODBC_ASSERT(idx.size() == type.size());
-        NANODBC_ASSERT(idx.size() == size.size());
-        NANODBC_ASSERT(idx.size() == scale.size());
+        if (idx.size() != type.size() || idx.size() != size.size() || idx.size() != scale.size())
+            throw programming_error("parameter description arrays are of different size");
 
         for (std::size_t i = 0; i < idx.size(); ++i)
         {
