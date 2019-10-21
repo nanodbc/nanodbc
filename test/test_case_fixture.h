@@ -1706,7 +1706,7 @@ struct test_case_fixture : public base_test_fixture
         }
     }
 
-    void test_batch_insert_param_type_set()
+    void test_batch_insert_describe_param()
     {
         std::size_t const batch_size = 9;
         int integers[batch_size] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
@@ -1748,7 +1748,7 @@ struct test_case_fixture : public base_test_fixture
         std::vector<short> type{12, 3};
         std::vector<unsigned long> size{60, 9};
         std::vector<short> scale{0, 1}; // round to one decimal
-        stmt.set_param_descr(idx, type, size, scale);
+        stmt.describe_parameters(idx, type, size, scale);
 
         stmt.bind(0, integers, batch_size);
         stmt.bind_strings(1, strings);

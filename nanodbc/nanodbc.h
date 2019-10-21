@@ -994,7 +994,7 @@ public:
     /// \param type Vector of (short integer) types.
     /// \param size Vector of (unsigned long) sizes.
     /// \param scale Vector of (short integer) decimal precision / scale.
-    void set_param_descr(
+    void describe_parameters(
         const std::vector<short>& idx,
         const std::vector<short>& type,
         const std::vector<unsigned long>& size,

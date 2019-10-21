@@ -2041,7 +2041,7 @@ public:
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     }
 
-    void set_param_descr(
+    void describe_parameters(
         const std::vector<short>& idx,
         const std::vector<short>& type,
         const std::vector<unsigned long>& size,
@@ -4202,13 +4202,13 @@ void statement::bind_null(short param_index, std::size_t batch_size)
     impl_->bind_null(param_index, batch_size);
 }
 
-void statement::set_param_descr(
+void statement::describe_parameters(
     const std::vector<short>& idx,
     const std::vector<short>& type,
     const std::vector<unsigned long>& size,
     const std::vector<short>& scale)
 {
-    impl_->set_param_descr(idx, type, size, scale);
+    impl_->describe_parameters(idx, type, size, scale);
 }
 
 } // namespace nanodbc
