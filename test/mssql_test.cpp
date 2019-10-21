@@ -114,6 +114,14 @@ TEST_CASE_METHOD(mssql_fixture, "test_batch_insert_mixed", "[mssql][batch]")
     test_batch_insert_mixed();
 }
 
+TEST_CASE_METHOD(
+    mssql_fixture,
+    "test_batch_insert_describe_param",
+    "[mssql][batch][describe_param]")
+{
+    test_batch_insert_describe_param();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_blob", "[mssql][blob][binary][varbinary]")
 {
     nanodbc::connection connection = connect();
