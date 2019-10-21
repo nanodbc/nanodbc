@@ -3,7 +3,7 @@ version: 2
 jobs:
   lint:
     docker:
-      - image: circleci/python:2.7
+      - image: circleci/python:3.8.0-buster
     steps:
       - checkout
       - run:
@@ -28,7 +28,7 @@ jobs:
             echo "TODO: rst-lint index.rst"
   build-deploy:
     docker:
-      - image: circleci/python:2.7
+      - image: circleci/python:3.8.0-buster
     steps:
       - checkout
       - run:
