@@ -1,46 +1,94 @@
 {
-  "_comment": "CMakeSettings.json for building Boost.GIL tests and examples. See https://go.microsoft.com//fwlink//?linkid=834763 for more information about CMake integration with Visual Studio 2017 and this file.",
-  
-  "environments": [
-    {
-      "BuildDir": "${workspaceRoot}\\_build"
-    },
-    {
-      "InstallDir": "${workspaceRoot}\\_install"
-    }
+  "_comment": [
+    "Sample CMakeSettings.json for building with CMake integration in Visual Studio 2017.",
+    "See https://go.microsoft.com//fwlink//?linkid=834763 for more information.",
+    "Usage:",
+    "Copy utility/vs2017/CMkeSettings.json to top-level directory of nanodbc source tree",
+    "Then, launch Visual Studio 2017 > File > Open > CMake > select top-level CMakeLists.txt",
+    "See nanodbc top-level CMakeLists.txt for complete list of options available to be passed via -D to cmake."
   ],
-
+  "environments": [
+    { "BuildDir": "${workspaceRoot}\\_build" },
+    { "InstallDir": "${workspaceRoot}\\_install" },
+    { "NANODBC_DEFAULT_D_DISABLE_ASYNC": "OFF" },
+    { "NANODBC_DEFAULT_D_DISABLE_EXAMPLES": "OFF" },
+    { "NANODBC_DEFAULT_D_DISABLE_INSTALL": "OFF" },
+    { "NANODBC_DEFAULT_D_DISABLE_LIBCXX": "OFF" },
+    { "NANODBC_DEFAULT_D_DISABLE_TESTS": "OFF" },
+    { "NANODBC_DEFAULT_D_ENABLE_COVERAGE": "OFF" },
+    { "NANODBC_DEFAULT_D_ENABLE_BOOST": "OFF" },
+    { "NANODBC_DEFAULT_D_ENABLE_UNICODE": "ON" },
+    { "NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA": "OFF" }
+  ],
   "configurations": [
     {
-      "name": "x86-Debug",
+      "name": "x64-Debug-Ninja",
       "generator": "Ninja",
       "configurationType": "Debug",
-      "inheritEnvironments": [ "msvc_x86" ],
-      "buildRoot": "${env.BuildDir}\\${name}",
-      "installRoot": "${env.InstallDir}\\${name}",
-      "cmakeCommandArgs": "",
-      "buildCommandArgs": "-v",
-      "ctestCommandArgs": ""
-    },
-    {
-      "name": "x86-Debug-Unicode",
-      "generator": "Ninja",
-      "configurationType": "Debug",
-      "inheritEnvironments": [ "msvc_x86" ],
+      "inheritEnvironments": [ "msvc_x64_x64" ],
       "buildRoot": "${env.BuildDir}\\${name}",
       "installRoot": "${env.InstallDir}\\${name}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
       "variables": [
-        {
-          "name": "NANODBC_ENABLE_UNICODE",
-          "value": "ON"
-        }
+        { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
+        { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
+        { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
+        { "name": "NANODBC_DISABLE_LIBCXX", "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}" },
+        { "name": "NANODBC_DISABLE_TESTS", "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}" },
+        { "name": "NANODBC_ENABLE_COVERAGE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}" },
+        { "name": "NANODBC_ENABLE_BOOST", "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}" },
+        { "name": "NANODBC_ENABLE_UNICODE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}" },
+        { "name": "NANODBC_ENABLE_WORKAROUND_NODATA", "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}" }
       ]
     },
     {
-      "name": "x86-Release",
+      "name": "x64-Release-Ninja",
+      "generator": "Ninja",
+      "configurationType": "RelWithDebInfo",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "buildRoot": "${env.BuildDir}\\${name}",
+      "installRoot": "${env.InstallDir}\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-v",
+      "ctestCommandArgs": "",
+      "variables": [
+        { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
+        { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
+        { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
+        { "name": "NANODBC_DISABLE_LIBCXX", "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}" },
+        { "name": "NANODBC_DISABLE_TESTS", "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}" },
+        { "name": "NANODBC_ENABLE_COVERAGE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}" },
+        { "name": "NANODBC_ENABLE_BOOST", "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}" },
+        { "name": "NANODBC_ENABLE_UNICODE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}" },
+        { "name": "NANODBC_ENABLE_WORKAROUND_NODATA", "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}" }
+      ]
+    },
+    {
+      "name": "x86-Debug-Ninja",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "buildRoot": "${env.BuildDir}\\${name}",
+      "installRoot": "${env.InstallDir}\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-v",
+      "ctestCommandArgs": "",
+      "variables": [
+        { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
+        { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
+        { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
+        { "name": "NANODBC_DISABLE_LIBCXX", "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}" },
+        { "name": "NANODBC_DISABLE_TESTS", "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}" },
+        { "name": "NANODBC_ENABLE_COVERAGE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}" },
+        { "name": "NANODBC_ENABLE_BOOST", "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}" },
+        { "name": "NANODBC_ENABLE_UNICODE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}" },
+        { "name": "NANODBC_ENABLE_WORKAROUND_NODATA", "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}" }
+      ]
+    },
+    {
+      "name": "x86-Release-Ninja",
       "generator": "Ninja",
       "configurationType": "RelWithDebInfo",
       "inheritEnvironments": [ "msvc_x86" ],
@@ -48,79 +96,185 @@
       "installRoot": "${env.InstallDir}\\${name}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "-v",
-      "ctestCommandArgs": ""
-    },
-    {
-      "name": "x86-Release-Unicode",
-      "generator": "Ninja",
-      "configurationType": "RelWithDebInfo",
-      "inheritEnvironments": [ "msvc_x86" ],
-      "buildRoot": "${env.BuildDir}\\${name}",
-      "installRoot": "${env.InstallDir}\\${name}",
-      "cmakeCommandArgs": "",
-      "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
       "variables": [
-        {
-          "name": "NANODBC_ENABLE_UNICODE",
-          "value": "ON"
-        }
+        { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
+        { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
+        { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
+        { "name": "NANODBC_DISABLE_LIBCXX", "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}" },
+        { "name": "NANODBC_DISABLE_TESTS", "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}" },
+        { "name": "NANODBC_ENABLE_COVERAGE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}" },
+        { "name": "NANODBC_ENABLE_BOOST", "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}" },
+        { "name": "NANODBC_ENABLE_UNICODE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}" },
+        { "name": "NANODBC_ENABLE_WORKAROUND_NODATA", "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}" }
       ]
     },
     {
-      "name": "x64-Debug",
-      "generator": "Ninja",
+      "name": "x64-Debug-VS2017",
+      "generator": "Visual Studio 15 2017 Win64",
       "configurationType": "Debug",
-      "inheritEnvironments": [ "msvc_x64_x64" ],
       "buildRoot": "${env.BuildDir}\\${name}",
       "installRoot": "${env.InstallDir}\\${name}",
+      "buildCommandArgs": "-m",
       "cmakeCommandArgs": "",
-      "buildCommandArgs": "-v",
-      "ctestCommandArgs": ""
-    },
-    {
-      "name": "x64-Debug-Unicode",
-      "generator": "Ninja",
-      "configurationType": "Debug",
-      "inheritEnvironments": [ "msvc_x64_x64" ],
-      "buildRoot": "${env.BuildDir}\\${name}",
-      "installRoot": "${env.InstallDir}\\${name}",
-      "cmakeCommandArgs": "",
-      "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
       "variables": [
-        {
-          "name": "NANODBC_ENABLE_UNICODE",
-          "value": "ON"
-        }
+        { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
+        { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
+        { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
+        { "name": "NANODBC_DISABLE_LIBCXX", "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}" },
+        { "name": "NANODBC_DISABLE_TESTS", "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}" },
+        { "name": "NANODBC_ENABLE_COVERAGE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}" },
+        { "name": "NANODBC_ENABLE_BOOST", "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}" },
+        { "name": "NANODBC_ENABLE_UNICODE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}" },
+        { "name": "NANODBC_ENABLE_WORKAROUND_NODATA", "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}" }
       ]
     },
     {
-      "name": "x64-Release",
-      "generator": "Ninja",
-      "configurationType": "RelWithDebInfo",
-      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "name": "x64-Release-VS2017",
+      "generator": "Visual Studio 15 2017 Win64",
+      "configurationType": "Release",
       "buildRoot": "${env.BuildDir}\\${name}",
       "installRoot": "${env.InstallDir}\\${name}",
+      "buildCommandArgs": "-m",
       "cmakeCommandArgs": "",
-      "buildCommandArgs": "-v",
-      "ctestCommandArgs": ""
-    },
-    {
-      "name": "x64-Release-Unicode",
-      "generator": "Ninja",
-      "configurationType": "RelWithDebInfo",
-      "inheritEnvironments": [ "msvc_x64_x64" ],
-      "buildRoot": "${env.BuildDir}\\${name}",
-      "installRoot": "${env.InstallDir}\\${name}",
-      "cmakeCommandArgs": "",
-      "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
       "variables": [
-        {
-          "name": "NANODBC_ENABLE_UNICODE",
-          "value": "ON"
-        }
+        { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
+        { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
+        { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
+        { "name": "NANODBC_DISABLE_LIBCXX", "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}" },
+        { "name": "NANODBC_DISABLE_TESTS", "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}" },
+        { "name": "NANODBC_ENABLE_COVERAGE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}" },
+        { "name": "NANODBC_ENABLE_BOOST", "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}" },
+        { "name": "NANODBC_ENABLE_UNICODE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}" },
+        { "name": "NANODBC_ENABLE_WORKAROUND_NODATA", "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}" }
+      ]
+    },
+    {
+      "name": "x86-Debug-VS2017",
+      "generator": "Visual Studio 15 2017",
+      "configurationType": "Debug",
+      "buildRoot": "${env.BuildDir}\\${name}",
+      "installRoot": "${env.InstallDir}\\${name}",
+      "buildCommandArgs": "-m",
+      "cmakeCommandArgs": "",
+      "ctestCommandArgs": "",
+      "variables": [
+        { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
+        { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
+        { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
+        { "name": "NANODBC_DISABLE_LIBCXX", "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}" },
+        { "name": "NANODBC_DISABLE_TESTS", "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}" },
+        { "name": "NANODBC_ENABLE_COVERAGE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}" },
+        { "name": "NANODBC_ENABLE_BOOST", "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}" },
+        { "name": "NANODBC_ENABLE_UNICODE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}" },
+        { "name": "NANODBC_ENABLE_WORKAROUND_NODATA", "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}" }
+      ]
+    },
+    {
+      "name": "x86-Release-VS2017",
+      "generator": "Visual Studio 15 2017",
+      "configurationType": "Release",
+      "buildRoot": "${env.BuildDir}\\${name}",
+      "installRoot": "${env.InstallDir}\\${name}",
+      "buildCommandArgs": "-m",
+      "cmakeCommandArgs": "",
+      "ctestCommandArgs": "",
+      "variables": [
+        { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
+        { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
+        { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
+        { "name": "NANODBC_DISABLE_LIBCXX", "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}" },
+        { "name": "NANODBC_DISABLE_TESTS", "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}" },
+        { "name": "NANODBC_ENABLE_COVERAGE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}" },
+        { "name": "NANODBC_ENABLE_BOOST", "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}" },
+        { "name": "NANODBC_ENABLE_UNICODE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}" },
+        { "name": "NANODBC_ENABLE_WORKAROUND_NODATA", "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}" }
+      ]
+    },
+    {
+      "name": "x64-Debug-VS2019",
+      "generator": "Visual Studio 16 2019 Win64",
+      "configurationType": "Debug",
+      "buildRoot": "${env.BuildDir}\\${name}",
+      "installRoot": "${env.InstallDir}\\${name}",
+      "buildCommandArgs": "-m",
+      "cmakeCommandArgs": "",
+      "ctestCommandArgs": "",
+      "variables": [
+        { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
+        { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
+        { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
+        { "name": "NANODBC_DISABLE_LIBCXX", "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}" },
+        { "name": "NANODBC_DISABLE_TESTS", "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}" },
+        { "name": "NANODBC_ENABLE_COVERAGE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}" },
+        { "name": "NANODBC_ENABLE_BOOST", "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}" },
+        { "name": "NANODBC_ENABLE_UNICODE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}" },
+        { "name": "NANODBC_ENABLE_WORKAROUND_NODATA", "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}" }
+      ]
+    },
+    {
+      "name": "x64-Release-VS2019",
+      "generator": "Visual Studio 16 2019 Win64",
+      "configurationType": "Release",
+      "buildRoot": "${env.BuildDir}\\${name}",
+      "installRoot": "${env.InstallDir}\\${name}",
+      "buildCommandArgs": "-m",
+      "cmakeCommandArgs": "",
+      "ctestCommandArgs": "",
+      "variables": [
+        { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
+        { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
+        { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
+        { "name": "NANODBC_DISABLE_LIBCXX", "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}" },
+        { "name": "NANODBC_DISABLE_TESTS", "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}" },
+        { "name": "NANODBC_ENABLE_COVERAGE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}" },
+        { "name": "NANODBC_ENABLE_BOOST", "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}" },
+        { "name": "NANODBC_ENABLE_UNICODE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}" },
+        { "name": "NANODBC_ENABLE_WORKAROUND_NODATA", "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}" }
+      ]
+    },
+    {
+      "name": "x86-Debug-VS2019",
+      "generator": "Visual Studio 16 2019",
+      "configurationType": "Debug",
+      "buildRoot": "${env.BuildDir}\\${name}",
+      "installRoot": "${env.InstallDir}\\${name}",
+      "buildCommandArgs": "-m",
+      "cmakeCommandArgs": "",
+      "ctestCommandArgs": "",
+      "variables": [
+        { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
+        { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
+        { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
+        { "name": "NANODBC_DISABLE_LIBCXX", "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}" },
+        { "name": "NANODBC_DISABLE_TESTS", "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}" },
+        { "name": "NANODBC_ENABLE_COVERAGE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}" },
+        { "name": "NANODBC_ENABLE_BOOST", "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}" },
+        { "name": "NANODBC_ENABLE_UNICODE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}" },
+        { "name": "NANODBC_ENABLE_WORKAROUND_NODATA", "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}" }
+      ]
+    },
+    {
+      "name": "x86-Release-VS2019",
+      "generator": "Visual Studio 16 2019",
+      "configurationType": "Release",
+      "buildRoot": "${env.BuildDir}\\${name}",
+      "installRoot": "${env.InstallDir}\\${name}",
+      "buildCommandArgs": "-m",
+      "cmakeCommandArgs": "",
+      "ctestCommandArgs": "",
+      "variables": [
+        { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
+        { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
+        { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
+        { "name": "NANODBC_DISABLE_LIBCXX", "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}" },
+        { "name": "NANODBC_DISABLE_TESTS", "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}" },
+        { "name": "NANODBC_ENABLE_COVERAGE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}" },
+        { "name": "NANODBC_ENABLE_BOOST", "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}" },
+        { "name": "NANODBC_ENABLE_UNICODE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}" },
+        { "name": "NANODBC_ENABLE_WORKAROUND_NODATA", "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}" }
       ]
     }
   ]
