@@ -392,6 +392,49 @@ TEST_CASE_METHOD(
     REQUIRE(!results.next());
 }
 
+TEST_CASE_METHOD(
+    mssql_fixture,
+    "test_blob_retrieve_out_of_order",
+    "[mssql][blob][varchar][unbound]")
+{
+    // This test is based on https://knowledgebase.progress.com/articles/Article/9384,
+    // it illustrates a canonical sitaution leading to the Invalid Descriptor Index error.
+    // TODO: Port it to database-agnostic tests.
+
+    nanodbc::connection connection = connect();
+    create_table(
+        connection,
+        NANODBC_TEXT("test_blob_retrieve_out_of_order"),
+        NANODBC_TEXT("(c1 int, c2 varchar(max), c3 int, c4 text)"));
+    execute(
+        connection,
+        NANODBC_TEXT("insert into test_blob_retrieve_out_of_order values "
+                     "(1, 'this is varchar max', 11, 'this is text');"));
+
+    // Out of order
+    {
+        nanodbc::result results = nanodbc::execute(
+            connection,
+            NANODBC_TEXT("select c1, c2, c3, c4 from test_blob_retrieve_out_of_order;"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<int>(0) == 1);
+        REQUIRE_THROWS_WITH(
+            results.get<nanodbc::string>(1), Catch::Contains("Invalid Descriptor Index"));
+    }
+
+    // Bound first, then unbound
+    {
+        nanodbc::result results = nanodbc::execute(
+            connection,
+            NANODBC_TEXT("select c1, c3, c2, c4 from test_blob_retrieve_out_of_order;"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<int>(0) == 1);
+        REQUIRE(results.get<int>(1) == 11);
+        REQUIRE(results.get<nanodbc::string>(2) == NANODBC_TEXT("this is varchar max"));
+        REQUIRE(results.get<nanodbc::string>(3) == NANODBC_TEXT("this is text"));
+    }
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_catalog_list_catalogs", "[mssql][catalog][catalogs]")
 {
     test_catalog_list_catalogs();
