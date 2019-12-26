@@ -12,7 +12,7 @@ struct vertica_fixture : public test_case_fixture
             connection_string_ = get_env("NANODBC_TEST_CONNSTR_VERTICA");
     }
 };
-}
+} // namespace
 
 // TODO: add blob (bytea) test
 

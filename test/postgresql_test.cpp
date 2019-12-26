@@ -15,7 +15,7 @@ struct postgresql_fixture : public test_case_fixture
             connection_string_ = get_env("NANODBC_TEST_CONNSTR_PGSQL");
     }
 };
-}
+} // namespace
 
 // TODO: add blob (bytea) test
 
