@@ -3287,8 +3287,10 @@ public:
 
     bool next(void* event_handle = nullptr)
     {
-        if (rows() && ++rowset_position_ < rowset_size_)
+        if (rows() && ++rowset_position_ < rowset_size_){
+            set_current_position();
             return rowset_position_ < rows();
+        }
         rowset_position_ = 0;
         return fetch(0, SQL_FETCH_NEXT, event_handle);
     }
@@ -3322,8 +3324,11 @@ public:
 
     bool prior()
     {
-        if (rows() && --rowset_position_ >= 0)
+        if( rows() && --rowset_position_ >= 0 )
+        {
+            set_current_position();
             return true;
+        }
         rowset_position_ = 0;
         return fetch(0, SQL_FETCH_PRIOR);
     }
@@ -3937,6 +3942,17 @@ private:
         delete[] column.pdata_;
         column.pdata_ = nullptr;
         column.bound_ = false;
+    }
+
+    void set_current_position()
+    {
+        if( rowset_position_ < rowset_size_ )
+        {
+            RETCODE rc;
+            NANODBC_CALL_RC( SQLSetPos, rc, stmt_.native_statement_handle(), rowset_position_ + 1, SQL_POSITION, SQL_LOCK_NO_CHANGE );
+            if( !success( rc ) )
+                NANODBC_THROW_DATABASE_ERROR( stmt_.native_statement_handle(), SQL_HANDLE_STMT );
+        }
     }
 
 private:
