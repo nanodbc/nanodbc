@@ -112,7 +112,7 @@ message(STATUS "nanodbc feature: Enable SQL_NO_DATA bug workaround - ${NANODBC_E
 if(UNIX)
   # Try to find unixODBC first via odbc_config program.
   find_program(ODBC_CONFIG odbc_config
-    $ENV{ODBC_PATH}/bin /usr/bin /usr/local/bin PATHS)
+    PATHS $ENV{ODBC_PATH}/bin /usr/bin /usr/local/bin)
   if(ODBC_CONFIG)
     message(STATUS "nanodbc build: ODBC on Unix - unixODBC")
     set(ODBCLIB odbc)
@@ -144,7 +144,7 @@ if(UNIX)
   # Fallback to using iODBC
   if(NOT ODBC_CONFIG)
     find_program(ODBC_CONFIG iodbc-config
-      $ENV{ODBC_PATH}/bin /usr/bin /usr/local/bin PATHS)
+      PATHS $ENV{ODBC_PATH}/bin /usr/bin /usr/local/bin)
     if(ODBC_CONFIG)
       message(STATUS "nanodbc build: ODBC on Unix - iODBC")
       set(ODBCLIB iodbc)
