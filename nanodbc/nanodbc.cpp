@@ -489,7 +489,7 @@ const char* database_error::what() const noexcept
     return message.c_str();
 }
 
-const long database_error::native() const noexcept
+long database_error::native() const noexcept
 {
     return native_error;
 }
