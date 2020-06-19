@@ -1,3 +1,101 @@
+# v2.13.0
+
+## New Features
+- Added `catalog::find_table_privileges` method [`#204`](https://github.com/lexicalunit/nanodbc/pull/204)
+- Added `connection::allocate` method to manage ODBC handles handles [`#147`](https://github.com/lexicalunit/nanodbc/pull/147)
+- Added `connection::get_info` method which gets string information from a connection [`#215`](https://github.com/lexicalunit/nanodbc/pull/215)
+- Added `NANODBC_DEPRECATED` macro [`#279`](https://github.com/lexicalunit/nanodbc/pull/279)
+- Added `nanodbc::list_drivers` free function [`#192`](https://github.com/lexicalunit/nanodbc/pull/192)
+- Added `result::column_datatype_name` method [`#237`](https://github.com/lexicalunit/nanodbc/pull/237)
+- Added `result::column_decimal_digits` method [`#202`](https://github.com/lexicalunit/nanodbc/pull/202)
+- Added `result::has_affected_rows` method [`#185`](https://github.com/lexicalunit/nanodbc/pull/185)
+- Added `statement::describe_parameters` method as alternative to `SQLDescribeParam` [`#225`](https://github.com/nanodbc/nanodbc/pull/225)
+- Added build flag `NANODBC_DISABLE_ASYNC` which disables async features [`#142`](https://github.com/lexicalunit/nanodbc/pull/142)
+- Added CMake package configuration [`#245`](https://github.com/lexicalunit/nanodbc/pull/245)
+- Added column validating function to the `result_impl` class [`#206`](https://github.com/lexicalunit/nanodbc/pull/206)
+- Added handling of `SQL_SS_UDT` data as binary [`#148`](https://github.com/lexicalunit/nanodbc/pull/148)
+- Added input iterator for result class [`#155`](https://github.com/lexicalunit/nanodbc/pull/155)
+- Added public macro `NANODBC_THROW_NO_SOURCE_LOCATION` [`#184`](https://github.com/lexicalunit/nanodbc/pull/184)
+- Added string converter functions for more efficient processing [`#151`](https://github.com/lexicalunit/nanodbc/pull/151)
+- Added support for `SQL_WLONGVARCHAR` data type [`#211`](https://github.com/lexicalunit/nanodbc/pull/211)
+- Added support for `std::vector` of strings input [`#214`](https://github.com/lexicalunit/nanodbc/pull/214)
+- Added support for `time` column type [`#183`](https://github.com/lexicalunit/nanodbc/pull/183)
+- Added support for binding of binary data [`#219`](https://github.com/lexicalunit/nanodbc/pull/219)
+- Added support to get binary data as array of bytes [`#130`](https://github.com/lexicalunit/nanodbc/pull/130)
+- Added two `catalog` operations: `list_catalogs` and `list_schemas` [`#193`](https://github.com/lexicalunit/nanodbc/pull/193)
+- Added very minimal support for SQL Server-specific time datatypes [`#228`](https://github.com/lexicalunit/nanodbc/pull/228)
+- Allowed binding values of all intrinsic integral types [`#232`](https://github.com/lexicalunit/nanodbc/pull/232)
+
+## Changes
+- Changed `COLUMN_SIZE` for `bytea` to now equal `SQL_NO_TOTAL(-4)` by default [`#251`](https://github.com/lexicalunit/nanodbc/pull/251)
+- Disabled declaration of async methods if `NANODBC_DISABLE_ASYNC` is defined [`#197`](https://github.com/lexicalunit/nanodbc/pull/197)
+- Fixed, improved and cleaned up the family of bind functions
+- Made `NANODBC_TEXT` macro public [`#151`](https://github.com/lexicalunit/nanodbc/pull/151)
+- Refactored CMake options to default value `OFF` [`#260`](https://github.com/lexicalunit/nanodbc/pull/260)
+- Removed unused output connection string from `SQLDriverConnect` call [`#188`](https://github.com/lexicalunit/nanodbc/pull/188)
+- Renamed `nanodbc::string_type` to `nanodbc::string` [`#269`](https://github.com/lexicalunit/nanodbc/pull/269)
+- Renamed `src` directory to `nanodbc` [`#256`](https://github.com/lexicalunit/nanodbc/pull/256)
+- Replaced custom `NANODBC_STATIC` option with CMake native `BUILD_SHARED_LIBS` [`#250`](https://github.com/lexicalunit/nanodbc/pull/250)
+- Report `SQL_HANDLE_DBC` error if statement::open fails to allocate handle [`#178`](https://github.com/lexicalunit/nanodbc/pull/178)
+- Started enforcing project-wide consistent code style using `clang-format` [`#203`](https://github.com/lexicalunit/nanodbc/pull/203)
+
+## Bug Fixes
+- Added DB-specific tests for `result::affected_rows` [`#154`](https://github.com/lexicalunit/nanodbc/pull/154)
+- Fixed `statement_impl::async*` members which were left uninitialized if not built-in [`#187`](https://github.com/lexicalunit/nanodbc/pull/187)
+- Fixed binding of `SQL_DECIMAL` and `SQL_NUMERIC` type as character data [`#238`](https://github.com/lexicalunit/nanodbc/pull/238)
+- Fixed compilation using Xcode 11 [`#224`](https://github.com/lexicalunit/nanodbc/pull/224)
+- Fixed copying of buffer to output string for `SQL_C_BINARY` [`#129`](https://github.com/lexicalunit/nanodbc/pull/129)
+- Fixed correct buffer size passed to `SQLGetData` [`#150`](https://github.com/lexicalunit/nanodbc/pull/150)
+- Fixed incorrect size passed to `SQLBindParameter` while inserting batch of strings [`#116`](https://github.com/lexicalunit/nanodbc/issues/116)
+- Fixed integer conversions [`#176`](https://github.com/lexicalunit/nanodbc/pull/176)
+- Fixed issue withSAP/Sybase ASE ODBC driver not setting `sqlsize` to 0 when retrieving `varchar` columns [`#275`](https://github.com/lexicalunit/nanodbc/pull/275)
+- Fixed overflowing transaction counter [`#144`](https://github.com/lexicalunit/nanodbc/pull/144)
+- Fixed retrieving long strings from MySQL [`#212`](https://github.com/lexicalunit/nanodbc/pull/212)
+- Fixed some issues with the async support, plus add async prepare and next [`#170`](https://github.com/lexicalunit/nanodbc/pull/170)
+- Fixed to use correct wide-char count when copying from `SQLGetData` buffer [`#182`](https://github.com/lexicalunit/nanodbc/pull/182)
+- Handled `SQLGetData` return value of `SQL_NO_TOTAL` [`#161`](https://github.com/lexicalunit/nanodbc/pull/161)
+- Put the string lengths in their proper place [`#165`](https://github.com/lexicalunit/nanodbc/pull/165)
+- Resolved narrowing from `wchar_t` to `char` warning in VS 2017 updates [`#199`](https://github.com/nanodbc/nanodbc/pull/199)
+- Resolved unexpected `bind()` with nulls set to `nullptr` behavior [`#140`](https://github.com/lexicalunit/nanodbc/pull/140)
+- Updated to catch up with breaking change in SQLite ODBC 0.9996 [`#165`](https://github.com/nanodbc/nanodbc/pull/165)
+
+## Testing
+- Added `integer_boundary` test case for SQLite [`#174`](https://github.com/lexicalunit/nanodbc/pull/174)
+- Added AppVeyor build targeting SQL Server 2016 [`#194`](https://github.com/lexicalunit/nanodbc/pull/194)
+- Added CI job to lint and build docs [`#152`](https://github.com/lexicalunit/nanodbc/pull/152)
+- Added CI job to run clang-format 5.0 to check for code formatting errors [`#153`](https://github.com/lexicalunit/nanodbc/pull/153)
+- Added CI jobs to run static code analysis [`#270`](https://github.com/lexicalunit/nanodbc/pull/270)
+- Added MinGW build job to AppVeyor [`#196`](https://github.com/lexicalunit/nanodbc/pull/196)
+- Added SQL Server test for the Invalid Descriptor Index issue [`#227`](https://github.com/lexicalunit/nanodbc/pull/227)
+- Added SQL Server test inserting large blob using direct `INSERT` [`#186`](https://github.com/lexicalunit/nanodbc/pull/186)
+- Added test for `std::vector<bool>` workaround [`#267`](https://github.com/lexicalunit/nanodbc/pull/267)
+- Added test for integer to string conversion (SQLite only) [`#190`](https://github.com/lexicalunit/nanodbc/pull/190)
+- Added test insert and select from/into `nanodbc::time` (SQLite) [`#195`](https://github.com/lexicalunit/nanodbc/pull/195)
+- Added tests for PostgreSQL time/timestamp with/without time zone [`#229`](https://github.com/lexicalunit/nanodbc/pull/229)
+- Added Vertica to Travis CI [`#199`](https://github.com/lexicalunit/nanodbc/pull/199)
+- Refactored test fixture and split into common utilities base and test case base [`#225`](https://github.com/lexicalunit/nanodbc/pull/225)
+- Updated Catch to 2.4.2 [`#201`](https://github.com/lexicalunit/nanodbc/pull/201)
+
+## Acknowledgements
+
+[Denis Glazachev](https://github.com/traceon),
+[Jim Hester](https://github.com/jimhester),
+[Billy O'Neal](https://github.com/BillyONeal),
+[Kun Ren](https://github.com/renkun-ken),
+[whizmo](https://github.com/whizmo),
+[Amy Troschinetz](https://github.com/lexicalunit),
+[Christopher Blaesius](https://github.com/ChrisBFX),
+[detule](https://github.com/detule),
+[Diego Sogari](https://github.com/dsogari),
+[Jon Valvatne](https://github.com/jon-v),
+[Mateusz Loskot](https://github.com/mloskot),
+[Michael C. Grant](https://github.com/mcg1969),
+[H1X4Dev](https://github.com/H1X4Dev),
+[Rafee Memon](https://github.com/rafeememon),
+[Sauron](https://github.com/saur0n),
+[Seth Shelnutt](https://github.com/Shelnutt2),
+[ThermoX360](https://github.com/ThermoX360)
+
 # v2.12.4
 
 Resolves a possible crash with `SQLDescribeParam()`. In Progress OpenEdge 11 driver setting the
