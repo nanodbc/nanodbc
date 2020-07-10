@@ -3126,13 +3126,6 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
         return;
     }
 
-    case SQL_C_GUID:
-    {
-        const char* s = col.pdata_ + rowset_position_ * col.clen_;
-        result.assign(s, s + column_size);
-        return;
-    }
-
     case SQL_C_LONG:
     {
         std::string buffer(column_size + 1, 0); // ensure terminating null
