@@ -3439,6 +3439,59 @@ void result::result_impl::get_ref_impl(short column, T& result) const
 namespace nanodbc
 {
 
+std::list<datasource> list_dsns()
+{
+    NANODBC_SQLCHAR name[1024] = {0};
+    NANODBC_SQLCHAR driver[1024] = {0};
+    SQLSMALLINT name_len_ret{0};
+    SQLSMALLINT driver_len_ret{0};
+    SQLUSMALLINT direction{SQL_FETCH_FIRST};
+
+    connection env; // ensures handles RAII
+    env.allocate();
+    NANODBC_ASSERT(env.native_env_handle());
+
+    std::list<datasource> dsns;
+    RETCODE rc{SQL_SUCCESS};
+    do
+    {
+        NANODBC_CALL_RC(
+            NANODBC_FUNC(SQLDataSources),
+            rc,
+            env.native_env_handle(),                  // EnvironmentHandle
+            direction,                                // Direction
+            name,                                     // DSN Name
+            sizeof(name) / sizeof(NANODBC_SQLCHAR),   // Size of Name Buffer
+            &name_len_ret,                            // Written DSN Name length
+            driver,                                   // Driver Name
+            sizeof(driver) / sizeof(NANODBC_SQLCHAR), // Size of Driver Buffer
+            &driver_len_ret);                         // Written Driver length
+
+        if (rc == SQL_SUCCESS)
+        {
+            using char_type = string::value_type;
+            static_assert(
+                sizeof(NANODBC_SQLCHAR) == sizeof(char_type),
+                "incompatible SQLCHAR and string::value_type");
+
+            datasource dsn;
+            dsn.name = string(&name[0], &name[std::char_traits<NANODBC_SQLCHAR>::length(name)]);
+            dsn.driver =
+                string(&driver[0], &driver[std::char_traits<NANODBC_SQLCHAR>::length(driver)]);
+
+            dsns.push_back(std::move(dsn));
+            direction = SQL_FETCH_NEXT;
+        }
+        else
+        {
+            if (rc != SQL_NO_DATA)
+                NANODBC_THROW_DATABASE_ERROR(env.native_env_handle(), SQL_HANDLE_ENV);
+        }
+    } while (success(rc));
+
+    return dsns;
+}
+
 std::list<driver> list_drivers()
 {
     NANODBC_SQLCHAR descr[1024] = {0};
