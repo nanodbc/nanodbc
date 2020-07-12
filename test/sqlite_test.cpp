@@ -40,7 +40,7 @@ struct sqlite_fixture : public test_case_fixture
             conn, NANODBC_TEXT("catalog_tables_test"), NANODBC_TEXT("(a int PRIMARY KEY, b text)"));
     }
 };
-}
+} // namespace
 
 // Unicode build on Ubuntu 12.04 with unixODBC 2.2.14p2 and libsqliteodbc 0.91-3 throws:
 // test/sqlite_test.cpp:42: FAILED:
@@ -108,6 +108,11 @@ TEST_CASE_METHOD(sqlite_fixture, "test_affected_rows", "[sqlite][affected_rows]"
 TEST_CASE_METHOD(sqlite_fixture, "test_driver", "[sqlite][driver]")
 {
     test_driver();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_dsns", "[sqlite][dsn]")
+{
+    test_dsns();
 }
 
 // TODO: Investigate why these tests fail on Linux

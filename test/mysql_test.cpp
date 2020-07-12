@@ -16,13 +16,18 @@ struct mysql_fixture : public test_case_fixture
             connection_string_ = get_env("NANODBC_TEST_CONNSTR_MYSQL");
     }
 };
-}
+} // namespace
 
 // FIXME: No catlog_* tests for MySQL. Not supported?
 
 TEST_CASE_METHOD(mysql_fixture, "test_driver", "[mysql][driver]")
 {
     test_driver();
+}
+
+TEST_CASE_METHOD(mysql_fixture, "test_dsns", "[mysql][dsn]")
+{
+    test_dsns();
 }
 
 TEST_CASE_METHOD(mysql_fixture, "test_affected_rows", "[mysql][affected_rows]")

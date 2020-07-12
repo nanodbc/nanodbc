@@ -12,13 +12,18 @@ struct vertica_fixture : public test_case_fixture
             connection_string_ = get_env("NANODBC_TEST_CONNSTR_VERTICA");
     }
 };
-}
+} // namespace
 
 // TODO: add blob (bytea) test
 
 TEST_CASE_METHOD(vertica_fixture, "test_driver", "[vertica][driver]")
 {
     test_driver();
+}
+
+TEST_CASE_METHOD(vertica_fixture, "test_dsns", "[vertica][dsn]")
+{
+    test_dsns();
 }
 
 TEST_CASE_METHOD(vertica_fixture, "test_batch_insert_integer", "[vertica][batch][integral]")

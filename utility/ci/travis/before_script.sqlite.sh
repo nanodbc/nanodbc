@@ -13,3 +13,8 @@ EOF
 else
     sudo odbcinst -i -d -f /usr/share/sqliteodbc/unixodbc.ini
 fi
+ODBC_DRIVER_NAME="SQLite3"
+cat > ${HOME}/.odbc.ini <<EOF
+[testdsn]
+Driver                  = ${ODBC_DRIVER_NAME}
+EOF
