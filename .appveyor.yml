@@ -60,6 +60,7 @@ environment:
     - DB: SQLite
       G: "Visual Studio 15 2017 Win64"
     - DB: SQLite
+      P: x86-32
       G: "Visual Studio 15 2017"
 
     - DB: SQLite
@@ -191,27 +192,27 @@ test_script:
         }
         if ($env:DB -Match "MSSQL2008") {
           $test_driver = "ODBC Driver 11 for SQL Server"
-          $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={$test_driver};Server=(local)\SQL2008R2SP2;Database=master;UID=sa;PWD=Password12!;"
+          $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={${test_driver}};Server=(local)\SQL2008R2SP2;Database=master;UID=sa;PWD=Password12!;"
           $test_name = "mssql_test"
         } elseif ($env:DB -Match "MSSQL2012") {
           $test_driver = "ODBC Driver 11 for SQL Server"
-          $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={$test_driver};Server=(local)\SQL2012SP1;Database=master;UID=sa;PWD=Password12!;"
+          $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={${test_driver}};Server=(local)\SQL2012SP1;Database=master;UID=sa;PWD=Password12!;"
           $test_name = "mssql_test"
         } elseif ($env:DB -Match "MSSQL2014") {
           $test_driver = "ODBC Driver 11 for SQL Server"
-          $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={$test_driver};Server=(local)\SQL2014;Database=master;UID=sa;PWD=Password12!;"
+          $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={${test_driver}};Server=(local)\SQL2014;Database=master;UID=sa;PWD=Password12!;"
           $test_name = "mssql_test"
         } elseif ($env:DB -Match "MSSQL2016") {
           $test_driver = "ODBC Driver 11 for SQL Server"
-          $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={$test_driver};Server=(local)\SQL2016;Database=master;UID=sa;PWD=Password12!;"
+          $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={${test_driver}};Server=(local)\SQL2016;Database=master;UID=sa;PWD=Password12!;"
           $test_name = "mssql_test"
         } elseif ($env:DB -Match "MySQL") {
           $test_driver = "MySQL ODBC 5.3 ANSI Driver"
-          $env:NANODBC_TEST_CONNSTR_MYSQL="Driver={$test_driver};Server=127.0.0.1;Database=nanodbc_test;User=root;Password=Password12!;big_packets=1;"
+          $env:NANODBC_TEST_CONNSTR_MYSQL="Driver={${test_driver}};Server=127.0.0.1;Database=nanodbc_test;User=root;Password=Password12!;big_packets=1;"
           $test_name = "mysql_test"
         } elseif ($env:DB -Match "PostgreSQL") {
           $test_driver = "PostgreSQL ANSI(x64)"
-          $env:NANODBC_TEST_CONNSTR_PGSQL="Driver={$test_driver};Server=127.0.0.1;Port=5432;Database=nanodbc_test;Uid=postgres;Pwd=Password12!;"
+          $env:NANODBC_TEST_CONNSTR_PGSQL="Driver={${test_driver}};Server=127.0.0.1;Port=5432;Database=nanodbc_test;Uid=postgres;Pwd=Password12!;"
           $test_name = "postgresql_test"
         } elseif ($env:DB -Match "SQLite") {
           $test_driver = "SQLite3 ODBC Driver"
@@ -219,7 +220,13 @@ test_script:
         } else {
           throw 'Database ' + $env:DB + ' not configured yet'
         }
-        Add-OdbcDsn -Name testdsn -DriverName $test_driver -DsnType System -Platform 64-bit -SetPropertyValue @("Database=db01")
+        if ($env:P -Match "x86-32") {
+          Add-OdbcDsn -Name testdsn -DriverName "$test_driver" -Platform "32-bit" -DsnType System -SetPropertyValue @("Database=db01")
+        } else {
+          Add-OdbcDsn -Name testdsn -DriverName "$test_driver" -DsnType System -SetPropertyValue @("Database=db01")
+        }
+        Write-Host "Installed ODBC data sources:" -ForegroundColor Magenta
+        Get-OdbcDsn | Select-Object -ExpandProperty Name
         Write-Host "Running $Env:CONFIGURATION build test: $test_name" -ForegroundColor Magenta
         $cmd = 'ctest -V --output-on-failure -C ' + $Env:CONFIGURATION + ' -R ' + $test_name
         iex "& $cmd"
