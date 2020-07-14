@@ -3439,7 +3439,7 @@ void result::result_impl::get_ref_impl(short column, T& result) const
 namespace nanodbc
 {
 
-std::list<datasource> list_dsns()
+std::list<datasource> list_datasources()
 {
     NANODBC_SQLCHAR name[1024] = {0};
     NANODBC_SQLCHAR driver[1024] = {0};

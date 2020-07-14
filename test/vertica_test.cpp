@@ -21,9 +21,9 @@ TEST_CASE_METHOD(vertica_fixture, "test_driver", "[vertica][driver]")
     test_driver();
 }
 
-TEST_CASE_METHOD(vertica_fixture, "test_dsns", "[vertica][dsn]")
+TEST_CASE_METHOD(vertica_fixture, "test_datasources", "[vertica][datasources]")
 {
-    test_dsns();
+    test_datasources();
 }
 
 TEST_CASE_METHOD(vertica_fixture, "test_batch_insert_integer", "[vertica][batch][integral]")

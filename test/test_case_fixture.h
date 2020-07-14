@@ -950,14 +950,14 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(found);
     }
 
-    void test_dsns()
+    void test_datasources()
     {
         auto const driver_name = connection_string_parameter(NANODBC_TEXT("DRIVER"));
 
         // Verify given driver, by name, is available - that is,
         // it is registered with the ODBC Driver Manager in the host environment.
         REQUIRE(!driver_name.empty());
-        auto const dsns = nanodbc::list_dsns();
+        auto const dsns = nanodbc::list_datasources();
         bool found =
             std::any_of(dsns.cbegin(), dsns.cend(), [&driver_name](nanodbc::datasource const& dsn) {
                 return dsn.name == nanodbc::test::convert((std::string) "testdsn") &&

@@ -110,9 +110,9 @@ TEST_CASE_METHOD(sqlite_fixture, "test_driver", "[sqlite][driver]")
     test_driver();
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "test_dsns", "[sqlite][dsn]")
+TEST_CASE_METHOD(sqlite_fixture, "test_datasources", "[sqlite][datasources]")
 {
-    test_dsns();
+    test_datasources();
 }
 
 // TODO: Investigate why these tests fail on Linux

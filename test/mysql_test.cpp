@@ -25,9 +25,9 @@ TEST_CASE_METHOD(mysql_fixture, "test_driver", "[mysql][driver]")
     test_driver();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "test_dsns", "[mysql][dsn]")
+TEST_CASE_METHOD(mysql_fixture, "test_datasources", "[mysql][datasources]")
 {
-    test_dsns();
+    test_datasources();
 }
 
 TEST_CASE_METHOD(mysql_fixture, "test_affected_rows", "[mysql][affected_rows]")

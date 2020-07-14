@@ -1840,7 +1840,7 @@ struct datasource
 std::list<driver> list_drivers();
 
 /// \brief Returns a list of ODBC data sources on your system.
-std::list<datasource> list_dsns();
+std::list<datasource> list_datasources();
 
 /// \brief Immediately opens, prepares, and executes the given query directly on the given
 /// connection.

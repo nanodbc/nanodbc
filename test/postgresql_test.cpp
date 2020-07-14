@@ -24,9 +24,9 @@ TEST_CASE_METHOD(postgresql_fixture, "test_driver", "[postgresql][driver]")
     test_driver();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "test_dsns", "[postgresql][dsn]")
+TEST_CASE_METHOD(postgresql_fixture, "test_datasources", "[postgresql][datasources]")
 {
-    test_dsns();
+    test_datasources();
 }
 
 TEST_CASE_METHOD(postgresql_fixture, "test_batch_insert_integer", "[postgresql][batch][integral]")

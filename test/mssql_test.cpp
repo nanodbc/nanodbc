@@ -35,9 +35,9 @@ TEST_CASE_METHOD(mssql_fixture, "test_driver", "[mssql][driver]")
     test_driver();
 }
 
-TEST_CASE_METHOD(mssql_fixture, "test_dsns", "[mssql][dsn]")
+TEST_CASE_METHOD(mssql_fixture, "test_datasources", "[mssql][datasources]")
 {
-    test_dsns();
+    test_datasources();
 }
 
 TEST_CASE_METHOD(mssql_fixture, "test_affected_rows", "[mssql][affected_rows]")
