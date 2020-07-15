@@ -1830,8 +1830,17 @@ struct driver
     std::list<attribute> attributes; ///< List of driver attributes.
 };
 
+struct datasource
+{
+    nanodbc::string name;   ///< DSN name.
+    nanodbc::string driver; ///< Driver description.
+};
+
 /// \brief Returns a list of ODBC drivers on your system.
 std::list<driver> list_drivers();
+
+/// \brief Returns a list of ODBC data sources on your system.
+std::list<datasource> list_datasources();
 
 /// \brief Immediately opens, prepares, and executes the given query directly on the given
 /// connection.

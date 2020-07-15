@@ -15,13 +15,18 @@ struct postgresql_fixture : public test_case_fixture
             connection_string_ = get_env("NANODBC_TEST_CONNSTR_PGSQL");
     }
 };
-}
+} // namespace
 
 // TODO: add blob (bytea) test
 
 TEST_CASE_METHOD(postgresql_fixture, "test_driver", "[postgresql][driver]")
 {
     test_driver();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "test_datasources", "[postgresql][datasources]")
+{
+    test_datasources();
 }
 
 TEST_CASE_METHOD(postgresql_fixture, "test_batch_insert_integer", "[postgresql][batch][integral]")
