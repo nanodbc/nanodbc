@@ -262,7 +262,11 @@ if(NOT NANODBC_DISABLE_INSTALL)
   install(FILES nanodbc/nanodbc.h DESTINATION include/nanodbc)
   # Make project importable from the install directory
   ## Generate and install *-config.cmake exporting targets from install tree.
-  install(EXPORT ${NANODBC_CONFIG} DESTINATION cmake)
+  if (WIN32 AND NOT MINGW)
+    install(EXPORT ${NANODBC_CONFIG} DESTINATION "cmake")
+  else()
+    install(EXPORT ${NANODBC_CONFIG} DESTINATION "lib/cmake/nanodbc")
+  endif()
   # Make project importable from the build directory
   ## Generate file *-config.cmake exporting targets from build tree.
   export(TARGETS nanodbc FILE ${NANODBC_CONFIG}.cmake)
