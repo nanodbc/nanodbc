@@ -181,7 +181,7 @@ before_install:
 before_script:
   - if [[ -f ${TRAVIS_BUILD_DIR}/utility/ci/travis/before_script.$DB.sh ]]; then source ${TRAVIS_BUILD_DIR}/utility/ci/travis/before_script.$DB.sh; fi
   - if [[ -f /etc/odbcinst.ini ]]; then export ODBCSYSINI=/etc; fi
-  - if [[ -f /etc/odbc.ini ]]; then export ODBCINI=/etc/odbc.ini; fi
+  - export ODBCINI=${HOME}/.odbc.ini
   - odbcinst -j
   - if [[ -f "$ODBCSYSINI/odbcinst.ini" ]]; then odbcinst -q -d; fi
   - if [[ -s "$ODBCINI" ]]; then odbcinst -q -s; fi

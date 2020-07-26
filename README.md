@@ -6,7 +6,7 @@ A small C++ wrapper for the native C ODBC API. Please see the [online documentat
 user information, example usage, propaganda, and detailed source level documentation.
 
 [![GitHub release](https://img.shields.io/github/tag/nanodbc/nanodbc.svg)](https://github.com/nanodbc/nanodbc/releases)
-[![GitHub commits](https://img.shields.io/github/commits-since/nanodbc/nanodbc/v2.12.4.svg?style=flat-square)](https://github.com/nanodbc/nanodbc/releases/tag/v2.12.4)
+[![GitHub commits](https://img.shields.io/github/commits-since/nanodbc/nanodbc/v2.13.0.svg?style=flat-square)](https://github.com/nanodbc/nanodbc/releases/tag/v2.13.0)
 [![License](https://img.shields.io/github/license/nanodbc/nanodbc.svg?style=flat-square)](https://github.com/nanodbc/nanodbc/blob/master/LICENSE)
 
 [![Gitter](https://img.shields.io/gitter/room/nanodbc/nanodbc.svg?style=flat-square)](https://gitter.im/nanodbc-help/Lobby)
@@ -249,6 +249,8 @@ Once your local `master` branch is ready for publishing
 bumps the major, minor, or patch version, then updates the repository's `VERSION` file, adds a
 "Preparing" commit, and creates git tags appropriately. For example to make a minor update you
 would run `./utility/publish.sh minor`.
+Review files of CMake configuration, documentation and Sphinx configuration,
+and update version number wherever necessary.
 
 > **Important:** Always update [`CHANGELOG.md`](CHANGELOG.md) with information about new changes,
 > bug fixes, and features when making a new release.
@@ -263,6 +265,10 @@ To do this manually instead, use the following steps &mdash; for example a minor
 3. `git commit -m "Preparing 2.10.0 release."`
 4. `git tag -f "v2.10.0"`
 5. `git push -f origin "v2.10.0"`
+
+Next, switch to `gh-pages` branch, build latest documentation, commit and push.
+
+Finally, announce the new release to the public.
 
 ## Future work
 
