@@ -2780,6 +2780,7 @@ private:
                 {
                 case SQL_VARCHAR:
                 case SQL_WVARCHAR:
+                case SQL_SS_XML:
                 {
                     // Divide in half, due to sqlsize being 32-bit in Win32 (and 64-bit in x64)
                     // sqlsize = std::numeric_limits<int32_t>::max() / 2 - 1;
@@ -2851,6 +2852,7 @@ private:
                 break;
             case SQL_WCHAR:
             case SQL_WVARCHAR:
+            case SQL_SS_XML:
                 col.ctype_ = sql_ctype<wide_string>::value;
                 col.clen_ = (col.sqlsize_ + 1) * sizeof(SQLWCHAR);
                 if (is_blob)

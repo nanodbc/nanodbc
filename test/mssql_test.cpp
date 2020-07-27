@@ -158,6 +158,24 @@ TEST_CASE_METHOD(mssql_fixture, "test_blob", "[mssql][blob][binary][varbinary]")
     }
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_xml", "[mssql][xml]")
+{
+    auto connection = connect();
+    {
+        create_table(connection, NANODBC_TEXT("test_xml"), NANODBC_TEXT("(data XML)"));
+        nanodbc::statement stmt(connection);
+        prepare(stmt, NANODBC_TEXT("INSERT INTO test_xml (data) VALUES (?)"));
+
+        std::vector<nanodbc::string> s = {NANODBC_TEXT("myxmldata")};
+        stmt.bind_strings(0, s);
+        execute(stmt);
+        nanodbc::result results =
+            nanodbc::execute(connection, NANODBC_TEXT("SELECT data FROM test_xml;"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<nanodbc::string>(0) == s[0]);
+    }
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_large_blob", "[mssql][blob][binary][varbinary]")
 {
     std::vector<std::uint8_t> blob;

@@ -6,6 +6,7 @@
 - Added `connection::get_info` method which gets string information from a connection [`#215`](https://github.com/lexicalunit/nanodbc/pull/215)
 - Added `NANODBC_DEPRECATED` macro [`#279`](https://github.com/lexicalunit/nanodbc/pull/279)
 - Added `nanodbc::list_drivers` free function [`#192`](https://github.com/lexicalunit/nanodbc/pull/192)
+- Added `nanodbc::list_datasources` free function [`#237`](https://github.com/lexicalunit/nanodbc/pull/237)
 - Added `result::column_datatype_name` method [`#237`](https://github.com/lexicalunit/nanodbc/pull/237)
 - Added `result::column_decimal_digits` method [`#202`](https://github.com/lexicalunit/nanodbc/pull/202)
 - Added `result::has_affected_rows` method [`#185`](https://github.com/lexicalunit/nanodbc/pull/185)
@@ -18,6 +19,7 @@
 - Added public macro `NANODBC_THROW_NO_SOURCE_LOCATION` [`#184`](https://github.com/lexicalunit/nanodbc/pull/184)
 - Added string converter functions for more efficient processing [`#151`](https://github.com/lexicalunit/nanodbc/pull/151)
 - Added support for `SQL_WLONGVARCHAR` data type [`#211`](https://github.com/lexicalunit/nanodbc/pull/211)
+- Added support for `SQL_SS_XML` data type [`#238`](https://github.com/lexicalunit/nanodbc/pull/238)
 - Added support for `std::vector` of strings input [`#214`](https://github.com/lexicalunit/nanodbc/pull/214)
 - Added support for `time` column type [`#183`](https://github.com/lexicalunit/nanodbc/pull/183)
 - Added support for binding of binary data [`#219`](https://github.com/lexicalunit/nanodbc/pull/219)
@@ -94,7 +96,8 @@
 [Rafee Memon](https://github.com/rafeememon),
 [Sauron](https://github.com/saur0n),
 [Seth Shelnutt](https://github.com/Shelnutt2),
-[ThermoX360](https://github.com/ThermoX360)
+[ThermoX360](https://github.com/ThermoX360),
+[detule](https://github.com/detule)
 
 # v2.12.4
 
