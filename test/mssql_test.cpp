@@ -158,6 +158,24 @@ TEST_CASE_METHOD(mssql_fixture, "test_blob", "[mssql][blob][binary][varbinary]")
     }
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_xml", "[mssql][xml]")
+{
+    auto connection = connect();
+    {
+        create_table(connection, NANODBC_TEXT("test_xml"), NANODBC_TEXT("(data XML)"));
+        nanodbc::statement stmt(connection);
+        prepare(stmt, NANODBC_TEXT("INSERT INTO test_xml (data) VALUES (?)"));
+
+        std::vector<nanodbc::string> s = {NANODBC_TEXT("myxmldata")};
+        stmt.bind_strings(0, s);
+        execute(stmt);
+        nanodbc::result results =
+            nanodbc::execute(connection, NANODBC_TEXT("SELECT data FROM test_xml;"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<nanodbc::string>(0) == s[0]);
+    }
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_large_blob", "[mssql][blob][binary][varbinary]")
 {
     std::vector<std::uint8_t> blob;
@@ -436,6 +454,34 @@ TEST_CASE_METHOD(
         REQUIRE(results.get<int>(0) == 1);
         REQUIRE(results.get<int>(1) == 11);
         REQUIRE(results.get<nanodbc::string>(2) == NANODBC_TEXT("this is varchar max"));
+        REQUIRE(results.get<nanodbc::string>(3) == NANODBC_TEXT("this is text"));
+    }
+
+    // Unbind all columns
+    {
+        nanodbc::result results = nanodbc::execute(
+            connection,
+            NANODBC_TEXT("select c1, c2, c3, c4 from test_blob_retrieve_out_of_order;"));
+        results.unbind();
+        REQUIRE(results.next());
+        REQUIRE(results.get<int>(0) == 1);
+        REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("this is varchar max"));
+        REQUIRE(results.get<int>(2) == 11);
+        REQUIRE(results.get<nanodbc::string>(3) == NANODBC_TEXT("this is text"));
+    }
+
+    // Unbind offending column only
+    {
+        nanodbc::result results = nanodbc::execute(
+            connection,
+            NANODBC_TEXT("select c1, c2, c3, c4 from test_blob_retrieve_out_of_order;"));
+        REQUIRE(results.is_bound(0));
+        REQUIRE(results.is_bound(2));
+        results.unbind(2);
+        REQUIRE(results.next());
+        REQUIRE(results.get<int>(0) == 1);
+        REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("this is varchar max"));
+        REQUIRE(results.get<int>(2) == 11);
         REQUIRE(results.get<nanodbc::string>(3) == NANODBC_TEXT("this is text"));
     }
 }
