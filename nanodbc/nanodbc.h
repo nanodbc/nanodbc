@@ -769,7 +769,7 @@ public:
     /// \param batch_size The number of values being bound.
     /// \param null_sentry Value which should represent a null value.
     /// \param nulls Flags for values that should be set to a null value.
-    /// \param param_direciton ODBC parameter direction.
+    /// \param param_direction ODBC parameter direction.
     /// \throws database_error
     ///
     /// @{
@@ -844,7 +844,7 @@ public:
     /// taken as the number of values.
     /// \param null_sentry Value which should represent a null value.
     /// \param nulls Flags for values that should be set to a null value.
-    /// \param param_direciton ODBC parameter direction.
+    /// \param param_direction ODBC parameter direction.
     /// \throws database_error
     ///
     /// @{
