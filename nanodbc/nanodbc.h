@@ -292,7 +292,7 @@ public:
     /// \param info Additional info that will be appended to the beginning of the error message.
     database_error(void* handle, short handle_type, const std::string& info = "");
     const char* what() const noexcept;
-    const long native() const noexcept;
+    long native() const noexcept;
     const std::string state() const noexcept;
 
 private:
