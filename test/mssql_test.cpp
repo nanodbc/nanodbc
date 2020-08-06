@@ -127,6 +127,35 @@ TEST_CASE_METHOD(
     test_batch_insert_describe_param();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_multi_statement_insert_select", "[mssql]")
+{
+    nanodbc::connection c = connect();
+    create_table(
+        c,
+        NANODBC_TEXT("test_multi_statement_insert_select"),
+        NANODBC_TEXT("(fid int IDENTITY, v real)"));
+    execute(c, NANODBC_TEXT(""));
+
+    // This batch of two statements, INSERT and SELECT, returns two result sets
+    nanodbc::result r = nanodbc::execute(
+        c,
+        NANODBC_TEXT("insert into test_multi_statement_insert_select (v) values (3.14);")
+            NANODBC_TEXT("select SCOPE_IDENTITY()"));
+
+    // INSERT result set with the count
+    REQUIRE(r.affected_rows() == 1);
+
+    // SELECT result set with the last identity value
+    REQUIRE(r.next_result());
+    REQUIRE(r.next());
+
+    // Type of IDENTITY(seed,increment) return value is NUMERIC(38,0)
+    // and the function may generate negative values too.
+    auto const sid = r.get<nanodbc::string>(0);
+    auto const nid = std::stoll(sid);
+    REQUIRE(nid == 1);
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_blob", "[mssql][blob][binary][varbinary]")
 {
     nanodbc::connection connection = connect();
