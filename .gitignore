@@ -34,7 +34,6 @@
 /*.dir
 /*.local.bat
 /docker_build/
-example
 example.dSYM/
 /example/empty.cpp
 
