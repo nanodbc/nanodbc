@@ -1,6 +1,7 @@
 # v2.13.0
 
 ## New Features
+- Added support for optional binding to allow out-of-order retrieval of unbound columns with `SQLGetData` [`#236`](https://github.com/nanodbc/nanodbc/pull/236)
 - Added `catalog::find_table_privileges` method [`#204`](https://github.com/lexicalunit/nanodbc/pull/204)
 - Added `connection::allocate` method to manage ODBC handles handles [`#147`](https://github.com/lexicalunit/nanodbc/pull/147)
 - Added `connection::get_info` method which gets string information from a connection [`#215`](https://github.com/lexicalunit/nanodbc/pull/215)
