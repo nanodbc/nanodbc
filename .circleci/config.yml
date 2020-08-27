@@ -14,18 +14,17 @@ jobs:
             sudo npm install -g markdownlint-cli
             markdownlint --version
       - run:
-          name: install restructuredtext_lint
+          name: install rstcheck
           command: |
-            sudo pip install restructuredtext_lint
-            rst-lint --version
+            sudo pip install rstcheck
+            rstcheck --version
       - run:
           name: lint README.md
           command: markdownlint --config .markdownlint.json README.md
       - run:
           name: lint docs/
           command: |
-            cd doc
-            echo "TODO: rst-lint index.rst"
+            rstcheck doc/*.rst
   build-deploy:
     docker:
       - image: circleci/python:3.8.0-buster
