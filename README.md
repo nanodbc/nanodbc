@@ -159,19 +159,9 @@ clang-format -i /path/to/file
 
 ### Source Level Documentation
 
-Source level documentation provided via [GitHub's gh-pages][gh-pages] is available at
-[nanodbc.io][nanodbc]. To re-build and update it, preform the following steps from the
-root directory of the repository:
-
-1. `git clone -b gh-pages git@github.com:nanodbc/nanodbc.git doc` Necessary the first time,
-   not subsequently.
-2. `cd doc`
-3. `make` Generates updated documentation locally.
-4. `make commit` Adds and commits any updated documentation.
-5. `git push origin gh-pages` Deploys the changes to github.
-
-Building documentation and gh-pages requires the use of [Doxygen][doxygen] and
-[jekyll][jekyll]. See the [`Makefile` on the `gh-pages` branch][nanodbc-makefile] for more details.
+Source level documentation provided via [GitHub's gh-pages][gh-pages] is available
+at [nanodbc.io][nanodbc]. To re-build and update it, preform the following steps
+from the [doc/README.md](doc/README.md) file.
 
 ### Quick Setup for Testing or Development Environments
 
