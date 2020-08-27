@@ -1,2 +1,16 @@
 installdox
 /.jekyll-metadata
+
+# CLion
+/.idea
+
+# VS2017 / VSCode
+/.vs*
+/CMakeSettings.json
+/launch.vs.json
+
+# Miscelenaous
+/.vagrant
+/*build*/
+/*.local.bat
+/example/empty.cpp
