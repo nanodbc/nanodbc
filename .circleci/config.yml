@@ -24,7 +24,7 @@ jobs:
       - run:
           name: lint docs/
           command: |
-            rstcheck doc/*.rst
+            rstcheck -r doc
   build-deploy:
     docker:
       - image: circleci/python:3.8.0-buster
