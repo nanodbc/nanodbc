@@ -1,0 +1,159 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classnanodbc_1_1catalog_1_1tables" kind="class" language="C++" prot="public">
+    <compoundname>nanodbc::catalog::tables</compoundname>
+    <includes refid="nanodbc_8h" local="no">nanodbc.h</includes>
+      <sectiondef kind="friend">
+      <memberdef kind="friend" id="classnanodbc_1_1catalog_1_1tables_1af0f3134c7f6f1f36bfe1e247318dfe43" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>friend class</type>
+        <definition>friend class nanodbc::catalog</definition>
+        <argsstring></argsstring>
+        <name>nanodbc::catalog</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1682" column="9" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1682" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classnanodbc_1_1catalog_1_1tables_1a6f009f8b9e42114e2a09eaec4d7a9219" prot="private" static="no" mutable="no">
+        <type><ref refid="classnanodbc_1_1result" kindref="compound">result</ref></type>
+        <definition>result nanodbc::catalog::tables::result_</definition>
+        <argsstring></argsstring>
+        <name>result_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1684" column="16" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1684" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1_1tables_1a5315f75223a7ce90b4fcff38e03ee355" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool nanodbc::catalog::tables::next</definition>
+        <argsstring>()</argsstring>
+        <name>next</name>
+        <briefdescription>
+<para>Move to the next result in the result set. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1674" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1_1tables_1a1322c3bbfbd4500aef0c7655d172b5b0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string nanodbc::catalog::tables::table_catalog</definition>
+        <argsstring>() const</argsstring>
+        <name>table_catalog</name>
+        <briefdescription>
+<para>Fetch table catalog. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1675" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1_1tables_1af38adabf52d3dc10178704c5f5a551d3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string nanodbc::catalog::tables::table_schema</definition>
+        <argsstring>() const</argsstring>
+        <name>table_schema</name>
+        <briefdescription>
+<para>Fetch table schema. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1676" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1_1tables_1a10115337bee64ff69a3808f12819f8a1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string nanodbc::catalog::tables::table_name</definition>
+        <argsstring>() const</argsstring>
+        <name>table_name</name>
+        <briefdescription>
+<para>Fetch table name. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1677" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1_1tables_1adb13cff21e59c6f534ee426d5b35ddd0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string nanodbc::catalog::tables::table_type</definition>
+        <argsstring>() const</argsstring>
+        <name>table_type</name>
+        <briefdescription>
+<para>Fetch table type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1678" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1_1tables_1aceecf984de3a6cec736b2cf68f656042" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string nanodbc::catalog::tables::table_remarks</definition>
+        <argsstring>() const</argsstring>
+        <name>table_remarks</name>
+        <briefdescription>
+<para>Fetch table remarks. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1679" column="16"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1_1tables_1abc27715e131e1ff937a6019321d5aacc" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>nanodbc::catalog::tables::tables</definition>
+        <argsstring>(result &amp;find_result)</argsstring>
+        <name>tables</name>
+        <param>
+          <type><ref refid="classnanodbc_1_1result" kindref="compound">result</ref> &amp;</type>
+          <declname>find_result</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1683" column="9"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Result set for a list of tables in the data source. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1672" column="1" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1671" bodyend="1685"/>
+    <listofallmembers>
+      <member refid="classnanodbc_1_1catalog_1_1tables_1af0f3134c7f6f1f36bfe1e247318dfe43" prot="public" virt="non-virtual"><scope>nanodbc::catalog::tables</scope><name>nanodbc::catalog</name></member>
+      <member refid="classnanodbc_1_1catalog_1_1tables_1a5315f75223a7ce90b4fcff38e03ee355" prot="public" virt="non-virtual"><scope>nanodbc::catalog::tables</scope><name>next</name></member>
+      <member refid="classnanodbc_1_1catalog_1_1tables_1a6f009f8b9e42114e2a09eaec4d7a9219" prot="private" virt="non-virtual"><scope>nanodbc::catalog::tables</scope><name>result_</name></member>
+      <member refid="classnanodbc_1_1catalog_1_1tables_1a1322c3bbfbd4500aef0c7655d172b5b0" prot="public" virt="non-virtual"><scope>nanodbc::catalog::tables</scope><name>table_catalog</name></member>
+      <member refid="classnanodbc_1_1catalog_1_1tables_1a10115337bee64ff69a3808f12819f8a1" prot="public" virt="non-virtual"><scope>nanodbc::catalog::tables</scope><name>table_name</name></member>
+      <member refid="classnanodbc_1_1catalog_1_1tables_1aceecf984de3a6cec736b2cf68f656042" prot="public" virt="non-virtual"><scope>nanodbc::catalog::tables</scope><name>table_remarks</name></member>
+      <member refid="classnanodbc_1_1catalog_1_1tables_1af38adabf52d3dc10178704c5f5a551d3" prot="public" virt="non-virtual"><scope>nanodbc::catalog::tables</scope><name>table_schema</name></member>
+      <member refid="classnanodbc_1_1catalog_1_1tables_1adb13cff21e59c6f534ee426d5b35ddd0" prot="public" virt="non-virtual"><scope>nanodbc::catalog::tables</scope><name>table_type</name></member>
+      <member refid="classnanodbc_1_1catalog_1_1tables_1abc27715e131e1ff937a6019321d5aacc" prot="private" virt="non-virtual"><scope>nanodbc::catalog::tables</scope><name>tables</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

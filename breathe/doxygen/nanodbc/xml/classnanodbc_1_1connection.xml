@@ -1,0 +1,887 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classnanodbc_1_1connection" kind="class" language="C++" prot="public">
+    <compoundname>nanodbc::connection</compoundname>
+    <includes refid="nanodbc_8h" local="no">nanodbc.h</includes>
+      <sectiondef kind="friend">
+      <memberdef kind="friend" id="classnanodbc_1_1connection_1a81c6edeae265bb1c87fcb10a9a73da73" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>friend class</type>
+        <definition>friend class nanodbc::transaction::transaction_impl</definition>
+        <argsstring></argsstring>
+        <name>nanodbc::transaction::transaction_impl</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1206" column="5" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1205" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classnanodbc_1_1connection_1afe32d507450d8ffdde5815516bfe8f21" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; connection_impl &gt;</type>
+        <definition>std::shared_ptr&lt;connection_impl&gt; nanodbc::connection::impl_</definition>
+        <argsstring></argsstring>
+        <name>impl_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1209" column="21" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1209" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classnanodbc_1_1connection_1aab3f1b405cc87c780b3ec5e95665284d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>nanodbc::connection::connection</definition>
+        <argsstring>()</argsstring>
+        <name>connection</name>
+        <briefdescription>
+<para>Create new connection object, initially not connected. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1033" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1connection_1aaea353f8c2f0b4576bc4c95bed330b46" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>nanodbc::connection::connection</definition>
+        <argsstring>(const connection &amp;rhs)</argsstring>
+        <name>connection</name>
+        <param>
+          <type>const <ref refid="classnanodbc_1_1connection" kindref="compound">connection</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+<para>Copy constructor. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1036" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1connection_1a6d3081d73935e5e5964b5e1937d2fbb5" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>nanodbc::connection::connection</definition>
+        <argsstring>(connection &amp;&amp;rhs) noexcept</argsstring>
+        <name>connection</name>
+        <param>
+          <type><ref refid="classnanodbc_1_1connection" kindref="compound">connection</ref> &amp;&amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+<para>Move constructor. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1039" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1connection_1a9576a354ff4882ecc3124f25fc6960e7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classnanodbc_1_1connection" kindref="compound">connection</ref> &amp;</type>
+        <definition>connection&amp; nanodbc::connection::operator=</definition>
+        <argsstring>(connection rhs)</argsstring>
+        <name>operator=</name>
+        <param>
+          <type><ref refid="classnanodbc_1_1connection" kindref="compound">connection</ref></type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+<para>Assignment. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1042" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1connection_1ab241b93c73d166570d6cc897c533c251" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void nanodbc::connection::swap</definition>
+        <argsstring>(connection &amp;) noexcept</argsstring>
+        <name>swap</name>
+        <param>
+          <type><ref refid="classnanodbc_1_1connection" kindref="compound">connection</ref> &amp;</type>
+        </param>
+        <briefdescription>
+<para>Member swap. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1045" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1connection_1ad61afea16c994599c792f5c74ce7c93b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>nanodbc::connection::connection</definition>
+        <argsstring>(const string &amp;dsn, const string &amp;user, const string &amp;pass, long timeout=0)</argsstring>
+        <name>connection</name>
+        <param>
+          <type>const string &amp;</type>
+          <declname>dsn</declname>
+        </param>
+        <param>
+          <type>const string &amp;</type>
+          <declname>user</declname>
+        </param>
+        <param>
+          <type>const string &amp;</type>
+          <declname>pass</declname>
+        </param>
+        <param>
+          <type>long</type>
+          <declname>timeout</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+<para>Create new connection object and immediately connect to the given data source. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The function calls ODBC API SQLConnect.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>dsn</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name of the data source name (DSN). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>user</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The username for authenticating to the data source. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>pass</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The password for authenticating to the data source. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>timeout</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Seconds before connection timeout. Default 0 meaning no timeout. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="see"><para><ref refid="classnanodbc_1_1connection_1a703da57a7ce3c572f472132ba49a1114" kindref="member">connected()</ref>, <ref refid="classnanodbc_1_1connection_1a480deb30989b18cad0394980fb181da7" kindref="member">connect()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1057" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1connection_1ac1680824319607b0681ad6a8cca0660b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>nanodbc::connection::connection</definition>
+        <argsstring>(const string &amp;connection_string, long timeout=0)</argsstring>
+        <name>connection</name>
+        <param>
+          <type>const string &amp;</type>
+          <declname>connection_string</declname>
+        </param>
+        <param>
+          <type>long</type>
+          <declname>timeout</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+<para>Create new connection object and immediately connect using the given connection string. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The function calls ODBC API SQLDriverConnect.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>connection_string</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The connection string for establishing a connection. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>timeout</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Seconds before connection timeout. Default is 0 indicating no timeout. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="see"><para><ref refid="classnanodbc_1_1connection_1a703da57a7ce3c572f472132ba49a1114" kindref="member">connected()</ref>, <ref refid="classnanodbc_1_1connection_1a480deb30989b18cad0394980fb181da7" kindref="member">connect()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1068" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1connection_1a115b960ed491c9db46430ff90f58606d" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>nanodbc::connection::~connection</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~connection</name>
+        <briefdescription>
+<para>Automatically disconnects from the database and frees all associated resources. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Will not throw even if disconnecting causes some kind of error and raises an exception. If you explicitly need to know if <ref refid="classnanodbc_1_1connection_1adf614b7fdc08596122ca12e21a61ba34" kindref="member">disconnect()</ref> succeeds, call it directly. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1074" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1connection_1abbb4205d3062eb487b71aeaa59d7d398" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void nanodbc::connection::allocate</definition>
+        <argsstring>()</argsstring>
+        <name>allocate</name>
+        <briefdescription>
+<para>Allocate environment and connection handles. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Allows on-demand allocation of handles to configure the ODBC environment and attributes, before database connection is established. Typically, user does not have to make this call explicitly.</para>
+<para><parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="see"><para><ref refid="classnanodbc_1_1connection_1a625a5575d144f49f75b0e637bf297fad" kindref="member">deallocate()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1084" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1connection_1a625a5575d144f49f75b0e637bf297fad" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void nanodbc::connection::deallocate</definition>
+        <argsstring>()</argsstring>
+        <name>deallocate</name>
+        <briefdescription>
+<para>Release environment and connection handles. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="classnanodbc_1_1connection_1abbb4205d3062eb487b71aeaa59d7d398" kindref="member">allocate()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1088" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1connection_1a480deb30989b18cad0394980fb181da7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void nanodbc::connection::connect</definition>
+        <argsstring>(const string &amp;dsn, const string &amp;user, const string &amp;pass, long timeout=0)</argsstring>
+        <name>connect</name>
+        <param>
+          <type>const string &amp;</type>
+          <declname>dsn</declname>
+        </param>
+        <param>
+          <type>const string &amp;</type>
+          <declname>user</declname>
+        </param>
+        <param>
+          <type>const string &amp;</type>
+          <declname>pass</declname>
+        </param>
+        <param>
+          <type>long</type>
+          <declname>timeout</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+<para>Connect to the given data source. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>dsn</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name of the data source. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>user</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The username for authenticating to the data source. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>pass</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The password for authenticating to the data source. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>timeout</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Seconds before connection timeout. Default is 0 indicating no timeout. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="see"><para><ref refid="classnanodbc_1_1connection_1a703da57a7ce3c572f472132ba49a1114" kindref="member">connected()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1097" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1connection_1ac40809d558a6a56b70e9fcbc16a12ceb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void nanodbc::connection::connect</definition>
+        <argsstring>(const string &amp;connection_string, long timeout=0)</argsstring>
+        <name>connect</name>
+        <param>
+          <type>const string &amp;</type>
+          <declname>connection_string</declname>
+        </param>
+        <param>
+          <type>long</type>
+          <declname>timeout</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+<para>Connect using the given connection string. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>connection_string</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The connection string for establishing a connection. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>timeout</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Seconds before connection timeout. Default is 0 indicating no timeout. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="see"><para><ref refid="classnanodbc_1_1connection_1a703da57a7ce3c572f472132ba49a1114" kindref="member">connected()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1104" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1connection_1a14b8cee67a5dd9a9310e8ffc7b45e62b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool nanodbc::connection::async_connect</definition>
+        <argsstring>(const string &amp;dsn, const string &amp;user, const string &amp;pass, void *event_handle, long timeout=0)</argsstring>
+        <name>async_connect</name>
+        <param>
+          <type>const string &amp;</type>
+          <declname>dsn</declname>
+        </param>
+        <param>
+          <type>const string &amp;</type>
+          <declname>user</declname>
+        </param>
+        <param>
+          <type>const string &amp;</type>
+          <declname>pass</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>event_handle</declname>
+        </param>
+        <param>
+          <type>long</type>
+          <declname>timeout</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+<para>Initiate an asynchronous connection operation to the given data source. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method will only be available if nanodbc is built against ODBC headers and library that supports asynchronous mode. Such that the identifiers <computeroutput>SQL_ATTR_ASYNC_DBC_EVENT</computeroutput> and <computeroutput>SQLCompleteAsync</computeroutput> are extant. Otherwise this method will be defined, but not implemented.</para>
+<para>Asynchronous features can be disabled entierly by defining <computeroutput>NANODBC_DISABLE_ASYNC</computeroutput> when building nanodbc.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>dsn</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name of the data source. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>user</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The username for authenticating to the data source. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>pass</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The password for authenticating to the data source. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>event_handle</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The event handle the caller will wait before calling async_complete. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>timeout</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Seconds before connection timeout. Default is 0 indicating no timeout. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Boolean: true if event handle needs to be awaited, false if connection is ready now. </para>
+</simplesect>
+<simplesect kind="see"><para><ref refid="classnanodbc_1_1connection_1a703da57a7ce3c572f472132ba49a1114" kindref="member">connected()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1124" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1connection_1ab8c6fddf14ec8e6ff136ec0e9dc0aa79" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool nanodbc::connection::async_connect</definition>
+        <argsstring>(const string &amp;connection_string, void *event_handle, long timeout=0)</argsstring>
+        <name>async_connect</name>
+        <param>
+          <type>const string &amp;</type>
+          <declname>connection_string</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>event_handle</declname>
+        </param>
+        <param>
+          <type>long</type>
+          <declname>timeout</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+<para>Initiate an asynchronous connection operation using the given connection string. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method will only be available if nanodbc is built against ODBC headers and library that supports asynchronous mode. Such that the identifiers <computeroutput>SQL_ATTR_ASYNC_DBC_EVENT</computeroutput> and <computeroutput>SQLCompleteAsync</computeroutput> are extant. Otherwise this method will be defined, but not implemented.</para>
+<para>Asynchronous features can be disabled entierly by defining <computeroutput>NANODBC_DISABLE_ASYNC</computeroutput> when building nanodbc.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>connection_string</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The connection string for establishing a connection. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>event_handle</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Event handle the caller will wait before calling async_complete. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>timeout</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Seconds before connection timeout. Default is 0 indicating no timeout. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Boolean: true if event handle needs to be awaited, false if connection is ready now. </para>
+</simplesect>
+<simplesect kind="see"><para><ref refid="classnanodbc_1_1connection_1a703da57a7ce3c572f472132ba49a1114" kindref="member">connected()</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1146" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1connection_1a553744244891734178611487703063d3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void nanodbc::connection::async_complete</definition>
+        <argsstring>()</argsstring>
+        <name>async_complete</name>
+        <briefdescription>
+<para>Completes a previously initiated asynchronous connection operation. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Asynchronous features can be disabled entierly by defining <computeroutput>NANODBC_DISABLE_ASYNC</computeroutput> when building nanodbc. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1152" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1connection_1a703da57a7ce3c572f472132ba49a1114" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool nanodbc::connection::connected</definition>
+        <argsstring>() const</argsstring>
+        <name>connected</name>
+        <briefdescription>
+<para>Returns true if connected to the database. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1156" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1connection_1adf614b7fdc08596122ca12e21a61ba34" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void nanodbc::connection::disconnect</definition>
+        <argsstring>()</argsstring>
+        <name>disconnect</name>
+        <briefdescription>
+<para>Disconnects from the database, but maintains environment and handle resources. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1159" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1connection_1ae242ce62a62d14e7fc0e8c741838d258" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::size_t</type>
+        <definition>std::size_t nanodbc::connection::transactions</definition>
+        <argsstring>() const</argsstring>
+        <name>transactions</name>
+        <briefdescription>
+<para>Returns the number of transactions currently held for this connection. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1162" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1connection_1aee1abe297213bf4b2927df8883eedfa0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void *</type>
+        <definition>void* nanodbc::connection::native_dbc_handle</definition>
+        <argsstring>() const</argsstring>
+        <name>native_dbc_handle</name>
+        <briefdescription>
+<para>Returns the native ODBC database connection handle. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1165" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1connection_1a0a1db012bb8e17527ff274a62fb559a4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void *</type>
+        <definition>void* nanodbc::connection::native_env_handle</definition>
+        <argsstring>() const</argsstring>
+        <name>native_env_handle</name>
+        <briefdescription>
+<para>Returns the native ODBC environment handle. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1168" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1connection_1aaa9d4619442694c11b26e3a044a8e839" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>T</type>
+        <definition>T nanodbc::connection::get_info</definition>
+        <argsstring>(short info_type) const</argsstring>
+        <name>get_info</name>
+        <param>
+          <type>short</type>
+          <declname>info_type</declname>
+        </param>
+        <briefdescription>
+<para>Returns information from the ODBC connection as a string or fixed-size value. The general information about the driver and data source associated with a connection is obtained using <computeroutput>SQLGetInfo</computeroutput> function. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1174" column="7"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1connection_1a39d2e978322f4f8c24ece6641169fd30" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string nanodbc::connection::dbms_name</definition>
+        <argsstring>() const</argsstring>
+        <name>dbms_name</name>
+        <briefdescription>
+<para>Returns name of the DBMS product. Returns the ODBC information type SQL_DBMS_NAME of the DBMS product accesssed by the driver via the current connection. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1179" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1connection_1ad1d7d8901d376a3d451a49220e2c2b3c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string nanodbc::connection::dbms_version</definition>
+        <argsstring>() const</argsstring>
+        <name>dbms_version</name>
+        <briefdescription>
+<para>Returns version of the DBMS product. Returns the ODBC information type SQL_DBMS_VER of the DBMS product accesssed by the driver via the current connection. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1184" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1connection_1a9a93b35bd875edefa81c39c14ecc282f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string nanodbc::connection::driver_name</definition>
+        <argsstring>() const</argsstring>
+        <name>driver_name</name>
+        <briefdescription>
+<para>Returns the name of the ODBC driver. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1188" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1connection_1af6cc1d8f8eaa9cd2ac9f215020f75dec" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string nanodbc::connection::database_name</definition>
+        <argsstring>() const</argsstring>
+        <name>database_name</name>
+        <briefdescription>
+<para>Returns the name of the currently connected database. Returns the current SQL_DATABASE_NAME information value associated with the connection. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1192" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1connection_1a2fd48ede244a5a3d8c640e738073e322" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string nanodbc::connection::catalog_name</definition>
+        <argsstring>() const</argsstring>
+        <name>catalog_name</name>
+        <briefdescription>
+<para>Returns the name of the current catalog. Returns the current setting of the connection attribute SQL_ATTR_CURRENT_CATALOG. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1196" column="12"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="classnanodbc_1_1connection_1a54287c967b39f849f31a6ba8d3295aa0" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::size_t</type>
+        <definition>std::size_t nanodbc::connection::ref_transaction</definition>
+        <argsstring>()</argsstring>
+        <name>ref_transaction</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1199" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1connection_1af106a0198bbe3369c351a4fc920d713d" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::size_t</type>
+        <definition>std::size_t nanodbc::connection::unref_transaction</definition>
+        <argsstring>()</argsstring>
+        <name>unref_transaction</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1200" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1connection_1a74cadf8f5080dcb2147b349a39551260" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool nanodbc::connection::rollback</definition>
+        <argsstring>() const</argsstring>
+        <name>rollback</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1201" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1connection_1ac042b258b082953d169a85e0f45bf4d7" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void nanodbc::connection::rollback</definition>
+        <argsstring>(bool onoff)</argsstring>
+        <name>rollback</name>
+        <param>
+          <type>bool</type>
+          <declname>onoff</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1202" column="10"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Manages and encapsulates ODBC resources such as the connection and environment handles. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1030" column="1" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1029" bodyend="1210"/>
+    <listofallmembers>
+      <member refid="classnanodbc_1_1connection_1abbb4205d3062eb487b71aeaa59d7d398" prot="public" virt="non-virtual"><scope>nanodbc::connection</scope><name>allocate</name></member>
+      <member refid="classnanodbc_1_1connection_1a553744244891734178611487703063d3" prot="public" virt="non-virtual"><scope>nanodbc::connection</scope><name>async_complete</name></member>
+      <member refid="classnanodbc_1_1connection_1a14b8cee67a5dd9a9310e8ffc7b45e62b" prot="public" virt="non-virtual"><scope>nanodbc::connection</scope><name>async_connect</name></member>
+      <member refid="classnanodbc_1_1connection_1ab8c6fddf14ec8e6ff136ec0e9dc0aa79" prot="public" virt="non-virtual"><scope>nanodbc::connection</scope><name>async_connect</name></member>
+      <member refid="classnanodbc_1_1connection_1a2fd48ede244a5a3d8c640e738073e322" prot="public" virt="non-virtual"><scope>nanodbc::connection</scope><name>catalog_name</name></member>
+      <member refid="classnanodbc_1_1connection_1a480deb30989b18cad0394980fb181da7" prot="public" virt="non-virtual"><scope>nanodbc::connection</scope><name>connect</name></member>
+      <member refid="classnanodbc_1_1connection_1ac40809d558a6a56b70e9fcbc16a12ceb" prot="public" virt="non-virtual"><scope>nanodbc::connection</scope><name>connect</name></member>
+      <member refid="classnanodbc_1_1connection_1a703da57a7ce3c572f472132ba49a1114" prot="public" virt="non-virtual"><scope>nanodbc::connection</scope><name>connected</name></member>
+      <member refid="classnanodbc_1_1connection_1aab3f1b405cc87c780b3ec5e95665284d" prot="public" virt="non-virtual"><scope>nanodbc::connection</scope><name>connection</name></member>
+      <member refid="classnanodbc_1_1connection_1aaea353f8c2f0b4576bc4c95bed330b46" prot="public" virt="non-virtual"><scope>nanodbc::connection</scope><name>connection</name></member>
+      <member refid="classnanodbc_1_1connection_1a6d3081d73935e5e5964b5e1937d2fbb5" prot="public" virt="non-virtual"><scope>nanodbc::connection</scope><name>connection</name></member>
+      <member refid="classnanodbc_1_1connection_1ad61afea16c994599c792f5c74ce7c93b" prot="public" virt="non-virtual"><scope>nanodbc::connection</scope><name>connection</name></member>
+      <member refid="classnanodbc_1_1connection_1ac1680824319607b0681ad6a8cca0660b" prot="public" virt="non-virtual"><scope>nanodbc::connection</scope><name>connection</name></member>
+      <member refid="classnanodbc_1_1connection_1af6cc1d8f8eaa9cd2ac9f215020f75dec" prot="public" virt="non-virtual"><scope>nanodbc::connection</scope><name>database_name</name></member>
+      <member refid="classnanodbc_1_1connection_1a39d2e978322f4f8c24ece6641169fd30" prot="public" virt="non-virtual"><scope>nanodbc::connection</scope><name>dbms_name</name></member>
+      <member refid="classnanodbc_1_1connection_1ad1d7d8901d376a3d451a49220e2c2b3c" prot="public" virt="non-virtual"><scope>nanodbc::connection</scope><name>dbms_version</name></member>
+      <member refid="classnanodbc_1_1connection_1a625a5575d144f49f75b0e637bf297fad" prot="public" virt="non-virtual"><scope>nanodbc::connection</scope><name>deallocate</name></member>
+      <member refid="classnanodbc_1_1connection_1adf614b7fdc08596122ca12e21a61ba34" prot="public" virt="non-virtual"><scope>nanodbc::connection</scope><name>disconnect</name></member>
+      <member refid="classnanodbc_1_1connection_1a9a93b35bd875edefa81c39c14ecc282f" prot="public" virt="non-virtual"><scope>nanodbc::connection</scope><name>driver_name</name></member>
+      <member refid="classnanodbc_1_1connection_1aaa9d4619442694c11b26e3a044a8e839" prot="public" virt="non-virtual"><scope>nanodbc::connection</scope><name>get_info</name></member>
+      <member refid="classnanodbc_1_1connection_1afe32d507450d8ffdde5815516bfe8f21" prot="private" virt="non-virtual"><scope>nanodbc::connection</scope><name>impl_</name></member>
+      <member refid="classnanodbc_1_1connection_1a81c6edeae265bb1c87fcb10a9a73da73" prot="public" virt="non-virtual"><scope>nanodbc::connection</scope><name>nanodbc::transaction::transaction_impl</name></member>
+      <member refid="classnanodbc_1_1connection_1aee1abe297213bf4b2927df8883eedfa0" prot="public" virt="non-virtual"><scope>nanodbc::connection</scope><name>native_dbc_handle</name></member>
+      <member refid="classnanodbc_1_1connection_1a0a1db012bb8e17527ff274a62fb559a4" prot="public" virt="non-virtual"><scope>nanodbc::connection</scope><name>native_env_handle</name></member>
+      <member refid="classnanodbc_1_1connection_1a9576a354ff4882ecc3124f25fc6960e7" prot="public" virt="non-virtual"><scope>nanodbc::connection</scope><name>operator=</name></member>
+      <member refid="classnanodbc_1_1connection_1a54287c967b39f849f31a6ba8d3295aa0" prot="private" virt="non-virtual"><scope>nanodbc::connection</scope><name>ref_transaction</name></member>
+      <member refid="classnanodbc_1_1connection_1a74cadf8f5080dcb2147b349a39551260" prot="private" virt="non-virtual"><scope>nanodbc::connection</scope><name>rollback</name></member>
+      <member refid="classnanodbc_1_1connection_1ac042b258b082953d169a85e0f45bf4d7" prot="private" virt="non-virtual"><scope>nanodbc::connection</scope><name>rollback</name></member>
+      <member refid="classnanodbc_1_1connection_1ab241b93c73d166570d6cc897c533c251" prot="public" virt="non-virtual"><scope>nanodbc::connection</scope><name>swap</name></member>
+      <member refid="classnanodbc_1_1connection_1ae242ce62a62d14e7fc0e8c741838d258" prot="public" virt="non-virtual"><scope>nanodbc::connection</scope><name>transactions</name></member>
+      <member refid="classnanodbc_1_1connection_1af106a0198bbe3369c351a4fc920d713d" prot="private" virt="non-virtual"><scope>nanodbc::connection</scope><name>unref_transaction</name></member>
+      <member refid="classnanodbc_1_1connection_1a115b960ed491c9db46430ff90f58606d" prot="public" virt="non-virtual"><scope>nanodbc::connection</scope><name>~connection</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

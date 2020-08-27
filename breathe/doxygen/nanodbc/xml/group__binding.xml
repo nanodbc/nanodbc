@@ -1,0 +1,137 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="group__binding" kind="group">
+    <compoundname>binding</compoundname>
+    <title>Binding parameters</title>
+    <innergroup refid="group__bind__multi">Binding multiple non-string values</innergroup>
+    <innergroup refid="group__bind__strings">Binding multiple string values</innergroup>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="group__binding_1gabe1b3e2f93e5b854f6f6a3dfa3250f5c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void nanodbc::statement::bind</definition>
+        <argsstring>(short param_index, T const *value, param_direction direction=PARAM_IN)</argsstring>
+        <name>bind</name>
+        <param>
+          <type>short</type>
+          <declname>param_index</declname>
+        </param>
+        <param>
+          <type>T const *</type>
+          <declname>value</declname>
+        </param>
+        <param>
+          <type>param_direction</type>
+          <declname>direction</declname>
+          <defval>PARAM_IN</defval>
+        </param>
+        <briefdescription>
+<para>Binds given value to given parameter placeholder number in the prepared statement. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>If your prepared SQL query has any ? placeholders, this is how you bind values to them. Placeholder numbers count from left to right and are 0-indexed.</para>
+<para>It is NOT possible to use these functions for batch operations as number of elements is not specified here.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>param_index</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Zero-based index of parameter marker (placeholder position). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>value</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Value to substitute into placeholder. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>direction</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>ODBC parameter direction. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="756" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="group__binding_1ga1c92f0059d16d859355f61a020e78d13" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void nanodbc::statement::bind_null</definition>
+        <argsstring>(short param_index, std::size_t batch_size=1)</argsstring>
+        <name>bind_null</name>
+        <param>
+          <type>short</type>
+          <declname>param_index</declname>
+        </param>
+        <param>
+          <type>std::size_t</type>
+          <declname>batch_size</declname>
+          <defval>1</defval>
+        </param>
+        <briefdescription>
+<para>Binds null values to the parameter placeholder number in the prepared statement. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>If your prepared SQL query has any parameter markers, ? (question mark) placeholders, this is how you bind values to them. Parameter markers are numbered using Zero-based index from left to right.</para>
+<para>It is possible to use this function for batch operations.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>param_index</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Zero-based index of parameter marker (placeholder position). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>batch_size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number of elements being bound. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="977" column="10"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>These functions are used to bind values to ODBC parameters. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

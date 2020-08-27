@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="structnanodbc_1_1time" kind="struct" language="C++" prot="public">
+    <compoundname>nanodbc::time</compoundname>
+    <includes refid="nanodbc_8h" local="no">nanodbc.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structnanodbc_1_1time_1a057fb220c0d675c9760b86666a985dbc" prot="public" static="no" mutable="no">
+        <type>std::int16_t</type>
+        <definition>std::int16_t nanodbc::time::hour</definition>
+        <argsstring></argsstring>
+        <name>hour</name>
+        <briefdescription>
+<para>Hours since midnight [0-23]. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="334" column="18" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="334" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structnanodbc_1_1time_1a343d25fdd7c3e67467bf18d3d9cc82c9" prot="public" static="no" mutable="no">
+        <type>std::int16_t</type>
+        <definition>std::int16_t nanodbc::time::min</definition>
+        <argsstring></argsstring>
+        <name>min</name>
+        <briefdescription>
+<para>Minutes after the hour [0-59]. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="335" column="18" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="335" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structnanodbc_1_1time_1a57df2df9fcc00af1e9c34e95899a420b" prot="public" static="no" mutable="no">
+        <type>std::int16_t</type>
+        <definition>std::int16_t nanodbc::time::sec</definition>
+        <argsstring></argsstring>
+        <name>sec</name>
+        <briefdescription>
+<para>Seconds after the minute. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="336" column="18" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="336" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>A type for representing time data. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="333" column="1" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="332" bodyend="337"/>
+    <listofallmembers>
+      <member refid="structnanodbc_1_1time_1a057fb220c0d675c9760b86666a985dbc" prot="public" virt="non-virtual"><scope>nanodbc::time</scope><name>hour</name></member>
+      <member refid="structnanodbc_1_1time_1a343d25fdd7c3e67467bf18d3d9cc82c9" prot="public" virt="non-virtual"><scope>nanodbc::time</scope><name>min</name></member>
+      <member refid="structnanodbc_1_1time_1a57df2df9fcc00af1e9c34e95899a420b" prot="public" virt="non-virtual"><scope>nanodbc::time</scope><name>sec</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

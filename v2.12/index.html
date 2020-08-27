@@ -1,0 +1,122 @@
+---
+title: nanodbc
+---
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8' />
+  <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+  <meta name="description" content="nanodbc : A small C++ wrapper for the native C ODBC API." />
+  <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/reset.css">
+  <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/highlight.css">
+  <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/theme.css">
+  <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/slider.css">
+  <script src="javascripts/modernizr.js"></script>
+  <title>nanodbc</title>
+</head>
+<body>
+<div id="main">
+
+<!-- HEADER -->
+<div id="header_wrap" class="outer">
+    <header class="inner">
+      <a id="forkme_banner" href="https://github.com/nanodbc/nanodbc">View on GitHub</a>
+      <a id="doc_banner" href="http://nanodbc.github.io/nanodbc/doxygen/index.html">API Documentation</a>
+
+      <h1 id="project_title">nanodbc</h1>
+      <h2 id="project_tagline">A small C++ wrapper for the native C ODBC API.</h2>
+
+        <section id="downloads">
+          <a class="zip_download_link" href="https://github.com/nanodbc/nanodbc/releases">Download this project as a .zip file</a>
+          <a class="tar_download_link" href="https://github.com/nanodbc/nanodbc/releases">Download this project as a tar.gz file</a>
+        </section>
+    </header>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="main_content_wrap" class="outer">
+<section id="main_content" class="inner">
+    <h1>Motivation</h1>
+    <p>Here's a before and after look at straight ODBC C API code and its equivalent nanodbc code.</p>
+    <figure class="cd-image-container">
+      <img src="images/before.png" alt="C API">
+      <span class="cd-image-label" data-type="original">Straight ODBC</span>
+      <div class="cd-resize-img">
+        <img src="images/after.png" alt="nanodbc">
+        <span class="cd-image-label" data-type="modified">Using nanodbc</span>
+      </div>
+      <span class="cd-handle"></span>
+    </figure>
+
+    <h1>History</h1>
+    <p>Originally nanodbc began as a simple fork of <a href="http://code.google.com/p/tiodbc/">TinyODBC</a> with additional features. Eventually it grew to the point where it made sense to break with many of the basic underlaying design decisions of TinyODBC and completely refactor much of the codebase. Other projects that have had influence on nanodbc include <a href="http://simpledb.sourceforge.net">SimpleDB</a>, <a href="http://code.google.com/p/pyodbc/">pyodbc</a>, <a href="http://dtemplatelib.sourceforge.net">Database Template Library</a>, and <a href="http://www.codeguru.com/mfc_database/gsodbc.html">GSODBC</a>.</p>
+    <p>For for information on library usage, see the <a href="http://nanodbc.github.io/nanodbc/doxygen/index.html">source level documentation</a> courtesy of <a href="http://www.stack.nl/~dimitri/doxygen/">Doxygen</a>! And for all the gory details of building nanodbc, or the source itself, visit <a href="https://github.com/nanodbc/nanodbc">nanondbc on GitHub</a>.</p>
+
+    <h1>Why should you use nanodbc?</h1>
+    <ul>
+      <li>Small! Same as TinyODBC, nanodbc is small. A header and an implementation file.</li>
+      <li>Simple! There are only a handful of significant classes to learn.</li>
+      <li>Portable! nanodbc uses  only standard C++ headers in addition to the ODBC API headers.</li>
+      <li>Robust! Where it makes sense, error handling is done with exceptions instead of return codes.</li>
+      <li>Features! nanodbc supports ODBC 3, SQLDriverConnect(), Transactions, Bound Parameters, Bulk Operations, and much more.</li>
+      <li>Documented! I have tried to provide very clean and useful documentation with example usage.</li>
+      <li>Active! I am currently actively using and developing nanodbc so I hope to add more and more features all the time.</li>
+    </ul>
+
+    <h1>Version Information</h1>
+
+    <table style="width: 100%; font-size: larger; line-height: 150%;"><thead>
+    <tr>
+    <th align="left">Version</th>
+    <th align="left">Description</th>
+    </tr>
+    </thead><tbody>
+    <tr>
+    <td align="left"><code>release</code></td>
+    <td align="left"><a href="https://travis-ci.org/nanodbc/nanodbc"><img src="https://travis-ci.org/nanodbc/nanodbc.svg?branch=release" alt="release" data-canonical-src="https://travis-ci.org/nanodbc/nanodbc.svg?branch=release" style="vertical-align: middle; max-width:100px;"></a> Most recent release that's been deemed "stable". Always prefer to use this version if you can!</td>
+    </tr>
+    <tr>
+    <td align="left"><code>latest</code></td>
+    <td align="left"><a href="https://travis-ci.org/nanodbc/nanodbc"><img src="https://travis-ci.org/nanodbc/nanodbc.svg?branch=latest" alt="latest" data-canonical-src="https://travis-ci.org/nanodbc/nanodbc.svg?branch=latest" style="vertical-align: middle; max-width:100px;"></a> Latest release; still needs testing to be deemed "stable". <strong><a href="https://nanodbc/nanodbc/releases">See all available releases.</a></strong></td>
+    </tr>
+    <tr>
+    <td align="left"><code>master</code></td>
+    <td align="left"><a href="https://travis-ci.org/nanodbc/nanodbc"><img src="https://travis-ci.org/nanodbc/nanodbc.svg?branch=master" alt="master" data-canonical-src="https://travis-ci.org/nanodbc/nanodbc.svg?branch=master" style="vertical-align: middle; max-width:100px;"></a> Contains the latest development code, not yet ready for a release.</td>
+    </tr>
+    <tr>
+    <td align="left"><code>v2.x.x</code></td>
+    <td align="left">Targets C++14+. All future development will build upon this version.</td>
+    </tr>
+    <tr>
+    <td align="left"><code>v1.x.x</code></td>
+    <td align="left">Supports C++03 and optionally C++11. <em>There is no longer any support for this version.</em></td>
+    </tr>
+    </tbody></table>
+
+    <h1>Example usage</h1>
+    <div class="example">
+      {% highlight cpp %}
+      {% include example.cpp %}
+      {% endhighlight %}
+    </div>
+
+    <h1>Contributing</h1>
+    <p>nanodbc is Open Source Software and very accepting of bug fixes and new features. Please consider <a href="https://github.com/nanodbc/nanodbc#contributing">contributing any changes you make</a> or <a href="https://github.com/nanodbc/nanodbc/issues">reporting any issues you have</a>. Cheers!</p>
+</div>
+</section>
+
+<!-- FOOTER -->
+<div id="footer_wrap" class="outer">
+  <footer class="inner">
+    <p class="copyright">nanodbc maintained by <a href="https://github.com/lexicalunit">lexicalunit</a></p>
+    <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+  </footer>
+</div>
+
+<script src="javascripts/jquery-2.1.1.js"></script>
+<script src="javascripts/jquery.mobile.custom.min.js"></script>
+<script src="javascripts/main.js"></script>
+
+</div> <!-- #main -->
+</body>
+</html>

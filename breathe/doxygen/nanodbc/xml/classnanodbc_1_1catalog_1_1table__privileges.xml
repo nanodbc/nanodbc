@@ -1,0 +1,189 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classnanodbc_1_1catalog_1_1table__privileges" kind="class" language="C++" prot="public">
+    <compoundname>nanodbc::catalog::table_privileges</compoundname>
+    <includes refid="nanodbc_8h" local="no">nanodbc.h</includes>
+      <sectiondef kind="friend">
+      <memberdef kind="friend" id="classnanodbc_1_1catalog_1_1table__privileges_1af0f3134c7f6f1f36bfe1e247318dfe43" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>friend class</type>
+        <definition>friend class nanodbc::catalog</definition>
+        <argsstring></argsstring>
+        <name>nanodbc::catalog</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1767" column="9" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1767" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classnanodbc_1_1catalog_1_1table__privileges_1aec4766d11c7075a9f4cb60cc60a2f23f" prot="private" static="no" mutable="no">
+        <type><ref refid="classnanodbc_1_1result" kindref="compound">result</ref></type>
+        <definition>result nanodbc::catalog::table_privileges::result_</definition>
+        <argsstring></argsstring>
+        <name>result_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1769" column="16" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1769" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1_1table__privileges_1a4960cb6d0edfa988ad3dbdf2940e0c93" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool nanodbc::catalog::table_privileges::next</definition>
+        <argsstring>()</argsstring>
+        <name>next</name>
+        <briefdescription>
+<para>Move to the next result in the result set. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1756" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1_1table__privileges_1aa1212da091b4c95b680a4de4c4906927" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string nanodbc::catalog::table_privileges::table_catalog</definition>
+        <argsstring>() const</argsstring>
+        <name>table_catalog</name>
+        <briefdescription>
+<para>Fetch table catalog. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1757" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1_1table__privileges_1a75049bbc32d7a4e4c53a3723f3859da3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string nanodbc::catalog::table_privileges::table_schema</definition>
+        <argsstring>() const</argsstring>
+        <name>table_schema</name>
+        <briefdescription>
+<para>Fetch table schema. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1758" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1_1table__privileges_1aac883f1373e4e6d9965f93cdff781a79" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string nanodbc::catalog::table_privileges::table_name</definition>
+        <argsstring>() const</argsstring>
+        <name>table_name</name>
+        <briefdescription>
+<para>Fetch table name. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1759" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1_1table__privileges_1a2b49c7a12f7e7ce3ea2c4f7106635245" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string nanodbc::catalog::table_privileges::grantor</definition>
+        <argsstring>() const</argsstring>
+        <name>grantor</name>
+        <briefdescription>
+<para>Fetch name of user who granted the privilege. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1760" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1_1table__privileges_1ab14ef42b52e2694e836d01105224d815" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string nanodbc::catalog::table_privileges::grantee</definition>
+        <argsstring>() const</argsstring>
+        <name>grantee</name>
+        <briefdescription>
+<para>Fetch name of user whom the privilege was granted. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1761" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1_1table__privileges_1a0a6b85672d5d8be8766a78c087f32d47" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string nanodbc::catalog::table_privileges::privilege</definition>
+        <argsstring>() const</argsstring>
+        <name>privilege</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Fetch the table privilege. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1762" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1_1table__privileges_1ae281289d9513f9af912d3de4a7e1f113" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string nanodbc::catalog::table_privileges::is_grantable</definition>
+        <argsstring>() const</argsstring>
+        <name>is_grantable</name>
+        <briefdescription>
+<para>Fetch indicator whether the grantee is permitted to grant the privilege to other users. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1764" column="16"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1_1table__privileges_1a31a50d29ac59cbcb6af8870fba77db4c" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>nanodbc::catalog::table_privileges::table_privileges</definition>
+        <argsstring>(result &amp;find_result)</argsstring>
+        <name>table_privileges</name>
+        <param>
+          <type><ref refid="classnanodbc_1_1result" kindref="compound">result</ref> &amp;</type>
+          <declname>find_result</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1768" column="9"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Result set for a list of tables and the privileges associated with each table. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1754" column="1" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1753" bodyend="1770"/>
+    <listofallmembers>
+      <member refid="classnanodbc_1_1catalog_1_1table__privileges_1ab14ef42b52e2694e836d01105224d815" prot="public" virt="non-virtual"><scope>nanodbc::catalog::table_privileges</scope><name>grantee</name></member>
+      <member refid="classnanodbc_1_1catalog_1_1table__privileges_1a2b49c7a12f7e7ce3ea2c4f7106635245" prot="public" virt="non-virtual"><scope>nanodbc::catalog::table_privileges</scope><name>grantor</name></member>
+      <member refid="classnanodbc_1_1catalog_1_1table__privileges_1ae281289d9513f9af912d3de4a7e1f113" prot="public" virt="non-virtual"><scope>nanodbc::catalog::table_privileges</scope><name>is_grantable</name></member>
+      <member refid="classnanodbc_1_1catalog_1_1table__privileges_1af0f3134c7f6f1f36bfe1e247318dfe43" prot="public" virt="non-virtual"><scope>nanodbc::catalog::table_privileges</scope><name>nanodbc::catalog</name></member>
+      <member refid="classnanodbc_1_1catalog_1_1table__privileges_1a4960cb6d0edfa988ad3dbdf2940e0c93" prot="public" virt="non-virtual"><scope>nanodbc::catalog::table_privileges</scope><name>next</name></member>
+      <member refid="classnanodbc_1_1catalog_1_1table__privileges_1a0a6b85672d5d8be8766a78c087f32d47" prot="public" virt="non-virtual"><scope>nanodbc::catalog::table_privileges</scope><name>privilege</name></member>
+      <member refid="classnanodbc_1_1catalog_1_1table__privileges_1aec4766d11c7075a9f4cb60cc60a2f23f" prot="private" virt="non-virtual"><scope>nanodbc::catalog::table_privileges</scope><name>result_</name></member>
+      <member refid="classnanodbc_1_1catalog_1_1table__privileges_1aa1212da091b4c95b680a4de4c4906927" prot="public" virt="non-virtual"><scope>nanodbc::catalog::table_privileges</scope><name>table_catalog</name></member>
+      <member refid="classnanodbc_1_1catalog_1_1table__privileges_1aac883f1373e4e6d9965f93cdff781a79" prot="public" virt="non-virtual"><scope>nanodbc::catalog::table_privileges</scope><name>table_name</name></member>
+      <member refid="classnanodbc_1_1catalog_1_1table__privileges_1a31a50d29ac59cbcb6af8870fba77db4c" prot="private" virt="non-virtual"><scope>nanodbc::catalog::table_privileges</scope><name>table_privileges</name></member>
+      <member refid="classnanodbc_1_1catalog_1_1table__privileges_1a75049bbc32d7a4e4c53a3723f3859da3" prot="public" virt="non-virtual"><scope>nanodbc::catalog::table_privileges</scope><name>table_schema</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

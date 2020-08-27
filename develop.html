@@ -1,0 +1,333 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Develop &mdash; nanodbc 2.13.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API" href="api.html" />
+    <link rel="prev" title="Use" href="use.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> nanodbc
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.13.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="use.html">Use</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Develop</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#contributing">Contributing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#guidelines">Guidelines</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#style">Style</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#environments">Environments</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#docker">Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#vagrant">Vagrant</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#test">Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#release">Release</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#documentation">Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#future">Future</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">nanodbc</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Develop</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/develop.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="develop">
+<h1>Develop<a class="headerlink" href="#develop" title="Permalink to this headline">¶</a></h1>
+<p>Notes about development process of nanodbc.</p>
+<div class="section" id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h2>
+<p>nanodbc is an Open Source Software and very accepting of bug fixes
+and new features.</p>
+<p>Please consider contributing any changes you make via
+<a class="reference external" href="https://github.com/nanodbc/nanodbc/pulls">pull requests</a>
+or reporting any
+<a class="reference external" href="https://github.com/nanodbc/nanodbc/issues">issues</a> you might have.</p>
+<p>Cheers!</p>
+</div>
+<div class="section" id="guidelines">
+<h2>Guidelines<a class="headerlink" href="#guidelines" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="style">
+<h3>Style<a class="headerlink" href="#style" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://clang.llvm.org/docs/ClangFormat.html">clang-format</a>
+handles all C++ code formatting for nanodbc.</p>
+<p>This utility is <a class="reference external" href="https://brew.sh/">brew-installable</a> on OS X
+(<code class="docutils literal notranslate"><span class="pre">brew</span> <span class="pre">install</span> <span class="pre">clang-format</span></code>) and is available on all major platforms.</p>
+<p>See our <a class="reference external" href="https://github.com/nanodbc/nanodbc/blob/master/.clang-format">.clang-format</a>
+configuration file for details on the style.</p>
+<p>The script <a class="reference external" href="https://github.com/nanodbc/nanodbc/blob/master/utility/style.sh">utility/style.sh</a>
+formats all code in the repository automatically.
+To run <code class="docutils literal notranslate"><span class="pre">clang-format</span></code> on a single file use the following.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">clang-format -i /path/to/file</span>
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Please auto-format all code submitted in Pull Requests.</p>
+</div>
+<p><a class="reference external" href="http://editorconfig.org">.editorconfig</a> file is provided to automatically
+tell popular code editors about the preferred basic style settings like
+indentation, whitespacesm end of line and such for distinguished types of
+plain text files.</p>
+</div>
+</div>
+<div class="section" id="environments">
+<h2>Environments<a class="headerlink" href="#environments" title="Permalink to this headline">¶</a></h2>
+<p>To get up and running with nanodbc as fast as possible consider
+using the provided Dockerfile or Vagrantfile with pre-configured
+development environmnets.</p>
+<div class="section" id="docker">
+<h3>Docker<a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h3>
+<p>Spin up a docker container suitable for testing and development of nanodbc:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">cd</span> /path/to/nanodbc
+<span class="gp">$</span> docker build -t nanodbc .
+<span class="gp">$</span> docker run -v <span class="s2">&quot;</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">&quot;</span>:<span class="s2">&quot;/opt/</span><span class="k">$(</span>basename <span class="k">$(</span><span class="nb">pwd</span><span class="k">))</span><span class="s2">&quot;</span> -it nanodbc /bin/bash
+<span class="gp">root@hash:/#</span> mkdir -p /opt/nanodbc/build <span class="o">&amp;&amp;</span> <span class="nb">cd</span> /opt/nanodbc/build
+<span class="gp">root@hash:/opt/nanodbc/build#</span> cmake ..
+<span class="gp">root@hash:/opt/nanodbc/build#</span> make nanodbc
+</pre></div>
+</div>
+</div>
+<div class="section" id="vagrant">
+<h3>Vagrant<a class="headerlink" href="#vagrant" title="Permalink to this headline">¶</a></h3>
+<p>Launch vagrant VM (using VirtualBox provider for example),
+<code class="docutils literal notranslate"><span class="pre">ssh</span></code> into it and build nanodbc:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">cd</span> /path/to/nanodbc
+<span class="gp">$</span> vagrant up
+<span class="gp">$</span> vagrant ssh
+<span class="gp">vagrant@vagrant-ubuntu-precise-64:~$</span> git clone https://github.com/nanodbc/nanodbc.git
+<span class="gp">vagrant@vagrant-ubuntu-precise-64:~$</span> mkdir -p nanodbc/build <span class="o">&amp;&amp;</span> <span class="nb">cd</span> nanodbc/build
+<span class="gp">vagrant@vagrant-ubuntu-precise-64:~$</span> <span class="nv">CXX</span><span class="o">=</span>g++-5 cmake ..
+<span class="gp">vagrant@vagrant-ubuntu-precise-64:~$</span> make nanodbc
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="test">
+<h2>Test<a class="headerlink" href="#test" title="Permalink to this headline">¶</a></h2>
+<p>See <a class="reference external" href="https://github.com/nanodbc/nanodbc/blob/v2.13.0/README.md">README.md</a>.</p>
+</div>
+<div class="section" id="release">
+<h2>Release<a class="headerlink" href="#release" title="Permalink to this headline">¶</a></h2>
+<p>See <a class="reference external" href="https://github.com/nanodbc/nanodbc/blob/v2.13.0/README.md">README.md</a>.</p>
+<div class="section" id="documentation">
+<h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h3>
+<p>See <a class="reference external" href="https://github.com/nanodbc/nanodbc/blob/v2.13.0/doc/README.md">doc/README.md</a>.</p>
+</div>
+</div>
+<div class="section" id="future">
+<h2>Future<a class="headerlink" href="#future" title="Permalink to this headline">¶</a></h2>
+<p>Good to Have / Want Someday</p>
+<ul class="simple">
+<li><p>Refactor tests to follow BDD pattern.</p></li>
+<li><p>Update codebase to use more C++14 idioms and patterns.</p></li>
+<li><p>Write more tests with the goal to have much higher code coverage.</p></li>
+<li><p>More tests for a large variety of drivers. Include performance tests.</p></li>
+<li><p>Clean up <code class="docutils literal notranslate"><span class="pre">bind_*</span></code> family of functions, reduce any duplication.</p></li>
+<li><p>Improve documentation: The main website and API docs should be more responsive.</p></li>
+<li><p>Provide more examples in documentation, more details, and point out any gotchas.</p></li>
+<li><p>Versioned generated source level API documentation for release and latest. For each major and minor published versions too?</p></li>
+<li><p>Add “HOWTO Build” documentation for Windows, OS X, and Linux.</p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="api.html" class="btn btn-neutral float-right" title="API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="use.html" class="btn btn-neutral float-left" title="Use" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2016-2012, Amy Troschinetz and others.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

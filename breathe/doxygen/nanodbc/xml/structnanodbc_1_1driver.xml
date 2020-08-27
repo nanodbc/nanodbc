@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="structnanodbc_1_1driver" kind="struct" language="C++" prot="public">
+    <compoundname>nanodbc::driver</compoundname>
+    <includes refid="nanodbc_8h" local="no">nanodbc.h</includes>
+    <innerclass refid="structnanodbc_1_1driver_1_1attribute" prot="public">nanodbc::driver::attribute</innerclass>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structnanodbc_1_1driver_1a199181975093cc309564d0de3b296c71" prot="public" static="no" mutable="no">
+        <type>nanodbc::string</type>
+        <definition>nanodbc::string nanodbc::driver::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <briefdescription>
+<para>Driver name. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1879" column="21" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1879" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structnanodbc_1_1driver_1a4528ae3553031578ba886933c03c3f35" prot="public" static="no" mutable="no">
+        <type>std::list&lt; <ref refid="structnanodbc_1_1driver_1_1attribute" kindref="compound">attribute</ref> &gt;</type>
+        <definition>std::list&lt;attribute&gt; nanodbc::driver::attributes</definition>
+        <argsstring></argsstring>
+        <name>attributes</name>
+        <briefdescription>
+<para>List of driver attributes. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1880" column="15" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1880" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Information on a configured ODBC driver. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1871" column="1" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1870" bodyend="1881"/>
+    <listofallmembers>
+      <member refid="structnanodbc_1_1driver_1a4528ae3553031578ba886933c03c3f35" prot="public" virt="non-virtual"><scope>nanodbc::driver</scope><name>attributes</name></member>
+      <member refid="structnanodbc_1_1driver_1a199181975093cc309564d0de3b296c71" prot="public" virt="non-virtual"><scope>nanodbc::driver</scope><name>name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

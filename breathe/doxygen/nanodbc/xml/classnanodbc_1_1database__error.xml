@@ -1,0 +1,183 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classnanodbc_1_1database__error" kind="class" language="C++" prot="public">
+    <compoundname>nanodbc::database_error</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">runtime_error</basecompoundref>
+    <includes refid="nanodbc_8h" local="no">nanodbc.h</includes>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classnanodbc_1_1database__error_1aa735d774c1b595e2690c4fddb2350025" prot="private" static="no" mutable="no">
+        <type>long</type>
+        <definition>long nanodbc::database_error::native_error</definition>
+        <argsstring></argsstring>
+        <name>native_error</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="299" column="10" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="299" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classnanodbc_1_1database__error_1a9549296937912a5802e1ccd652879ebf" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string nanodbc::database_error::sql_state</definition>
+        <argsstring></argsstring>
+        <name>sql_state</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="300" column="17" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="300" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classnanodbc_1_1database__error_1aa82a2c5a87a513ea4ca4baf8618408ba" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string nanodbc::database_error::message</definition>
+        <argsstring></argsstring>
+        <name>message</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="301" column="17" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="301" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classnanodbc_1_1database__error_1a5896a7b81053281d045eb9a0e127ef76" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>nanodbc::database_error::database_error</definition>
+        <argsstring>(void *handle, short handle_type, const std::string &amp;info=&quot;&quot;)</argsstring>
+        <name>database_error</name>
+        <param>
+          <type>void *</type>
+          <declname>handle</declname>
+        </param>
+        <param>
+          <type>short</type>
+          <declname>handle_type</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>info</declname>
+          <defval>&quot;&quot;</defval>
+        </param>
+        <briefdescription>
+<para>Creates runtime_error with message about last ODBC error. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>handle</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The native ODBC statement or connection handle. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>handle_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The native ODBC handle type code for the given handle. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>info</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Additional info that will be appended to the beginning of the error message. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="293" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1database__error_1a87adadb385e77c1a31d77e42f9888ec7" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char* nanodbc::database_error::what</definition>
+        <argsstring>() const noexcept</argsstring>
+        <name>what</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="294" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1database__error_1af239af2bf8c4981cfdb20d62362fe329" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>long</type>
+        <definition>long nanodbc::database_error::native</definition>
+        <argsstring>() const noexcept</argsstring>
+        <name>native</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="295" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1database__error_1a49ebd24a0598597e12a380e22fec357e" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string nanodbc::database_error::state</definition>
+        <argsstring>() const noexcept</argsstring>
+        <name>state</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="296" column="23"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>General database error. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="group__exceptions" kindref="compound">Exception types</ref> </para>
+</simplesect>
+</para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>runtime_error</label>
+      </node>
+      <node id="1">
+        <label>nanodbc::database_error</label>
+        <link refid="classnanodbc_1_1database__error"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>runtime_error</label>
+      </node>
+      <node id="1">
+        <label>nanodbc::database_error</label>
+        <link refid="classnanodbc_1_1database__error"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="287" column="1" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="286" bodyend="302"/>
+    <listofallmembers>
+      <member refid="classnanodbc_1_1database__error_1a5896a7b81053281d045eb9a0e127ef76" prot="public" virt="non-virtual"><scope>nanodbc::database_error</scope><name>database_error</name></member>
+      <member refid="classnanodbc_1_1database__error_1aa82a2c5a87a513ea4ca4baf8618408ba" prot="private" virt="non-virtual"><scope>nanodbc::database_error</scope><name>message</name></member>
+      <member refid="classnanodbc_1_1database__error_1af239af2bf8c4981cfdb20d62362fe329" prot="public" virt="non-virtual"><scope>nanodbc::database_error</scope><name>native</name></member>
+      <member refid="classnanodbc_1_1database__error_1aa735d774c1b595e2690c4fddb2350025" prot="private" virt="non-virtual"><scope>nanodbc::database_error</scope><name>native_error</name></member>
+      <member refid="classnanodbc_1_1database__error_1a9549296937912a5802e1ccd652879ebf" prot="private" virt="non-virtual"><scope>nanodbc::database_error</scope><name>sql_state</name></member>
+      <member refid="classnanodbc_1_1database__error_1a49ebd24a0598597e12a380e22fec357e" prot="public" virt="non-virtual"><scope>nanodbc::database_error</scope><name>state</name></member>
+      <member refid="classnanodbc_1_1database__error_1a87adadb385e77c1a31d77e42f9888ec7" prot="public" virt="non-virtual"><scope>nanodbc::database_error</scope><name>what</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

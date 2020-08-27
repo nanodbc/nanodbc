@@ -1,0 +1,174 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classnanodbc_1_1catalog_1_1primary__keys" kind="class" language="C++" prot="public">
+    <compoundname>nanodbc::catalog::primary_keys</compoundname>
+    <includes refid="nanodbc_8h" local="no">nanodbc.h</includes>
+      <sectiondef kind="friend">
+      <memberdef kind="friend" id="classnanodbc_1_1catalog_1_1primary__keys_1af0f3134c7f6f1f36bfe1e247318dfe43" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>friend class</type>
+        <definition>friend class nanodbc::catalog</definition>
+        <argsstring></argsstring>
+        <name>nanodbc::catalog</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1747" column="9" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1747" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classnanodbc_1_1catalog_1_1primary__keys_1aad91e1c1a180a5c156633c4a971afdc6" prot="private" static="no" mutable="no">
+        <type><ref refid="classnanodbc_1_1result" kindref="compound">result</ref></type>
+        <definition>result nanodbc::catalog::primary_keys::result_</definition>
+        <argsstring></argsstring>
+        <name>result_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1749" column="16" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1749" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1_1primary__keys_1a1bf49eceb97125f61a0bde77a932e0f6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool nanodbc::catalog::primary_keys::next</definition>
+        <argsstring>()</argsstring>
+        <name>next</name>
+        <briefdescription>
+<para>Move to the next result in the result set. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1731" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1_1primary__keys_1afbfca580980e280e66819c2f0a3240f6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string nanodbc::catalog::primary_keys::table_catalog</definition>
+        <argsstring>() const</argsstring>
+        <name>table_catalog</name>
+        <briefdescription>
+<para>Fetch table catalog. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1732" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1_1primary__keys_1a9e3b4c7726c653c734db68fdb3a97317" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string nanodbc::catalog::primary_keys::table_schema</definition>
+        <argsstring>() const</argsstring>
+        <name>table_schema</name>
+        <briefdescription>
+<para>Fetch table schema. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1733" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1_1primary__keys_1a94dd82e753c3fd03bdd946298b1b187a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string nanodbc::catalog::primary_keys::table_name</definition>
+        <argsstring>() const</argsstring>
+        <name>table_name</name>
+        <briefdescription>
+<para>Fetch table name. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1734" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1_1primary__keys_1a27c5a18b8efc9d0632da922bf826903c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string nanodbc::catalog::primary_keys::column_name</definition>
+        <argsstring>() const</argsstring>
+        <name>column_name</name>
+        <briefdescription>
+<para>Fetch column name. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1735" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1_1primary__keys_1a433cd68a00686979966c4c9a0cf3efc4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>short</type>
+        <definition>short nanodbc::catalog::primary_keys::column_number</definition>
+        <argsstring>() const</argsstring>
+        <name>column_number</name>
+        <briefdescription>
+<para>Column sequence number in the key (starting with 1). Returns valye of KEY_SEQ column in result set returned by SQLPrimaryKeys. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1739" column="15"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1_1primary__keys_1a97c3ac806273deb1b5ecaea3eb67721f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string nanodbc::catalog::primary_keys::primary_key_name</definition>
+        <argsstring>() const</argsstring>
+        <name>primary_key_name</name>
+        <briefdescription>
+<para>Primary key name. NULL if not applicable to the data source. Returns valye of PK_NAME column in result set returned by SQLPrimaryKeys. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1744" column="16"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1_1primary__keys_1a83868710da88d5e23c75cb61d0fdfa04" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>nanodbc::catalog::primary_keys::primary_keys</definition>
+        <argsstring>(result &amp;find_result)</argsstring>
+        <name>primary_keys</name>
+        <param>
+          <type><ref refid="classnanodbc_1_1result" kindref="compound">result</ref> &amp;</type>
+          <declname>find_result</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1748" column="9"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Result set for a list of columns that compose the primary key of a single table. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1729" column="1" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1728" bodyend="1750"/>
+    <listofallmembers>
+      <member refid="classnanodbc_1_1catalog_1_1primary__keys_1a27c5a18b8efc9d0632da922bf826903c" prot="public" virt="non-virtual"><scope>nanodbc::catalog::primary_keys</scope><name>column_name</name></member>
+      <member refid="classnanodbc_1_1catalog_1_1primary__keys_1a433cd68a00686979966c4c9a0cf3efc4" prot="public" virt="non-virtual"><scope>nanodbc::catalog::primary_keys</scope><name>column_number</name></member>
+      <member refid="classnanodbc_1_1catalog_1_1primary__keys_1af0f3134c7f6f1f36bfe1e247318dfe43" prot="public" virt="non-virtual"><scope>nanodbc::catalog::primary_keys</scope><name>nanodbc::catalog</name></member>
+      <member refid="classnanodbc_1_1catalog_1_1primary__keys_1a1bf49eceb97125f61a0bde77a932e0f6" prot="public" virt="non-virtual"><scope>nanodbc::catalog::primary_keys</scope><name>next</name></member>
+      <member refid="classnanodbc_1_1catalog_1_1primary__keys_1a97c3ac806273deb1b5ecaea3eb67721f" prot="public" virt="non-virtual"><scope>nanodbc::catalog::primary_keys</scope><name>primary_key_name</name></member>
+      <member refid="classnanodbc_1_1catalog_1_1primary__keys_1a83868710da88d5e23c75cb61d0fdfa04" prot="private" virt="non-virtual"><scope>nanodbc::catalog::primary_keys</scope><name>primary_keys</name></member>
+      <member refid="classnanodbc_1_1catalog_1_1primary__keys_1aad91e1c1a180a5c156633c4a971afdc6" prot="private" virt="non-virtual"><scope>nanodbc::catalog::primary_keys</scope><name>result_</name></member>
+      <member refid="classnanodbc_1_1catalog_1_1primary__keys_1afbfca580980e280e66819c2f0a3240f6" prot="public" virt="non-virtual"><scope>nanodbc::catalog::primary_keys</scope><name>table_catalog</name></member>
+      <member refid="classnanodbc_1_1catalog_1_1primary__keys_1a94dd82e753c3fd03bdd946298b1b187a" prot="public" virt="non-virtual"><scope>nanodbc::catalog::primary_keys</scope><name>table_name</name></member>
+      <member refid="classnanodbc_1_1catalog_1_1primary__keys_1a9e3b4c7726c653c734db68fdb3a97317" prot="public" virt="non-virtual"><scope>nanodbc::catalog::primary_keys</scope><name>table_schema</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

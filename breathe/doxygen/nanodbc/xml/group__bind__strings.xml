@@ -1,0 +1,516 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="group__bind__strings" kind="group">
+    <compoundname>bind_strings</compoundname>
+    <title>Binding multiple string values</title>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="group__bind__strings_1ga8914c229f28ee7b02cf1b85684741326" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+          <param>
+            <type>typename</type>
+            <defval>enable_if_character&lt;T&gt;</defval>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void nanodbc::statement::bind_strings</definition>
+        <argsstring>(short param_index, T const *values, std::size_t value_size, std::size_t batch_size, param_direction direction=PARAM_IN)</argsstring>
+        <name>bind_strings</name>
+        <param>
+          <type>short</type>
+          <declname>param_index</declname>
+        </param>
+        <param>
+          <type>T const *</type>
+          <declname>values</declname>
+        </param>
+        <param>
+          <type>std::size_t</type>
+          <declname>value_size</declname>
+        </param>
+        <param>
+          <type>std::size_t</type>
+          <declname>batch_size</declname>
+        </param>
+        <param>
+          <type>param_direction</type>
+          <declname>direction</declname>
+          <defval>PARAM_IN</defval>
+        </param>
+        <briefdescription>
+<para>Binds multiple string values. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="group__bind__strings_1ga8914c229f28ee7b02cf1b85684741326" kindref="member">bind_strings</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="855" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="group__bind__strings_1gaecd4578e6c204ffb15203e743a4ffdba" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+          <param>
+            <type>typename</type>
+            <defval>enable_if_string&lt;T&gt;</defval>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void nanodbc::statement::bind_strings</definition>
+        <argsstring>(short param_index, std::vector&lt; T &gt; const &amp;values, param_direction direction=PARAM_IN)</argsstring>
+        <name>bind_strings</name>
+        <param>
+          <type>short</type>
+          <declname>param_index</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; T &gt; const &amp;</type>
+          <declname>values</declname>
+        </param>
+        <param>
+          <type>param_direction</type>
+          <declname>direction</declname>
+          <defval>PARAM_IN</defval>
+        </param>
+        <briefdescription>
+<para>Binds multiple string values. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Size of the values vector indicates number of values to bind. Longest string in the array determines maximum length of individual value.</para>
+<para><simplesect kind="see"><para><ref refid="group__bind__strings_1ga8914c229f28ee7b02cf1b85684741326" kindref="member">bind_strings</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="869" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="group__bind__strings_1ga979e2bdbe4d7b3a6845112a306735a3e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>std::size_t</type>
+            <declname>BatchSize</declname>
+            <defname>BatchSize</defname>
+          </param>
+          <param>
+            <type>std::size_t</type>
+            <declname>ValueSize</declname>
+            <defname>ValueSize</defname>
+          </param>
+          <param>
+            <type>class T</type>
+          </param>
+          <param>
+            <type>typename</type>
+            <defval>enable_if_character&lt;T&gt;</defval>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void nanodbc::statement::bind_strings</definition>
+        <argsstring>(short param_index, T const (&amp;values)[BatchSize][ValueSize], param_direction direction=PARAM_IN)</argsstring>
+        <name>bind_strings</name>
+        <param>
+          <type>short</type>
+          <declname>param_index</declname>
+        </param>
+        <param>
+          <type>T const (&amp;)</type>
+          <declname>values</declname>
+          <array>[BatchSize][ValueSize]</array>
+        </param>
+        <param>
+          <type>param_direction</type>
+          <declname>direction</declname>
+          <defval>PARAM_IN</defval>
+        </param>
+        <briefdescription>
+<para>Binds multiple string values. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="group__bind__strings_1ga8914c229f28ee7b02cf1b85684741326" kindref="member">bind_strings</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="881" column="10" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="881" bodyend="888"/>
+      </memberdef>
+      <memberdef kind="function" id="group__bind__strings_1gaab3ea540d9998532141d11970107767d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+          <param>
+            <type>typename</type>
+            <defval>enable_if_character&lt;T&gt;</defval>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void nanodbc::statement::bind_strings</definition>
+        <argsstring>(short param_index, T const *values, std::size_t value_size, std::size_t batch_size, T const *null_sentry, param_direction direction=PARAM_IN)</argsstring>
+        <name>bind_strings</name>
+        <param>
+          <type>short</type>
+          <declname>param_index</declname>
+        </param>
+        <param>
+          <type>T const *</type>
+          <declname>values</declname>
+        </param>
+        <param>
+          <type>std::size_t</type>
+          <declname>value_size</declname>
+        </param>
+        <param>
+          <type>std::size_t</type>
+          <declname>batch_size</declname>
+        </param>
+        <param>
+          <type>T const *</type>
+          <declname>null_sentry</declname>
+        </param>
+        <param>
+          <type>param_direction</type>
+          <declname>direction</declname>
+          <defval>PARAM_IN</defval>
+        </param>
+        <briefdescription>
+<para>Binds multiple string values. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="group__bind__strings_1ga8914c229f28ee7b02cf1b85684741326" kindref="member">bind_strings</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="893" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="group__bind__strings_1gab3fcf94cac28bc25a794c3cd9b9cf47c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+          <param>
+            <type>typename</type>
+            <defval>enable_if_string&lt;T&gt;</defval>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void nanodbc::statement::bind_strings</definition>
+        <argsstring>(short param_index, std::vector&lt; T &gt; const &amp;values, typename T::value_type const *null_sentry, param_direction direction=PARAM_IN)</argsstring>
+        <name>bind_strings</name>
+        <param>
+          <type>short</type>
+          <declname>param_index</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; T &gt; const &amp;</type>
+          <declname>values</declname>
+        </param>
+        <param>
+          <type>typename T::value_type const *</type>
+          <declname>null_sentry</declname>
+        </param>
+        <param>
+          <type>param_direction</type>
+          <declname>direction</declname>
+          <defval>PARAM_IN</defval>
+        </param>
+        <briefdescription>
+<para>Binds multiple string values. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="group__bind__strings_1ga8914c229f28ee7b02cf1b85684741326" kindref="member">bind_strings</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="904" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="group__bind__strings_1gaeb56183ce0f1c8a213b3088b8b03b6ff" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>std::size_t</type>
+            <declname>BatchSize</declname>
+            <defname>BatchSize</defname>
+          </param>
+          <param>
+            <type>std::size_t</type>
+            <declname>ValueSize</declname>
+            <defname>ValueSize</defname>
+          </param>
+          <param>
+            <type>class T</type>
+          </param>
+          <param>
+            <type>typename</type>
+            <defval>enable_if_character&lt;T&gt;</defval>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void nanodbc::statement::bind_strings</definition>
+        <argsstring>(short param_index, T const (&amp;values)[BatchSize][ValueSize], T const *null_sentry, param_direction direction=PARAM_IN)</argsstring>
+        <name>bind_strings</name>
+        <param>
+          <type>short</type>
+          <declname>param_index</declname>
+        </param>
+        <param>
+          <type>T const (&amp;)</type>
+          <declname>values</declname>
+          <array>[BatchSize][ValueSize]</array>
+        </param>
+        <param>
+          <type>T const *</type>
+          <declname>null_sentry</declname>
+        </param>
+        <param>
+          <type>param_direction</type>
+          <declname>direction</declname>
+          <defval>PARAM_IN</defval>
+        </param>
+        <briefdescription>
+<para>Binds multiple string values. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="group__bind__strings_1ga8914c229f28ee7b02cf1b85684741326" kindref="member">bind_strings</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="917" column="10" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="917" bodyend="925"/>
+      </memberdef>
+      <memberdef kind="function" id="group__bind__strings_1gadfdbae0cd7e7bf3737715bd32904438c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+          <param>
+            <type>typename</type>
+            <defval>enable_if_character&lt;T&gt;</defval>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void nanodbc::statement::bind_strings</definition>
+        <argsstring>(short param_index, T const *values, std::size_t value_size, std::size_t batch_size, bool const *nulls, param_direction direction=PARAM_IN)</argsstring>
+        <name>bind_strings</name>
+        <param>
+          <type>short</type>
+          <declname>param_index</declname>
+        </param>
+        <param>
+          <type>T const *</type>
+          <declname>values</declname>
+        </param>
+        <param>
+          <type>std::size_t</type>
+          <declname>value_size</declname>
+        </param>
+        <param>
+          <type>std::size_t</type>
+          <declname>batch_size</declname>
+        </param>
+        <param>
+          <type>bool const *</type>
+          <declname>nulls</declname>
+        </param>
+        <param>
+          <type>param_direction</type>
+          <declname>direction</declname>
+          <defval>PARAM_IN</defval>
+        </param>
+        <briefdescription>
+<para>Binds multiple string values. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="group__bind__strings_1ga8914c229f28ee7b02cf1b85684741326" kindref="member">bind_strings</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="930" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="group__bind__strings_1ga7cc7255e38df32cedd8e50f86512a9a8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+          <param>
+            <type>typename</type>
+            <defval>enable_if_string&lt;T&gt;</defval>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void nanodbc::statement::bind_strings</definition>
+        <argsstring>(short param_index, std::vector&lt; T &gt; const &amp;values, bool const *nulls, param_direction direction=PARAM_IN)</argsstring>
+        <name>bind_strings</name>
+        <param>
+          <type>short</type>
+          <declname>param_index</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; T &gt; const &amp;</type>
+          <declname>values</declname>
+        </param>
+        <param>
+          <type>bool const *</type>
+          <declname>nulls</declname>
+        </param>
+        <param>
+          <type>param_direction</type>
+          <declname>direction</declname>
+          <defval>PARAM_IN</defval>
+        </param>
+        <briefdescription>
+<para>Binds multiple string values. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="group__bind__strings_1ga8914c229f28ee7b02cf1b85684741326" kindref="member">bind_strings</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="941" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="group__bind__strings_1ga15d74df8689ffbc2543cd7453d32097b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>std::size_t</type>
+            <declname>BatchSize</declname>
+            <defname>BatchSize</defname>
+          </param>
+          <param>
+            <type>std::size_t</type>
+            <declname>ValueSize</declname>
+            <defname>ValueSize</defname>
+          </param>
+          <param>
+            <type>class T</type>
+          </param>
+          <param>
+            <type>typename</type>
+            <defval>enable_if_character&lt;T&gt;</defval>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void nanodbc::statement::bind_strings</definition>
+        <argsstring>(short param_index, T const (&amp;values)[BatchSize][ValueSize], bool const *nulls, param_direction direction=PARAM_IN)</argsstring>
+        <name>bind_strings</name>
+        <param>
+          <type>short</type>
+          <declname>param_index</declname>
+        </param>
+        <param>
+          <type>T const (&amp;)</type>
+          <declname>values</declname>
+          <array>[BatchSize][ValueSize]</array>
+        </param>
+        <param>
+          <type>bool const *</type>
+          <declname>nulls</declname>
+        </param>
+        <param>
+          <type>param_direction</type>
+          <declname>direction</declname>
+          <defval>PARAM_IN</defval>
+        </param>
+        <briefdescription>
+<para>Binds multiple string values. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="group__bind__strings_1ga8914c229f28ee7b02cf1b85684741326" kindref="member">bind_strings</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="954" column="10" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="954" bodyend="962"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Binds given string values to parameter marker in prepared statement. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>If your prepared SQL query has any parameter markers, ? (question mark) placeholders, this is how you bind values to them. Parameter markers are numbered using Zero-based index from left to right.</para>
+<para>It is possible to use these functions for batch operations.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>param_index</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Zero-based index of parameter marker (placeholder position). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>values</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Array of values to substitute into parameter placeholders. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>value_size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Maximum length of string value in array. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>batch_size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of string values to bind. Otherwise template parameter BatchSize is taken as the number of values. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>null_sentry</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Value which should represent a null value. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>nulls</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Flags for values that should be set to a null value. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>param_direction</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>ODBC parameter direction. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

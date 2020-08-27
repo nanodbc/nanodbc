@@ -1,0 +1,652 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="namespacenanodbc" kind="namespace" language="C++">
+    <compoundname>nanodbc</compoundname>
+    <innerclass refid="classnanodbc_1_1catalog" prot="public">nanodbc::catalog</innerclass>
+    <innerclass refid="classnanodbc_1_1connection" prot="public">nanodbc::connection</innerclass>
+    <innerclass refid="classnanodbc_1_1database__error" prot="public">nanodbc::database_error</innerclass>
+    <innerclass refid="structnanodbc_1_1datasource" prot="public">nanodbc::datasource</innerclass>
+    <innerclass refid="structnanodbc_1_1date" prot="public">nanodbc::date</innerclass>
+    <innerclass refid="structnanodbc_1_1driver" prot="public">nanodbc::driver</innerclass>
+    <innerclass refid="classnanodbc_1_1index__range__error" prot="public">nanodbc::index_range_error</innerclass>
+    <innerclass refid="classnanodbc_1_1null__access__error" prot="public">nanodbc::null_access_error</innerclass>
+    <innerclass refid="classnanodbc_1_1programming__error" prot="public">nanodbc::programming_error</innerclass>
+    <innerclass refid="classnanodbc_1_1result" prot="public">nanodbc::result</innerclass>
+    <innerclass refid="classnanodbc_1_1result__iterator" prot="public">nanodbc::result_iterator</innerclass>
+    <innerclass refid="classnanodbc_1_1statement" prot="public">nanodbc::statement</innerclass>
+    <innerclass refid="structnanodbc_1_1time" prot="public">nanodbc::time</innerclass>
+    <innerclass refid="structnanodbc_1_1timestamp" prot="public">nanodbc::timestamp</innerclass>
+    <innerclass refid="classnanodbc_1_1transaction" prot="public">nanodbc::transaction</innerclass>
+    <innerclass refid="classnanodbc_1_1type__incompatible__error" prot="public">nanodbc::type_incompatible_error</innerclass>
+      <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="namespacenanodbc_1abfc0ece56278e590911ec8352774c212" prot="public" static="no">
+        <type>std::string</type>
+        <definition>typedef std::string nanodbc::string</definition>
+        <argsstring></argsstring>
+        <name>string</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="163" column="21" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="163" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespacenanodbc_1aeddf33f0df2bb9ba05323112e3aed316" prot="public" static="no">
+        <type>std::u16string</type>
+        <definition>typedef std::u16string nanodbc::wide_string</definition>
+        <argsstring></argsstring>
+        <name>wide_string</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="173" column="24" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="173" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespacenanodbc_1ad2d466f268b27c7f76a801379dbeb101" prot="public" static="no">
+        <type>wide_string::value_type</type>
+        <definition>typedef wide_string::value_type nanodbc::wide_char_t</definition>
+        <argsstring></argsstring>
+        <name>wide_char_t</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="177" column="33" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="177" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespacenanodbc_1ad636e9d08ea26f54100aa013031f8344" prot="public" static="no">
+        <type>long</type>
+        <definition>typedef long nanodbc::null_type</definition>
+        <argsstring></argsstring>
+        <name>null_type</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="187" column="14" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="187" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="group__utility_1gaac06d237b348a3040a5cb378e86af570" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>std::integral_constant&lt; bool, std::is_same&lt; typename std::decay&lt; T &gt;::type, std::string &gt;::value||std::is_same&lt; typename std::decay&lt; T &gt;::type, wide_string &gt;::value &gt;</type>
+        <definition>using nanodbc::is_string = typedef std::integral_constant&lt; bool, std::is_same&lt;typename std::decay&lt;T&gt;::type, std::string&gt;::value || std::is_same&lt;typename std::decay&lt;T&gt;::type, wide_string&gt;::value&gt;</definition>
+        <argsstring></argsstring>
+        <name>is_string</name>
+        <briefdescription>
+<para>A type trait for testing if a type is a std::basic_string compatible with the current nanodbc configuration. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="354" column="1" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="357" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="group__utility_1gadf207d0dda8d44076925a9d19fbfac0a" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>std::integral_constant&lt; bool, std::is_same&lt; typename std::decay&lt; T &gt;::type, std::string::value_type &gt;::value||std::is_same&lt; typename std::decay&lt; T &gt;::type, wide_char_t &gt;::value &gt;</type>
+        <definition>using nanodbc::is_character = typedef std::integral_constant&lt; bool, std::is_same&lt;typename std::decay&lt;T&gt;::type, std::string::value_type&gt;::value || std::is_same&lt;typename std::decay&lt;T&gt;::type, wide_char_t&gt;::value&gt;</definition>
+        <argsstring></argsstring>
+        <name>is_character</name>
+        <briefdescription>
+<para>A type trait for testing if a type is a character compatible with the current nanodbc configuration. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="362" column="1" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="365" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="group__utility_1ga0cf23526593c5647433a3dbdf7f582e3" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>typename std::enable_if&lt; <ref refid="group__utility_1gaac06d237b348a3040a5cb378e86af570" kindref="member">is_string</ref>&lt; T &gt;::value &gt;::type</type>
+        <definition>using nanodbc::enable_if_string = typedef typename std::enable_if&lt;is_string&lt;T&gt;::value&gt;::type</definition>
+        <argsstring></argsstring>
+        <name>enable_if_string</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="368" column="1" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="368" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="group__utility_1ga4de8f00ef2dfc16187ee819e4ff75602" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>typename std::enable_if&lt; <ref refid="group__utility_1gadf207d0dda8d44076925a9d19fbfac0a" kindref="member">is_character</ref>&lt; T &gt;::value &gt;::type</type>
+        <definition>using nanodbc::enable_if_character = typedef typename std::enable_if&lt;is_character&lt;T&gt;::value&gt;::type</definition>
+        <argsstring></argsstring>
+        <name>enable_if_character</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="371" column="1" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="371" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="group__mainc_1gac6e8e0e4c603c1bbfc0c7db3a58919f0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classnanodbc_1_1result__iterator" kindref="compound">result_iterator</ref></type>
+        <definition>result_iterator nanodbc::begin</definition>
+        <argsstring>(result &amp;r)</argsstring>
+        <name>begin</name>
+        <param>
+          <type><ref refid="classnanodbc_1_1result" kindref="compound">result</ref> &amp;</type>
+          <declname>r</declname>
+        </param>
+        <briefdescription>
+<para>Returns an iterator to the beginning of the given result set. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1630" column="24" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1630" bodyend="1633"/>
+      </memberdef>
+      <memberdef kind="function" id="group__mainc_1ga91df79a3401b5afd4ec109101737b05b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classnanodbc_1_1result__iterator" kindref="compound">result_iterator</ref></type>
+        <definition>result_iterator nanodbc::end</definition>
+        <argsstring>(result &amp;)</argsstring>
+        <name>end</name>
+        <param>
+          <type><ref refid="classnanodbc_1_1result" kindref="compound">result</ref> &amp;</type>
+        </param>
+        <briefdescription>
+<para>Returns an iterator to the end of a result set. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The default-constructed <computeroutput><ref refid="classnanodbc_1_1result__iterator" kindref="compound">nanodbc::result_iterator</ref></computeroutput> is known as the end-of-result iterator. When a valid <computeroutput><ref refid="classnanodbc_1_1result__iterator" kindref="compound">nanodbc::result_iterator</ref></computeroutput> reaches the end of the underlying result set, it becomes equal to the end-of-result iterator. Dereferencing or incrementing it further is undefined. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1641" column="24" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1641" bodyend="1644"/>
+      </memberdef>
+      <memberdef kind="function" id="group__mainf_1ga1a463085cf583c00a8e990a643422d63" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::list&lt; <ref refid="structnanodbc_1_1driver" kindref="compound">driver</ref> &gt;</type>
+        <definition>std::list&lt;driver&gt; nanodbc::list_drivers</definition>
+        <argsstring>()</argsstring>
+        <name>list_drivers</name>
+        <briefdescription>
+<para>Returns a list of ODBC drivers on your system. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1890" column="11" declfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" declline="1890" declcolumn="11"/>
+      </memberdef>
+      <memberdef kind="function" id="group__mainf_1ga7c116c76f815fab527939a2dab6c2968" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::list&lt; <ref refid="structnanodbc_1_1datasource" kindref="compound">datasource</ref> &gt;</type>
+        <definition>std::list&lt;datasource&gt; nanodbc::list_datasources</definition>
+        <argsstring>()</argsstring>
+        <name>list_datasources</name>
+        <briefdescription>
+<para>Returns a list of ODBC data sources on your system. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1893" column="11" declfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" declline="1893" declcolumn="11"/>
+      </memberdef>
+      <memberdef kind="function" id="group__mainf_1ga5cbac617a3964611bd16a2fc6f991b83" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classnanodbc_1_1result" kindref="compound">result</ref></type>
+        <definition>result nanodbc::execute</definition>
+        <argsstring>(connection &amp;conn, const string &amp;query, long batch_operations=1, long timeout=0)</argsstring>
+        <name>execute</name>
+        <param>
+          <type><ref refid="classnanodbc_1_1connection" kindref="compound">connection</ref> &amp;</type>
+          <declname>conn</declname>
+        </param>
+        <param>
+          <type>const string &amp;</type>
+          <declname>query</declname>
+        </param>
+        <param>
+          <type>long</type>
+          <declname>batch_operations</declname>
+          <defval>1</defval>
+        </param>
+        <param>
+          <type>long</type>
+          <declname>timeout</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+<para>Immediately opens, prepares, and executes the given query directly on the given connection. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>conn</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The connection where the statement will be executed. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>query</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The SQL query that will be executed. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>batch_operations</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Numbers of rows to fetch per rowset, or the number of batch parameters to process. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>timeout</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number in seconds before query timeout. Default is 0 indicating no timeout. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A result set object. </para>
+</simplesect>
+<simplesect kind="attention"><para>You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed. </para>
+</simplesect>
+<simplesect kind="see"><para>open(), <ref refid="group__mainf_1ga961a75629487f22ebc87d114c5699bc2" kindref="member">prepare()</ref>, <ref refid="group__mainf_1ga5cbac617a3964611bd16a2fc6f991b83" kindref="member">execute()</ref>, <ref refid="classnanodbc_1_1result" kindref="compound">result</ref>, <ref refid="classnanodbc_1_1transaction" kindref="compound">transaction</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1906" column="8" declfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" declline="1906" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="group__mainf_1gaee1775943fa1c5906cda9341851633c1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void nanodbc::just_execute</definition>
+        <argsstring>(connection &amp;conn, const string &amp;query, long batch_operations=1, long timeout=0)</argsstring>
+        <name>just_execute</name>
+        <param>
+          <type><ref refid="classnanodbc_1_1connection" kindref="compound">connection</ref> &amp;</type>
+          <declname>conn</declname>
+        </param>
+        <param>
+          <type>const string &amp;</type>
+          <declname>query</declname>
+        </param>
+        <param>
+          <type>long</type>
+          <declname>batch_operations</declname>
+          <defval>1</defval>
+        </param>
+        <param>
+          <type>long</type>
+          <declname>timeout</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+<para>Opens, prepares, and executes query directly without creating result object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>conn</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The connection where the statement will be executed. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>query</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The SQL query that will be executed. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>batch_operations</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Rows to fetch per rowset, or number of batch parameters to process. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>timeout</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number in seconds before query timeout. Default is 0 indicating no timeout. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A result set object. </para>
+</simplesect>
+<simplesect kind="attention"><para>You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed. </para>
+</simplesect>
+<simplesect kind="see"><para>open(), <ref refid="group__mainf_1ga961a75629487f22ebc87d114c5699bc2" kindref="member">prepare()</ref>, <ref refid="group__mainf_1ga5cbac617a3964611bd16a2fc6f991b83" kindref="member">execute()</ref>, <ref refid="classnanodbc_1_1result" kindref="compound">result</ref>, <ref refid="classnanodbc_1_1transaction" kindref="compound">transaction</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1917" column="6" declfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" declline="1917" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="group__mainf_1gad178fcf995fa5ac42702607f35e5ba39" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classnanodbc_1_1result" kindref="compound">result</ref></type>
+        <definition>result nanodbc::execute</definition>
+        <argsstring>(statement &amp;stmt, long batch_operations=1)</argsstring>
+        <name>execute</name>
+        <param>
+          <type><ref refid="classnanodbc_1_1statement" kindref="compound">statement</ref> &amp;</type>
+          <declname>stmt</declname>
+        </param>
+        <param>
+          <type>long</type>
+          <declname>batch_operations</declname>
+          <defval>1</defval>
+        </param>
+        <briefdescription>
+<para>Execute the previously prepared query now. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>stmt</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The prepared statement that will be executed. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>batch_operations</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Rows to fetch per rowset, or the number of batch parameters to process. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A result set object. </para>
+</simplesect>
+<simplesect kind="attention"><para>You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed. </para>
+</simplesect>
+<simplesect kind="see"><para>open(), <ref refid="group__mainf_1ga961a75629487f22ebc87d114c5699bc2" kindref="member">prepare()</ref>, <ref refid="group__mainf_1ga5cbac617a3964611bd16a2fc6f991b83" kindref="member">execute()</ref>, <ref refid="classnanodbc_1_1result" kindref="compound">result</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1931" column="8" declfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" declline="1931" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="group__mainf_1gafa9051df00f710f9d4123dc24896d821" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void nanodbc::just_execute</definition>
+        <argsstring>(statement &amp;stmt, long batch_operations=1)</argsstring>
+        <name>just_execute</name>
+        <param>
+          <type><ref refid="classnanodbc_1_1statement" kindref="compound">statement</ref> &amp;</type>
+          <declname>stmt</declname>
+        </param>
+        <param>
+          <type>long</type>
+          <declname>batch_operations</declname>
+          <defval>1</defval>
+        </param>
+        <briefdescription>
+<para>Execute the previously prepared query now and without creating result object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>stmt</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The prepared statement that will be executed. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>batch_operations</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Rows to fetch per rowset, or the number of batch parameters to process. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A result set object. </para>
+</simplesect>
+<simplesect kind="attention"><para>You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed. </para>
+</simplesect>
+<simplesect kind="see"><para>open(), <ref refid="group__mainf_1ga961a75629487f22ebc87d114c5699bc2" kindref="member">prepare()</ref>, <ref refid="group__mainf_1ga5cbac617a3964611bd16a2fc6f991b83" kindref="member">execute()</ref>, <ref refid="classnanodbc_1_1result" kindref="compound">result</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1941" column="6" declfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" declline="1941" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="group__mainf_1ga3f5b3e15f31690ef54ca20058ea89074" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classnanodbc_1_1result" kindref="compound">result</ref></type>
+        <definition>result nanodbc::transact</definition>
+        <argsstring>(statement &amp;stmt, long batch_operations)</argsstring>
+        <name>transact</name>
+        <param>
+          <type><ref refid="classnanodbc_1_1statement" kindref="compound">statement</ref> &amp;</type>
+          <declname>stmt</declname>
+        </param>
+        <param>
+          <type>long</type>
+          <declname>batch_operations</declname>
+        </param>
+        <briefdescription>
+<para>Execute the previously prepared query now. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Executes within the context of a transaction object, commits directly after execution. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>stmt</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The prepared statement that will be executed in batch. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>batch_operations</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Rows to fetch per rowset, or the number of batch parameters to process. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A result set object. </para>
+</simplesect>
+<simplesect kind="see"><para>open(), <ref refid="group__mainf_1ga961a75629487f22ebc87d114c5699bc2" kindref="member">prepare()</ref>, <ref refid="group__mainf_1ga5cbac617a3964611bd16a2fc6f991b83" kindref="member">execute()</ref>, <ref refid="classnanodbc_1_1result" kindref="compound">result</ref>, <ref refid="classnanodbc_1_1transaction" kindref="compound">transaction</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1951" column="8" declfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" declline="1951" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="group__mainf_1ga343e69acce5e8122723ca8d38b0a7f92" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void nanodbc::just_transact</definition>
+        <argsstring>(statement &amp;stmt, long batch_operations)</argsstring>
+        <name>just_transact</name>
+        <param>
+          <type><ref refid="classnanodbc_1_1statement" kindref="compound">statement</ref> &amp;</type>
+          <declname>stmt</declname>
+        </param>
+        <param>
+          <type>long</type>
+          <declname>batch_operations</declname>
+        </param>
+        <briefdescription>
+<para>Execute the previously prepared query now and without creating result object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Executes within the context of a transaction object, commits directly after execution. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>stmt</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The prepared statement that will be executed in batch. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>batch_operations</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Rows to fetch per rowset, or the number of batch parameters to process. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A result set object. </para>
+</simplesect>
+<simplesect kind="see"><para>open(), <ref refid="group__mainf_1ga961a75629487f22ebc87d114c5699bc2" kindref="member">prepare()</ref>, <ref refid="group__mainf_1ga5cbac617a3964611bd16a2fc6f991b83" kindref="member">execute()</ref>, <ref refid="classnanodbc_1_1result" kindref="compound">result</ref>, <ref refid="classnanodbc_1_1transaction" kindref="compound">transaction</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1961" column="6" declfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" declline="1961" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="group__mainf_1ga961a75629487f22ebc87d114c5699bc2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void nanodbc::prepare</definition>
+        <argsstring>(statement &amp;stmt, const string &amp;query, long timeout=0)</argsstring>
+        <name>prepare</name>
+        <param>
+          <type><ref refid="classnanodbc_1_1statement" kindref="compound">statement</ref> &amp;</type>
+          <declname>stmt</declname>
+        </param>
+        <param>
+          <type>const string &amp;</type>
+          <declname>query</declname>
+        </param>
+        <param>
+          <type>long</type>
+          <declname>timeout</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+<para>Prepares the given statement to execute on it associated connection. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>If the statement is not open throws <ref refid="classnanodbc_1_1programming__error" kindref="compound">programming_error</ref>. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>stmt</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The prepared statement that will be executed in batch. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>query</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The SQL query that will be executed. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>timeout</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number in seconds before query timeout. Default is 0 indicating no timeout. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="see"><para>open() </para>
+</simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+<parametername><ref refid="classnanodbc_1_1programming__error" kindref="compound">programming_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1971" column="6" declfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" declline="1971" declcolumn="6"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>The entirety of nanodbc can be found within this one namespace. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="note"><para>This library does not make any exception safety guarantees, but should work just fine with a threading enabled ODBC driver. If you want to use nanodbc objects in threads I recommend each thread keep their own connection to the database. Otherwise you must synchronize any access to nanodbc objects. </para>
+</simplesect>
+</para>
+    </detaileddescription>
+    <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="98" column="1"/>
+  </compounddef>
+</doxygen>
