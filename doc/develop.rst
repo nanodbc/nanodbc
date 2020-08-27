@@ -93,16 +93,18 @@ Test
 
 *TODO*: How to test your feature for nanodbc
 
+See [README.md](https://github.com/nanodbc/nanodbc/blob/master/README.md)
+
 ******************************************************************************
 Release
 ******************************************************************************
 
-*TODO*: How to release and publish source code
+See [README.md](https://github.com/nanodbc/nanodbc/blob/master/README.md)
 
 Documentation
 ==============================================================================
 
-*TODO*: How to generate and publish documentation
+See [doc/README.md](https://github.com/nanodbc/nanodbc/blob/master/doc/README.md)
 
 ******************************************************************************
 Future
