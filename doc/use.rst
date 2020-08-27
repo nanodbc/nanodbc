@@ -22,12 +22,13 @@ Quickstart
 .. code-block:: cpp
 
   #include <nanodbc/nanodbc.h>
+  #include <iostream>
   #include <exception>
 
   int main() try
   {
-    auto const connstr = ...; // an ODBC connection string to your database
-    nanodbc::connecton conn(connstr);
+    auto const connstr = NANODBC_TEXT("..."); // an ODBC connection string to your database
+    nanodbc::connection conn(connstr);
     nanodbc::execute(conn, NANODBC_TEXT("create table t (i int)"));
     nanodbc::execute(conn, NANODBC_TEXT("insert into t (1)"));
 
@@ -40,7 +41,7 @@ Quickstart
   }
   catch (std::exception& e)
   {
-      cerr << e.what() << endl;
+      std::cerr << e.what() << std::endl;
       return EXIT_FAILURE;
   }
 
