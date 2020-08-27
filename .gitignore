@@ -18,6 +18,14 @@
 # CLion
 /.idea
 
+# Node (for docs build)
+node_modules
+package-lock.json
+
+# Python (for docs build)
+.venv
+.pyvenv
+
 # VS2017 / VSCode
 /.vs*
 /CMakeSettings.json
