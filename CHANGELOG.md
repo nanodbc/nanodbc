@@ -17,7 +17,7 @@
 - Added column validating function to the `result_impl` class [`#206`](https://github.com/lexicalunit/nanodbc/pull/206)
 - Added handling of `SQL_SS_UDT` data as binary [`#148`](https://github.com/lexicalunit/nanodbc/pull/148)
 - Added input iterator for result class [`#155`](https://github.com/lexicalunit/nanodbc/pull/155)
-- Added public macro `NANODBC_THROW_NO_SOURCE_LOCATION` [`#184`](https://github.com/lexicalunit/nanodbc/pull/184)
+- Added public macro `NANODBC_THROW_NO_SOURCE_LOCATION` [`#184`](https://github.com/nanodbc/nanodbc/pull/184)
 - Added string converter functions for more efficient processing [`#151`](https://github.com/lexicalunit/nanodbc/pull/151)
 - Added support for `SQL_WLONGVARCHAR` data type [`#211`](https://github.com/lexicalunit/nanodbc/pull/211)
 - Added support for `SQL_SS_XML` data type [`#238`](https://github.com/lexicalunit/nanodbc/pull/238)
