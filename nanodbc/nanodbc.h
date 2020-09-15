@@ -1769,6 +1769,64 @@ public:
         result result_;
     };
 
+    /// \brief Result set for a list of procedures in the data source.
+    class procedures
+    {
+    public:
+        bool next();                 ///< Move to the next result in the result set.
+        string proc_catalog() const; ///< Fetch procedure catalog.
+        string proc_schema() const;  ///< Fetch procedure schema.
+        string proc_name() const;    ///< Fetch procedure name.
+        string proc_remarks() const; ///< Fetch procedure remarks.
+        short proc_type() const;     ///< Fetch procedure type.
+
+    private:
+        friend class nanodbc::catalog;
+        procedures(result& find_result);
+        result result_;
+    };
+
+    /// \brief Result set for a list of procedures in the data source.
+    class procedure_columns
+    {
+    public:
+        bool next();                           ///< Move to the next result in the result set.
+        string proc_catalog() const;           ///< Fetch table catalog.
+        string proc_schema() const;            ///< Fetch table schema.
+        string proc_name() const;              ///< Fetch table name.
+        string column_name() const;            ///< Fetch column name.
+        short column_type() const;             ///< Fetch column type.
+        short data_type() const;               ///< Fetch column data type.
+        string type_name() const;              ///< Fetch column type name.
+        long column_size() const;              ///< Fetch column size.
+        long buffer_length() const;            ///< Fetch buffer length.
+        short decimal_digits() const;          ///< Fetch decimal digits.
+        short numeric_precision_radix() const; ///< Fetch numeric precission.
+        short nullable() const;                ///< True iff column is nullable.
+        string remarks() const;                ///< Fetch column remarks.
+        string column_default() const;         ///< Fetch column's default.
+        short sql_data_type() const;           ///< Fetch column's SQL data type.
+        short sql_datetime_subtype() const;    ///< Fetch datetime subtype of column.
+        long char_octet_length() const;        ///< Fetch char octet length.
+
+        /// \brief Ordinal position of the column in the table.
+        /// The first column in the table is number 1.
+        /// Returns ORDINAL_POSITION column value in result set returned by SQLColumns.
+        long ordinal_position() const;
+
+        /// \brief Fetch column is-nullable information.
+        ///
+        /// \note MSDN: This column returns a zero-length string if nullability is unknown.
+        ///       ISO rules are followed to determine nullability.
+        ///       An ISO SQL-compliant DBMS cannot return an empty string.
+        string is_nullable() const;
+
+    private:
+        friend class nanodbc::catalog;
+        procedure_columns(result& find_result);
+        result result_;
+    };
+
     /// \brief Creates catalog operating on database accessible through the specified connection.
     explicit catalog(connection& conn);
 
@@ -1830,6 +1888,37 @@ public:
     /// Empty string argument is equivalent to passing the search pattern '%'.
     catalog::primary_keys find_primary_keys(
         const string& table,
+        const string& schema = string(),
+        const string& catalog = string());
+
+    /// \brief Creates result set with catalog, schema, procedure, and procedure types.
+    ///
+    /// Procedure information is obtained by executing `SQLProcedures` function within
+    /// scope of the connected database accessible with the specified connection.
+    /// Since this function is implemented in terms of the `SQLProcedures`s, it returns
+    /// result set ordered by PROCEDURE_CAT, PROCEDUORE_SCHEM, and PROCEDURE_NAME.
+    ///
+    /// All arguments are treated as the Pattern Value Arguments.
+    /// Empty string argument is equivalent to passing the search pattern '%'.
+
+    catalog::procedures find_procedures(
+        const string& procedure = string(),
+        const string& schema = string(),
+        const string& catalog = string());
+
+    /// \brief Creates result set with columns in one or more procedures.
+    ///
+    /// Columns information is obtained by executing `SQLProcedureColumns` function within
+    /// scope of the connected database accessible with the specified connection.
+    /// Since this function is implemented in terms of the `SQLProcedureColumns`, it returns
+    /// result set ordered by PROCEDURE_CAT, PROCEDURE_SCHEM, PROCEDURE_NAME, and
+    /// COLUMN_TYPE.
+    ///
+    /// All arguments are treated as the Pattern Value Arguments.
+    /// Empty string argument is equivalent to passing the search pattern '%'.
+    catalog::procedure_columns find_procedure_columns(
+        const string& column = string(),
+        const string& procedure = string(),
         const string& schema = string(),
         const string& catalog = string());
 

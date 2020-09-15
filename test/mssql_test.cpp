@@ -540,6 +540,11 @@ TEST_CASE_METHOD(mssql_fixture, "test_catalog_tables", "[mssql][catalog][tables]
     test_catalog_tables();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_catalog_procedure_columns", "[mssql][catalog][procedure_columns]")
+{
+    test_catalog_procedure_columns();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_catalog_table_privileges", "[mssql][catalog][tables]")
 {
     test_catalog_table_privileges();
