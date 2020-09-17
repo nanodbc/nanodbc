@@ -602,13 +602,12 @@ struct test_case_fixture : public base_test_fixture
             }
             execute(
                 connection,
-                NANODBC_TEXT(
-                    "CREATE PROCEDURE " + procedure_name +
-                    " @arg_varchar VARCHAR(10), @arg_int INT "
-                    "AS "
-                    "BEGIN "
-                    "        SELECT @arg_varchar AS A, @arg_int AS B, GETDATE() AS C "
-                    "END;"));
+                NANODBC_TEXT("CREATE PROCEDURE " + procedure_name) +
+                    NANODBC_TEXT(" @arg_varchar VARCHAR(10), @arg_int INT "
+                                 "AS "
+                                 "BEGIN "
+                                 "        SELECT @arg_varchar AS A, @arg_int AS B, GETDATE() AS C "
+                                 "END;"));
 
             // Use brute-force look-up
             {
@@ -663,8 +662,9 @@ struct test_case_fixture : public base_test_fixture
                     // as well as column_type is as expected.
                     // All of the remaining attribtues are shared with the SQLColumns
                     // API call and are tested there
-                    if (columns.column_name().find("arg_int") != std::string::npos ||
-                        columns.column_name().find("arg_varchar") != std::string::npos)
+                    if (columns.column_name().find(NANODBC_TEXT("arg_int")) != std::string::npos ||
+                        columns.column_name().find(NANODBC_TEXT("arg_varchar")) !=
+                            std::string::npos)
                     {
                         REQUIRE(columns.column_type() == SQL_PARAM_INPUT);
                         count++;
