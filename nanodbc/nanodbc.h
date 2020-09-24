@@ -1773,12 +1773,12 @@ public:
     class procedures
     {
     public:
-        bool next();                 ///< Move to the next result in the result set.
-        string proc_catalog() const; ///< Fetch procedure catalog.
-        string proc_schema() const;  ///< Fetch procedure schema.
-        string proc_name() const;    ///< Fetch procedure name.
-        string proc_remarks() const; ///< Fetch procedure remarks.
-        short proc_type() const;     ///< Fetch procedure type.
+        bool next();                      ///< Move to the next result in the result set.
+        string procedure_catalog() const; ///< Fetch procedure catalog.
+        string procedure_schema() const;  ///< Fetch procedure schema.
+        string procedure_name() const;    ///< Fetch procedure name.
+        string procedure_remarks() const; ///< Fetch procedure remarks.
+        short procedure_type() const;     ///< Fetch procedure type.
 
     private:
         friend class nanodbc::catalog;
@@ -1791,9 +1791,9 @@ public:
     {
     public:
         bool next();                           ///< Move to the next result in the result set.
-        string proc_catalog() const;           ///< Fetch table catalog.
-        string proc_schema() const;            ///< Fetch table schema.
-        string proc_name() const;              ///< Fetch table name.
+        string procedure_catalog() const;      ///< Fetch procedure catalog.
+        string procedure_schema() const;       ///< Fetch procedure schema.
+        string procedure_name() const;         ///< Fetch procedure name.
         string column_name() const;            ///< Fetch column name.
         short column_type() const;             ///< Fetch column type.
         short data_type() const;               ///< Fetch column data type.

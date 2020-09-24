@@ -582,7 +582,7 @@ struct test_case_fixture : public base_test_fixture
             while (procedures.next())
             {
                 // This values (procedure name) must not be NULL (returned as empty string)
-                REQUIRE(!procedures.proc_name().empty());
+                REQUIRE(!procedures.procedure_name().empty());
                 count++;
             }
             REQUIRE(count > 0);
@@ -616,7 +616,7 @@ struct test_case_fixture : public base_test_fixture
                 while (procedures.next())
                 {
                     // Can not expect name to be exactly the same.
-                    if (procedures.proc_name().find(procedure_name) != std::string::npos)
+                    if (procedures.procedure_name().find(procedure_name) != std::string::npos)
                     {
                         // Unclear whether we can form reliable expectations around the procedure
                         // type
@@ -632,7 +632,7 @@ struct test_case_fixture : public base_test_fixture
                 nanodbc::catalog::procedures procedures = catalog.find_procedures(procedure_name);
                 // expect single record with the wanted procedure
                 REQUIRE(procedures.next());
-                REQUIRE(procedures.proc_name().find(procedure_name) != std::string::npos);
+                REQUIRE(procedures.procedure_name().find(procedure_name) != std::string::npos);
                 // expect no more records
                 REQUIRE(!procedures.next());
             }

@@ -4399,32 +4399,32 @@ bool catalog::procedures::next()
     return result_.next();
 }
 
-string catalog::procedures::proc_catalog() const
+string catalog::procedures::procedure_catalog() const
 {
     // PROCEDURE_CAT may be NULL
     return result_.get<string>(0, string());
 }
 
-string catalog::procedures::proc_schema() const
+string catalog::procedures::procedure_schema() const
 {
     // PROCEDURE_SCHEM may be NULL
     return result_.get<string>(1, string());
 }
 
-string catalog::procedures::proc_name() const
+string catalog::procedures::procedure_name() const
 {
     // PROCEDURE_NAME is never NULL
     return result_.get<string>(2);
 }
 
-string catalog::procedures::proc_remarks() const
+string catalog::procedures::procedure_remarks() const
 {
     // Column indicies 3, 4, 5 and "reserved for future use".
     // PROCEDURE_REMARKS column may be NULL
     return result_.get<string>(6, string());
 }
 
-short catalog::procedures::proc_type() const
+short catalog::procedures::procedure_type() const
 {
     // PROCEDURE_TYPE may be NULL
     return result_.get<short>(7, SQL_PT_UNKNOWN);
@@ -4538,19 +4538,19 @@ bool catalog::procedure_columns::next()
     return result_.next();
 }
 
-string catalog::procedure_columns::proc_catalog() const
+string catalog::procedure_columns::procedure_catalog() const
 {
     // TABLE_CAT might be NULL
     return result_.get<string>(0, string());
 }
 
-string catalog::procedure_columns::proc_schema() const
+string catalog::procedure_columns::procedure_schema() const
 {
     // TABLE_SCHEM might be NULL
     return result_.get<string>(1, string());
 }
 
-string catalog::procedure_columns::proc_name() const
+string catalog::procedure_columns::procedure_name() const
 {
     // TABLE_NAME is never NULL
     return result_.get<string>(2);
