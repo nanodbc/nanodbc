@@ -570,6 +570,111 @@ struct test_case_fixture : public base_test_fixture
         }
     }
 
+    void test_catalog_procedure_columns()
+    {
+        nanodbc::connection connection = connect();
+        nanodbc::catalog catalog(connection);
+
+        // Check we can iterate over any procedures
+        {
+            nanodbc::catalog::procedures procedures = catalog.find_procedures();
+            long count = 0;
+            while (procedures.next())
+            {
+                // This values (procedure name) must not be NULL (returned as empty string)
+                REQUIRE(!procedures.procedure_name().empty());
+                count++;
+            }
+            REQUIRE(count > 0);
+        }
+
+        nanodbc::string const procedure_name(NANODBC_TEXT("test_catalog_procedure"));
+
+        // Find a procedure with known name
+        {
+            try
+            {
+                nanodbc::result results =
+                    execute(connection, NANODBC_TEXT("DROP PROCEDURE " + procedure_name));
+            }
+            catch (...)
+            {
+            }
+            execute(
+                connection,
+                NANODBC_TEXT("CREATE PROCEDURE " + procedure_name) +
+                    NANODBC_TEXT(" @arg_varchar VARCHAR(10), @arg_int INT "
+                                 "AS "
+                                 "BEGIN "
+                                 "        SELECT @arg_varchar AS A, @arg_int AS B, GETDATE() AS C "
+                                 "END;"));
+
+            // Use brute-force look-up
+            {
+                nanodbc::catalog::procedures procedures = catalog.find_procedures();
+                bool found = false;
+                while (procedures.next())
+                {
+                    // Can not expect name to be exactly the same.
+                    if (procedures.procedure_name().find(procedure_name) != std::string::npos)
+                    {
+                        // Unclear whether we can form reliable expectations around the procedure
+                        // type
+                        found = true;
+                        break;
+                    }
+                }
+                REQUIRE(found);
+            }
+
+            // Use SQLProcedures pattern search capabilities
+            {
+                nanodbc::catalog::procedures procedures = catalog.find_procedures(procedure_name);
+                // expect single record with the wanted procedure
+                REQUIRE(procedures.next());
+                REQUIRE(procedures.procedure_name().find(procedure_name) != std::string::npos);
+                // expect no more records
+                REQUIRE(!procedures.next());
+            }
+        }
+        // Now over to find_procedure_columns
+        {
+            // Check we can iterate over any columns
+            {
+                nanodbc::catalog::procedure_columns columns = catalog.find_procedure_columns();
+                long count = 0;
+                while (columns.next())
+                {
+                    // These values must not be NULL (returned as empty string)
+                    REQUIRE(!columns.column_name().empty());
+                    count++;
+                }
+                REQUIRE(count > 0);
+            }
+            // Find a procedure with known name and verify its known columns
+            {
+                nanodbc::catalog::procedure_columns columns =
+                    catalog.find_procedure_columns(NANODBC_TEXT("%"), procedure_name);
+                long count = 0;
+                while (columns.next())
+                {
+                    // Verify that the expected columns make an appearance
+                    // as well as column_type is as expected.
+                    // All of the remaining attribtues are shared with the SQLColumns
+                    // API call and are tested there
+                    if (columns.column_name().find(NANODBC_TEXT("arg_int")) != std::string::npos ||
+                        columns.column_name().find(NANODBC_TEXT("arg_varchar")) !=
+                            std::string::npos)
+                    {
+                        REQUIRE(columns.column_type() == SQL_PARAM_INPUT);
+                        count++;
+                    }
+                }
+                REQUIRE(count == 2);
+            }
+        }
+    }
+
     void test_catalog_tables()
     {
         nanodbc::connection connection = connect();
