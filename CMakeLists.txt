@@ -167,11 +167,29 @@ if(UNIX)
   message(STATUS "ODBC link flags: ${ODBC_LINK_FLAGS}")
 endif()
 
+
+if(UNIX)
+  find_path(ODBC_INCLUDE sql.h ${find_opt})
+  if(NOT ODBC_INCLUDE)
+    message(FATAL_ERROR "sql.h header file not found")
+  else()
+    message("-- Found sql.h header file at: " ${ODBC_INCLUDE})
+  endif()
+  include_directories(${ODBC_INCLUDE})
+  find_library(ODBC_LIBRARY NAMES odbc PATHS "/usr/local/lib")
+  if(NOT ODBC_LIBRARY)
+    message(FATAL_ERROR "ODBC library not found$")
+  else()
+    message("-- Found ODBC library at: " ${ODBC_LIBRARY})
+  endif()
+  set(lib_dep ${lib_dep} ${ODBC_LIBRARY})
+endif()
+
 ########################################
 ## find ODBC libraries to link
 ########################################
 if(UNIX)
-  set(ODBC_LIBRARIES ${ODBCLIB})
+  set(ODBC_LIBRARIES ${ODBC_LIBRARY})
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${ODBC_LINK_FLAGS}")
 elseif(MSVC OR CMAKE_CXX_COMPILER_ID MATCHES "Intel")
   set(ODBC_LIBRARIES odbc32.lib odbccp32.lib Ws2_32.lib)

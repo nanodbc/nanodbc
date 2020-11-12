@@ -16,7 +16,7 @@
 
 #ifdef NANODBC_ENABLE_BOOST
 #include <boost/locale/encoding_utf.hpp>
-#elif defined(__GNUC__) && __GNUC__ < 5
+#elif defined(__GNUC__) && __GNUC__ < 5 && !defined(__llvm__)
 #include <cstdlib>
 #else
 #include <codecvt>
@@ -50,7 +50,7 @@ inline nanodbc::string convert(std::string const& in)
 #ifdef NANODBC_ENABLE_BOOST
     using boost::locale::conv::utf_to_utf;
     out = utf_to_utf<nanodbc::string::value_type>(in.c_str(), in.c_str() + in.size());
-#elif defined(__GNUC__) && __GNUC__ < 5
+#elif defined(__GNUC__) && __GNUC__ < 5 && !defined(__llvm__)
     std::vector<wchar_t> characters(in.length());
     for (size_t i = 0; i < in.length(); i++)
         characters[i] = in[i];
@@ -81,7 +81,7 @@ inline std::string convert(nanodbc::string const& in)
 #ifdef NANODBC_ENABLE_BOOST
     using boost::locale::conv::utf_to_utf;
     out = utf_to_utf<char>(in.c_str(), in.c_str() + in.size());
-#elif defined(__GNUC__) && __GNUC__ < 5
+#elif defined(__GNUC__) && __GNUC__ < 5 && !defined(__llvm__)
     size_t size = mbsnrtowcs(nullptr, in.data(), in.length(), 0, nullptr);
     if (size == std::string::npos)
         throw std::range_error("UTF-8 -> UTF-16 conversion error");
