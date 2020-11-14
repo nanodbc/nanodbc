@@ -110,6 +110,9 @@ message(STATUS "nanodbc feature: Enable SQL_NO_DATA bug workaround - ${NANODBC_E
 ## find unixODBC or iODBC config binary
 ########################################
 if(UNIX)
+
+  set(CMAKE_VERBOSE_MAKEFILE ON)
+
   # Try to find unixODBC first via odbc_config program.
   find_program(ODBC_CONFIG odbc_config
     PATHS $ENV{ODBC_PATH}/bin /usr/bin /usr/local/bin)
@@ -122,6 +125,16 @@ if(UNIX)
     set(CMAKE_FLAGS "${CMAKE_FLAGS} ${ODBC_CFLAGS}")
     execute_process(COMMAND ${ODBC_CONFIG} --libs
       OUTPUT_VARIABLE ODBC_LINK_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+  if(APPLE)
+    # string(SUBSTRING <string> <begin> <length> <output_variable>)
+    string(SUBSTRING ${ODBC_LINK_FLAGS} 2 -1 ODBCLIB_tmp) #trim first 3 characters "-L/"
+    message(STATUS "ODBCLIB_tmp = ${ODBCLIB_tmp}")
+    string(REPLACE " -lodbc" "" ODBCLIB_tmp ${ODBCLIB_tmp})
+    message(STATUS "ODBCLIB_tmp = ${ODBCLIB_tmp}")
+    set(ODBCLIB "${ODBCLIB_tmp}/libodbc.dylib")
+    message(STATUS "ODBCLIB = ${ODBCLIB}")
+  endif()
   endif()
 
   # Fallback to finding unixODBC via install paths
@@ -167,29 +180,11 @@ if(UNIX)
   message(STATUS "ODBC link flags: ${ODBC_LINK_FLAGS}")
 endif()
 
-
-if(UNIX)
-  find_path(ODBC_INCLUDE sql.h ${find_opt})
-  if(NOT ODBC_INCLUDE)
-    message(FATAL_ERROR "sql.h header file not found")
-  else()
-    message("-- Found sql.h header file at: " ${ODBC_INCLUDE})
-  endif()
-  include_directories(${ODBC_INCLUDE})
-  find_library(ODBC_LIBRARY NAMES odbc PATHS "/usr/local/lib")
-  if(NOT ODBC_LIBRARY)
-    message(FATAL_ERROR "ODBC library not found$")
-  else()
-    message("-- Found ODBC library at: " ${ODBC_LIBRARY})
-  endif()
-  set(lib_dep ${lib_dep} ${ODBC_LIBRARY})
-endif()
-
 ########################################
 ## find ODBC libraries to link
 ########################################
 if(UNIX)
-  set(ODBC_LIBRARIES ${ODBC_LIBRARY})
+  set(ODBC_LIBRARIES ${ODBCLIB})
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${ODBC_LINK_FLAGS}")
 elseif(MSVC OR CMAKE_CXX_COMPILER_ID MATCHES "Intel")
   set(ODBC_LIBRARIES odbc32.lib odbccp32.lib Ws2_32.lib)
