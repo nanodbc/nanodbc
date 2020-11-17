@@ -107,30 +107,14 @@ if(NANODBC_ENABLE_WORKAROUND_NODATA)
 endif()
 message(STATUS "nanodbc feature: Enable SQL_NO_DATA bug workaround - ${NANODBC_ENABLE_WORKAROUND_NODATA}")
 
+set(CMAKE_VERBOSE_MAKEFILE ON)
 find_package(ODBC REQUIRED)
 message(STATUS "ODBC found: ${ODBC_FOUND}")
 message(STATUS "ODBC include: ${ODBC_INCLUDE_DIRS}")
 message(STATUS "ODBC library: ${ODBC_LIBRARIES}")
 message(STATUS "ODBC config: ${ODBC_CONFIG}")
 
-if(UNIX)
-
-  set(CMAKE_VERBOSE_MAKEFILE ON)
-
-  # Try to find unixODBC first via odbc_config program.
-  find_program(ODBC_CONFIG odbc_config
-    PATHS $ENV{ODBC_PATH}/bin /usr/bin /usr/local/bin)
-  if(ODBC_CONFIG)
-    message(STATUS "nanodbc build: ODBC on Unix - unixODBC")
-    execute_process(COMMAND ${ODBC_CONFIG} --include-prefix
-      OUTPUT_VARIABLE ODBC_INCLUDE_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
-    message(STATUS "ODBC include: ${ODBC_INCLUDE_DIR}")
-    set(ODBC_CFLAGS "-I${ODBC_INCLUDE_DIR}")
-    set(CMAKE_FLAGS "${CMAKE_FLAGS} ${ODBC_CFLAGS}")
-    execute_process(COMMAND ${ODBC_CONFIG} --libs
-      OUTPUT_VARIABLE ODBC_LINK_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-  endif()
-endif()
+include_directories(${ODBC_INCLUDE_DIRS})
 
 ########################################
 ## find ODBC libraries to link
