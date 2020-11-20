@@ -91,7 +91,9 @@ void run_test(nanodbc::string const& connection_string)
         nanodbc::statement statement(connection);
         execute(connection, NANODBC_TEXT("drop table if exists batch_test;"));
         execute(
-            connection, NANODBC_TEXT("create table batch_test (x varchar(10), x2 varchar(10), y int, z float);"));
+            connection,
+            NANODBC_TEXT(
+                "create table batch_test (x varchar(10), x2 varchar(10), y int, z float);"));
         prepare(
             statement, NANODBC_TEXT("insert into batch_test (x, x2, y, z) values (?, ?, ?, ?);"));
 
@@ -145,11 +147,12 @@ void run_test(nanodbc::string const& connection_string)
         const int a_null = 0;
         nanodbc::string::value_type const* b_null = NANODBC_TEXT("");
         int a_data[elements] = {0, 88, 0, 0, 0};
-        nanodbc::string::value_type b_data[elements][10] = {NANODBC_TEXT(""),
-                                                            NANODBC_TEXT("non-null"),
-                                                            NANODBC_TEXT(""),
-                                                            NANODBC_TEXT(""),
-                                                            NANODBC_TEXT("")};
+        nanodbc::string::value_type b_data[elements][10] = {
+            NANODBC_TEXT(""),
+            NANODBC_TEXT("non-null"),
+            NANODBC_TEXT(""),
+            NANODBC_TEXT(""),
+            NANODBC_TEXT("")};
 
         statement.bind(0, a_data, elements, &a_null);
         statement.bind_strings(1, b_data, b_null);
