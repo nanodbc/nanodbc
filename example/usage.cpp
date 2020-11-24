@@ -91,7 +91,9 @@ void run_test(nanodbc::string const& connection_string)
         nanodbc::statement statement(connection);
         execute(connection, NANODBC_TEXT("drop table if exists batch_test;"));
         execute(
-            connection, NANODBC_TEXT("create table batch_test (x varchar(10), y int, z float);"));
+            connection,
+            NANODBC_TEXT(
+                "create table batch_test (x varchar(10), x2 varchar(10), y int, z float);"));
         prepare(
             statement, NANODBC_TEXT("insert into batch_test (x, x2, y, z) values (?, ?, ?, ?);"));
 
@@ -112,7 +114,7 @@ void run_test(nanodbc::string const& connection_string)
 
         transact(statement, elements);
 
-        nanodbc::result results = execute(connection, NANODBC_TEXT("select * from batch_test;"), 3);
+        nanodbc::result results = execute(connection, NANODBC_TEXT("select * from batch_test;"));
         show(results);
 
         execute(connection, NANODBC_TEXT("drop table if exists batch_test;"));
