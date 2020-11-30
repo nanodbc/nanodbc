@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(nanodbc CXX)
+message(STATUS "CMake version: ${CMAKE_VERSION}")
 
 # NOTE: All options follow CMake convention:
 #       If no initial value is provided, OFF is used.
