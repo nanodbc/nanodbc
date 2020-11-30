@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.12)
 project(nanodbc CXX)
 
 # NOTE: All options follow CMake convention:
@@ -106,73 +106,19 @@ if(NANODBC_ENABLE_WORKAROUND_NODATA)
 endif()
 message(STATUS "nanodbc feature: Enable SQL_NO_DATA bug workaround - ${NANODBC_ENABLE_WORKAROUND_NODATA}")
 
-########################################
-## find unixODBC or iODBC config binary
-########################################
-if(UNIX)
-  # Try to find unixODBC first via odbc_config program.
-  find_program(ODBC_CONFIG odbc_config
-    PATHS $ENV{ODBC_PATH}/bin /usr/bin /usr/local/bin)
-  if(ODBC_CONFIG)
-    message(STATUS "nanodbc build: ODBC on Unix - unixODBC")
-    set(ODBCLIB odbc)
-    execute_process(COMMAND ${ODBC_CONFIG} --include-prefix
-      OUTPUT_VARIABLE ODBC_INCLUDE_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
-    set(ODBC_CFLAGS "-I${ODBC_INCLUDE_DIR}")
-    set(CMAKE_FLAGS "${CMAKE_FLAGS} ${ODBC_CFLAGS}")
-    execute_process(COMMAND ${ODBC_CONFIG} --libs
-      OUTPUT_VARIABLE ODBC_LINK_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-  endif()
+find_package(ODBC REQUIRED)
+message(STATUS "ODBC found: ${ODBC_FOUND}")
+message(STATUS "ODBC include: ${ODBC_INCLUDE_DIRS}")
+message(STATUS "ODBC library: ${ODBC_LIBRARIES}")
+message(STATUS "ODBC config: ${ODBC_CONFIG}")
 
-  # Fallback to finding unixODBC via install paths
-  if(NOT ODBC_CONFIG)
-    find_path(UnixODBC_INCLUDE_DIR uodbc_stats.h
-      /usr/include
-      /usr/local/include
-      /usr/include/odbc
-      /usr/local/include/odbc
-      /usr/include/libodbc
-      /usr/local/include/libodbc)
-    if(UnixODBC_INCLUDE_DIR)
-      set(ODBC_CONFIG 1)
-      message(STATUS "nanodbc build: ODBC on Unix - unixODBC")
-      set(ODBCLIB odbc)
-      set(ODBC_CFLAGS "-I${UnixODBC_INCLUDE_DIR} -DHAVE_UNISTD_H -DHAVE_PWD_H -DHAVE_SYS_TYPES_H -DHAVE_LONG_LONG -DSIZEOF_LONG_INT=8")
-    endif()
-  endif()
-
-  # Fallback to using iODBC
-  if(NOT ODBC_CONFIG)
-    find_program(ODBC_CONFIG iodbc-config
-      PATHS $ENV{ODBC_PATH}/bin /usr/bin /usr/local/bin)
-    if(ODBC_CONFIG)
-      message(STATUS "nanodbc build: ODBC on Unix - iODBC")
-      set(ODBCLIB iodbc)
-      execute_process(COMMAND ${ODBC_CONFIG} --cflags
-        OUTPUT_VARIABLE ODBC_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-      set(CMAKE_FLAGS "${CMAKE_FLAGS} ${ODBC_CFLAGS}")
-      execute_process(COMMAND ${ODBC_CONFIG} --libs
-        OUTPUT_VARIABLE ODBC_LINK_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-      if(NANODBC_ENABLE_UNICODE)
-        add_definitions(-DNANODBC_USE_IODBC_WIDE_STRINGS)
-      endif()
-    endif()
-  endif()
-
-  if(NOT ODBC_CONFIG)
-    message(FATAL_ERROR "can not find a suitable odbc driver manager")
-  endif()
-
-  message(STATUS "ODBC compile flags: ${ODBC_CFLAGS}")
-  message(STATUS "ODBC link flags: ${ODBC_LINK_FLAGS}")
-endif()
+include_directories(${ODBC_INCLUDE_DIRS})
 
 ########################################
 ## find ODBC libraries to link
 ########################################
 if(UNIX)
-  set(ODBC_LIBRARIES ${ODBCLIB})
-  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${ODBC_LINK_FLAGS}")
+  set(ODBC_LIBRARIES ${ODBC_LIBRARIES})
 elseif(MSVC OR CMAKE_CXX_COMPILER_ID MATCHES "Intel")
   set(ODBC_LIBRARIES odbc32.lib odbccp32.lib Ws2_32.lib)
 elseif(MINGW)
