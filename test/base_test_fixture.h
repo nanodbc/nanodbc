@@ -12,6 +12,7 @@
 #include <iomanip>
 #include <iostream>
 #include <locale>
+#include <random>
 #include <sstream>
 
 #ifdef NANODBC_ENABLE_BOOST
@@ -519,6 +520,48 @@ struct base_test_fixture
         {
             execute(connection, NANODBC_TEXT("DROP TABLE ") + name + NANODBC_TEXT(";"));
         }
+    }
+
+    // returns random string [min_size, max_size]
+    template <class T, typename = nanodbc::enable_if_string<T>>
+    T create_random_string(size_t min_size, size_t max_size)
+    {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<size_t> dist_size(min_size, max_size);
+        std::uniform_int_distribution<size_t> dist_alpha(0, 25);
+
+        T result;
+        result.resize(dist_size(gen));
+
+        for (auto& dst : result)
+        {
+            // set 'A' to 'Z'
+            dst = static_cast<typename T::value_type>('A') +
+                  static_cast<typename T::value_type>(dist_alpha(gen));
+        }
+
+        return result;
+    }
+
+    // returns random binary [min_size, max_size]
+    std::vector<uint8_t> create_random_binary(size_t min_size, size_t max_size)
+    {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<size_t> dist_size(min_size, max_size);
+        std::uniform_int_distribution<size_t> dist_bin(0, 255);
+
+        std::vector<uint8_t> result;
+        result.resize(dist_size(gen));
+
+        for (auto& dst : result)
+        {
+            // set 0x00 to 0xFF
+            dst = static_cast<uint8_t>(dist_bin(gen));
+        }
+
+        return result;
     }
 };
 
