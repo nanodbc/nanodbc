@@ -260,7 +260,7 @@ struct base_test_fixture
         }
     }
 
-    void check_data_type_size(nanodbc::string const& name, int column_size, short radix = -1)
+    void check_data_type_size(nanodbc::string const& name, long column_size, short radix = -1)
     {
         if (name == NANODBC_TEXT("float"))
         {

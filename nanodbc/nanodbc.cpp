@@ -2500,7 +2500,7 @@ public:
         return static_cast<long>(col.sqlsize_);
     }
 
-    int column_size(const string& column_name) const
+    long column_size(const string& column_name) const
     {
         const short column = this->column(column_name);
         return column_size(column);
