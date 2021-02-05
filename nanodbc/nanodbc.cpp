@@ -2542,13 +2542,13 @@ public:
         SQLSMALLINT len = 0; // total number of bytes
         RETCODE rc;
         NANODBC_CALL_RC(
-            SQLColAttribute,
+            NANODBC_FUNC(SQLColAttribute),
             rc,
             stmt_.native_statement_handle(),
             column + 1,
             SQL_DESC_TYPE_NAME,
             type_name,
-            sizeof(type_name) / sizeof(NANODBC_SQLCHAR),
+            sizeof(type_name),
             &len,
             nullptr);
         if (!success(rc))
