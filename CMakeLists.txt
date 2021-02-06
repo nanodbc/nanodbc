@@ -35,7 +35,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 message(STATUS "nanodbc compile: C++${CMAKE_CXX_STANDARD}")
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wnarrowing -Werror")
   include(CheckCXXCompilerFlag)
 
   if (NANODBC_ENABLE_COVERAGE)
