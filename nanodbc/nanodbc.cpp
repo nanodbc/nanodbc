@@ -90,6 +90,8 @@
 #define SQL_SS_UDT (-151) // from sqlncli.h
 #endif
 
+// Driver specific SQL constant defines for table-valued parameter
+// From msodbcsql.h (new Microsoft ODBC Driver for SQL Server)
 #ifndef SQL_SOPT_SS_BASE
 #define SQL_SOPT_SS_BASE 1225
 #endif
