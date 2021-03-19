@@ -2711,7 +2711,7 @@ public:
 
 private:
     template <typename T>
-    T* ensure_pdata(short column) const;
+    std::unique_ptr<T, std::function<void(T*)>> ensure_pdata(short column) const;
 
     template <class T, typename std::enable_if<!is_string<T>::value, int>::type = 0>
     void get_ref_impl(short column, T& result) const;
@@ -3429,14 +3429,15 @@ void result::result_impl::get_ref_from_string_column(short column, T& result) co
 }
 
 template <typename T>
-T* result::result_impl::ensure_pdata(short column) const
+std::unique_ptr<T, std::function<void(T*)>> result::result_impl::ensure_pdata(short column) const
 {
     bound_column& col = bound_columns_[column];
     SQLLEN ValueLenOrInd;
     SQLRETURN rc;
     if (is_bound(column))
     {
-        return (T*)(col.pdata_ + rowset_position_ * col.clen_);
+        return std::unique_ptr<T, std::function<void(T*)>>(
+            (T*)(col.pdata_ + rowset_position_ * col.clen_), [](T* ptr) {});
     }
 
     T* buffer = new T;
@@ -3458,7 +3459,7 @@ T* result::result_impl::ensure_pdata(short column) const
         NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
     NANODBC_ASSERT(ValueLenOrInd == (SQLLEN)buffer_size);
 
-    return buffer;
+    return std::unique_ptr<T>(buffer);
 }
 
 template <class T, typename std::enable_if<!is_string<T>::value, int>::type>
