@@ -3436,6 +3436,8 @@ std::unique_ptr<T, std::function<void(T*)>> result::result_impl::ensure_pdata(sh
     SQLRETURN rc;
     if (is_bound(column))
     {
+        // Return a unique_ptr with a no-op deleter as this memory allocation
+        // is managed (allocated and released) elsewhere.
         return std::unique_ptr<T, std::function<void(T*)>>(
             (T*)(col.pdata_ + rowset_position_ * col.clen_), [](T* ptr) {});
     }
@@ -3459,6 +3461,9 @@ std::unique_ptr<T, std::function<void(T*)>> result::result_impl::ensure_pdata(sh
         NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
     NANODBC_ASSERT(ValueLenOrInd == (SQLLEN)buffer_size);
 
+    // Return a traditional unique_ptr since we just allocated this buffer, and
+    // we most certainly want this memory returned to the heap when the result
+    // goes out of scope.
     return std::unique_ptr<T>(buffer);
 }
 
