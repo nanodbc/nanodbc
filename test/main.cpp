@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
             return EXIT_FAILURE;
         }
 
-            // Path to data folder with data files used in some tests
+        // Path to data folder with data files used in some tests
 #ifdef NANODBC_TEST_DATA
         if (cfg.data_path_.empty())
             cfg.data_path_ = std::string(NANODBC_TEST_DATA);

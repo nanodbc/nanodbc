@@ -12,7 +12,7 @@ struct odbc_fixture : public test_case_fixture
             connection_string_ = get_env("NANODBC_TEST_CONNSTR_ODBC");
     }
 };
-}
+} // namespace
 
 TEST_CASE_METHOD(odbc_fixture, "test_driver", "[odbc][driver]")
 {
