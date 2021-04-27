@@ -3,7 +3,7 @@ name: "Lint: clang-format"
 on: [push, pull_request]
 
 jobs:
-  clang-format:
+  Format:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
