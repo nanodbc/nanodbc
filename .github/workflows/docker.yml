@@ -1,4 +1,4 @@
-name: "Lint: Dockerfile"
+name: "Lint: docker"
 
 on: [push, pull_request]
 
