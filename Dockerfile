@@ -1,4 +1,5 @@
 FROM ubuntu:17.04
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # NOTE: install apt-utils since it is Priority: important, should really be installed otherwise
 #       'debconf: delaying package configuration, since apt-utils is not installed'
@@ -6,7 +7,9 @@ RUN apt-get -qy update && apt-get -qy install --no-upgrade --no-install-recommen
         apt-transport-https \
         apt-utils \
         curl \
-        software-properties-common
+        software-properties-common \
+        && apt-get clean \
+        && rm -rf /var/lib/apt/lists/*
 
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys BA9EF27F
 RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test
@@ -22,23 +25,25 @@ RUN apt-get -qy update && apt-get -qy install --no-upgrade --no-install-recommen
         make \
         mysql-client \
         libsqliteodbc \
+        locales \
         odbc-postgresql \
         postgresql-client \
         sqlite3 \
         unixodbc \
         unixodbc-dev \
-        vim
+        vim \
+        && apt-get clean \
+        && rm -rf /var/lib/apt/lists/*
 
 RUN ACCEPT_EULA=Y apt-get -qy install --no-upgrade --no-install-recommends \
         msodbcsql \
         mssql-tools
 
-RUN echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bash_profile
-RUN echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
+RUN echo "export PATH=$PATH:/opt/mssql-tools/bin" >> ~/.bash_profile
+RUN echo "export PATH=$PATH:/opt/mssql-tools/bin" >> ~/.bashrc
 
 # install reasonable locales (in fact, required by mssql-tools (sqlcmd))
-RUN apt-get install -y locales \
-    && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
+RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
     && locale-gen
 
 RUN odbcinst -i -d -f /usr/share/sqliteodbc/unixodbc.ini
@@ -57,3 +62,4 @@ RUN /opt/mysql-connector-odbc-5.3.9-linux-ubuntu17.04-x86-64bit/bin/myodbc-insta
 RUN  git clone https://github.com/nanodbc/nanodbc.git /opt/nanodbc && mkdir -p /opt/nanodbc/build
 
 ENV CXX g++-5
+SHELL ["/bin/bash"]
