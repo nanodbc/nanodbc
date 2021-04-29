@@ -3,7 +3,8 @@ name: "Lint: documentation"
 on: [push, pull_request]
 
 jobs:
-  reStructuredText:
+  build:
+    name: ".rst"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2

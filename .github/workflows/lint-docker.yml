@@ -3,7 +3,8 @@ name: "Lint: docker"
 on: [push, pull_request]
 
 jobs:
-  Dockerfile:
+  build:
+    name: Dockerfile
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2

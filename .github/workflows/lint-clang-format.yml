@@ -3,7 +3,8 @@ name: "Lint: clang-format"
 on: [push, pull_request]
 
 jobs:
-  Format:
+  build:
+    name: ".hpp .cpp"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2

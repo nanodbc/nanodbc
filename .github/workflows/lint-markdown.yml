@@ -3,7 +3,8 @@ name: "Lint: markdown"
 on: [push, pull_request]
 
 jobs:
-  Markdown:
+  build:
+    name: ".md"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
