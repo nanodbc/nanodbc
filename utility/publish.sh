@@ -20,7 +20,7 @@ if [[ -n "$(git status -s)" ]]; then
     abort "changes exist in workspace, please commit or stash them first."
 fi
 
-version=$(cat VERSION)
+version=$(cat VERSION.txt)
 major="$(echo "$version" | cut -d. -f1)"
 minor="$(echo "$version" | cut -d. -f2)"
 patch="$(echo "$version" | cut -d. -f3)"
@@ -47,8 +47,8 @@ fi
 
 show "Publishing nanodbc version: $version"
 set -ue
-run "echo '$version' > VERSION"
-run "git add VERSION"
+run "echo '$version' > VERSION.txt"
+run "git add VERSION.txt"
 run "git commit -m 'Preparing $version release.'"
 run "git tag -f '$tag'"
 run "git push -f origin '$tag'"

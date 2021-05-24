@@ -20,6 +20,6 @@ if [[ -n "$(git status -s)" ]]; then
     abort "changes exist in workspace, please commit or stash them first."
 fi
 
-version=$(cat VERSION)
+version=$(cat VERSION.txt)
 tag="v$version"
 run "git log ${tag}..HEAD"

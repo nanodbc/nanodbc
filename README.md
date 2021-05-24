@@ -236,7 +236,7 @@ If a feature requires a database-specific test case for each database, then skip
 
 Once your local `master` branch is ready for publishing
 (i.e. [semantic versioning][semver]), use the `utility/publish.sh` script. This script
-bumps the major, minor, or patch version, then updates the repository's `VERSION` file, adds a
+bumps the major, minor, or patch version, then updates the repository's `VERSION.txt` file, adds a
 "Preparing" commit, and creates git tags appropriately. For example to make a minor update you
 would run `./utility/publish.sh minor`.
 Review files of CMake configuration, documentation and Sphinx configuration,
@@ -250,8 +250,8 @@ and update version number wherever necessary.
 To do this manually instead, use the following steps &mdash; for example a minor update from
 `2.9.x` to `2.10.0`:
 
-1. `echo "2.10.0" > VERSION`
-2. `git add VERSION`
+1. `echo "2.10.0" > VERSION.txt`
+2. `git add VERSION.txt`
 3. `git commit -m "Preparing 2.10.0 release."`
 4. `git tag -f "v2.10.0"`
 5. `git push -f origin "v2.10.0"`
