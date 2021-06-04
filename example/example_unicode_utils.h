@@ -3,7 +3,7 @@
 
 #include <nanodbc/nanodbc.h>
 
-#if defined(__GNUC__) && __GNUC__ < 5
+#if defined(__GNUC__) && __GNUC__ < 5 && !defined(__llvm__)
 #include <cwchar>
 #else
 #include <codecvt>
@@ -24,7 +24,7 @@ inline nanodbc::string convert(std::string const& in)
         sizeof(nanodbc::string::value_type) > 1,
         "NANODBC_ENABLE_UNICODE mode requires wide string");
     nanodbc::string out;
-#if defined(__GNUC__) && __GNUC__ < 5
+#if defined(__GNUC__) && __GNUC__ < 5 && !defined(__llvm__)
     std::vector<wchar_t> characters(in.length());
     for (size_t i = 0; i < in.length(); i++)
         characters[i] = in[i];
@@ -52,7 +52,7 @@ inline std::string convert(nanodbc::string const& in)
 {
     static_assert(sizeof(nanodbc::string::value_type) > 1, "string must be wide");
     std::string out;
-#if defined(__GNUC__) && __GNUC__ < 5
+#if defined(__GNUC__) && __GNUC__ < 5 && !defined(__llvm__)
     size_t size = mbsnrtowcs(nullptr, in.data(), in.length(), 0, nullptr);
     if (size == std::string::npos)
         throw std::range_error("UTF-8 -> UTF-16 conversion error");

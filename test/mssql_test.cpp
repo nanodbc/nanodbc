@@ -127,6 +127,14 @@ TEST_CASE_METHOD(
     test_batch_insert_describe_param();
 }
 
+void nanodbc_to_str(std::wstring &dest, const nanodbc::string &src)
+{
+  for (size_t idx = 0; idx < src.size(); idx++)
+  {
+    dest += src.at(idx);
+  }
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_multi_statement_insert_select", "[mssql]")
 {
     nanodbc::connection c = connect();
@@ -152,7 +160,9 @@ TEST_CASE_METHOD(mssql_fixture, "test_multi_statement_insert_select", "[mssql]")
     // Type of IDENTITY(seed,increment) return value is NUMERIC(38,0)
     // and the function may generate negative values too.
     auto const sid = r.get<nanodbc::string>(0);
-    auto const nid = std::stoll(sid);
+    std::wstring tmp;
+    nanodbc_to_str(tmp, sid);
+    auto const nid = std::stoll(tmp);
     REQUIRE(nid == 1);
 }
 
