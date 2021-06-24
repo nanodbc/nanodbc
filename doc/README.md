@@ -41,7 +41,7 @@ rstcheck -r doc
 
 ## Build
 
-```
+```console
 pushd doc && make clean && make html && popd
 ```
 

@@ -1,0 +1,15 @@
+name: "Lint: documentation"
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: ".rst"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: docker://oskarstark/doctor-rst
+      with:
+        args: --short --error-format=github
+      env:
+        DOCS_DIR: 'doc/'
