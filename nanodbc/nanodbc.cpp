@@ -2894,7 +2894,6 @@ private:
                 break;
             case SQL_TIMESTAMP:
             case SQL_TYPE_TIMESTAMP:
-            case SQL_SS_TIMESTAMPOFFSET:
                 col.ctype_ = SQL_C_TIMESTAMP;
                 col.clen_ = sizeof(timestamp);
                 break;
@@ -2910,6 +2909,7 @@ private:
                 break;
             case SQL_WCHAR:
             case SQL_WVARCHAR:
+            case SQL_SS_TIMESTAMPOFFSET:
             case SQL_SS_XML:
                 col.ctype_ = sql_ctype<wide_string>::value;
                 col.clen_ = (col.sqlsize_ + 1) * sizeof(SQLWCHAR);

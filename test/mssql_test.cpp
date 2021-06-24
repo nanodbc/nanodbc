@@ -874,19 +874,17 @@ TEST_CASE_METHOD(mssql_fixture, "test_datetimeoffset", "[mssql][datetime]")
         REQUIRE(result.column_datatype_name(0) == NANODBC_TEXT("datetimeoffset"));
 
         REQUIRE(result.next());
-        auto t = result.get<nanodbc::timestamp>(0);
-        REQUIRE(t.year == 2006);
-        REQUIRE(t.month == 12);
-        REQUIRE(t.day == 30);
-        // Currently, nanodbc binds SQL_SS_TIMESTAMPOFFSET as SQL_C_TIMESTAMP,
-        // not as SQL_C_SS_TIMESTAMPOFFSET.
-        // This seems to cause the DBMS or the driver to convert the time to local time
-        // based on time zone
-        // REQUIRE(t.hour == 13); // or 21 (GMT) or 22 (CET) or other client local time
-        REQUIRE(t.hour > 0);
-        REQUIRE(t.min == 45);
-        REQUIRE(t.sec == 12);
-        REQUIRE(t.fract > 0);
+        auto t = result.get<nanodbc::string>(0);
+		// the result is this NANODBC_TEXT("2006-12-30 13:45:12.3450000 -08:00");
+        REQUIRE(t.size() >= 27); // frac of seconds is server and system dependend
+        REQUIRE(t.substr(0, 23) == NANODBC_TEXT("2006-12-30 13:45:12.345"));
+		auto it = t.rbegin();
+		REQUIRE(*it++ == '0');
+		REQUIRE(*it++ == '0');
+		REQUIRE(*it++ == ':');
+		REQUIRE(*it++ == '8');
+		REQUIRE(*it++ == '0');
+		REQUIRE(*it++ == '-');
         ;
     }
 }
