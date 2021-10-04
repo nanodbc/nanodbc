@@ -139,6 +139,11 @@ TEST_CASE_METHOD(vertica_fixture, "test_string_vector", "[vertica][string]")
     test_string_vector();
 }
 
+TEST_CASE_METHOD(vertica_fixture, "test_string_view_vector", "[vertica][string]")
+{
+    test_string_view_vector();
+}
+
 TEST_CASE_METHOD(vertica_fixture, "test_time", "[vertica][time]")
 {
     test_time();
