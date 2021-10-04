@@ -161,6 +161,11 @@ TEST_CASE_METHOD(postgresql_fixture, "test_string_vector", "[postgresql][string]
     test_string_vector();
 }
 
+TEST_CASE_METHOD(postgresql_fixture, "test_string_view_vector", "[postgresql][string]")
+{
+    test_string_view_vector();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_batch_binary", "[postgresql][binary]")
 {
     test_batch_binary();
