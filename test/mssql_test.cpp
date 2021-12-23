@@ -152,8 +152,7 @@ TEST_CASE_METHOD(mssql_fixture, "test_multi_statement_insert_select", "[mssql]")
     // Type of IDENTITY(seed,increment) return value is NUMERIC(38,0)
     // and the function may generate negative values too.
     auto const sid = r.get<nanodbc::string>(0);
-    auto const nid = std::stoll(sid);
-    REQUIRE(nid == 1);
+    REQUIRE(NANODBC_TEXT("1") == sid);
 }
 
 TEST_CASE_METHOD(mssql_fixture, "test_blob", "[mssql][blob][binary][varbinary]")
