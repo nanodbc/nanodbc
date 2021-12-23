@@ -879,16 +879,16 @@ TEST_CASE_METHOD(mssql_fixture, "test_datetimeoffset", "[mssql][datetime]")
 
         REQUIRE(result.next());
         auto t = result.get<nanodbc::string>(0);
-		// the result is this NANODBC_TEXT("2006-12-30 13:45:12.3450000 -08:00");
+        // the result is this NANODBC_TEXT("2006-12-30 13:45:12.3450000 -08:00");
         REQUIRE(t.size() >= 27); // frac of seconds is server and system dependend
         REQUIRE(t.substr(0, 23) == NANODBC_TEXT("2006-12-30 13:45:12.345"));
-		auto it = t.rbegin();
-		REQUIRE(*it++ == '0');
-		REQUIRE(*it++ == '0');
-		REQUIRE(*it++ == ':');
-		REQUIRE(*it++ == '8');
-		REQUIRE(*it++ == '0');
-		REQUIRE(*it++ == '-');
+        auto it = t.rbegin();
+        REQUIRE(*it++ == '0');
+        REQUIRE(*it++ == '0');
+        REQUIRE(*it++ == ':');
+        REQUIRE(*it++ == '8');
+        REQUIRE(*it++ == '0');
+        REQUIRE(*it++ == '-');
         ;
     }
 }
