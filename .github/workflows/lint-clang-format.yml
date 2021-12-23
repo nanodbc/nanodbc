@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   build:
-    name: ".hpp .cpp"
+    name: ".h .cpp"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
