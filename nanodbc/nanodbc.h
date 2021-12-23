@@ -383,10 +383,10 @@ using is_string = std::integral_constant<
     std::is_same<typename std::decay<T>::type, std::string>::value ||
         std::is_same<typename std::decay<T>::type, wide_string>::value
 #ifdef NANODBC_SUPPORT_STRING_VIEW
-    || std::is_same<typename std::decay<T>::type, std::string_view>::value
-    || std::is_same<typename std::decay<T>::type, wide_string_view>::value
+        || std::is_same<typename std::decay<T>::type, std::string_view>::value ||
+        std::is_same<typename std::decay<T>::type, wide_string_view>::value
 #endif
->;
+    >;
 
 /// \brief A type trait for testing if a type is a character compatible with the current nanodbc
 /// configuration
@@ -461,10 +461,10 @@ public:
     const class connection& connection() const;
 
     /// Returns the connection object.
-    operator class connection&();
+    operator class connection &();
 
     /// Returns the connection object.
-    operator const class connection&() const;
+    operator const class connection &() const;
 
 private:
     class transaction_impl;

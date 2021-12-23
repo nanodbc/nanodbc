@@ -3929,12 +3929,12 @@ const class connection& transaction::connection() const
     return impl_->connection();
 }
 
-transaction::operator class connection&()
+transaction::operator class connection &()
 {
     return impl_->connection();
 }
 
-transaction::operator const class connection&() const
+transaction::operator const class connection &() const
 {
     return impl_->connection();
 }
