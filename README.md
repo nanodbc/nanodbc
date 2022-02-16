@@ -44,8 +44,8 @@ have never had to do so.
 
 Major features beyond what's already supported by ODBC are not within the scope of nanodbc. This is
 where the *nano* part of nanodbc becomes relevant: This library is _as minimal as possible_. That
-means no dependencies beyond standard C++ and typical ODBC headers. No features unsupported by
-existing ODBC API calls.
+means no dependencies beyond standard C++ and typical ODBC headers and libraries to link against.
+No features unsupported by existing ODBC API calls.
 
 ## Building
 
@@ -55,10 +55,10 @@ files into your project and run with it. For those that want it, I have also pro
 The CMake files will also support out of source builds.
 
 Tests use the [Catch][catch] test framework, and CMake will automatically fetch the latest version
-of Catch for you at build time. To build the tests you will also need to have either [unixODBC] or
-[iODBC] installed and discoverable by CMake. This is easy on OS X where you can use [Homebrew][brew]
-to install unixODBC with `brew install unixodbc`, or use the system provided iODBC if you have OS X
-10.9 or earlier.
+of Catch for you at build time. To build the nanodbc and the tests you will also need to have
+either [unixODBC] or [iODBC] installed and discoverable by CMake.
+This is easy on OS X where you can use [Homebrew][brew] to install unixODBC with `brew install unixodbc`,
+or use the system provided iODBC if you have OS X 10.9 or earlier.
 
 The tests attempt to connect to a [SQLite][sqlite] database, so you will have to have that and a
 SQLite ODBC driver installed. At the time of this writing, there happens to be a nice
