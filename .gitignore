@@ -46,3 +46,7 @@ package-lock.json
 example.dSYM/
 /example/empty.cpp
 website/
+* Copy.*
+*.csv
+*.db
+
