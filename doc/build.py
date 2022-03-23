@@ -2,7 +2,7 @@
 
 # Configuration
 nanodbc_name = 'nanodbc'
-nanodbc_versions = ['master', '2.13.0']
+nanodbc_versions = ['master', '2.14.0', '2.13.0']
 # End of Configuration
 
 import errno

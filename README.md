@@ -6,7 +6,7 @@ A small C++ wrapper for the native C ODBC API. Please see the [online documentat
 user information, example usage, propaganda, and detailed source level documentation.
 
 [![GitHub release](https://img.shields.io/github/tag/nanodbc/nanodbc.svg)](https://github.com/nanodbc/nanodbc/releases)
-[![GitHub commits](https://img.shields.io/github/commits-since/nanodbc/nanodbc/v2.13.0.svg?style=flat-square)](https://github.com/nanodbc/nanodbc/releases/tag/v2.13.0)
+[![GitHub commits](https://img.shields.io/github/commits-since/nanodbc/nanodbc/v2.14.0.svg?style=flat-square)](https://github.com/nanodbc/nanodbc/releases/tag/v2.14.0)
 [![License](https://img.shields.io/github/license/nanodbc/nanodbc.svg?style=flat-square)](https://github.com/nanodbc/nanodbc/blob/master/LICENSE)
 
 [![Gitter](https://img.shields.io/gitter/room/nanodbc/nanodbc.svg?style=flat-square)](https://gitter.im/nanodbc-help/Lobby)
