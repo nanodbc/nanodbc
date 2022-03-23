@@ -6,9 +6,11 @@ nanodbc - C++ wrapper for ODBC API
 
 nanodbc is a small library that makes ODBC API programming easy and fun again.
 
-Documentation for the latest version `v2.13.0`_.
+Documentation for the latest version `v2.14.0`_.
 
-Documentation for previous version `v2.12.4`_ is `here <https://nanodbc.github.io/nanodbc/v2.12.4>`_.
+Documentation for previous versions:
+  - `v2.13.0`_ is `here <https://nanodbc.github.io/nanodbc/v2.13.0>`_.
+  - `v2.12.4`_ is `here <https://nanodbc.github.io/nanodbc/v2.12.4>`_.
 
 ******************************************************************************
 Motivation
@@ -76,6 +78,7 @@ Major features beyond what's already supported by ODBC are not within the scope 
   develop
   api
 
+.. _`v2.14.0`: https://github.com/nanodbc/nanodbc/releases/tag/v2.14.0
 .. _`v2.13.0`: https://github.com/nanodbc/nanodbc/releases/tag/v2.13.0
 .. _`v2.12.4`: https://github.com/nanodbc/nanodbc/releases/tag/v2.12.4
 .. _`TinyODBC`: https://code.google.com/archive/p/tiodbc/

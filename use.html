@@ -1,72 +1,37 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>Use &mdash; nanodbc 2.13.0 documentation</title>
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-
-  
-  
-  
-  
-
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Use &mdash; nanodbc 2.14.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Develop" href="develop.html" />
     <link rel="prev" title="Install" href="install.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> nanodbc
-          
-
-          
+            <a href="index.html" class="icon icon-home"> nanodbc
           </a>
-
-          
-            
-            
               <div class="version">
-                2.13.0
+                2.14.0
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -74,18 +39,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Install</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Use</a><ul>
@@ -98,71 +52,32 @@
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">nanodbc</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Use</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/use.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="use">
-<span id="id1"></span><h1>Use<a class="headerlink" href="#use" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="use">
+<span id="id1"></span><h1>Use<a class="headerlink" href="#use" title="Permalink to this headline"></a></h1>
 <p>In order to use the nanodbc library, add <code class="docutils literal notranslate"><span class="pre">nanodbc/nanodbc.h</span></code>
 and <code class="docutils literal notranslate"><span class="pre">nanodbc/nanodbc.cpp</span></code> source files to your project.</p>
 <p>Alternatively, you can build the library with CMake as static or shared
@@ -170,36 +85,36 @@ library and add it to your project as linker input.</p>
 <p>Add <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;nanodbc/nanodbc.h&gt;</span></code> in source files where you wish to use
 nanodbc functions and classes.</p>
 <p>The entirety of nanodbc can be found within the single <cite>nanodbc</cite> namespace.</p>
-<div class="section" id="quickstart">
-<h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;nanodbc/nanodbc.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;exception&gt;</span><span class="cp"></span>
+<section id="quickstart">
+<h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline"></a></h2>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;nanodbc/nanodbc.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;exception&gt;</span><span class="cp"></span>
 
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="k">try</span>
-<span class="p">{</span>
-  <span class="k">auto</span> <span class="k">const</span> <span class="n">connstr</span> <span class="o">=</span> <span class="n">NANODBC_TEXT</span><span class="p">(</span><span class="s">&quot;...&quot;</span><span class="p">);</span> <span class="c1">// an ODBC connection string to your database</span>
-  <span class="n">nanodbc</span><span class="o">::</span><span class="n">connection</span> <span class="n">conn</span><span class="p">(</span><span class="n">connstr</span><span class="p">);</span>
-  <span class="n">nanodbc</span><span class="o">::</span><span class="n">execute</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">NANODBC_TEXT</span><span class="p">(</span><span class="s">&quot;create table t (i int)&quot;</span><span class="p">));</span>
-  <span class="n">nanodbc</span><span class="o">::</span><span class="n">execute</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">NANODBC_TEXT</span><span class="p">(</span><span class="s">&quot;insert into t (1)&quot;</span><span class="p">));</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="k">try</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">connstr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NANODBC_TEXT</span><span class="p">(</span><span class="s">&quot;...&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// an ODBC connection string to your database</span>
+<span class="w">  </span><span class="n">nanodbc</span><span class="o">::</span><span class="n">connection</span><span class="w"> </span><span class="n">conn</span><span class="p">(</span><span class="n">connstr</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">nanodbc</span><span class="o">::</span><span class="n">execute</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span><span class="w"> </span><span class="n">NANODBC_TEXT</span><span class="p">(</span><span class="s">&quot;create table t (i int)&quot;</span><span class="p">));</span><span class="w"></span>
+<span class="w">  </span><span class="n">nanodbc</span><span class="o">::</span><span class="n">execute</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span><span class="w"> </span><span class="n">NANODBC_TEXT</span><span class="p">(</span><span class="s">&quot;insert into t (1)&quot;</span><span class="p">));</span><span class="w"></span>
 
-  <span class="k">auto</span> <span class="n">result</span> <span class="o">=</span> <span class="n">nanodbc</span><span class="o">::</span><span class="n">execute</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">NANODBC_TEXT</span><span class="p">(</span><span class="s">&quot;SELECT i FROM t&quot;</span><span class="p">));</span>
-  <span class="k">while</span> <span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="n">next</span><span class="p">())</span>
-  <span class="p">{</span>
-    <span class="k">auto</span> <span class="n">i</span> <span class="o">=</span> <span class="n">result</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-  <span class="p">}</span>
-  <span class="k">return</span> <span class="n">EXIT_SUCCESS</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="k">catch</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">exception</span><span class="o">&amp;</span> <span class="n">e</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="n">e</span><span class="p">.</span><span class="n">what</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-    <span class="k">return</span> <span class="n">EXIT_FAILURE</span><span class="p">;</span>
-<span class="p">}</span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nanodbc</span><span class="o">::</span><span class="n">execute</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span><span class="w"> </span><span class="n">NANODBC_TEXT</span><span class="p">(</span><span class="s">&quot;SELECT i FROM t&quot;</span><span class="p">));</span><span class="w"></span>
+<span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="n">next</span><span class="p">())</span><span class="w"></span>
+<span class="w">  </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">EXIT_SUCCESS</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">exception</span><span class="o">&amp;</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cerr</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">what</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">EXIT_FAILURE</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="iodbc-and-unixodbc">
-<h2>iODBC and unixODBC<a class="headerlink" href="#iodbc-and-unixodbc" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="iodbc-and-unixodbc">
+<h2>iODBC and unixODBC<a class="headerlink" href="#iodbc-and-unixodbc" title="Permalink to this headline"></a></h2>
 <p>Notes about using nanodbc with <a class="reference external" href="http://www.iodbc.org">iODBC</a> and <a class="reference external" href="http://www.unixodbc.org">unixODBC</a> in Unix systems.</p>
 <p>On Windows, <code class="docutils literal notranslate"><span class="pre">sizeof(wchar_t)</span> <span class="pre">==</span> <span class="pre">sizeof(SQLWCHAR)</span> <span class="pre">==</span> <span class="pre">2</span></code>.
 On Unix, <code class="docutils literal notranslate"><span class="pre">sizeof(wchar_t)</span> <span class="pre">==</span> <span class="pre">4</span></code>.</p>
@@ -215,291 +130,266 @@ As such there is no guarantee that tests will pass in entirety on a system using
 Our recommendation is to use unixODBC.</p>
 <p>If you must use iODBC, consider disabling Unicode mode in nanodbc build
 configuration to avoid <code class="docutils literal notranslate"><span class="pre">wchar_t</span></code> issues, see <a class="reference internal" href="install.html#build"><span class="std std-ref">Build</span></a>.</p>
-</div>
-<div class="section" id="example">
-<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;algorithm&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;cstring&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline"></a></h2>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;algorithm&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstring&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
 
-<span class="cp">#include</span> <span class="cpf">&lt;nanodbc/nanodbc.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;nanodbc/nanodbc.h&gt;</span><span class="cp"></span>
 
-<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">std</span><span class="p">;</span><span class="w"></span>
 
-<span class="kt">void</span> <span class="nf">show</span><span class="p">(</span><span class="n">nanodbc</span><span class="o">::</span><span class="n">result</span><span class="o">&amp;</span> <span class="n">results</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span><span class="n">nanodbc</span><span class="o">::</span><span class="n">result</span><span class="o">&amp;</span><span class="w"> </span><span class="n">results</span><span class="p">);</span><span class="w"></span>
 
-<span class="kt">void</span> <span class="nf">run_test</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">connection_string</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="c1">// Establishing connections</span>
-    <span class="n">nanodbc</span><span class="o">::</span><span class="n">connection</span> <span class="n">connection</span><span class="p">(</span><span class="n">connection_string</span><span class="p">);</span>
-    <span class="c1">// or connection(connection_string, timeout_seconds);</span>
-    <span class="c1">// or connection(&quot;data source name&quot;, &quot;username&quot;, &quot;password&quot;);</span>
-    <span class="c1">// or connection(&quot;data source name&quot;, &quot;username&quot;, &quot;password&quot;, timeout_seconds);</span>
-    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Connected with driver &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">connection</span><span class="p">.</span><span class="n">driver_name</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">run_test</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">connection_string</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// Establishing connections</span>
+<span class="w">    </span><span class="n">nanodbc</span><span class="o">::</span><span class="n">connection</span><span class="w"> </span><span class="n">connection</span><span class="p">(</span><span class="n">connection_string</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// or connection(connection_string, timeout_seconds);</span>
+<span class="w">    </span><span class="c1">// or connection(&quot;data source name&quot;, &quot;username&quot;, &quot;password&quot;);</span>
+<span class="w">    </span><span class="c1">// or connection(&quot;data source name&quot;, &quot;username&quot;, &quot;password&quot;, timeout_seconds);</span>
+<span class="w">    </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Connected with driver &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">connection</span><span class="p">.</span><span class="n">driver_name</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
 
-    <span class="c1">// Setup</span>
-    <span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s">&quot;drop table if exists public.simple_test;&quot;</span><span class="p">);</span>
-    <span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s">&quot;create table public.simple_test (a int, b varchar(10));&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// Setup</span>
+<span class="w">    </span><span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;drop table if exists public.simple_test;&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;create table public.simple_test (a int, b varchar(10));&quot;</span><span class="p">);</span><span class="w"></span>
 
-    <span class="n">nanodbc</span><span class="o">::</span><span class="n">result</span> <span class="n">results</span><span class="p">;</span>
+<span class="w">    </span><span class="n">nanodbc</span><span class="o">::</span><span class="n">result</span><span class="w"> </span><span class="n">results</span><span class="p">;</span><span class="w"></span>
 
-    <span class="c1">// Direct execution</span>
-    <span class="p">{</span>
-        <span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s">&quot;insert into public.simple_test values (1, &#39;one&#39;);&quot;</span><span class="p">);</span>
-        <span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s">&quot;insert into public.simple_test values (2, &#39;two&#39;);&quot;</span><span class="p">);</span>
-        <span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s">&quot;insert into public.simple_test values (3, &#39;tri&#39;);&quot;</span><span class="p">);</span>
-        <span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s">&quot;insert into public.simple_test (b) values (&#39;z&#39;);&quot;</span><span class="p">);</span>
-        <span class="n">results</span> <span class="o">=</span> <span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s">&quot;select * from public.simple_test;&quot;</span><span class="p">);</span>
-        <span class="n">show</span><span class="p">(</span><span class="n">results</span><span class="p">);</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="c1">// Direct execution</span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;insert into public.simple_test values (1, &#39;one&#39;);&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;insert into public.simple_test values (2, &#39;two&#39;);&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;insert into public.simple_test values (3, &#39;tri&#39;);&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;insert into public.simple_test (b) values (&#39;z&#39;);&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;select * from public.simple_test;&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">show</span><span class="p">(</span><span class="n">results</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
 
-    <span class="c1">// Accessing results by name, or column number</span>
-    <span class="p">{</span>
-        <span class="n">results</span> <span class="o">=</span> <span class="n">execute</span><span class="p">(</span>
-            <span class="n">connection</span><span class="p">,</span> <span class="s">&quot;select a as first, b as second from public.simple_test where a = 1;&quot;</span><span class="p">);</span>
-        <span class="n">results</span><span class="p">.</span><span class="n">next</span><span class="p">();</span>
-        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span> <span class="o">&lt;&lt;</span> <span class="n">results</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;first&quot;</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;, &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">results</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="c1">// Accessing results by name, or column number</span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">execute</span><span class="p">(</span><span class="w"></span>
+<span class="w">            </span><span class="n">connection</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;select a as first, b as second from public.simple_test where a = 1;&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">results</span><span class="p">.</span><span class="n">next</span><span class="p">();</span><span class="w"></span>
+<span class="w">        </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">results</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;first&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;, &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">results</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
 
-    <span class="c1">// Binding parameters</span>
-    <span class="p">{</span>
-        <span class="n">nanodbc</span><span class="o">::</span><span class="n">statement</span> <span class="n">statement</span><span class="p">(</span><span class="n">connection</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// Binding parameters</span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">nanodbc</span><span class="o">::</span><span class="n">statement</span><span class="w"> </span><span class="n">statement</span><span class="p">(</span><span class="n">connection</span><span class="p">);</span><span class="w"></span>
 
-        <span class="c1">// Inserting values</span>
-        <span class="n">prepare</span><span class="p">(</span><span class="n">statement</span><span class="p">,</span> <span class="s">&quot;insert into public.simple_test (a, b) values (?, ?);&quot;</span><span class="p">);</span>
-        <span class="k">const</span> <span class="kt">int</span> <span class="n">eight_int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">;</span>
-        <span class="n">statement</span><span class="p">.</span><span class="n">bind</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">eight_int</span><span class="p">);</span>
-        <span class="k">const</span> <span class="n">string</span> <span class="n">eight_str</span> <span class="o">=</span> <span class="s">&quot;eight&quot;</span><span class="p">;</span>
-        <span class="n">statement</span><span class="p">.</span><span class="n">bind</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">eight_str</span><span class="p">.</span><span class="n">c_str</span><span class="p">());</span>
-        <span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">);</span>
+<span class="w">        </span><span class="c1">// Inserting values</span>
+<span class="w">        </span><span class="n">prepare</span><span class="p">(</span><span class="n">statement</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;insert into public.simple_test (a, b) values (?, ?);&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">eight_int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="n">statement</span><span class="p">.</span><span class="n">bind</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">eight_int</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="n">string</span><span class="w"> </span><span class="n">eight_str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;eight&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="n">statement</span><span class="p">.</span><span class="n">bind</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">eight_str</span><span class="p">.</span><span class="n">c_str</span><span class="p">());</span><span class="w"></span>
+<span class="w">        </span><span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">);</span><span class="w"></span>
 
-        <span class="c1">// Inserting null values</span>
-        <span class="n">prepare</span><span class="p">(</span><span class="n">statement</span><span class="p">,</span> <span class="s">&quot;insert into public.simple_test (a, b) values (?, ?);&quot;</span><span class="p">);</span>
-        <span class="n">statement</span><span class="p">.</span><span class="n">bind_null</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-        <span class="n">statement</span><span class="p">.</span><span class="n">bind_null</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-        <span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">);</span>
+<span class="w">        </span><span class="c1">// Inserting null values</span>
+<span class="w">        </span><span class="n">prepare</span><span class="p">(</span><span class="n">statement</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;insert into public.simple_test (a, b) values (?, ?);&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">statement</span><span class="p">.</span><span class="n">bind_null</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">statement</span><span class="p">.</span><span class="n">bind_null</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">);</span><span class="w"></span>
 
-        <span class="c1">// Inserting multiple null values</span>
-        <span class="n">prepare</span><span class="p">(</span><span class="n">statement</span><span class="p">,</span> <span class="s">&quot;insert into public.simple_test (a, b) values (?, ?);&quot;</span><span class="p">);</span>
-        <span class="n">statement</span><span class="p">.</span><span class="n">bind_null</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
-        <span class="n">statement</span><span class="p">.</span><span class="n">bind_null</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
-        <span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+<span class="w">        </span><span class="c1">// Inserting multiple null values</span>
+<span class="w">        </span><span class="n">prepare</span><span class="p">(</span><span class="n">statement</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;insert into public.simple_test (a, b) values (?, ?);&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">statement</span><span class="p">.</span><span class="n">bind_null</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">statement</span><span class="p">.</span><span class="n">bind_null</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span><span class="w"></span>
 
-        <span class="n">prepare</span><span class="p">(</span><span class="n">statement</span><span class="p">,</span> <span class="s">&quot;select * from public.simple_test;&quot;</span><span class="p">);</span>
-        <span class="n">results</span> <span class="o">=</span> <span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">);</span>
-        <span class="n">show</span><span class="p">(</span><span class="n">results</span><span class="p">);</span>
-    <span class="p">}</span>
+<span class="w">        </span><span class="n">prepare</span><span class="p">(</span><span class="n">statement</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;select * from public.simple_test;&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">show</span><span class="p">(</span><span class="n">results</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
 
-    <span class="c1">// Transactions</span>
-    <span class="p">{</span>
-        <span class="p">{</span>
-            <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">deleting all rows ... &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">flush</span><span class="p">;</span>
-            <span class="n">nanodbc</span><span class="o">::</span><span class="n">transaction</span> <span class="n">transaction</span><span class="p">(</span><span class="n">connection</span><span class="p">);</span>
-            <span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s">&quot;delete from public.simple_test;&quot;</span><span class="p">);</span>
-            <span class="c1">// transaction will be rolled back if we don&#39;t call transaction.commit()</span>
-        <span class="p">}</span>
-        <span class="n">results</span> <span class="o">=</span> <span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s">&quot;select count(1) from public.simple_test;&quot;</span><span class="p">);</span>
-        <span class="n">results</span><span class="p">.</span><span class="n">next</span><span class="p">();</span>
-        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;still have &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">results</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; rows!&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="c1">// Transactions</span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">deleting all rows ... &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">flush</span><span class="p">;</span><span class="w"></span>
+<span class="w">            </span><span class="n">nanodbc</span><span class="o">::</span><span class="n">transaction</span><span class="w"> </span><span class="n">transaction</span><span class="p">(</span><span class="n">connection</span><span class="p">);</span><span class="w"></span>
+<span class="w">            </span><span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;delete from public.simple_test;&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">            </span><span class="c1">// transaction will be rolled back if we don&#39;t call transaction.commit()</span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="n">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;select count(1) from public.simple_test;&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">results</span><span class="p">.</span><span class="n">next</span><span class="p">();</span><span class="w"></span>
+<span class="w">        </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;still have &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">results</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; rows!&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
 
-    <span class="c1">// Batch inserting</span>
-    <span class="p">{</span>
-        <span class="n">nanodbc</span><span class="o">::</span><span class="n">statement</span> <span class="n">statement</span><span class="p">(</span><span class="n">connection</span><span class="p">);</span>
-        <span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s">&quot;drop table if exists public.batch_test;&quot;</span><span class="p">);</span>
-        <span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s">&quot;create table public.batch_test (x varchar(10), y int, z float);&quot;</span><span class="p">);</span>
-        <span class="n">prepare</span><span class="p">(</span><span class="n">statement</span><span class="p">,</span> <span class="s">&quot;insert into public.batch_test (x, y, z) values (?, ?, ?);&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// Batch inserting</span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">nanodbc</span><span class="o">::</span><span class="n">statement</span><span class="w"> </span><span class="n">statement</span><span class="p">(</span><span class="n">connection</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;drop table if exists public.batch_test;&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;create table public.batch_test (x varchar(10), y int, z float);&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">prepare</span><span class="p">(</span><span class="n">statement</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;insert into public.batch_test (x, y, z) values (?, ?, ?);&quot;</span><span class="p">);</span><span class="w"></span>
 
-        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">elements</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">elements</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span><span class="w"></span>
 
-        <span class="kt">char</span> <span class="n">xdata</span><span class="p">[</span><span class="n">elements</span><span class="p">][</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;this&quot;</span><span class="p">,</span> <span class="s">&quot;is&quot;</span><span class="p">,</span> <span class="s">&quot;a&quot;</span><span class="p">,</span> <span class="s">&quot;test&quot;</span><span class="p">};</span>
-        <span class="n">statement</span><span class="p">.</span><span class="n">bind_strings</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xdata</span><span class="p">);</span>
+<span class="w">        </span><span class="kt">char</span><span class="w"> </span><span class="n">xdata</span><span class="p">[</span><span class="n">elements</span><span class="p">][</span><span class="mi">10</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;this&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;is&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;test&quot;</span><span class="p">};</span><span class="w"></span>
+<span class="w">        </span><span class="n">statement</span><span class="p">.</span><span class="n">bind_strings</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">xdata</span><span class="p">);</span><span class="w"></span>
 
-        <span class="kt">int</span> <span class="n">ydata</span><span class="p">[</span><span class="n">elements</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">};</span>
-        <span class="n">statement</span><span class="p">.</span><span class="n">bind</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">elements</span><span class="p">);</span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">ydata</span><span class="p">[</span><span class="n">elements</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">};</span><span class="w"></span>
+<span class="w">        </span><span class="n">statement</span><span class="p">.</span><span class="n">bind</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">ydata</span><span class="p">,</span><span class="w"> </span><span class="n">elements</span><span class="p">);</span><span class="w"></span>
 
-        <span class="kt">float</span> <span class="n">zdata</span><span class="p">[</span><span class="n">elements</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">2.2</span><span class="p">,</span> <span class="mf">3.3</span><span class="p">,</span> <span class="mf">4.4</span><span class="p">};</span>
-        <span class="n">statement</span><span class="p">.</span><span class="n">bind</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">zdata</span><span class="p">,</span> <span class="n">elements</span><span class="p">);</span>
+<span class="w">        </span><span class="kt">float</span><span class="w"> </span><span class="n">zdata</span><span class="p">[</span><span class="n">elements</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mf">1.1</span><span class="p">,</span><span class="w"> </span><span class="mf">2.2</span><span class="p">,</span><span class="w"> </span><span class="mf">3.3</span><span class="p">,</span><span class="w"> </span><span class="mf">4.4</span><span class="p">};</span><span class="w"></span>
+<span class="w">        </span><span class="n">statement</span><span class="p">.</span><span class="n">bind</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">zdata</span><span class="p">,</span><span class="w"> </span><span class="n">elements</span><span class="p">);</span><span class="w"></span>
 
-        <span class="n">transact</span><span class="p">(</span><span class="n">statement</span><span class="p">,</span> <span class="n">elements</span><span class="p">);</span>
+<span class="w">        </span><span class="n">transact</span><span class="p">(</span><span class="n">statement</span><span class="p">,</span><span class="w"> </span><span class="n">elements</span><span class="p">);</span><span class="w"></span>
 
-        <span class="n">results</span> <span class="o">=</span> <span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s">&quot;select * from public.batch_test;&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
-        <span class="n">show</span><span class="p">(</span><span class="n">results</span><span class="p">);</span>
+<span class="w">        </span><span class="n">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;select * from public.batch_test;&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">show</span><span class="p">(</span><span class="n">results</span><span class="p">);</span><span class="w"></span>
 
-        <span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s">&quot;drop table if exists public.batch_test;&quot;</span><span class="p">);</span>
-    <span class="p">}</span>
+<span class="w">        </span><span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;drop table if exists public.batch_test;&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
 
-    <span class="c1">// Dates and Times</span>
-    <span class="p">{</span>
-        <span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s">&quot;drop table if exists public.date_test;&quot;</span><span class="p">);</span>
-        <span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s">&quot;create table public.date_test (x datetime);&quot;</span><span class="p">);</span>
-        <span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s">&quot;insert into public.date_test values (current_timestamp);&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// Dates and Times</span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;drop table if exists public.date_test;&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;create table public.date_test (x datetime);&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;insert into public.date_test values (current_timestamp);&quot;</span><span class="p">);</span><span class="w"></span>
 
-        <span class="n">results</span> <span class="o">=</span> <span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s">&quot;select * from public.date_test;&quot;</span><span class="p">);</span>
-        <span class="n">results</span><span class="p">.</span><span class="n">next</span><span class="p">();</span>
+<span class="w">        </span><span class="n">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;select * from public.date_test;&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">results</span><span class="p">.</span><span class="n">next</span><span class="p">();</span><span class="w"></span>
 
-        <span class="n">nanodbc</span><span class="o">::</span><span class="n">date</span> <span class="n">date</span> <span class="o">=</span> <span class="n">results</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="n">nanodbc</span><span class="o">::</span><span class="n">date</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span> <span class="o">&lt;&lt;</span> <span class="n">date</span><span class="p">.</span><span class="n">year</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;-&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">date</span><span class="p">.</span><span class="n">month</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;-&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">date</span><span class="p">.</span><span class="n">day</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+<span class="w">        </span><span class="n">nanodbc</span><span class="o">::</span><span class="n">date</span><span class="w"> </span><span class="n">date</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">results</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="n">nanodbc</span><span class="o">::</span><span class="n">date</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">date</span><span class="p">.</span><span class="n">year</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;-&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">date</span><span class="p">.</span><span class="n">month</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;-&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">date</span><span class="p">.</span><span class="n">day</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
 
-        <span class="n">results</span> <span class="o">=</span> <span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s">&quot;select * from public.date_test;&quot;</span><span class="p">);</span>
-        <span class="n">show</span><span class="p">(</span><span class="n">results</span><span class="p">);</span>
+<span class="w">        </span><span class="n">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;select * from public.date_test;&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">show</span><span class="p">(</span><span class="n">results</span><span class="p">);</span><span class="w"></span>
 
-        <span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s">&quot;drop table if exists public.date_test;&quot;</span><span class="p">);</span>
-    <span class="p">}</span>
+<span class="w">        </span><span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;drop table if exists public.date_test;&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
 
-    <span class="c1">// Inserting NULL values with a sentry</span>
-    <span class="p">{</span>
-        <span class="n">nanodbc</span><span class="o">::</span><span class="n">statement</span> <span class="n">statement</span><span class="p">(</span><span class="n">connection</span><span class="p">);</span>
-        <span class="n">prepare</span><span class="p">(</span><span class="n">statement</span><span class="p">,</span> <span class="s">&quot;insert into public.simple_test (a, b) values (?, ?);&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// Inserting NULL values with a sentry</span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">nanodbc</span><span class="o">::</span><span class="n">statement</span><span class="w"> </span><span class="n">statement</span><span class="p">(</span><span class="n">connection</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">prepare</span><span class="p">(</span><span class="n">statement</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;insert into public.simple_test (a, b) values (?, ?);&quot;</span><span class="p">);</span><span class="w"></span>
 
-        <span class="k">const</span> <span class="kt">int</span> <span class="n">elements</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
-        <span class="k">const</span> <span class="kt">int</span> <span class="n">a_null</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-        <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">b_null</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">;</span>
-        <span class="kt">int</span> <span class="n">a_data</span><span class="p">[</span><span class="n">elements</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">88</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">};</span>
-        <span class="kt">char</span> <span class="n">b_data</span><span class="p">[</span><span class="n">elements</span><span class="p">][</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;non-null&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">};</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">elements</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">a_null</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">b_null</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">a_data</span><span class="p">[</span><span class="n">elements</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">88</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">};</span><span class="w"></span>
+<span class="w">        </span><span class="kt">char</span><span class="w"> </span><span class="n">b_data</span><span class="p">[</span><span class="n">elements</span><span class="p">][</span><span class="mi">10</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;non-null&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">};</span><span class="w"></span>
 
-        <span class="n">statement</span><span class="p">.</span><span class="n">bind</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">a_data</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">a_null</span><span class="p">);</span>
-        <span class="n">statement</span><span class="p">.</span><span class="n">bind_strings</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">b_data</span><span class="p">,</span> <span class="n">b_null</span><span class="p">);</span>
+<span class="w">        </span><span class="n">statement</span><span class="p">.</span><span class="n">bind</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">a_data</span><span class="p">,</span><span class="w"> </span><span class="n">elements</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">a_null</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">statement</span><span class="p">.</span><span class="n">bind_strings</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">b_data</span><span class="p">,</span><span class="w"> </span><span class="n">b_null</span><span class="p">);</span><span class="w"></span>
 
-        <span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">,</span> <span class="n">elements</span><span class="p">);</span>
+<span class="w">        </span><span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">,</span><span class="w"> </span><span class="n">elements</span><span class="p">);</span><span class="w"></span>
 
-        <span class="n">nanodbc</span><span class="o">::</span><span class="n">result</span> <span class="n">results</span> <span class="o">=</span> <span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s">&quot;select * from public.simple_test;&quot;</span><span class="p">);</span>
-        <span class="n">show</span><span class="p">(</span><span class="n">results</span><span class="p">);</span>
-    <span class="p">}</span>
+<span class="w">        </span><span class="n">nanodbc</span><span class="o">::</span><span class="n">result</span><span class="w"> </span><span class="n">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;select * from public.simple_test;&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">show</span><span class="p">(</span><span class="n">results</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
 
-    <span class="c1">// Inserting NULL values with flags</span>
-    <span class="p">{</span>
-        <span class="n">nanodbc</span><span class="o">::</span><span class="n">statement</span> <span class="n">statement</span><span class="p">(</span><span class="n">connection</span><span class="p">);</span>
-        <span class="n">prepare</span><span class="p">(</span><span class="n">statement</span><span class="p">,</span> <span class="s">&quot;insert into public.simple_test (a, b) values (?, ?);&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// Inserting NULL values with flags</span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">nanodbc</span><span class="o">::</span><span class="n">statement</span><span class="w"> </span><span class="n">statement</span><span class="p">(</span><span class="n">connection</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">prepare</span><span class="p">(</span><span class="n">statement</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;insert into public.simple_test (a, b) values (?, ?);&quot;</span><span class="p">);</span><span class="w"></span>
 
-        <span class="k">const</span> <span class="kt">int</span> <span class="n">elements</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
-        <span class="kt">int</span> <span class="n">a_data</span><span class="p">[</span><span class="n">elements</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">42</span><span class="p">};</span>
-        <span class="kt">char</span> <span class="n">b_data</span><span class="p">[</span><span class="n">elements</span><span class="p">][</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;every&quot;</span><span class="p">};</span>
-        <span class="kt">bool</span> <span class="n">nulls</span><span class="p">[</span><span class="n">elements</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="nb">true</span><span class="p">,</span> <span class="nb">false</span><span class="p">};</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">elements</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">a_data</span><span class="p">[</span><span class="n">elements</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p">};</span><span class="w"></span>
+<span class="w">        </span><span class="kt">char</span><span class="w"> </span><span class="n">b_data</span><span class="p">[</span><span class="n">elements</span><span class="p">][</span><span class="mi">10</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;every&quot;</span><span class="p">};</span><span class="w"></span>
+<span class="w">        </span><span class="kt">bool</span><span class="w"> </span><span class="n">nulls</span><span class="p">[</span><span class="n">elements</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">};</span><span class="w"></span>
 
-        <span class="n">statement</span><span class="p">.</span><span class="n">bind</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">a_data</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">nulls</span><span class="p">);</span>
-        <span class="n">statement</span><span class="p">.</span><span class="n">bind_strings</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">b_data</span><span class="p">,</span> <span class="n">nulls</span><span class="p">);</span>
+<span class="w">        </span><span class="n">statement</span><span class="p">.</span><span class="n">bind</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">a_data</span><span class="p">,</span><span class="w"> </span><span class="n">elements</span><span class="p">,</span><span class="w"> </span><span class="n">nulls</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">statement</span><span class="p">.</span><span class="n">bind_strings</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">b_data</span><span class="p">,</span><span class="w"> </span><span class="n">nulls</span><span class="p">);</span><span class="w"></span>
 
-        <span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">,</span> <span class="n">elements</span><span class="p">);</span>
+<span class="w">        </span><span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">,</span><span class="w"> </span><span class="n">elements</span><span class="p">);</span><span class="w"></span>
 
-        <span class="n">nanodbc</span><span class="o">::</span><span class="n">result</span> <span class="n">results</span> <span class="o">=</span> <span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s">&quot;select * from public.simple_test;&quot;</span><span class="p">);</span>
-        <span class="n">show</span><span class="p">(</span><span class="n">results</span><span class="p">);</span>
-    <span class="p">}</span>
+<span class="w">        </span><span class="n">nanodbc</span><span class="o">::</span><span class="n">result</span><span class="w"> </span><span class="n">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;select * from public.simple_test;&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">show</span><span class="p">(</span><span class="n">results</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
 
-    <span class="c1">// Cleanup</span>
-    <span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="s">&quot;drop table if exists public.simple_test;&quot;</span><span class="p">);</span>
-<span class="p">}</span>
+<span class="w">    </span><span class="c1">// Cleanup</span>
+<span class="w">    </span><span class="n">execute</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;drop table if exists public.simple_test;&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
-<span class="kt">void</span> <span class="nf">show</span><span class="p">(</span><span class="n">nanodbc</span><span class="o">::</span><span class="n">result</span><span class="o">&amp;</span> <span class="n">results</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="k">const</span> <span class="kt">short</span> <span class="n">columns</span> <span class="o">=</span> <span class="n">results</span><span class="p">.</span><span class="n">columns</span><span class="p">();</span>
-    <span class="kt">long</span> <span class="n">rows_displayed</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span><span class="n">nanodbc</span><span class="o">::</span><span class="n">result</span><span class="o">&amp;</span><span class="w"> </span><span class="n">results</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">short</span><span class="w"> </span><span class="n">columns</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">results</span><span class="p">.</span><span class="n">columns</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="kt">long</span><span class="w"> </span><span class="n">rows_displayed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
 
-    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">Displaying &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">results</span><span class="p">.</span><span class="n">affected_rows</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; rows &quot;</span>
-        <span class="o">&lt;&lt;</span> <span class="s">&quot;(&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">results</span><span class="p">.</span><span class="n">rowset_size</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; fetched at a time):&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Displaying &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">results</span><span class="p">.</span><span class="n">affected_rows</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; rows &quot;</span><span class="w"></span>
+<span class="w">        </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;(&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">results</span><span class="p">.</span><span class="n">rowset_size</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; fetched at a time):&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
 
-    <span class="c1">// show the column names</span>
-    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;row</span><span class="se">\t</span><span class="s">&quot;</span><span class="p">;</span>
-    <span class="k">for</span> <span class="p">(</span><span class="kt">short</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">columns</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
-        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">results</span><span class="p">.</span><span class="n">column_name</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\t</span><span class="s">&quot;</span><span class="p">;</span>
-    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// show the column names</span>
+<span class="w">    </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;row</span><span class="se">\t</span><span class="s">&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">short</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">columns</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">results</span><span class="p">.</span><span class="n">column_name</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\t</span><span class="s">&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
 
-    <span class="c1">// show the column data for each row</span>
-    <span class="k">while</span> <span class="p">(</span><span class="n">results</span><span class="p">.</span><span class="n">next</span><span class="p">())</span>
-    <span class="p">{</span>
-        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">rows_displayed</span><span class="o">++</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\t</span><span class="s">&quot;</span><span class="p">;</span>
-        <span class="k">for</span> <span class="p">(</span><span class="kt">short</span> <span class="n">col</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">col</span> <span class="o">&lt;</span> <span class="n">columns</span><span class="p">;</span> <span class="o">++</span><span class="n">col</span><span class="p">)</span>
-            <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;(&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">results</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="s">&quot;null&quot;</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;)</span><span class="se">\t</span><span class="s">&quot;</span><span class="p">;</span>
-        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
-    <span class="p">}</span>
-<span class="p">}</span>
+<span class="w">    </span><span class="c1">// show the column data for each row</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">results</span><span class="p">.</span><span class="n">next</span><span class="p">())</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">rows_displayed</span><span class="o">++</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\t</span><span class="s">&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">short</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">columns</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">col</span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;(&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">results</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="n">col</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;null&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;)</span><span class="se">\t</span><span class="s">&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
-<span class="kt">void</span> <span class="nf">usage</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">ostream</span><span class="o">&amp;</span> <span class="n">out</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">binary_name</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="n">out</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;usage: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">binary_name</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; connection_string&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-<span class="p">}</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">usage</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">ostream</span><span class="o">&amp;</span><span class="w"> </span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="k">const</span><span class="o">&amp;</span><span class="w"> </span><span class="n">binary_name</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">out</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;usage: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">binary_name</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; connection_string&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[])</span>
-<span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">argc</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="kt">char</span><span class="o">*</span> <span class="n">app_name</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">strrchr</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="sc">&#39;/&#39;</span><span class="p">);</span>
-        <span class="n">app_name</span> <span class="o">=</span> <span class="n">app_name</span> <span class="o">?</span> <span class="n">app_name</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">:</span> <span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
-        <span class="k">if</span> <span class="p">(</span><span class="mi">0</span> <span class="o">==</span> <span class="n">std</span><span class="o">::</span><span class="n">strncmp</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span> <span class="s">&quot;lt-&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
-            <span class="n">app_name</span> <span class="o">+=</span> <span class="mi">3</span><span class="p">;</span> <span class="c1">// remove libtool prefix</span>
-        <span class="n">usage</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">cerr</span><span class="p">,</span> <span class="n">app_name</span><span class="p">);</span>
-        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
-    <span class="p">}</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">argv</span><span class="p">[])</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">argc</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">app_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">strrchr</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="sc">&#39;/&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">app_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">app_name</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">app_name</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">strncmp</span><span class="p">(</span><span class="n">app_name</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;lt-&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">))</span><span class="w"></span>
+<span class="w">            </span><span class="n">app_name</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="c1">// remove libtool prefix</span>
+<span class="w">        </span><span class="n">usage</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">cerr</span><span class="p">,</span><span class="w"> </span><span class="n">app_name</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
 
-    <span class="k">try</span>
-    <span class="p">{</span>
-        <span class="n">run_test</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
-    <span class="p">}</span>
-    <span class="k">catch</span> <span class="p">(</span><span class="k">const</span> <span class="n">exception</span><span class="o">&amp;</span> <span class="n">e</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="n">e</span><span class="p">.</span><span class="n">what</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
-        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
-    <span class="p">}</span>
-<span class="p">}</span>
+<span class="w">    </span><span class="k">try</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">run_test</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">exception</span><span class="o">&amp;</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">cerr</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">what</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">endl</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="develop.html" class="btn btn-neutral float-right" title="Develop" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="install.html" class="btn btn-neutral float-left" title="Install" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="install.html" class="btn btn-neutral float-left" title="Install" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="develop.html" class="btn btn-neutral float-right" title="Develop" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        
-        &copy; Copyright 2016-2012, Amy Troschinetz and others.
-
-    </p>
+    <p>&#169; Copyright 2016-2012, Amy Troschinetz and others..</p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
