@@ -1,0 +1,245 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classnanodbc_1_1result__iterator" kind="class" language="C++" prot="public">
+    <compoundname>nanodbc::result_iterator</compoundname>
+    <includes refid="nanodbc_8h" local="no">nanodbc.h</includes>
+      <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classnanodbc_1_1result__iterator_1af46c41cf24ac2db0574486dc2b88c848" prot="public" static="no">
+        <type>std::input_iterator_tag</type>
+        <definition>typedef std::input_iterator_tag nanodbc::result_iterator::iterator_category</definition>
+        <argsstring></argsstring>
+        <name>iterator_category</name>
+        <briefdescription>
+<para>Category of iterator. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1563" column="37" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1563" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classnanodbc_1_1result__iterator_1a70c5112a23653e61cfd840631f5a370e" prot="public" static="no">
+        <type><ref refid="classnanodbc_1_1result" kindref="compound">result</ref></type>
+        <definition>typedef result nanodbc::result_iterator::value_type</definition>
+        <argsstring></argsstring>
+        <name>value_type</name>
+        <briefdescription>
+<para>Values returned by iterator access. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1564" column="20" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1564" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classnanodbc_1_1result__iterator_1a49329c62a4366740ff86be23ca1eef0d" prot="public" static="no">
+        <type><ref refid="classnanodbc_1_1result" kindref="compound">result</ref> *</type>
+        <definition>typedef result* nanodbc::result_iterator::pointer</definition>
+        <argsstring></argsstring>
+        <name>pointer</name>
+        <briefdescription>
+<para>Pointer to iteration values. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1565" column="20" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1565" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classnanodbc_1_1result__iterator_1aeca21fe535e223231562d96a76c5ee92" prot="public" static="no">
+        <type><ref refid="classnanodbc_1_1result" kindref="compound">result</ref> &amp;</type>
+        <definition>typedef result&amp; nanodbc::result_iterator::reference</definition>
+        <argsstring></argsstring>
+        <name>reference</name>
+        <briefdescription>
+<para>Reference to iteration values. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1566" column="20" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1566" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classnanodbc_1_1result__iterator_1af16f09f398c533c9346d521a2ea9aeef" prot="public" static="no">
+        <type>std::ptrdiff_t</type>
+        <definition>typedef std::ptrdiff_t nanodbc::result_iterator::difference_type</definition>
+        <argsstring></argsstring>
+        <name>difference_type</name>
+        <briefdescription>
+<para>Iterator difference. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1567" column="28" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1567" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classnanodbc_1_1result__iterator_1a610a4fc896cf1ef23e26151554a4b7f3" prot="private" static="no" mutable="no">
+        <type><ref refid="classnanodbc_1_1result" kindref="compound">result</ref></type>
+        <definition>result nanodbc::result_iterator::result_</definition>
+        <argsstring></argsstring>
+        <name>result_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1626" column="12" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1626" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classnanodbc_1_1result__iterator_1a3802a8a11ad2f043484be879e92fbd33" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>nanodbc::result_iterator::result_iterator</definition>
+        <argsstring>()=default</argsstring>
+        <name>result_iterator</name>
+        <briefdescription>
+<para>Default iterator; an empty result set. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1570" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result__iterator_1af0cd8c4ea131a971a4ee616fde1a8eca" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>nanodbc::result_iterator::result_iterator</definition>
+        <argsstring>(result &amp;r)</argsstring>
+        <name>result_iterator</name>
+        <param>
+          <type><ref refid="classnanodbc_1_1result" kindref="compound">result</ref> &amp;</type>
+          <declname>r</declname>
+        </param>
+        <briefdescription>
+<para>Create result iterator for a given result set. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1573" column="14" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1573" bodyend="1577"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result__iterator_1a81e7fb97c415a43e812b6c296ea992a6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classnanodbc_1_1result__iterator_1aeca21fe535e223231562d96a76c5ee92" kindref="member">reference</ref></type>
+        <definition>reference nanodbc::result_iterator::operator*</definition>
+        <argsstring>()</argsstring>
+        <name>operator*</name>
+        <briefdescription>
+<para>Dereference. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1580" column="15" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1580" bodyend="1580"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result__iterator_1a4f6eafe2226e141383d4461fa5de2746" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classnanodbc_1_1result__iterator_1a49329c62a4366740ff86be23ca1eef0d" kindref="member">pointer</ref></type>
+        <definition>pointer nanodbc::result_iterator::operator-&gt;</definition>
+        <argsstring>()</argsstring>
+        <name>operator-&gt;</name>
+        <briefdescription>
+<para>Access through dereference. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1583" column="13" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1583" bodyend="1588"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result__iterator_1ab63c554a6588e6dfb0a16dbba8e01247" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classnanodbc_1_1result__iterator" kindref="compound">result_iterator</ref> &amp;</type>
+        <definition>result_iterator&amp; nanodbc::result_iterator::operator++</definition>
+        <argsstring>()</argsstring>
+        <name>operator++</name>
+        <briefdescription>
+<para>Iteration. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1591" column="21" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1591" bodyend="1603"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result__iterator_1acf9cdfaccbdad7650b11fb77be994aa4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classnanodbc_1_1result__iterator" kindref="compound">result_iterator</ref></type>
+        <definition>result_iterator nanodbc::result_iterator::operator++</definition>
+        <argsstring>(int)</argsstring>
+        <name>operator++</name>
+        <param>
+          <type>int</type>
+        </param>
+        <briefdescription>
+<para>Iteration. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1606" column="21" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1606" bodyend="1611"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result__iterator_1a8db639b2b70997cb2e7c79368cb0f994" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool nanodbc::result_iterator::operator==</definition>
+        <argsstring>(result_iterator const &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <param>
+          <type><ref refid="classnanodbc_1_1result__iterator" kindref="compound">result_iterator</ref> const &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+<para>Iterators are equal if they a tied to the same native statemnt handle, or both empty. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1614" column="10" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1614" bodyend="1620"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result__iterator_1adb39628c4e759b39b85ba4a43b9f75e0" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool nanodbc::result_iterator::operator!=</definition>
+        <argsstring>(result_iterator const &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <param>
+          <type><ref refid="classnanodbc_1_1result__iterator" kindref="compound">result_iterator</ref> const &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+<para>Iterators are not equal if they have different native statemnt handles. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1623" column="10" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1623" bodyend="1623"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Single pass input iterator that accesses successive rows in the attached result set. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1561" column="1" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1560" bodyend="1627"/>
+    <listofallmembers>
+      <member refid="classnanodbc_1_1result__iterator_1af16f09f398c533c9346d521a2ea9aeef" prot="public" virt="non-virtual"><scope>nanodbc::result_iterator</scope><name>difference_type</name></member>
+      <member refid="classnanodbc_1_1result__iterator_1af46c41cf24ac2db0574486dc2b88c848" prot="public" virt="non-virtual"><scope>nanodbc::result_iterator</scope><name>iterator_category</name></member>
+      <member refid="classnanodbc_1_1result__iterator_1adb39628c4e759b39b85ba4a43b9f75e0" prot="public" virt="non-virtual"><scope>nanodbc::result_iterator</scope><name>operator!=</name></member>
+      <member refid="classnanodbc_1_1result__iterator_1a81e7fb97c415a43e812b6c296ea992a6" prot="public" virt="non-virtual"><scope>nanodbc::result_iterator</scope><name>operator*</name></member>
+      <member refid="classnanodbc_1_1result__iterator_1ab63c554a6588e6dfb0a16dbba8e01247" prot="public" virt="non-virtual"><scope>nanodbc::result_iterator</scope><name>operator++</name></member>
+      <member refid="classnanodbc_1_1result__iterator_1acf9cdfaccbdad7650b11fb77be994aa4" prot="public" virt="non-virtual"><scope>nanodbc::result_iterator</scope><name>operator++</name></member>
+      <member refid="classnanodbc_1_1result__iterator_1a4f6eafe2226e141383d4461fa5de2746" prot="public" virt="non-virtual"><scope>nanodbc::result_iterator</scope><name>operator-&gt;</name></member>
+      <member refid="classnanodbc_1_1result__iterator_1a8db639b2b70997cb2e7c79368cb0f994" prot="public" virt="non-virtual"><scope>nanodbc::result_iterator</scope><name>operator==</name></member>
+      <member refid="classnanodbc_1_1result__iterator_1a49329c62a4366740ff86be23ca1eef0d" prot="public" virt="non-virtual"><scope>nanodbc::result_iterator</scope><name>pointer</name></member>
+      <member refid="classnanodbc_1_1result__iterator_1aeca21fe535e223231562d96a76c5ee92" prot="public" virt="non-virtual"><scope>nanodbc::result_iterator</scope><name>reference</name></member>
+      <member refid="classnanodbc_1_1result__iterator_1a610a4fc896cf1ef23e26151554a4b7f3" prot="private" virt="non-virtual"><scope>nanodbc::result_iterator</scope><name>result_</name></member>
+      <member refid="classnanodbc_1_1result__iterator_1a3802a8a11ad2f043484be879e92fbd33" prot="public" virt="non-virtual"><scope>nanodbc::result_iterator</scope><name>result_iterator</name></member>
+      <member refid="classnanodbc_1_1result__iterator_1af0cd8c4ea131a971a4ee616fde1a8eca" prot="public" virt="non-virtual"><scope>nanodbc::result_iterator</scope><name>result_iterator</name></member>
+      <member refid="classnanodbc_1_1result__iterator_1a70c5112a23653e61cfd840631f5a370e" prot="public" virt="non-virtual"><scope>nanodbc::result_iterator</scope><name>value_type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="structnanodbc_1_1datasource" kind="struct" language="C++" prot="public">
+    <compoundname>nanodbc::datasource</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structnanodbc_1_1datasource_1ad1faa06235baf4be58719907bc6fdfba" prot="public" static="no" mutable="no">
+        <type>nanodbc::string</type>
+        <definition>nanodbc::string nanodbc::datasource::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <briefdescription>
+<para>DSN name. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1885" column="21" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1885" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structnanodbc_1_1datasource_1a5545e93a01b3fb68a92f50aa5285c653" prot="public" static="no" mutable="no">
+        <type>nanodbc::string</type>
+        <definition>nanodbc::string nanodbc::datasource::driver</definition>
+        <argsstring></argsstring>
+        <name>driver</name>
+        <briefdescription>
+<para>Driver description. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1886" column="21" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1886" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1884" column="1" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1883" bodyend="1887"/>
+    <listofallmembers>
+      <member refid="structnanodbc_1_1datasource_1a5545e93a01b3fb68a92f50aa5285c653" prot="public" virt="non-virtual"><scope>nanodbc::datasource</scope><name>driver</name></member>
+      <member refid="structnanodbc_1_1datasource_1ad1faa06235baf4be58719907bc6fdfba" prot="public" virt="non-virtual"><scope>nanodbc::datasource</scope><name>name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

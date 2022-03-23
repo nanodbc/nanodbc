@@ -1,0 +1,264 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>nanodbc - C++ wrapper for ODBC API &mdash; nanodbc 2.13.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Install" href="install.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="#" class="icon icon-home" alt="Documentation Home"> nanodbc
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.13.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="use.html">Use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="develop.html">Develop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">nanodbc</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>nanodbc - C++ wrapper for ODBC API</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="nanodbc-c-wrapper-for-odbc-api">
+<span id="index"></span><h1>nanodbc - C++ wrapper for ODBC API<a class="headerlink" href="#nanodbc-c-wrapper-for-odbc-api" title="Permalink to this headline">¶</a></h1>
+<p>nanodbc is a small library that makes ODBC API programming easy and fun again.</p>
+<p>Documentation for the latest version <a class="reference external" href="https://github.com/nanodbc/nanodbc/releases/tag/v2.13.0">v2.13.0</a>.</p>
+<p>Documentation for previous version <a class="reference external" href="https://github.com/nanodbc/nanodbc/releases/tag/v2.12.4">v2.12.4</a> is <a class="reference external" href="https://nanodbc.github.io/nanodbc/v2.12.4">here</a>.</p>
+<div class="section" id="motivation">
+<h2>Motivation<a class="headerlink" href="#motivation" title="Permalink to this headline">¶</a></h2>
+<p>Here’s a before and after look at straight ODBC C API code and its equivalent nanodbc code.</p>
+<p><a class="reference internal" href="_images/before.png"><img alt="before" src="_images/before.png" style="width: 45%;" /></a> <a class="reference internal" href="_images/after.png"><img alt="after" src="_images/after.png" style="width: 45%;" /></a></p>
+<p>The native C API for working with ODBC is exorbitantly verbose, ridiculously
+complicated, and fantastically brittle. nanodbc addresses these frustrations!
+The goal for nanodbc is to make developers happy.</p>
+<p>The nanodbc philosophy states: common database programming tasks
+should be easy, requiring concise and simple code.</p>
+<p>The latest <a class="reference external" href="https://isocpp.org/std/status">C++ standard</a> and <a class="reference external" href="https://github.com/isocpp/CppCoreGuidelines">C++ best practices</a> are enthusiastically
+incorporated to make the library as future-proof as possible.</p>
+<p>To accommodate users who can not use the latest and greatest,
+<a class="reference external" href="http://semver.org">semantic versioning</a> and release notes will clarify required C++ features
+and/or standards for particular versions.</p>
+</div>
+<div class="section" id="history">
+<h2>History<a class="headerlink" href="#history" title="Permalink to this headline">¶</a></h2>
+<p>Originally nanodbc began as a simple fork of <a class="reference external" href="https://code.google.com/archive/p/tiodbc/">TinyODBC</a> with additional
+features. Eventually it grew to the point where it made sense to break with
+many of the basic underlaying design decisions of TinyODBC and completely
+refactor much of the codebase. Other projects that have had influence on
+nanodbc include <a class="reference external" href="http://simpledb.sourceforge.net">SimpleDB</a>, <a class="reference external" href="https://github.com/mkleehammer/pyodbc">pyodbc</a>, <a class="reference external" href="http://dtemplatelib.sourceforge.net">Database Template Library</a>,
+and <a class="reference external" href="http://www.codeguru.com/cpp/data/mfc_database/odbc/article.php/c4337/A-Simple-and-Smart-ODBC-Wrapper-Library.htm">GSODBC</a>.</p>
+</div>
+<div class="section" id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<p>Why should you use nanodbc?</p>
+<ul class="simple">
+<li><p>Small! Same as TinyODBC, nanodbc is small. A header and an implementation file.</p></li>
+<li><p>Simple! There are only a handful of significant classes to learn.</p></li>
+<li><p>Portable! nanodbc uses only standard C++ headers in addition to the ODBC API headers.</p></li>
+<li><p>Robust! Where it makes sense, error handling is done with exceptions instead of return codes.</p></li>
+<li><p>Features! nanodbc supports ODBC 3, SQLDriverConnect(), Transactions, Bound Parameters, Bulk Operations, and much more.</p></li>
+<li><p>Documented! I have tried to provide very clean and useful documentation with example usage.</p></li>
+<li><p>Active! I am currently actively using and developing nanodbc so I hope to add more and more features all the time.</p></li>
+</ul>
+</div>
+<div class="section" id="design">
+<h2>Design<a class="headerlink" href="#design" title="Permalink to this headline">¶</a></h2>
+<p>All complex objects in nanodbc follow the <a class="reference external" href="http://wiki.c2.com/?PimplIdiom">pimpl</a> (Pointer to IMPLementation) idiom to provide separation between interface and implementation, value semantics, and a clean nanodbc.h header file that includes nothing but standard C++ headers.</p>
+<p>nanodbc wraps ODBC code, providing a simpler way to do the same thing. We try to be as featureful as possible, but I can’t guarantee you’ll never have to write supporting ODBC code. Personally, I have never had to do so.</p>
+<p>Major features beyond what’s already supported by ODBC are not within the scope of nanodbc. This is where the nano part of nanodbc becomes relevant: This library is as minimal as possible. That means no dependencies beyond standard C++ and typical ODBC headers. No features unsupported by existing ODBC API calls.</p>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="install.html" class="btn btn-neutral float-right" title="Install" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2016-2012, Amy Troschinetz and others.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

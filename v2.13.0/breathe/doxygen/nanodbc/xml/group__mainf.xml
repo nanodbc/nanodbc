@@ -1,0 +1,471 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="group__mainf" kind="group">
+    <compoundname>mainf</compoundname>
+    <title>Free Functions</title>
+    <innerclass refid="structnanodbc_1_1driver" prot="public">nanodbc::driver</innerclass>
+    <innerclass refid="structnanodbc_1_1datasource" prot="public">nanodbc::datasource</innerclass>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="group__mainf_1ga1a463085cf583c00a8e990a643422d63" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::list&lt; driver &gt;</type>
+        <definition>std::list&lt;driver&gt; nanodbc::list_drivers</definition>
+        <argsstring>()</argsstring>
+        <name>list_drivers</name>
+        <briefdescription>
+<para>Returns a list of ODBC drivers on your system. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1890" column="11" declfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" declline="1890" declcolumn="11"/>
+      </memberdef>
+      <memberdef kind="function" id="group__mainf_1ga7c116c76f815fab527939a2dab6c2968" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::list&lt; datasource &gt;</type>
+        <definition>std::list&lt;datasource&gt; nanodbc::list_datasources</definition>
+        <argsstring>()</argsstring>
+        <name>list_datasources</name>
+        <briefdescription>
+<para>Returns a list of ODBC data sources on your system. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1893" column="11" declfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" declline="1893" declcolumn="11"/>
+      </memberdef>
+      <memberdef kind="function" id="group__mainf_1ga5cbac617a3964611bd16a2fc6f991b83" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>result</type>
+        <definition>result nanodbc::execute</definition>
+        <argsstring>(connection &amp;conn, const string &amp;query, long batch_operations=1, long timeout=0)</argsstring>
+        <name>execute</name>
+        <param>
+          <type>connection &amp;</type>
+          <declname>conn</declname>
+        </param>
+        <param>
+          <type>const string &amp;</type>
+          <declname>query</declname>
+        </param>
+        <param>
+          <type>long</type>
+          <declname>batch_operations</declname>
+          <defval>1</defval>
+        </param>
+        <param>
+          <type>long</type>
+          <declname>timeout</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+<para>Immediately opens, prepares, and executes the given query directly on the given connection. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>conn</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The connection where the statement will be executed. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>query</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The SQL query that will be executed. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>batch_operations</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Numbers of rows to fetch per rowset, or the number of batch parameters to process. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>timeout</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number in seconds before query timeout. Default is 0 indicating no timeout. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A result set object. </para>
+</simplesect>
+<simplesect kind="attention"><para>You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed. </para>
+</simplesect>
+<simplesect kind="see"><para>open(), <ref refid="group__mainf_1ga961a75629487f22ebc87d114c5699bc2" kindref="member">prepare()</ref>, <ref refid="group__mainf_1ga5cbac617a3964611bd16a2fc6f991b83" kindref="member">execute()</ref>, <ref refid="classnanodbc_1_1result" kindref="compound">result</ref>, <ref refid="classnanodbc_1_1transaction" kindref="compound">transaction</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1906" column="8" declfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" declline="1906" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="group__mainf_1gaee1775943fa1c5906cda9341851633c1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void nanodbc::just_execute</definition>
+        <argsstring>(connection &amp;conn, const string &amp;query, long batch_operations=1, long timeout=0)</argsstring>
+        <name>just_execute</name>
+        <param>
+          <type>connection &amp;</type>
+          <declname>conn</declname>
+        </param>
+        <param>
+          <type>const string &amp;</type>
+          <declname>query</declname>
+        </param>
+        <param>
+          <type>long</type>
+          <declname>batch_operations</declname>
+          <defval>1</defval>
+        </param>
+        <param>
+          <type>long</type>
+          <declname>timeout</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+<para>Opens, prepares, and executes query directly without creating result object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>conn</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The connection where the statement will be executed. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>query</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The SQL query that will be executed. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>batch_operations</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Rows to fetch per rowset, or number of batch parameters to process. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>timeout</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number in seconds before query timeout. Default is 0 indicating no timeout. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A result set object. </para>
+</simplesect>
+<simplesect kind="attention"><para>You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed. </para>
+</simplesect>
+<simplesect kind="see"><para>open(), <ref refid="group__mainf_1ga961a75629487f22ebc87d114c5699bc2" kindref="member">prepare()</ref>, <ref refid="group__mainf_1ga5cbac617a3964611bd16a2fc6f991b83" kindref="member">execute()</ref>, <ref refid="classnanodbc_1_1result" kindref="compound">result</ref>, <ref refid="classnanodbc_1_1transaction" kindref="compound">transaction</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1917" column="6" declfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" declline="1917" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="group__mainf_1gad178fcf995fa5ac42702607f35e5ba39" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>result</type>
+        <definition>result nanodbc::execute</definition>
+        <argsstring>(statement &amp;stmt, long batch_operations=1)</argsstring>
+        <name>execute</name>
+        <param>
+          <type>statement &amp;</type>
+          <declname>stmt</declname>
+        </param>
+        <param>
+          <type>long</type>
+          <declname>batch_operations</declname>
+          <defval>1</defval>
+        </param>
+        <briefdescription>
+<para>Execute the previously prepared query now. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>stmt</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The prepared statement that will be executed. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>batch_operations</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Rows to fetch per rowset, or the number of batch parameters to process. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A result set object. </para>
+</simplesect>
+<simplesect kind="attention"><para>You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed. </para>
+</simplesect>
+<simplesect kind="see"><para>open(), <ref refid="group__mainf_1ga961a75629487f22ebc87d114c5699bc2" kindref="member">prepare()</ref>, <ref refid="group__mainf_1ga5cbac617a3964611bd16a2fc6f991b83" kindref="member">execute()</ref>, <ref refid="classnanodbc_1_1result" kindref="compound">result</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1931" column="8" declfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" declline="1931" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="group__mainf_1gafa9051df00f710f9d4123dc24896d821" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void nanodbc::just_execute</definition>
+        <argsstring>(statement &amp;stmt, long batch_operations=1)</argsstring>
+        <name>just_execute</name>
+        <param>
+          <type>statement &amp;</type>
+          <declname>stmt</declname>
+        </param>
+        <param>
+          <type>long</type>
+          <declname>batch_operations</declname>
+          <defval>1</defval>
+        </param>
+        <briefdescription>
+<para>Execute the previously prepared query now and without creating result object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>stmt</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The prepared statement that will be executed. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>batch_operations</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Rows to fetch per rowset, or the number of batch parameters to process. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A result set object. </para>
+</simplesect>
+<simplesect kind="attention"><para>You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed. </para>
+</simplesect>
+<simplesect kind="see"><para>open(), <ref refid="group__mainf_1ga961a75629487f22ebc87d114c5699bc2" kindref="member">prepare()</ref>, <ref refid="group__mainf_1ga5cbac617a3964611bd16a2fc6f991b83" kindref="member">execute()</ref>, <ref refid="classnanodbc_1_1result" kindref="compound">result</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1941" column="6" declfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" declline="1941" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="group__mainf_1ga3f5b3e15f31690ef54ca20058ea89074" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>result</type>
+        <definition>result nanodbc::transact</definition>
+        <argsstring>(statement &amp;stmt, long batch_operations)</argsstring>
+        <name>transact</name>
+        <param>
+          <type>statement &amp;</type>
+          <declname>stmt</declname>
+        </param>
+        <param>
+          <type>long</type>
+          <declname>batch_operations</declname>
+        </param>
+        <briefdescription>
+<para>Execute the previously prepared query now. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Executes within the context of a transaction object, commits directly after execution. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>stmt</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The prepared statement that will be executed in batch. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>batch_operations</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Rows to fetch per rowset, or the number of batch parameters to process. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A result set object. </para>
+</simplesect>
+<simplesect kind="see"><para>open(), <ref refid="group__mainf_1ga961a75629487f22ebc87d114c5699bc2" kindref="member">prepare()</ref>, <ref refid="group__mainf_1ga5cbac617a3964611bd16a2fc6f991b83" kindref="member">execute()</ref>, <ref refid="classnanodbc_1_1result" kindref="compound">result</ref>, <ref refid="classnanodbc_1_1transaction" kindref="compound">transaction</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1951" column="8" declfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" declline="1951" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="group__mainf_1ga343e69acce5e8122723ca8d38b0a7f92" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void nanodbc::just_transact</definition>
+        <argsstring>(statement &amp;stmt, long batch_operations)</argsstring>
+        <name>just_transact</name>
+        <param>
+          <type>statement &amp;</type>
+          <declname>stmt</declname>
+        </param>
+        <param>
+          <type>long</type>
+          <declname>batch_operations</declname>
+        </param>
+        <briefdescription>
+<para>Execute the previously prepared query now and without creating result object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Executes within the context of a transaction object, commits directly after execution. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>stmt</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The prepared statement that will be executed in batch. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>batch_operations</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Rows to fetch per rowset, or the number of batch parameters to process. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A result set object. </para>
+</simplesect>
+<simplesect kind="see"><para>open(), <ref refid="group__mainf_1ga961a75629487f22ebc87d114c5699bc2" kindref="member">prepare()</ref>, <ref refid="group__mainf_1ga5cbac617a3964611bd16a2fc6f991b83" kindref="member">execute()</ref>, <ref refid="classnanodbc_1_1result" kindref="compound">result</ref>, <ref refid="classnanodbc_1_1transaction" kindref="compound">transaction</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1961" column="6" declfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" declline="1961" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="group__mainf_1ga961a75629487f22ebc87d114c5699bc2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void nanodbc::prepare</definition>
+        <argsstring>(statement &amp;stmt, const string &amp;query, long timeout=0)</argsstring>
+        <name>prepare</name>
+        <param>
+          <type>statement &amp;</type>
+          <declname>stmt</declname>
+        </param>
+        <param>
+          <type>const string &amp;</type>
+          <declname>query</declname>
+        </param>
+        <param>
+          <type>long</type>
+          <declname>timeout</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+<para>Prepares the given statement to execute on it associated connection. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>If the statement is not open throws <ref refid="classnanodbc_1_1programming__error" kindref="compound">programming_error</ref>. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>stmt</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The prepared statement that will be executed in batch. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>query</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The SQL query that will be executed. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>timeout</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number in seconds before query timeout. Default is 0 indicating no timeout. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="see"><para>open() </para>
+</simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+<parametername><ref refid="classnanodbc_1_1programming__error" kindref="compound">programming_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1971" column="6" declfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" declline="1971" declcolumn="6"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Convenience functions. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classnanodbc_1_1index__range__error" kind="class" language="C++" prot="public">
+    <compoundname>nanodbc::index_range_error</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">runtime_error</basecompoundref>
+    <includes refid="nanodbc_8h" local="no">nanodbc.h</includes>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classnanodbc_1_1index__range__error_1a70574ec7f027c4f8767260391f2452b3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>nanodbc::index_range_error::index_range_error</definition>
+        <argsstring>()</argsstring>
+        <name>index_range_error</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="271" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1index__range__error_1a9e63be3fdebcf2310e7ad7af479ab429" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char* nanodbc::index_range_error::what</definition>
+        <argsstring>() const noexcept</argsstring>
+        <name>what</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="272" column="16"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Index out of range. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="group__exceptions" kindref="compound">Exception types</ref> </para>
+</simplesect>
+</para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>runtime_error</label>
+      </node>
+      <node id="1">
+        <label>nanodbc::index_range_error</label>
+        <link refid="classnanodbc_1_1index__range__error"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>runtime_error</label>
+      </node>
+      <node id="1">
+        <label>nanodbc::index_range_error</label>
+        <link refid="classnanodbc_1_1index__range__error"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="269" column="1" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="268" bodyend="273"/>
+    <listofallmembers>
+      <member refid="classnanodbc_1_1index__range__error_1a70574ec7f027c4f8767260391f2452b3" prot="public" virt="non-virtual"><scope>nanodbc::index_range_error</scope><name>index_range_error</name></member>
+      <member refid="classnanodbc_1_1index__range__error_1a9e63be3fdebcf2310e7ad7af479ab429" prot="public" virt="non-virtual"><scope>nanodbc::index_range_error</scope><name>what</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

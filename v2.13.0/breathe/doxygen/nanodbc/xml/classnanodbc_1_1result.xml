@@ -1,0 +1,1652 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classnanodbc_1_1result" kind="class" language="C++" prot="public">
+    <compoundname>nanodbc::result</compoundname>
+    <includes refid="nanodbc_8h" local="no">nanodbc.h</includes>
+      <sectiondef kind="friend">
+      <memberdef kind="friend" id="classnanodbc_1_1result_1aef4143376fa8878d00721aca642cbfee" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>friend class</type>
+        <definition>friend class nanodbc::statement::statement_impl</definition>
+        <argsstring></argsstring>
+        <name>nanodbc::statement::statement_impl</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1552" column="5" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1551" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="friend" id="classnanodbc_1_1result_1af0f3134c7f6f1f36bfe1e247318dfe43" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>friend class</type>
+        <definition>friend class nanodbc::catalog</definition>
+        <argsstring></argsstring>
+        <name>nanodbc::catalog</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1553" column="5" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1553" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classnanodbc_1_1result_1a2dd0236ea8297f5097dc366e65bd7ab2" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; result_impl &gt;</type>
+        <definition>std::shared_ptr&lt;result_impl&gt; nanodbc::result::impl_</definition>
+        <argsstring></argsstring>
+        <name>impl_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1556" column="21" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1556" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classnanodbc_1_1result_1ad4d59619a46d67bbc171d0d5c9e84705" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>nanodbc::result::result</definition>
+        <argsstring>()</argsstring>
+        <name>result</name>
+        <briefdescription>
+<para>Empty result set. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1234" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a19f6d7665824d9b06d7c2db22b34b4f3" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>nanodbc::result::~result</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~result</name>
+        <briefdescription>
+<para>Free result set. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1237" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a47f04c9526ecd6a1abf503ac534edc23" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>nanodbc::result::result</definition>
+        <argsstring>(const result &amp;rhs)</argsstring>
+        <name>result</name>
+        <param>
+          <type>const <ref refid="classnanodbc_1_1result" kindref="compound">result</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+<para>Copy constructor. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1240" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1af616d94ee18fa55cfd60687b98ff9ebd" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>nanodbc::result::result</definition>
+        <argsstring>(result &amp;&amp;rhs) noexcept</argsstring>
+        <name>result</name>
+        <param>
+          <type><ref refid="classnanodbc_1_1result" kindref="compound">result</ref> &amp;&amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+<para>Move constructor. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1243" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1aaf3b372233acae955b4fa7f39557762a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classnanodbc_1_1result" kindref="compound">result</ref> &amp;</type>
+        <definition>result&amp; nanodbc::result::operator=</definition>
+        <argsstring>(result rhs)</argsstring>
+        <name>operator=</name>
+        <param>
+          <type><ref refid="classnanodbc_1_1result" kindref="compound">result</ref></type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+<para>Assignment. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1246" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a8cfba4b26f5dbddc955494484bc41a0d" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void nanodbc::result::swap</definition>
+        <argsstring>(result &amp;rhs) noexcept</argsstring>
+        <name>swap</name>
+        <param>
+          <type><ref refid="classnanodbc_1_1result" kindref="compound">result</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+<para>Member swap. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1249" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a578066b462c2aa17c122ee7be268456e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void *</type>
+        <definition>void* nanodbc::result::native_statement_handle</definition>
+        <argsstring>() const</argsstring>
+        <name>native_statement_handle</name>
+        <briefdescription>
+<para>Returns the native ODBC statement handle. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1252" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1adea873810ff2e393096c16aabeadd48f" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>long</type>
+        <definition>long nanodbc::result::rowset_size</definition>
+        <argsstring>() const noexcept</argsstring>
+        <name>rowset_size</name>
+        <briefdescription>
+<para>The rowset size for this result set. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1255" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1ab038630cf35248dc6731eea37b14d12d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>long</type>
+        <definition>long nanodbc::result::affected_rows</definition>
+        <argsstring>() const</argsstring>
+        <name>affected_rows</name>
+        <briefdescription>
+<para>Number of affected rows by the request or -1 if the affected rows is not available. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1259" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1aba877de8e2cb4e17235464b3b9b7c069" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool nanodbc::result::has_affected_rows</definition>
+        <argsstring>() const</argsstring>
+        <name>has_affected_rows</name>
+        <briefdescription>
+<para>Reports if number of affected rows is available. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>true if number of affected rows is known, regardless of the value; false if the number is not available. </para>
+</simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para><programlisting filename=".cpp"><codeline><highlight class="normal">assert(r.has_affected_rows()<sp/>==<sp/>(r.affected_rows()<sp/>&gt;=<sp/>0));</highlight></codeline>
+</programlisting> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1268" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a7138ae9ec911fd4694a5c81ef902db89" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>long</type>
+        <definition>long nanodbc::result::rows</definition>
+        <argsstring>() const noexcept</argsstring>
+        <name>rows</name>
+        <briefdescription>
+<para>Rows in the current rowset or 0 if the number of rows is not available. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1271" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1af21bbbe31f0e2578701edb3b386cd536" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>short</type>
+        <definition>short nanodbc::result::columns</definition>
+        <argsstring>() const</argsstring>
+        <name>columns</name>
+        <briefdescription>
+<para>Returns the number of columns in a result set. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1275" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a8ce75f4ab1bb039c6ee6724966f54a93" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool nanodbc::result::first</definition>
+        <argsstring>()</argsstring>
+        <name>first</name>
+        <briefdescription>
+<para>Fetches the first row in the current result set. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>true if there are more results or false otherwise. </para>
+</simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1280" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a5078a998be38e7814338597eaf100405" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool nanodbc::result::last</definition>
+        <argsstring>()</argsstring>
+        <name>last</name>
+        <briefdescription>
+<para>Fetches the last row in the current result set. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>true if there are more results or false otherwise. </para>
+</simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1285" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a31470b51f194181373e4c2c4292d11c4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool nanodbc::result::next</definition>
+        <argsstring>()</argsstring>
+        <name>next</name>
+        <briefdescription>
+<para>Fetches the next row in the current result set. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>true if there are more results or false otherwise. </para>
+</simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1290" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a8c690c95797a04a6ea022e64867d0f53" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool nanodbc::result::async_next</definition>
+        <argsstring>(void *event_handle)</argsstring>
+        <name>async_next</name>
+        <param>
+          <type>void *</type>
+          <declname>event_handle</declname>
+        </param>
+        <briefdescription>
+<para>Initiates an asynchronous fetch of the next row in the current result set. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>true if the caller needs to wait for the event to be signalled, false if <ref refid="classnanodbc_1_1result_1a0af2da5efc2576da4d2b2b54e340e11c" kindref="member">complete_next()</ref> can be called immediately. </para>
+</simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1297" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a0af2da5efc2576da4d2b2b54e340e11c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool nanodbc::result::complete_next</definition>
+        <argsstring>()</argsstring>
+        <name>complete_next</name>
+        <briefdescription>
+<para>Completes a previously-initiated async fetch for next row in the current result set. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>true if there are more results or false otherwise. </para>
+</simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1302" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1afd0b71a0bfe3e184f3b9a1caf8f17058" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool nanodbc::result::prior</definition>
+        <argsstring>()</argsstring>
+        <name>prior</name>
+        <briefdescription>
+<para>Fetches the prior row in the current result set. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>true if there are more results or false otherwise. </para>
+</simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1308" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a70388a8ca569a6e30367a45f215f2986" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool nanodbc::result::move</definition>
+        <argsstring>(long row)</argsstring>
+        <name>move</name>
+        <param>
+          <type>long</type>
+          <declname>row</declname>
+        </param>
+        <briefdescription>
+<para>Moves to and fetches the specified row in the current result set. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>true if there are results or false otherwise. </para>
+</simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1313" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1abcd96eb3fd8fea53fa41289c5fc87377" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool nanodbc::result::skip</definition>
+        <argsstring>(long rows)</argsstring>
+        <name>skip</name>
+        <param>
+          <type>long</type>
+          <declname>rows</declname>
+        </param>
+        <briefdescription>
+<para>Skips a number of rows and then fetches the resulting row in the current result set. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>true if there are results or false otherwise. </para>
+</simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1318" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a240f2c35df4ff9816150918a60a83f0e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>unsigned long</type>
+        <definition>unsigned long nanodbc::result::position</definition>
+        <argsstring>() const</argsstring>
+        <name>position</name>
+        <briefdescription>
+<para>Returns the row position in the current result set. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1321" column="19"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1ab6c9e33d74b195c57766dcdd37d101d2" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool nanodbc::result::at_end</definition>
+        <argsstring>() const noexcept</argsstring>
+        <name>at_end</name>
+        <briefdescription>
+<para>Returns true if there are no more results in the current result set. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1324" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a5679451fc4f49cd09a935f3c47794281" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void nanodbc::result::unbind</definition>
+        <argsstring>()</argsstring>
+        <name>unbind</name>
+        <briefdescription>
+<para>Unbind data buffers for all columns in the result set. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Wraps <ref refid="classnanodbc_1_1result_1a07f0a69fb96b4c221df8cca8e9e99b80" kindref="member">unbind(short column)</ref> <parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1index__range__error" kindref="compound">index_range_error</ref></parametername>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1330" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a319dac2ed0ae506cc5e17be519884ffb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void nanodbc::result::unbind</definition>
+        <argsstring>(const string &amp;column_name)</argsstring>
+        <name>unbind</name>
+        <param>
+          <type>const string &amp;</type>
+          <declname>column_name</declname>
+        </param>
+        <briefdescription>
+<para>Unbind data buffers for specific columns in the result set. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Wraps <ref refid="classnanodbc_1_1result_1a07f0a69fb96b4c221df8cca8e9e99b80" kindref="member">unbind(short column)</ref></para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>column_name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>string Name of column we wish to unbind. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1index__range__error" kindref="compound">index_range_error</ref></parametername>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1338" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a07f0a69fb96b4c221df8cca8e9e99b80" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void nanodbc::result::unbind</definition>
+        <argsstring>(short column)</argsstring>
+        <name>unbind</name>
+        <param>
+          <type>short</type>
+          <declname>column</declname>
+        </param>
+        <briefdescription>
+<para>Unbind data buffers for specific columns in the result set. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>When a result is constructed, in order to optimize data retrieval, we automatically try to bind buffers, except for columns that contain long/blob data types. This method gives the caller the option to unbind a specific buffer. Subsequently, during calls to <ref refid="classnanodbc_1_1result_1affa949e32147a8f262d066a790651ad7" kindref="member">get()</ref>, if there is no bound data buffer, we will attempt to retrieve the data using a call SQLGetData; this is similar to the route taken for columns hosting long or bloby data types. This is suboptimal from efficiency perspective, however may be necessary of the driver we are communicating with does not support out-of-order retrieval of long data.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>column</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>short Zero-based index of column we wish to unbind. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1index__range__error" kindref="compound">index_range_error</ref></parametername>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1354" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1ad606b9ccfa02d6dbdae7a28c7a92bb14" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void nanodbc::result::get_ref</definition>
+        <argsstring>(short column, T &amp;result) const</argsstring>
+        <name>get_ref</name>
+        <param>
+          <type>short</type>
+          <declname>column</declname>
+        </param>
+        <param>
+          <type>T &amp;</type>
+          <declname>result</declname>
+        </param>
+        <briefdescription>
+<para>Gets data from the given column of the current rowset. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Columns are numbered from left to right and 0-indexed. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>column</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>position. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>result</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The column&apos;s value will be written to this parameter. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+<parametername><ref refid="classnanodbc_1_1index__range__error" kindref="compound">index_range_error</ref></parametername>
+<parametername><ref refid="classnanodbc_1_1type__incompatible__error" kindref="compound">type_incompatible_error</ref></parametername>
+<parametername><ref refid="classnanodbc_1_1null__access__error" kindref="compound">null_access_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1363" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a5f1ed8303dd506ed57a3eb87acd219b1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void nanodbc::result::get_ref</definition>
+        <argsstring>(short column, const T &amp;fallback, T &amp;result) const</argsstring>
+        <name>get_ref</name>
+        <param>
+          <type>short</type>
+          <declname>column</declname>
+        </param>
+        <param>
+          <type>const T &amp;</type>
+          <declname>fallback</declname>
+        </param>
+        <param>
+          <type>T &amp;</type>
+          <declname>result</declname>
+        </param>
+        <briefdescription>
+<para>Gets data from the given column of the current rowset. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>If the data is null, fallback is returned instead.</para>
+<para>Columns are numbered from left to right and 0-indexed. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>column</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>position. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fallback</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>if value is null, return fallback instead. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>result</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The column&apos;s value will be written to this parameter. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+<parametername><ref refid="classnanodbc_1_1index__range__error" kindref="compound">index_range_error</ref></parametername>
+<parametername><ref refid="classnanodbc_1_1type__incompatible__error" kindref="compound">type_incompatible_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1375" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a09a12956778629533cbb619a4fd9216d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void nanodbc::result::get_ref</definition>
+        <argsstring>(const string &amp;column_name, T &amp;result) const</argsstring>
+        <name>get_ref</name>
+        <param>
+          <type>const string &amp;</type>
+          <declname>column_name</declname>
+        </param>
+        <param>
+          <type>T &amp;</type>
+          <declname>result</declname>
+        </param>
+        <briefdescription>
+<para>Gets data from the given column by name of the current rowset. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>column_name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>column&apos;s name. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>result</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The column&apos;s value will be written to this parameter. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+<parametername><ref refid="classnanodbc_1_1index__range__error" kindref="compound">index_range_error</ref></parametername>
+<parametername><ref refid="classnanodbc_1_1type__incompatible__error" kindref="compound">type_incompatible_error</ref></parametername>
+<parametername><ref refid="classnanodbc_1_1null__access__error" kindref="compound">null_access_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1383" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1aacbd54c96647e3450c62b16a0678d027" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void nanodbc::result::get_ref</definition>
+        <argsstring>(const string &amp;column_name, const T &amp;fallback, T &amp;result) const</argsstring>
+        <name>get_ref</name>
+        <param>
+          <type>const string &amp;</type>
+          <declname>column_name</declname>
+        </param>
+        <param>
+          <type>const T &amp;</type>
+          <declname>fallback</declname>
+        </param>
+        <param>
+          <type>T &amp;</type>
+          <declname>result</declname>
+        </param>
+        <briefdescription>
+<para>Gets data from the given column by name of the current rowset. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>If the data is null, fallback is returned instead.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>column_name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>column&apos;s name. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fallback</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>if value is null, return fallback instead. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>result</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The column&apos;s value will be written to this parameter. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+<parametername><ref refid="classnanodbc_1_1index__range__error" kindref="compound">index_range_error</ref></parametername>
+<parametername><ref refid="classnanodbc_1_1type__incompatible__error" kindref="compound">type_incompatible_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1394" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1affa949e32147a8f262d066a790651ad7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>T</type>
+        <definition>T nanodbc::result::get</definition>
+        <argsstring>(short column) const</argsstring>
+        <name>get</name>
+        <param>
+          <type>short</type>
+          <declname>column</declname>
+        </param>
+        <briefdescription>
+<para>Gets data from the given column of the current rowset. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Columns are numbered from left to right and 0-indexed. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>column</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>position. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+<parametername><ref refid="classnanodbc_1_1index__range__error" kindref="compound">index_range_error</ref></parametername>
+<parametername><ref refid="classnanodbc_1_1type__incompatible__error" kindref="compound">type_incompatible_error</ref></parametername>
+<parametername><ref refid="classnanodbc_1_1null__access__error" kindref="compound">null_access_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1402" column="7"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1af33ef788292fc12198c06924db24fe97" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>T</type>
+        <definition>T nanodbc::result::get</definition>
+        <argsstring>(short column, const T &amp;fallback) const</argsstring>
+        <name>get</name>
+        <param>
+          <type>short</type>
+          <declname>column</declname>
+        </param>
+        <param>
+          <type>const T &amp;</type>
+          <declname>fallback</declname>
+        </param>
+        <briefdescription>
+<para>Gets data from the given column of the current rowset. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>If the data is null, fallback is returned instead.</para>
+<para>Columns are numbered from left to right and 0-indexed. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>column</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>position. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fallback</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>if value is null, return fallback instead. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+<parametername><ref refid="classnanodbc_1_1index__range__error" kindref="compound">index_range_error</ref></parametername>
+<parametername><ref refid="classnanodbc_1_1type__incompatible__error" kindref="compound">type_incompatible_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1413" column="7"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a3be6ab61aea0902cb05f55ad814e85c1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>T</type>
+        <definition>T nanodbc::result::get</definition>
+        <argsstring>(const string &amp;column_name) const</argsstring>
+        <name>get</name>
+        <param>
+          <type>const string &amp;</type>
+          <declname>column_name</declname>
+        </param>
+        <briefdescription>
+<para>Gets data from the given column by name of the current rowset. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>column_name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>column&apos;s name. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+<parametername><ref refid="classnanodbc_1_1index__range__error" kindref="compound">index_range_error</ref></parametername>
+<parametername><ref refid="classnanodbc_1_1type__incompatible__error" kindref="compound">type_incompatible_error</ref></parametername>
+<parametername><ref refid="classnanodbc_1_1null__access__error" kindref="compound">null_access_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1420" column="7"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a447e4575031945386b584c576c3a89bd" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>T</type>
+        <definition>T nanodbc::result::get</definition>
+        <argsstring>(const string &amp;column_name, const T &amp;fallback) const</argsstring>
+        <name>get</name>
+        <param>
+          <type>const string &amp;</type>
+          <declname>column_name</declname>
+        </param>
+        <param>
+          <type>const T &amp;</type>
+          <declname>fallback</declname>
+        </param>
+        <briefdescription>
+<para>Gets data from the given column by name of the current rowset. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>If the data is null, fallback is returned instead.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>column_name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>column&apos;s name. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fallback</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>if value is null, return fallback instead. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+<parametername><ref refid="classnanodbc_1_1index__range__error" kindref="compound">index_range_error</ref></parametername>
+<parametername><ref refid="classnanodbc_1_1type__incompatible__error" kindref="compound">type_incompatible_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1430" column="7"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a85462f6eaed91a5b03739319bd2712e7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool nanodbc::result::is_null</definition>
+        <argsstring>(short column) const</argsstring>
+        <name>is_null</name>
+        <param>
+          <type>short</type>
+          <declname>column</declname>
+        </param>
+        <briefdescription>
+<para>Returns true if and only if the given column of the current rowset is null. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>There is a bug/limitation in ODBC drivers for SQL Server (and possibly others) which causes SQLBindCol() to never write SQL_NOT_NULL to the length/indicator buffer unless you also bind the data column. nanodbc&apos;s <ref refid="classnanodbc_1_1result_1a85462f6eaed91a5b03739319bd2712e7" kindref="member">is_null()</ref> will return correct values for (n)varchar(max) columns when you ensure that SQLGetData() has been called for that column (i.e. after <ref refid="classnanodbc_1_1result_1affa949e32147a8f262d066a790651ad7" kindref="member">get()</ref> or <ref refid="classnanodbc_1_1result_1ad606b9ccfa02d6dbdae7a28c7a92bb14" kindref="member">get_ref()</ref> is called).</para>
+<para>Columns are numbered from left to right and 0-indexed. <simplesect kind="see"><para><ref refid="classnanodbc_1_1result_1affa949e32147a8f262d066a790651ad7" kindref="member">get()</ref>, <ref refid="classnanodbc_1_1result_1ad606b9ccfa02d6dbdae7a28c7a92bb14" kindref="member">get_ref()</ref> </para>
+</simplesect>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>column</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>position. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+<parametername><ref refid="classnanodbc_1_1index__range__error" kindref="compound">index_range_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1444" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a9201ef6814bf934ffb9caa7b62f3bad9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool nanodbc::result::is_null</definition>
+        <argsstring>(const string &amp;column_name) const</argsstring>
+        <name>is_null</name>
+        <param>
+          <type>const string &amp;</type>
+          <declname>column_name</declname>
+        </param>
+        <briefdescription>
+<para>Returns true if and only if the given column by name of the current rowset is null. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>See is_null(short column) for details on a bug/limitation of some ODBC drivers. <simplesect kind="see"><para><ref refid="classnanodbc_1_1result_1a85462f6eaed91a5b03739319bd2712e7" kindref="member">is_null()</ref> </para>
+</simplesect>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>column_name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>column&apos;s name. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1database__error" kindref="compound">database_error</ref></parametername>
+<parametername><ref refid="classnanodbc_1_1index__range__error" kindref="compound">index_range_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1452" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1aa2c248c125cc8ac8ac2d9d39f4a18b57" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool nanodbc::result::is_bound</definition>
+        <argsstring>(short column) const</argsstring>
+        <name>is_bound</name>
+        <param>
+          <type>short</type>
+          <declname>column</declname>
+        </param>
+        <briefdescription>
+<para>Returns true if we have bound a buffer to the given column. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Generically, nanodbc will greedily bind buffers to columns in the result set. However, we have also given the user the ability to unbind buffers via <ref refid="classnanodbc_1_1result_1a5679451fc4f49cd09a935f3c47794281" kindref="member">unbind()</ref> forcing nanodbc to retrieve data via SQLGetData. This method returns true if there is a buffer bound to the column.</para>
+<para>Columns are numbered from left to right and 0-indexed. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>column</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>short position. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1index__range__error" kindref="compound">index_range_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1464" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a29d14573922616bad3e734bf0379d39f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool nanodbc::result::is_bound</definition>
+        <argsstring>(const string &amp;column_name) const</argsstring>
+        <name>is_bound</name>
+        <param>
+          <type>const string &amp;</type>
+          <declname>column_name</declname>
+        </param>
+        <briefdescription>
+<para>Returns true if we have bound a buffer to the given column. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>See is_bound(short column) for details. <simplesect kind="see"><para><ref refid="classnanodbc_1_1result_1aa2c248c125cc8ac8ac2d9d39f4a18b57" kindref="member">is_bound()</ref> </para>
+</simplesect>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>column_name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>column&apos;s name. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1index__range__error" kindref="compound">index_range_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1472" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1ae4e254b2db63c65473cc058de3d5a844" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>short</type>
+        <definition>short nanodbc::result::column</definition>
+        <argsstring>(const string &amp;column_name) const</argsstring>
+        <name>column</name>
+        <param>
+          <type>const string &amp;</type>
+          <declname>column_name</declname>
+        </param>
+        <briefdescription>
+<para>Returns the column number of the specified column name. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Columns are numbered from left to right and 0-indexed. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>column_name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>column&apos;s name. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1index__range__error" kindref="compound">index_range_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1479" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a2bd3fc4e416108960c4191b2cbba256b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string nanodbc::result::column_name</definition>
+        <argsstring>(short column) const</argsstring>
+        <name>column_name</name>
+        <param>
+          <type>short</type>
+          <declname>column</declname>
+        </param>
+        <briefdescription>
+<para>Returns the name of the specified column. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Columns are numbered from left to right and 0-indexed. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>column</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>position. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1index__range__error" kindref="compound">index_range_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1486" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1ae6c9d812e8be9ea46a5cd346e83a6cba" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>long</type>
+        <definition>long nanodbc::result::column_size</definition>
+        <argsstring>(short column) const</argsstring>
+        <name>column_size</name>
+        <param>
+          <type>short</type>
+          <declname>column</declname>
+        </param>
+        <briefdescription>
+<para>Returns the size of the specified column. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Columns are numbered from left to right and 0-indexed. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>column</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>position. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1index__range__error" kindref="compound">index_range_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1493" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a43c42071bf86c4532039b61ad3f3c6c6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>long</type>
+        <definition>long nanodbc::result::column_size</definition>
+        <argsstring>(const string &amp;column_name) const</argsstring>
+        <name>column_size</name>
+        <param>
+          <type>const string &amp;</type>
+          <declname>column_name</declname>
+        </param>
+        <briefdescription>
+<para>Returns the size of the specified column by name. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1496" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1aa2568f3d624d65a9f850880e1d2747f8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int nanodbc::result::column_decimal_digits</definition>
+        <argsstring>(short column) const</argsstring>
+        <name>column_decimal_digits</name>
+        <param>
+          <type>short</type>
+          <declname>column</declname>
+        </param>
+        <briefdescription>
+<para>Returns the number of decimal digits of the specified column. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Applies to exact numeric types (scale), datetime and interval types (prcision). If the number cannot be determined or is not applicable, drivers typically return 0.</para>
+<para>Columns are numbered from left to right and 0-indexed. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>column</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>position. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classnanodbc_1_1index__range__error" kindref="compound">index_range_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1506" column="9"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1aabbb9fb0a14a5b0fbb33fda4a1143b78" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int nanodbc::result::column_decimal_digits</definition>
+        <argsstring>(const string &amp;column_name) const</argsstring>
+        <name>column_decimal_digits</name>
+        <param>
+          <type>const string &amp;</type>
+          <declname>column_name</declname>
+        </param>
+        <briefdescription>
+<para>Returns the number of decimal digits of the specified column by name. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1509" column="9"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a8adc601a07a055f15908724e285133bb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int nanodbc::result::column_datatype</definition>
+        <argsstring>(short column) const</argsstring>
+        <name>column_datatype</name>
+        <param>
+          <type>short</type>
+          <declname>column</declname>
+        </param>
+        <briefdescription>
+<para>Returns a identifying integer value representing the SQL type of this column. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1512" column="9"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1af698d05f12656b6ab0809b0a60ea9a60" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int nanodbc::result::column_datatype</definition>
+        <argsstring>(const string &amp;column_name) const</argsstring>
+        <name>column_datatype</name>
+        <param>
+          <type>const string &amp;</type>
+          <declname>column_name</declname>
+        </param>
+        <briefdescription>
+<para>Returns a identifying integer value representing the SQL type of this column by name. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1515" column="9"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a72775ba759833560efebba44892576b3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string nanodbc::result::column_datatype_name</definition>
+        <argsstring>(short column) const</argsstring>
+        <name>column_datatype_name</name>
+        <param>
+          <type>short</type>
+          <declname>column</declname>
+        </param>
+        <briefdescription>
+<para>Returns data source dependent data type name of this column. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The function calls SQLCoLAttribute with the field attribute SQL_DESC_TYPE_NAME to obtain the data type name. If the type is unknown, an empty string is returned. <simplesect kind="note"><para>Unlike other column metadata functions (eg. <ref refid="classnanodbc_1_1result_1a8adc601a07a055f15908724e285133bb" kindref="member">column_datatype()</ref>), this function cost is an extra ODBC API call. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1524" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a391d792c4a37be4037274b681c96da59" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>string</type>
+        <definition>string nanodbc::result::column_datatype_name</definition>
+        <argsstring>(const string &amp;column_name) const</argsstring>
+        <name>column_datatype_name</name>
+        <param>
+          <type>const string &amp;</type>
+          <declname>column_name</declname>
+        </param>
+        <briefdescription>
+<para>Returns data source dependent data type name of this column by name. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The function calls SQLCoLAttribute with the field attribute SQL_DESC_TYPE_NAME to obtain the data type name. If the type is unknown, an empty string is returned. <simplesect kind="note"><para>Unlike other column metadata functions (eg. <ref refid="classnanodbc_1_1result_1a8adc601a07a055f15908724e285133bb" kindref="member">column_datatype()</ref>), this function cost is an extra ODBC API call. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1533" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a094ee5a13d83c0aeabd8ccab4c4e130c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int nanodbc::result::column_c_datatype</definition>
+        <argsstring>(short column) const</argsstring>
+        <name>column_c_datatype</name>
+        <param>
+          <type>short</type>
+          <declname>column</declname>
+        </param>
+        <briefdescription>
+<para>Returns a identifying integer value representing the C type of this column. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1536" column="9"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a3f505031acffabc538b2d840416074fa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int nanodbc::result::column_c_datatype</definition>
+        <argsstring>(const string &amp;column_name) const</argsstring>
+        <name>column_c_datatype</name>
+        <param>
+          <type>const string &amp;</type>
+          <declname>column_name</declname>
+        </param>
+        <briefdescription>
+<para>Returns a identifying integer value representing the C type of this column by name. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1539" column="9"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a9cb9d5325c3ce58e7c48c1e4da1a99bb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool nanodbc::result::next_result</definition>
+        <argsstring>()</argsstring>
+        <name>next_result</name>
+        <briefdescription>
+<para>Returns the next result, e.g. when stored procedure returns multiple result sets. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1542" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1result_1a235653804363793ffe2e8300160694f6" prot="public" static="no" const="yes" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>nanodbc::result::operator bool</definition>
+        <argsstring>() const</argsstring>
+        <name>operator bool</name>
+        <briefdescription>
+<para>If and only if result object is valid, returns true. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1545" column="14"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="classnanodbc_1_1result_1af9bb9246941ac274bba7fea262a68992" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>nanodbc::result::result</definition>
+        <argsstring>(statement statement, long rowset_size)</argsstring>
+        <name>result</name>
+        <param>
+          <type><ref refid="classnanodbc_1_1statement" kindref="compound">statement</ref></type>
+          <declname>statement</declname>
+        </param>
+        <param>
+          <type>long</type>
+          <declname>rowset_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1548" column="5"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>A resource for managing result sets from statement execution. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="classnanodbc_1_1statement_1aaf1b96ccd2da0f671d9e845d68fcde37" kindref="member">statement::execute()</ref>, <ref refid="classnanodbc_1_1statement_1a8e6a6a9e68aba45704bfdd41fd4e827c" kindref="member">statement::execute_direct()</ref> </para>
+</simplesect>
+<simplesect kind="note"><para>result objects may be copied, however all copies will refer to the same result set. </para>
+</simplesect>
+</para>
+    </detaileddescription>
+    <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1231" column="1" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1230" bodyend="1557"/>
+    <listofallmembers>
+      <member refid="classnanodbc_1_1result_1ab038630cf35248dc6731eea37b14d12d" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>affected_rows</name></member>
+      <member refid="classnanodbc_1_1result_1a8c690c95797a04a6ea022e64867d0f53" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>async_next</name></member>
+      <member refid="classnanodbc_1_1result_1ab6c9e33d74b195c57766dcdd37d101d2" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>at_end</name></member>
+      <member refid="classnanodbc_1_1result_1ae4e254b2db63c65473cc058de3d5a844" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>column</name></member>
+      <member refid="classnanodbc_1_1result_1a094ee5a13d83c0aeabd8ccab4c4e130c" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>column_c_datatype</name></member>
+      <member refid="classnanodbc_1_1result_1a3f505031acffabc538b2d840416074fa" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>column_c_datatype</name></member>
+      <member refid="classnanodbc_1_1result_1a8adc601a07a055f15908724e285133bb" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>column_datatype</name></member>
+      <member refid="classnanodbc_1_1result_1af698d05f12656b6ab0809b0a60ea9a60" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>column_datatype</name></member>
+      <member refid="classnanodbc_1_1result_1a72775ba759833560efebba44892576b3" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>column_datatype_name</name></member>
+      <member refid="classnanodbc_1_1result_1a391d792c4a37be4037274b681c96da59" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>column_datatype_name</name></member>
+      <member refid="classnanodbc_1_1result_1aa2568f3d624d65a9f850880e1d2747f8" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>column_decimal_digits</name></member>
+      <member refid="classnanodbc_1_1result_1aabbb9fb0a14a5b0fbb33fda4a1143b78" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>column_decimal_digits</name></member>
+      <member refid="classnanodbc_1_1result_1a2bd3fc4e416108960c4191b2cbba256b" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>column_name</name></member>
+      <member refid="classnanodbc_1_1result_1ae6c9d812e8be9ea46a5cd346e83a6cba" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>column_size</name></member>
+      <member refid="classnanodbc_1_1result_1a43c42071bf86c4532039b61ad3f3c6c6" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>column_size</name></member>
+      <member refid="classnanodbc_1_1result_1af21bbbe31f0e2578701edb3b386cd536" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>columns</name></member>
+      <member refid="classnanodbc_1_1result_1a0af2da5efc2576da4d2b2b54e340e11c" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>complete_next</name></member>
+      <member refid="classnanodbc_1_1result_1a8ce75f4ab1bb039c6ee6724966f54a93" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>first</name></member>
+      <member refid="classnanodbc_1_1result_1affa949e32147a8f262d066a790651ad7" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>get</name></member>
+      <member refid="classnanodbc_1_1result_1af33ef788292fc12198c06924db24fe97" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>get</name></member>
+      <member refid="classnanodbc_1_1result_1a3be6ab61aea0902cb05f55ad814e85c1" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>get</name></member>
+      <member refid="classnanodbc_1_1result_1a447e4575031945386b584c576c3a89bd" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>get</name></member>
+      <member refid="classnanodbc_1_1result_1ad606b9ccfa02d6dbdae7a28c7a92bb14" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>get_ref</name></member>
+      <member refid="classnanodbc_1_1result_1a5f1ed8303dd506ed57a3eb87acd219b1" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>get_ref</name></member>
+      <member refid="classnanodbc_1_1result_1a09a12956778629533cbb619a4fd9216d" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>get_ref</name></member>
+      <member refid="classnanodbc_1_1result_1aacbd54c96647e3450c62b16a0678d027" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>get_ref</name></member>
+      <member refid="classnanodbc_1_1result_1aba877de8e2cb4e17235464b3b9b7c069" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>has_affected_rows</name></member>
+      <member refid="classnanodbc_1_1result_1a2dd0236ea8297f5097dc366e65bd7ab2" prot="private" virt="non-virtual"><scope>nanodbc::result</scope><name>impl_</name></member>
+      <member refid="classnanodbc_1_1result_1aa2c248c125cc8ac8ac2d9d39f4a18b57" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>is_bound</name></member>
+      <member refid="classnanodbc_1_1result_1a29d14573922616bad3e734bf0379d39f" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>is_bound</name></member>
+      <member refid="classnanodbc_1_1result_1a85462f6eaed91a5b03739319bd2712e7" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>is_null</name></member>
+      <member refid="classnanodbc_1_1result_1a9201ef6814bf934ffb9caa7b62f3bad9" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>is_null</name></member>
+      <member refid="classnanodbc_1_1result_1a5078a998be38e7814338597eaf100405" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>last</name></member>
+      <member refid="classnanodbc_1_1result_1a70388a8ca569a6e30367a45f215f2986" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>move</name></member>
+      <member refid="classnanodbc_1_1result_1af0f3134c7f6f1f36bfe1e247318dfe43" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>nanodbc::catalog</name></member>
+      <member refid="classnanodbc_1_1result_1aef4143376fa8878d00721aca642cbfee" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>nanodbc::statement::statement_impl</name></member>
+      <member refid="classnanodbc_1_1result_1a578066b462c2aa17c122ee7be268456e" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>native_statement_handle</name></member>
+      <member refid="classnanodbc_1_1result_1a31470b51f194181373e4c2c4292d11c4" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>next</name></member>
+      <member refid="classnanodbc_1_1result_1a9cb9d5325c3ce58e7c48c1e4da1a99bb" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>next_result</name></member>
+      <member refid="classnanodbc_1_1result_1a235653804363793ffe2e8300160694f6" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>operator bool</name></member>
+      <member refid="classnanodbc_1_1result_1aaf3b372233acae955b4fa7f39557762a" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>operator=</name></member>
+      <member refid="classnanodbc_1_1result_1a240f2c35df4ff9816150918a60a83f0e" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>position</name></member>
+      <member refid="classnanodbc_1_1result_1afd0b71a0bfe3e184f3b9a1caf8f17058" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>prior</name></member>
+      <member refid="classnanodbc_1_1result_1ad4d59619a46d67bbc171d0d5c9e84705" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>result</name></member>
+      <member refid="classnanodbc_1_1result_1a47f04c9526ecd6a1abf503ac534edc23" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>result</name></member>
+      <member refid="classnanodbc_1_1result_1af616d94ee18fa55cfd60687b98ff9ebd" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>result</name></member>
+      <member refid="classnanodbc_1_1result_1af9bb9246941ac274bba7fea262a68992" prot="private" virt="non-virtual"><scope>nanodbc::result</scope><name>result</name></member>
+      <member refid="classnanodbc_1_1result_1a7138ae9ec911fd4694a5c81ef902db89" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>rows</name></member>
+      <member refid="classnanodbc_1_1result_1adea873810ff2e393096c16aabeadd48f" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>rowset_size</name></member>
+      <member refid="classnanodbc_1_1result_1abcd96eb3fd8fea53fa41289c5fc87377" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>skip</name></member>
+      <member refid="classnanodbc_1_1result_1a8cfba4b26f5dbddc955494484bc41a0d" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>swap</name></member>
+      <member refid="classnanodbc_1_1result_1a5679451fc4f49cd09a935f3c47794281" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>unbind</name></member>
+      <member refid="classnanodbc_1_1result_1a319dac2ed0ae506cc5e17be519884ffb" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>unbind</name></member>
+      <member refid="classnanodbc_1_1result_1a07f0a69fb96b4c221df8cca8e9e99b80" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>unbind</name></member>
+      <member refid="classnanodbc_1_1result_1a19f6d7665824d9b06d7c2db22b34b4f3" prot="public" virt="non-virtual"><scope>nanodbc::result</scope><name>~result</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

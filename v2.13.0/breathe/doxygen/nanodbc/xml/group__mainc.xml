@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="group__mainc" kind="group">
+    <compoundname>mainc</compoundname>
+    <title>Main classes</title>
+    <innerclass refid="classnanodbc_1_1transaction" prot="public">nanodbc::transaction</innerclass>
+    <innerclass refid="classnanodbc_1_1statement" prot="public">nanodbc::statement</innerclass>
+    <innerclass refid="classnanodbc_1_1connection" prot="public">nanodbc::connection</innerclass>
+    <innerclass refid="classnanodbc_1_1result" prot="public">nanodbc::result</innerclass>
+    <innerclass refid="classnanodbc_1_1result__iterator" prot="public">nanodbc::result_iterator</innerclass>
+    <innerclass refid="classnanodbc_1_1catalog" prot="public">nanodbc::catalog</innerclass>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="group__mainc_1gac6e8e0e4c603c1bbfc0c7db3a58919f0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>result_iterator</type>
+        <definition>result_iterator nanodbc::begin</definition>
+        <argsstring>(result &amp;r)</argsstring>
+        <name>begin</name>
+        <param>
+          <type>result &amp;</type>
+          <declname>r</declname>
+        </param>
+        <briefdescription>
+<para>Returns an iterator to the beginning of the given result set. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1630" column="24" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1630" bodyend="1633"/>
+      </memberdef>
+      <memberdef kind="function" id="group__mainc_1ga91df79a3401b5afd4ec109101737b05b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>result_iterator</type>
+        <definition>result_iterator nanodbc::end</definition>
+        <argsstring>(result &amp;)</argsstring>
+        <name>end</name>
+        <param>
+          <type>result &amp;</type>
+        </param>
+        <briefdescription>
+<para>Returns an iterator to the end of a result set. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The default-constructed <computeroutput><ref refid="classnanodbc_1_1result__iterator" kindref="compound">nanodbc::result_iterator</ref></computeroutput> is known as the end-of-result iterator. When a valid <computeroutput><ref refid="classnanodbc_1_1result__iterator" kindref="compound">nanodbc::result_iterator</ref></computeroutput> reaches the end of the underlying result set, it becomes equal to the end-of-result iterator. Dereferencing or incrementing it further is undefined. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1641" column="24" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1641" bodyend="1644"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Main nanodbc classes. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,251 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classnanodbc_1_1catalog" kind="class" language="C++" prot="public">
+    <compoundname>nanodbc::catalog</compoundname>
+    <includes refid="nanodbc_8h" local="no">nanodbc.h</includes>
+    <innerclass refid="classnanodbc_1_1catalog_1_1columns" prot="public">nanodbc::catalog::columns</innerclass>
+    <innerclass refid="classnanodbc_1_1catalog_1_1primary__keys" prot="public">nanodbc::catalog::primary_keys</innerclass>
+    <innerclass refid="classnanodbc_1_1catalog_1_1table__privileges" prot="public">nanodbc::catalog::table_privileges</innerclass>
+    <innerclass refid="classnanodbc_1_1catalog_1_1tables" prot="public">nanodbc::catalog::tables</innerclass>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classnanodbc_1_1catalog_1a05104cec13fd4e785f90fb2cd228beb2" prot="private" static="no" mutable="no">
+        <type><ref refid="classnanodbc_1_1connection" kindref="compound">connection</ref></type>
+        <definition>connection nanodbc::catalog::conn_</definition>
+        <argsstring></argsstring>
+        <name>conn_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1847" column="16" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1847" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1ad18e6a0858639c14eb33b90736ab6d0e" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>nanodbc::catalog::catalog</definition>
+        <argsstring>(connection &amp;conn)</argsstring>
+        <name>catalog</name>
+        <param>
+          <type><ref refid="classnanodbc_1_1connection" kindref="compound">connection</ref> &amp;</type>
+          <declname>conn</declname>
+        </param>
+        <briefdescription>
+<para>Creates catalog operating on database accessible through the specified connection. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1773" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1a8271eae78585043dfb59c85cc2e361f5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classnanodbc_1_1catalog_1_1tables" kindref="compound">catalog::tables</ref></type>
+        <definition>catalog::tables nanodbc::catalog::find_tables</definition>
+        <argsstring>(const string &amp;table=string(), const string &amp;type=string(), const string &amp;schema=string(), const string &amp;catalog=string())</argsstring>
+        <name>find_tables</name>
+        <param>
+          <type>const string &amp;</type>
+          <declname>table</declname>
+          <defval>string()</defval>
+        </param>
+        <param>
+          <type>const string &amp;</type>
+          <declname>type</declname>
+          <defval>string()</defval>
+        </param>
+        <param>
+          <type>const string &amp;</type>
+          <declname>schema</declname>
+          <defval>string()</defval>
+        </param>
+        <param>
+          <type>const string &amp;</type>
+          <declname>catalog</declname>
+          <defval>string()</defval>
+        </param>
+        <briefdescription>
+<para>Creates result set with catalogs, schemas, tables, or table types. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Tables information is obtained by executing <computeroutput>SQLTable</computeroutput> function within scope of the connected database accessible with the specified connection. Since this function is implemented in terms of the <computeroutput>SQLTable</computeroutput>s, it returns result set ordered by TABLE_TYPE, TABLE_CAT, TABLE_SCHEM, and TABLE_NAME.</para>
+<para>All arguments are treated as the Pattern Value Arguments. Empty string argument is equivalent to passing the search pattern &apos;&apos;. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1784" column="21"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1a4fdba40e8bf0101d68484dd12ac520db" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classnanodbc_1_1catalog_1_1table__privileges" kindref="compound">catalog::table_privileges</ref></type>
+        <definition>catalog::table_privileges nanodbc::catalog::find_table_privileges</definition>
+        <argsstring>(const string &amp;catalog, const string &amp;table=string(), const string &amp;schema=string())</argsstring>
+        <name>find_table_privileges</name>
+        <param>
+          <type>const string &amp;</type>
+          <declname>catalog</declname>
+        </param>
+        <param>
+          <type>const string &amp;</type>
+          <declname>table</declname>
+          <defval>string()</defval>
+        </param>
+        <param>
+          <type>const string &amp;</type>
+          <declname>schema</declname>
+          <defval>string()</defval>
+        </param>
+        <briefdescription>
+<para>Creates result set with tables and the privileges associated with each table. Tables information is obtained by executing <computeroutput>SQLTablePrivileges</computeroutput> function within scope of the connected database accessible with the specified connection. Since this function is implemented in terms of the <computeroutput>SQLTablePrivileges</computeroutput>s, it returns result set ordered by TABLE_CAT, TABLE_SCHEM, TABLE_NAME, PRIVILEGE, and GRANTEE. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>catalog</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table catalog. It cannot contain a string search pattern. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>String search pattern for schema names, treated as the Pattern Value Arguments. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>table</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>String search pattern for table names, treated as the Pattern Value Arguments.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="note"><para>Due to the fact catalog cannot is not the Pattern Value Argument, order of parameters is different than in the other catalog look-up functions. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1803" column="31"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1ae095ba2ea1953355c7bdfba3b9e99cfa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classnanodbc_1_1catalog_1_1columns" kindref="compound">catalog::columns</ref></type>
+        <definition>catalog::columns nanodbc::catalog::find_columns</definition>
+        <argsstring>(const string &amp;column=string(), const string &amp;table=string(), const string &amp;schema=string(), const string &amp;catalog=string())</argsstring>
+        <name>find_columns</name>
+        <param>
+          <type>const string &amp;</type>
+          <declname>column</declname>
+          <defval>string()</defval>
+        </param>
+        <param>
+          <type>const string &amp;</type>
+          <declname>table</declname>
+          <defval>string()</defval>
+        </param>
+        <param>
+          <type>const string &amp;</type>
+          <declname>schema</declname>
+          <defval>string()</defval>
+        </param>
+        <param>
+          <type>const string &amp;</type>
+          <declname>catalog</declname>
+          <defval>string()</defval>
+        </param>
+        <briefdescription>
+<para>Creates result set with columns in one or more tables. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Columns information is obtained by executing <computeroutput>SQLColumns</computeroutput> function within scope of the connected database accessible with the specified connection. Since this function is implemented in terms of the <computeroutput>SQLColumns</computeroutput>, it returns result set ordered by TABLE_CAT, TABLE_SCHEM, TABLE_NAME, and ORDINAL_POSITION.</para>
+<para>All arguments are treated as the Pattern Value Arguments. Empty string argument is equivalent to passing the search pattern &apos;&apos;. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1817" column="22"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1a611a69c39c361e1902df3bf9a793a638" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classnanodbc_1_1catalog_1_1primary__keys" kindref="compound">catalog::primary_keys</ref></type>
+        <definition>catalog::primary_keys nanodbc::catalog::find_primary_keys</definition>
+        <argsstring>(const string &amp;table, const string &amp;schema=string(), const string &amp;catalog=string())</argsstring>
+        <name>find_primary_keys</name>
+        <param>
+          <type>const string &amp;</type>
+          <declname>table</declname>
+        </param>
+        <param>
+          <type>const string &amp;</type>
+          <declname>schema</declname>
+          <defval>string()</defval>
+        </param>
+        <param>
+          <type>const string &amp;</type>
+          <declname>catalog</declname>
+          <defval>string()</defval>
+        </param>
+        <briefdescription>
+<para>Creates result set with columns that compose the primary key of a single table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns result set with column names that make up the primary key for a table. The primary key information is obtained by executing <computeroutput>SQLPrimaryKey</computeroutput> function within scope of the connected database accessible with the specified connection.</para>
+<para>All arguments are treated as the Pattern Value Arguments. Empty string argument is equivalent to passing the search pattern &apos;&apos;. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1831" column="27"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1ae83d39136d08c7951df6d069c1b0e128" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::list&lt; string &gt;</type>
+        <definition>std::list&lt;string&gt; nanodbc::catalog::list_catalogs</definition>
+        <argsstring>()</argsstring>
+        <name>list_catalogs</name>
+        <briefdescription>
+<para>Returns names of all catalogs (or databases) available in connected data source. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Executes <computeroutput>SQLTable</computeroutput> function with <computeroutput>SQL_ALL_CATALOG</computeroutput> as catalog search pattern. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1839" column="15"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1catalog_1a76525f853db6c8c81e5fe3f92ccfc22f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::list&lt; string &gt;</type>
+        <definition>std::list&lt;string&gt; nanodbc::catalog::list_schemas</definition>
+        <argsstring>()</argsstring>
+        <name>list_schemas</name>
+        <briefdescription>
+<para>Returns names of all schemas available in connected data source. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Executes <computeroutput>SQLTable</computeroutput> function with <computeroutput>SQL_ALL_SCHEMAS</computeroutput> as schema search pattern. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1844" column="15"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>A resource for get catalog information from connected data source. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Queries are performed using the Catalog Functions in ODBC. All provided operations are convenient wrappers around the ODBC API The original ODBC behaviour should not be affected by any added processing. </para>
+    </detaileddescription>
+    <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="1668" column="1" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="1667" bodyend="1848"/>
+    <listofallmembers>
+      <member refid="classnanodbc_1_1catalog_1ad18e6a0858639c14eb33b90736ab6d0e" prot="public" virt="non-virtual"><scope>nanodbc::catalog</scope><name>catalog</name></member>
+      <member refid="classnanodbc_1_1catalog_1a05104cec13fd4e785f90fb2cd228beb2" prot="private" virt="non-virtual"><scope>nanodbc::catalog</scope><name>conn_</name></member>
+      <member refid="classnanodbc_1_1catalog_1ae095ba2ea1953355c7bdfba3b9e99cfa" prot="public" virt="non-virtual"><scope>nanodbc::catalog</scope><name>find_columns</name></member>
+      <member refid="classnanodbc_1_1catalog_1a611a69c39c361e1902df3bf9a793a638" prot="public" virt="non-virtual"><scope>nanodbc::catalog</scope><name>find_primary_keys</name></member>
+      <member refid="classnanodbc_1_1catalog_1a4fdba40e8bf0101d68484dd12ac520db" prot="public" virt="non-virtual"><scope>nanodbc::catalog</scope><name>find_table_privileges</name></member>
+      <member refid="classnanodbc_1_1catalog_1a8271eae78585043dfb59c85cc2e361f5" prot="public" virt="non-virtual"><scope>nanodbc::catalog</scope><name>find_tables</name></member>
+      <member refid="classnanodbc_1_1catalog_1ae83d39136d08c7951df6d069c1b0e128" prot="public" virt="non-virtual"><scope>nanodbc::catalog</scope><name>list_catalogs</name></member>
+      <member refid="classnanodbc_1_1catalog_1a76525f853db6c8c81e5fe3f92ccfc22f" prot="public" virt="non-virtual"><scope>nanodbc::catalog</scope><name>list_schemas</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

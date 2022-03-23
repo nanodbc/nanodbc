@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classnanodbc_1_1type__incompatible__error" kind="class" language="C++" prot="public">
+    <compoundname>nanodbc::type_incompatible_error</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">runtime_error</basecompoundref>
+    <includes refid="nanodbc_8h" local="no">nanodbc.h</includes>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classnanodbc_1_1type__incompatible__error_1a3d4a2648703bb661fe4043d165f0b21a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>nanodbc::type_incompatible_error::type_incompatible_error</definition>
+        <argsstring>()</argsstring>
+        <name>type_incompatible_error</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="253" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1type__incompatible__error_1a9089b6ae063027394e7a4d5b494ebae3" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char* nanodbc::type_incompatible_error::what</definition>
+        <argsstring>() const noexcept</argsstring>
+        <name>what</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="254" column="16"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Type incompatible. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="group__exceptions" kindref="compound">Exception types</ref> </para>
+</simplesect>
+</para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>std::runtime_error</label>
+      </node>
+      <node id="1">
+        <label>nanodbc::type_incompatible_error</label>
+        <link refid="classnanodbc_1_1type__incompatible__error"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>std::runtime_error</label>
+      </node>
+      <node id="1">
+        <label>nanodbc::type_incompatible_error</label>
+        <link refid="classnanodbc_1_1type__incompatible__error"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="251" column="1" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="250" bodyend="255"/>
+    <listofallmembers>
+      <member refid="classnanodbc_1_1type__incompatible__error_1a3d4a2648703bb661fe4043d165f0b21a" prot="public" virt="non-virtual"><scope>nanodbc::type_incompatible_error</scope><name>type_incompatible_error</name></member>
+      <member refid="classnanodbc_1_1type__incompatible__error_1a9089b6ae063027394e7a4d5b494ebae3" prot="public" virt="non-virtual"><scope>nanodbc::type_incompatible_error</scope><name>what</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

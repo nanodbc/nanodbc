@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="group__utility" kind="group">
+    <compoundname>utility</compoundname>
+    <title>Utilities</title>
+    <innerclass refid="structnanodbc_1_1date" prot="public">nanodbc::date</innerclass>
+    <innerclass refid="structnanodbc_1_1time" prot="public">nanodbc::time</innerclass>
+    <innerclass refid="structnanodbc_1_1timestamp" prot="public">nanodbc::timestamp</innerclass>
+      <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="group__utility_1gaac06d237b348a3040a5cb378e86af570" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>std::integral_constant&lt; bool, std::is_same&lt; typename std::decay&lt; T &gt;::type, std::string &gt;::value||std::is_same&lt; typename std::decay&lt; T &gt;::type, wide_string &gt;::value &gt;</type>
+        <definition>using nanodbc::is_string = typedef std::integral_constant&lt; bool, std::is_same&lt;typename std::decay&lt;T&gt;::type, std::string&gt;::value || std::is_same&lt;typename std::decay&lt;T&gt;::type, wide_string&gt;::value&gt;</definition>
+        <argsstring></argsstring>
+        <name>is_string</name>
+        <briefdescription>
+<para>A type trait for testing if a type is a std::basic_string compatible with the current nanodbc configuration. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="354" column="1" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="357" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="group__utility_1gadf207d0dda8d44076925a9d19fbfac0a" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>std::integral_constant&lt; bool, std::is_same&lt; typename std::decay&lt; T &gt;::type, std::string::value_type &gt;::value||std::is_same&lt; typename std::decay&lt; T &gt;::type, wide_char_t &gt;::value &gt;</type>
+        <definition>using nanodbc::is_character = typedef std::integral_constant&lt; bool, std::is_same&lt;typename std::decay&lt;T&gt;::type, std::string::value_type&gt;::value || std::is_same&lt;typename std::decay&lt;T&gt;::type, wide_char_t&gt;::value&gt;</definition>
+        <argsstring></argsstring>
+        <name>is_character</name>
+        <briefdescription>
+<para>A type trait for testing if a type is a character compatible with the current nanodbc configuration. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="362" column="1" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="365" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="group__utility_1ga0cf23526593c5647433a3dbdf7f582e3" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>typename std::enable_if&lt; is_string&lt; T &gt;::value &gt;::type</type>
+        <definition>using nanodbc::enable_if_string = typedef typename std::enable_if&lt;is_string&lt;T&gt;::value&gt;::type</definition>
+        <argsstring></argsstring>
+        <name>enable_if_string</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="368" column="1" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="368" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="group__utility_1ga4de8f00ef2dfc16187ee819e4ff75602" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>typename std::enable_if&lt; is_character&lt; T &gt;::value &gt;::type</type>
+        <definition>using nanodbc::enable_if_character = typedef typename std::enable_if&lt;is_character&lt;T&gt;::value&gt;::type</definition>
+        <argsstring></argsstring>
+        <name>enable_if_character</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="371" column="1" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="371" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Additional nanodbc utility classes and functions. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

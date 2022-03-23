@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classnanodbc_1_1programming__error" kind="class" language="C++" prot="public">
+    <compoundname>nanodbc::programming_error</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">runtime_error</basecompoundref>
+    <includes refid="nanodbc_8h" local="no">nanodbc.h</includes>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classnanodbc_1_1programming__error_1a9f746c1fdb0ee531b2aff58b55c926f0" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>nanodbc::programming_error::programming_error</definition>
+        <argsstring>(const std::string &amp;info)</argsstring>
+        <name>programming_error</name>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>info</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="280" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1programming__error_1ae30a8b2aa4105cbccbc62e13fc4e0c75" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char* nanodbc::programming_error::what</definition>
+        <argsstring>() const noexcept</argsstring>
+        <name>what</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="281" column="16"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Programming logic error. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="group__exceptions" kindref="compound">Exception types</ref> </para>
+</simplesect>
+</para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>runtime_error</label>
+      </node>
+      <node id="1">
+        <label>nanodbc::programming_error</label>
+        <link refid="classnanodbc_1_1programming__error"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>runtime_error</label>
+      </node>
+      <node id="1">
+        <label>nanodbc::programming_error</label>
+        <link refid="classnanodbc_1_1programming__error"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="278" column="1" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="277" bodyend="282"/>
+    <listofallmembers>
+      <member refid="classnanodbc_1_1programming__error_1a9f746c1fdb0ee531b2aff58b55c926f0" prot="public" virt="non-virtual"><scope>nanodbc::programming_error</scope><name>programming_error</name></member>
+      <member refid="classnanodbc_1_1programming__error_1ae30a8b2aa4105cbccbc62e13fc4e0c75" prot="public" virt="non-virtual"><scope>nanodbc::programming_error</scope><name>what</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="indexpage" kind="page">
+    <compoundname>index</compoundname>
+    <title>nanodbc</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<sect1 id="index_1synopsis">
+<title>Synopsis</title>
+<para>This library provides a wrapper API for the native ODBC API. It aims to do everything ODBC does, but with a <bold>much</bold> nicer interface. Anything it doesn&apos;t (yet) do can be done by retrieving the native ODBC handles and dropping down to straight ODBC C API code. For more propaganda, please see the <ulink url="http://nanodbc.io/">project homepage</ulink>.</para>
+</sect1>
+<sect1 id="index_1toc">
+<title>Table of Contents</title>
+<para><itemizedlist>
+<listitem><para><ref refid="index_1license" kindref="member">License</ref></para>
+</listitem><listitem><para><ref refid="index_1credits" kindref="member">Credits</ref></para>
+</listitem><listitem><para>Source level documentation:<itemizedlist>
+<listitem><para><ref refid="namespacenanodbc" kindref="compound">nanodbc namespace</ref></para>
+</listitem><listitem><para><ref refid="group__exceptions" kindref="compound">Exception types</ref></para>
+</listitem><listitem><para><ref refid="group__utility" kindref="compound">Utilities</ref></para>
+</listitem><listitem><para><ref refid="group__mainc" kindref="compound">Main classes</ref></para>
+</listitem><listitem><para><ref refid="group__mainf" kindref="compound">Free Functions</ref></para>
+</listitem><listitem><para><ref refid="group__binding" kindref="compound">Binding parameters</ref></para>
+</listitem><listitem><para><ref refid="group__bind__multi" kindref="compound">Binding multiple non-string values</ref></para>
+</listitem><listitem><para><ref refid="group__bind__strings" kindref="compound">Binding multiple string values</ref></para>
+</listitem></itemizedlist>
+</para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+<sect1 id="index_1license">
+<title>License</title>
+<para> Copyright (C) 2013 lexicalunit <ulink url="mailto:lexicalunit@lexicalunit.com">lexicalunit@lexicalunit.com</ulink></para>
+<para>The MIT License</para>
+<para>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &quot;Software&quot;), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</para>
+<para>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</para>
+<para>THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. </para>
+</sect1>
+<sect1 id="index_1credits">
+<title>Credits</title>
+<para> Much of the code in this file was originally derived from TinyODBC. TinyODBC is hosted at <ulink url="http://code.google.com/p/tiodbc/">http://code.google.com/p/tiodbc/</ulink> Copyright (C) 2008 SqUe <ulink url="mailto:squarious@gmail.com">squarious@gmail.com</ulink> License: The MIT License</para>
+<para>The idea for using RAII for transactions was inspired by SimpleDB: C++ ODBC database API, however the code in nanodbc is original and not derived from SimpleDB. Therefore the LGPL license under which SimpleDB is distributed does NOT apply to nanodbc. SimpleDB is hosted at <ulink url="http://simpledb.sourceforge.net">http://simpledb.sourceforge.net</ulink> Copyright (C) 2006 Eminence Technology Pty Ltd Copyright (C) 2008-2010,2012 Russell Kliese <ulink url="mailto:russell@kliese.id.au">russell@kliese.id.au</ulink> License: GNU Lesser General Public version 2.1</para>
+<para>Some improvements and features are based on The Python ODBC Library. The Python ODBC Library is hosted at <ulink url="http://code.google.com/p/pyodbc/">http://code.google.com/p/pyodbc/</ulink> License: The MIT License</para>
+<para>Implementation of column binding inspired by Nick E. Geht&apos;s source code posted to on CodeGuru. GSODBC hosted at <ulink url="http://www.codeguru.com/mfc_database/gsodbc.html">http://www.codeguru.com/mfc_database/gsodbc.html</ulink> Copyright (C) 2002 Nick E. Geht License: Perpetual license to reproduce, distribute, adapt, perform, display, and sublicense. See <ulink url="http://www.codeguru.com/submission-guidelines.php">http://www.codeguru.com/submission-guidelines.php</ulink> for details.  </para>
+</sect1>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

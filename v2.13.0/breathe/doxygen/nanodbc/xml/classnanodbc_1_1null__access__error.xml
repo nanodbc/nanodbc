@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classnanodbc_1_1null__access__error" kind="class" language="C++" prot="public">
+    <compoundname>nanodbc::null_access_error</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">runtime_error</basecompoundref>
+    <includes refid="nanodbc_8h" local="no">nanodbc.h</includes>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classnanodbc_1_1null__access__error_1a266596c19b36563938c415a19fdd67ad" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>nanodbc::null_access_error::null_access_error</definition>
+        <argsstring>()</argsstring>
+        <name>null_access_error</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="262" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classnanodbc_1_1null__access__error_1ac9be3ddba0f85ee17dda0f057400cb84" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char* nanodbc::null_access_error::what</definition>
+        <argsstring>() const noexcept</argsstring>
+        <name>what</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="263" column="16"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Accessed null data. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="group__exceptions" kindref="compound">Exception types</ref> </para>
+</simplesect>
+</para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>runtime_error</label>
+      </node>
+      <node id="1">
+        <label>nanodbc::null_access_error</label>
+        <link refid="classnanodbc_1_1null__access__error"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>runtime_error</label>
+      </node>
+      <node id="1">
+        <label>nanodbc::null_access_error</label>
+        <link refid="classnanodbc_1_1null__access__error"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/mnt/d/nanodbc/nanodbc/nanodbc.h" line="260" column="1" bodyfile="/mnt/d/nanodbc/nanodbc/nanodbc.h" bodystart="259" bodyend="264"/>
+    <listofallmembers>
+      <member refid="classnanodbc_1_1null__access__error_1a266596c19b36563938c415a19fdd67ad" prot="public" virt="non-virtual"><scope>nanodbc::null_access_error</scope><name>null_access_error</name></member>
+      <member refid="classnanodbc_1_1null__access__error_1ac9be3ddba0f85ee17dda0f057400cb84" prot="public" virt="non-virtual"><scope>nanodbc::null_access_error</scope><name>what</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
