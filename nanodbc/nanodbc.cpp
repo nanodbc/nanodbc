@@ -408,14 +408,14 @@ recent_error(SQLHANDLE handle, SQLSMALLINT handle_type, long& native, std::strin
     } while (rc != SQL_NO_DATA);
 
     convert(std::move(result), rvalue);
-    if (size(sql_state) > 0)
+
+    auto stateSize = size(sql_state);
+    if (stateSize > 0)
     {
-        state.clear();
-        state.reserve(size(sql_state) - 1);
-        for (std::size_t idx = 0; idx != size(sql_state) - 1; ++idx)
-        {
-            state.push_back(static_cast<char>(sql_state[idx]));
-        }
+        state.resize(stateSize);
+        std::transform(sql_state, sql_state + stateSize, std::begin(state), [](NANODBC_SQLCHAR c) {
+            return static_cast<char>(c);
+        });
     }
 
     native = native_error;
@@ -3743,7 +3743,9 @@ connection::connection(const string& connection_string, long timeout)
 {
 }
 
-connection::~connection() noexcept {}
+connection::~connection() noexcept
+{
+}
 
 void connection::allocate()
 {
@@ -3907,7 +3909,9 @@ void transaction::swap(transaction& rhs) noexcept
     swap(impl_, rhs.impl_);
 }
 
-transaction::~transaction() noexcept {}
+transaction::~transaction() noexcept
+{
+}
 
 void transaction::commit()
 {
@@ -3929,12 +3933,12 @@ const class connection& transaction::connection() const
     return impl_->connection();
 }
 
-transaction::operator class connection &()
+transaction::operator class connection&()
 {
     return impl_->connection();
 }
 
-transaction::operator const class connection &() const
+transaction::operator const class connection&() const
 {
     return impl_->connection();
 }
@@ -3993,7 +3997,9 @@ void statement::swap(statement& rhs) noexcept
     swap(impl_, rhs.impl_);
 }
 
-statement::~statement() noexcept {}
+statement::~statement() noexcept
+{
+}
 
 void statement::open(class connection& conn)
 {
@@ -5041,7 +5047,9 @@ result::result()
 {
 }
 
-result::~result() noexcept {}
+result::~result() noexcept
+{
+}
 
 result::result(statement stmt, long rowset_size)
     : impl_(new result_impl(stmt, rowset_size))

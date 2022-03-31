@@ -37,6 +37,29 @@ struct test_case_fixture : public base_test_fixture
         double>
         integral_test_types;
 
+    template <typename Functor>
+    void check_database_error_state(
+        Functor operationThrowsDatabaseError,
+        const std::string& expectedState)
+    {
+        bool database_error_thrown = false;
+        try
+        {
+            operationThrowsDatabaseError();
+        }
+        catch (const nanodbc::database_error& err)
+        {
+            database_error_thrown = true;
+            REQUIRE(expectedState == err.state());
+        }
+        catch (...)
+        {
+            /// Do nothing
+        }
+
+        REQUIRE(database_error_thrown == true);
+    }
+
     // Test Cases
 
     void test_batch_insert_integral()
@@ -305,7 +328,8 @@ struct test_case_fixture : public base_test_fixture
                     NANODBC_TEXT("c2 float NULL,") + NANODBC_TEXT("c3 decimal(9, 3),") +
                     NANODBC_TEXT("c4 date,") // seems more portable than datetime (SQL Server),
                                              // timestamp (PostgreSQL, MySQL)
-                    + NANODBC_TEXT("c5 varchar(60) DEFAULT \'sample value\',") +
+                    +
+                    NANODBC_TEXT("c5 varchar(60) DEFAULT \'sample value\',") +
                     NANODBC_TEXT("c6 varchar(120),") + NANODBC_TEXT("c7 ") + text_type_name +
                     NANODBC_TEXT(",") + NANODBC_TEXT("c8 ") + binary_type_name +
                     NANODBC_TEXT(");"));
@@ -1049,9 +1073,9 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(!driver_name.empty());
         auto const drivers = nanodbc::list_drivers();
         bool found = std::any_of(
-            drivers.cbegin(),
-            drivers.cend(),
-            [&driver_name](nanodbc::driver const& drv) { return driver_name == drv.name; });
+            drivers.cbegin(), drivers.cend(), [&driver_name](nanodbc::driver const& drv) {
+                return driver_name == drv.name;
+            });
         REQUIRE(found);
     }
 
@@ -1063,11 +1087,8 @@ struct test_case_fixture : public base_test_fixture
         // it is registered with the ODBC Driver Manager in the host environment.
         REQUIRE(!driver_name.empty());
         auto const dsns = nanodbc::list_datasources();
-        bool found = std::any_of(
-            dsns.cbegin(),
-            dsns.cend(),
-            [&driver_name](nanodbc::datasource const& dsn)
-            {
+        bool found =
+            std::any_of(dsns.cbegin(), dsns.cend(), [&driver_name](nanodbc::datasource const& dsn) {
                 return dsn.name == nanodbc::test::convert((std::string) "testdsn") &&
                        dsn.driver == driver_name;
             });
@@ -1081,6 +1102,10 @@ struct test_case_fixture : public base_test_fixture
 
         REQUIRE_THROWS_AS(
             execute(connection, NANODBC_TEXT("THIS IS NOT VALID SQL!")), nanodbc::database_error);
+
+        check_database_error_state(
+            [&connection]() { execute(connection, NANODBC_TEXT("THIS IS NOT VALID SQL!")); },
+            "42000");
 
         drop_table(connection, NANODBC_TEXT("test_exception"));
         execute(connection, NANODBC_TEXT("create table test_exception (i int);"));
@@ -1899,16 +1924,15 @@ struct test_case_fixture : public base_test_fixture
         std::size_t const batch_size = 9;
         int integers[batch_size] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
         float floats[batch_size] = {1.123f, 2.345f, 3.1f, 4.5f, 5.678f, 6.f, 7.89f, 8.90f, 9.1234f};
-        nanodbc::string::value_type trunc_float[batch_size][6] = {
-            NANODBC_TEXT("1.100"),
-            NANODBC_TEXT("2.300"),
-            NANODBC_TEXT("3.100"),
-            NANODBC_TEXT("4.500"),
-            NANODBC_TEXT("5.700"),
-            NANODBC_TEXT("6.000"),
-            NANODBC_TEXT("7.900"),
-            NANODBC_TEXT("8.900"),
-            NANODBC_TEXT("9.100")};
+        nanodbc::string::value_type trunc_float[batch_size][6] = {NANODBC_TEXT("1.100"),
+                                                                  NANODBC_TEXT("2.300"),
+                                                                  NANODBC_TEXT("3.100"),
+                                                                  NANODBC_TEXT("4.500"),
+                                                                  NANODBC_TEXT("5.700"),
+                                                                  NANODBC_TEXT("6.000"),
+                                                                  NANODBC_TEXT("7.900"),
+                                                                  NANODBC_TEXT("8.900"),
+                                                                  NANODBC_TEXT("9.100")};
         nanodbc::string::value_type strings[batch_size][60] = {
             NANODBC_TEXT("first string"),
             NANODBC_TEXT("second string"),
