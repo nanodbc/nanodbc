@@ -4,13 +4,13 @@ on: [push, pull_request]
 
 jobs:
   build:
-    name: ".hpp .cpp"
+    name: ".h .cpp"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - uses: DoozyX/clang-format-lint-action@v0.12
       with:
         source: '.'
-        extensions: 'hpp,cpp'
-        clangFormatVersion: 5
+        extensions: 'h,cpp'
+        clangFormatVersion: 9
         inplace: True

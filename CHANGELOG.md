@@ -1,5 +1,45 @@
 # ChangeLog
 
+## v2.14.0
+
+### New Features
+
+- Added Add `find_procedures` and `find_procedure_columns` to `catalog` class [`#249`](https://github.com/nanodbc/nanodbc/pull/249)
+- Added support for binding `std::string_view` in `statement` class [`#283`](https://github.com/nanodbc/nanodbc/pull/283)
+
+### Changes
+
+- Changed return type of `result_impl::column_size` from `int` to `long` for consistency [`#261`](https://github.com/nanodbc/nanodbc/pull/261)
+- Renamed `VERSION` file to `VERSION.txt` [`#275`](https://github.com/nanodbc/nanodbc/pull/275)
+
+### Bug Fixes
+
+- Fixed SQL statements in `example/usage.cpp` [`#253`](https://github.com/nanodbc/nanodbc/pull/253)
+- Fixed `result_impl::column_datatype_name` sizing for Unicode characters [`#263`](https://github.com/nanodbc/nanodbc/pull/263)
+- Fixed memory leak of `ensure_pdata` [`#269`](https://github.com/nanodbc/nanodbc/pull/269)
+- Fixed retrieval of SQL data type `DATETIMEOFFSET` [`#219`](https://github.com/nanodbc/nanodbc/pull/219)
+- Fixed compilation on MacOS using Homebrew's vanilla GCC (for Conan build) [`#279`](https://github.com/nanodbc/nanodbc/pull/279)
+
+### Testing
+
+- Add GitHub Actions with linters [`#273`](https://github.com/nanodbc/nanodbc/pull/273)
+
+### Acknowledgements
+
+Thank you to everyone who contributed to this release by committing changes and submitting pull requests:
+
+[Amy Troschinetz](https://github.com/lexicalunit),
+[Bernardo Sulzbach](https://github.com/bernardosulzbach),
+[Denis Glazachev](https://github.com/traceon),
+[detule](https://github.com/detule),
+[Ezequiel Ruiz](https://github.com/emruiz81),
+[Joe Siltberg](https://github.com/joesiltberg),
+[Mateusz Loskot](https://github.com/mloskot),
+[Michael Kaes](https://github.com/mkaes),
+[Sewon Park](https://github.com/sphawk)
+
+Thank you to everyone who also opened issues on GitHub.
+
 ## v2.13.0
 
 ### New Features
@@ -87,24 +127,25 @@
 
 ### Acknowledgements
 
-[Denis Glazachev](https://github.com/traceon),
-[Jim Hester](https://github.com/jimhester),
-[Billy O'Neal](https://github.com/BillyONeal),
-[Kun Ren](https://github.com/renkun-ken),
-[whizmo](https://github.com/whizmo),
+Thank you to everyone who contributed pull requests for this release:
+
 [Amy Troschinetz](https://github.com/lexicalunit),
+[Billy O'Neal](https://github.com/BillyONeal),
 [Christopher Blaesius](https://github.com/ChrisBFX),
+[Denis Glazachev](https://github.com/traceon),
 [detule](https://github.com/detule),
 [Diego Sogari](https://github.com/dsogari),
+[H1X4Dev](https://github.com/H1X4Dev),
+[Jim Hester](https://github.com/jimhester),
 [Jon Valvatne](https://github.com/jon-v),
+[Kun Ren](https://github.com/renkun-ken),
 [Mateusz Loskot](https://github.com/mloskot),
 [Michael C. Grant](https://github.com/mcg1969),
-[H1X4Dev](https://github.com/H1X4Dev),
 [Rafee Memon](https://github.com/rafeememon),
 [Sauron](https://github.com/saur0n),
 [Seth Shelnutt](https://github.com/Shelnutt2),
 [ThermoX360](https://github.com/ThermoX360),
-[detule](https://github.com/detule)
+[whizmo](https://github.com/whizmo)
 
 ## v2.12.4
 

@@ -144,33 +144,60 @@ namespace nanodbc
 #endif
 /// @}
 
+#if __cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L)
+#ifndef NANODBC_SUPPORT_STRING_VIEW
+#define NANODBC_SUPPORT_STRING_VIEW
+#endif
+#endif
+
 // You must explicitly request Unicode support by defining NANODBC_ENABLE_UNICODE at compile time.
 #ifndef DOXYGEN
 #ifdef NANODBC_ENABLE_UNICODE
 #ifdef NANODBC_USE_IODBC_WIDE_STRINGS
 #define NANODBC_TEXT(s) U##s
 typedef std::u32string string;
+#ifdef NANODBC_SUPPORT_STRING_VIEW
+typedef std::u32string_view string_view;
+#endif
 #else
 #ifdef _MSC_VER
 typedef std::wstring string;
+#ifdef NANODBC_SUPPORT_STRING_VIEW
+typedef std::wstring_view string_view;
+#endif
 #define NANODBC_TEXT(s) L##s
 #else
 typedef std::u16string string;
+#ifdef NANODBC_SUPPORT_STRING_VIEW
+typedef std::u16string_view string_view;
+#endif
 #define NANODBC_TEXT(s) u##s
 #endif
 #endif
 #else
 typedef std::string string;
+#ifdef NANODBC_SUPPORT_STRING_VIEW
+typedef std::string_view string_view;
+#endif
 #define NANODBC_TEXT(s) s
 #endif
 
 #ifdef NANODBC_USE_IODBC_WIDE_STRINGS
 typedef std::u32string wide_string;
+#ifdef NANODBC_SUPPORT_STRING_VIEW
+typedef std::u32string_view wide_string_view;
+#endif
 #else
 #ifdef _MSC_VER
 typedef std::wstring wide_string;
+#ifdef NANODBC_SUPPORT_STRING_VIEW
+typedef std::wstring_view wide_string_view;
+#endif
 #else
 typedef std::u16string wide_string;
+#ifdef NANODBC_SUPPORT_STRING_VIEW
+typedef std::u16string_view wide_string_view;
+#endif
 #endif
 #endif
 
@@ -364,7 +391,12 @@ template <typename T>
 using is_string = std::integral_constant<
     bool,
     std::is_same<typename std::decay<T>::type, std::string>::value ||
-        std::is_same<typename std::decay<T>::type, wide_string>::value>;
+        std::is_same<typename std::decay<T>::type, wide_string>::value
+#ifdef NANODBC_SUPPORT_STRING_VIEW
+        || std::is_same<typename std::decay<T>::type, std::string_view>::value ||
+        std::is_same<typename std::decay<T>::type, wide_string_view>::value
+#endif
+    >;
 
 /// \brief A type trait for testing if a type is a character compatible with the current nanodbc
 /// configuration
@@ -439,10 +471,10 @@ public:
     const class connection& connection() const;
 
     /// Returns the connection object.
-    operator class connection&();
+    operator class connection &();
 
     /// Returns the connection object.
-    operator const class connection&() const;
+    operator const class connection &() const;
 
 private:
     class transaction_impl;

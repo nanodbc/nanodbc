@@ -440,6 +440,11 @@ TEST_CASE_METHOD(sqlite_fixture, "test_string_vector", "[sqlite][string]")
     test_string_vector();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "test_string_view_vector", "[sqlite][string]")
+{
+    test_string_view_vector();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_batch_binary", "[sqlite][binary]")
 {
     test_batch_binary();

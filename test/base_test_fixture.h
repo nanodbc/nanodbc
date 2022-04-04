@@ -158,8 +158,8 @@ inline IntAnyOf IsAnyOf(std::initializer_list<int> v)
 {
     return IntAnyOf(std::move(v));
 }
-}
-} // namespace nanodbc::test
+} // namespace test
+} // namespace nanodbc
 
 extern nanodbc::test::Config cfg;
 

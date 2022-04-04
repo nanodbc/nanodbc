@@ -1049,26 +1049,34 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(!driver_name.empty());
         auto const drivers = nanodbc::list_drivers();
         bool found = std::any_of(
-            drivers.cbegin(), drivers.cend(), [&driver_name](nanodbc::driver const& drv) {
-                return driver_name == drv.name;
-            });
+            drivers.cbegin(),
+            drivers.cend(),
+            [&driver_name](nanodbc::driver const& drv) { return driver_name == drv.name; });
         REQUIRE(found);
     }
 
     void test_datasources()
     {
-        auto const driver_name = connection_string_parameter(NANODBC_TEXT("DRIVER"));
-
-        // Verify given driver, by name, is available - that is,
-        // it is registered with the ODBC Driver Manager in the host environment.
-        REQUIRE(!driver_name.empty());
         auto const dsns = nanodbc::list_datasources();
-        bool found =
-            std::any_of(dsns.cbegin(), dsns.cend(), [&driver_name](nanodbc::datasource const& dsn) {
-                return dsn.name == nanodbc::test::convert((std::string) "testdsn") &&
-                       dsn.driver == driver_name;
-            });
-        REQUIRE(found);
+        bool test_dsn_found = std::any_of(
+            dsns.cbegin(),
+            dsns.cend(),
+            [](nanodbc::datasource const& dsn)
+            { return dsn.name == nanodbc::test::convert("testdsn"); });
+        if (test_dsn_found)
+        {
+            auto const driver_name = connection_string_parameter(NANODBC_TEXT("DRIVER"));
+            REQUIRE(!driver_name.empty());
+
+            bool found = std::any_of(
+                dsns.cbegin(),
+                dsns.cend(),
+                [&driver_name](nanodbc::datasource const& dsn) {
+                    return dsn.name == nanodbc::test::convert("testdsn") &&
+                           dsn.driver == driver_name;
+                });
+            REQUIRE(found);
+        }
     }
 
     void test_exception()
@@ -1620,6 +1628,70 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(results.is_null(2));
     }
 
+    void test_string_view_vector()
+    {
+// std::string_view is only supported since C++17 compliant compilers
+#if __cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L)
+        nanodbc::connection connection = connect();
+        REQUIRE(connection.native_dbc_handle() != nullptr);
+        REQUIRE(connection.native_env_handle() != nullptr);
+        REQUIRE(connection.transactions() == std::size_t(0));
+
+        const std::vector<nanodbc::string> first_name_str = {
+            NANODBC_TEXT("Fred"), NANODBC_TEXT("Barney"), NANODBC_TEXT("Dino")};
+        const std::vector<nanodbc::string> last_name_str = {
+            NANODBC_TEXT("Flintstone"), NANODBC_TEXT("Rubble"), NANODBC_TEXT("")};
+        const std::vector<nanodbc::string> gender_str = {
+            NANODBC_TEXT("Male"), NANODBC_TEXT("Male"), NANODBC_TEXT("")};
+
+        const std::vector<nanodbc::string_view> first_name(
+            first_name_str.begin(), first_name_str.end());
+        const std::vector<nanodbc::string_view> last_name(
+            last_name_str.begin(), last_name_str.end());
+        const std::vector<nanodbc::string_view> gender(gender_str.begin(), gender_str.end());
+
+        drop_table(connection, NANODBC_TEXT("test_string_view_vector"));
+        execute(
+            connection,
+            NANODBC_TEXT("create table test_string_view_vector (first varchar(10), last "
+                         "varchar(10), gender varchar(10));"));
+
+        nanodbc::statement query(connection);
+        prepare(
+            query,
+            NANODBC_TEXT(
+                "insert into test_string_view_vector(first, last, gender) values(?, ?, ?)"));
+        REQUIRE(query.parameters() == 3);
+
+        // Without nulls
+        query.bind_strings(0, first_name);
+
+        // With null vector
+        bool nulls[3] = {false, false, true};
+        query.bind_strings(1, last_name, nulls);
+
+        // With null sentry
+        query.bind_strings(2, gender, NANODBC_TEXT(""));
+
+        nanodbc::execute(query, 3);
+
+        nanodbc::result results = execute(
+            connection, NANODBC_TEXT("select first,last,gender from test_string_view_vector"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<nanodbc::string>(0) == NANODBC_TEXT("Fred"));
+        REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("Flintstone"));
+        REQUIRE(results.get<nanodbc::string>(2) == NANODBC_TEXT("Male"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<nanodbc::string>(0) == NANODBC_TEXT("Barney"));
+        REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("Rubble"));
+        REQUIRE(results.get<nanodbc::string>(2) == NANODBC_TEXT("Male"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<nanodbc::string>(0) == NANODBC_TEXT("Dino"));
+        REQUIRE(results.is_null(1));
+        REQUIRE(results.is_null(2));
+#endif //__cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L)
+    }
+
     void test_string_vector_null_vector()
     {
         nanodbc::connection connection = connect();
@@ -1832,15 +1904,16 @@ struct test_case_fixture : public base_test_fixture
         std::size_t const batch_size = 9;
         int integers[batch_size] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
         float floats[batch_size] = {1.123f, 2.345f, 3.1f, 4.5f, 5.678f, 6.f, 7.89f, 8.90f, 9.1234f};
-        nanodbc::string::value_type trunc_float[batch_size][6] = {NANODBC_TEXT("1.100"),
-                                                                  NANODBC_TEXT("2.300"),
-                                                                  NANODBC_TEXT("3.100"),
-                                                                  NANODBC_TEXT("4.500"),
-                                                                  NANODBC_TEXT("5.700"),
-                                                                  NANODBC_TEXT("6.000"),
-                                                                  NANODBC_TEXT("7.900"),
-                                                                  NANODBC_TEXT("8.900"),
-                                                                  NANODBC_TEXT("9.100")};
+        nanodbc::string::value_type trunc_float[batch_size][6] = {
+            NANODBC_TEXT("1.100"),
+            NANODBC_TEXT("2.300"),
+            NANODBC_TEXT("3.100"),
+            NANODBC_TEXT("4.500"),
+            NANODBC_TEXT("5.700"),
+            NANODBC_TEXT("6.000"),
+            NANODBC_TEXT("7.900"),
+            NANODBC_TEXT("8.900"),
+            NANODBC_TEXT("9.100")};
         nanodbc::string::value_type strings[batch_size][60] = {
             NANODBC_TEXT("first string"),
             NANODBC_TEXT("second string"),

@@ -231,6 +231,11 @@ TEST_CASE_METHOD(mysql_fixture, "test_string_vector", "[mysql][string]")
     test_string_vector();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_string_view_vector", "[mysql][string]")
+{
+    test_string_view_vector();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_batch_binary", "[mysql][binary]")
 {
     test_batch_binary();

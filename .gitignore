@@ -36,6 +36,7 @@ package-lock.json
 /doc/build/
 /.vagrant
 /*build*/
+/out/
 /[Dd]ebug
 /[Rr]elease
 /[Ww]in32
@@ -46,3 +47,7 @@ package-lock.json
 example.dSYM/
 /example/empty.cpp
 website/
+* Copy.*
+*.csv
+*.db
+

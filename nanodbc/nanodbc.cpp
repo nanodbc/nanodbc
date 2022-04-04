@@ -3624,7 +3624,6 @@ private:
                 break;
             case SQL_TIMESTAMP:
             case SQL_TYPE_TIMESTAMP:
-            case SQL_SS_TIMESTAMPOFFSET:
                 col.ctype_ = SQL_C_TIMESTAMP;
                 col.clen_ = sizeof(timestamp);
                 break;
@@ -3640,6 +3639,7 @@ private:
                 break;
             case SQL_WCHAR:
             case SQL_WVARCHAR:
+            case SQL_SS_TIMESTAMPOFFSET:
             case SQL_SS_XML:
                 col.ctype_ = sql_ctype<wide_string>::value;
                 col.clen_ = (col.sqlsize_ + 1) * sizeof(SQLWCHAR);
@@ -4658,12 +4658,12 @@ const class connection& transaction::connection() const
     return impl_->connection();
 }
 
-transaction::operator class connection&()
+transaction::operator class connection &()
 {
     return impl_->connection();
 }
 
-transaction::operator const class connection&() const
+transaction::operator const class connection &() const
 {
     return impl_->connection();
 }
@@ -4934,6 +4934,11 @@ NANODBC_INSTANTIATE_BINDS(timestamp);
 
 NANODBC_INSTANTIATE_BIND_STRINGS(std::string);
 NANODBC_INSTANTIATE_BIND_STRINGS(wide_string);
+
+#ifdef NANODBC_SUPPORT_STRING_VIEW
+NANODBC_INSTANTIATE_BIND_STRINGS(std::string_view);
+NANODBC_INSTANTIATE_BIND_STRINGS(wide_string_view);
+#endif
 
 #undef NANODBC_INSTANTIATE_BINDS
 #undef NANODBC_INSTANTIATE_BIND_STRINGS
