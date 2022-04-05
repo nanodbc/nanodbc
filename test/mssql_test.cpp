@@ -1015,3 +1015,40 @@ TEST_CASE_METHOD(mssql_fixture, "test_bind_variant", "[mssql][variant]")
     }
 }
 #endif
+
+TEST_CASE_METHOD(mssql_fixture, "test_bind_float", "[mssql][number][float]")
+{
+    auto conn = connect();
+    create_table(
+        conn,
+        NANODBC_TEXT("test_bind_float"),
+        NANODBC_TEXT("(r real, f float, f24 float(24), f53 float(53), d double precision)"));
+
+    nanodbc::statement stmt(conn);
+    prepare(stmt, NANODBC_TEXT("insert into test_bind_float(r,f,f24,f53,d) values (?,?,?,?,?)"));
+
+    float r(1.123f);
+    float f(3.123f);
+    double d(7.123);
+    stmt.bind(0, &r);
+    stmt.bind(1, &f);
+    stmt.bind(2, &f);
+    stmt.bind(3, &f);
+    stmt.bind(4, &d);
+
+    nanodbc::transact(stmt, 1);
+    {
+        auto result = nanodbc::execute(conn, NANODBC_TEXT("select r,f,f24,f53,d from test_bind_float"));
+        result.next();
+        REQUIRE(result.get<float>(0) == static_cast<float>(r));
+        REQUIRE(result.get<std::string>(0).substr(0, 5) == "1.123");
+        REQUIRE(result.get<float>(1) == static_cast<float>(f));
+        REQUIRE(result.get<std::string>(1).substr(0, 5) == "3.123");
+        REQUIRE(result.get<float>(2) == static_cast<float>(f));
+        REQUIRE(result.get<std::string>(2).substr(0, 5) == "3.123");
+        REQUIRE(result.get<float>(3) == static_cast<float>(f));
+        REQUIRE(result.get<std::string>(3).substr(0, 5) == "3.123");
+        REQUIRE(result.get<double>(4) == static_cast<double>(d));
+        REQUIRE(result.get<std::string>(4).substr(0, 5) == "7.123");
+    }
+}
