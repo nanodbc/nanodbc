@@ -409,11 +409,11 @@ recent_error(SQLHANDLE handle, SQLSMALLINT handle_type, long& native, std::strin
 
     convert(std::move(result), rvalue);
 
-    auto stateSize = size(sql_state);
-    if (stateSize > 0)
+    auto state_size = size(sql_state);
+    if (state_size > 0)
     {
-        state.resize(stateSize);
-        std::transform(sql_state, sql_state + stateSize, std::begin(state), [](NANODBC_SQLCHAR c) {
+        state.resize(state_size);
+        std::transform(sql_state, sql_state + state_size, std::begin(state), [](NANODBC_SQLCHAR c) {
             return static_cast<char>(c);
         });
     }

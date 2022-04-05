@@ -39,18 +39,18 @@ struct test_case_fixture : public base_test_fixture
 
     template <typename Functor>
     void check_database_error_state(
-        Functor operationThrowsDatabaseError,
-        const std::string& expectedState)
+        Functor operation_throws_database_error,
+        const std::string& expected_state)
     {
         bool database_error_thrown = false;
         try
         {
-            operationThrowsDatabaseError();
+            operation_throws_database_error();
         }
         catch (const nanodbc::database_error& err)
         {
             database_error_thrown = true;
-            REQUIRE(expectedState == err.state());
+            REQUIRE(expected_state == err.state());
         }
         catch (...)
         {
