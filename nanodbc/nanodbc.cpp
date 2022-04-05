@@ -3743,9 +3743,7 @@ connection::connection(const string& connection_string, long timeout)
 {
 }
 
-connection::~connection() noexcept
-{
-}
+connection::~connection() noexcept {}
 
 void connection::allocate()
 {
@@ -3909,9 +3907,7 @@ void transaction::swap(transaction& rhs) noexcept
     swap(impl_, rhs.impl_);
 }
 
-transaction::~transaction() noexcept
-{
-}
+transaction::~transaction() noexcept {}
 
 void transaction::commit()
 {
@@ -3933,12 +3929,12 @@ const class connection& transaction::connection() const
     return impl_->connection();
 }
 
-transaction::operator class connection&()
+transaction::operator class connection &()
 {
     return impl_->connection();
 }
 
-transaction::operator const class connection&() const
+transaction::operator const class connection &() const
 {
     return impl_->connection();
 }
@@ -3997,9 +3993,7 @@ void statement::swap(statement& rhs) noexcept
     swap(impl_, rhs.impl_);
 }
 
-statement::~statement() noexcept
-{
-}
+statement::~statement() noexcept {}
 
 void statement::open(class connection& conn)
 {
@@ -5047,9 +5041,7 @@ result::result()
 {
 }
 
-result::~result() noexcept
-{
-}
+result::~result() noexcept {}
 
 result::result(statement stmt, long rowset_size)
     : impl_(new result_impl(stmt, rowset_size))

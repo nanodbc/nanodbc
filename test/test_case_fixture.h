@@ -328,8 +328,7 @@ struct test_case_fixture : public base_test_fixture
                     NANODBC_TEXT("c2 float NULL,") + NANODBC_TEXT("c3 decimal(9, 3),") +
                     NANODBC_TEXT("c4 date,") // seems more portable than datetime (SQL Server),
                                              // timestamp (PostgreSQL, MySQL)
-                    +
-                    NANODBC_TEXT("c5 varchar(60) DEFAULT \'sample value\',") +
+                    + NANODBC_TEXT("c5 varchar(60) DEFAULT \'sample value\',") +
                     NANODBC_TEXT("c6 varchar(120),") + NANODBC_TEXT("c7 ") + text_type_name +
                     NANODBC_TEXT(",") + NANODBC_TEXT("c8 ") + binary_type_name +
                     NANODBC_TEXT(");"));
@@ -1082,20 +1081,17 @@ struct test_case_fixture : public base_test_fixture
     void test_datasources()
     {
         auto const dsns = nanodbc::list_datasources();
-        bool test_dsn_found = std::any_of(
-            dsns.cbegin(),
-            dsns.cend(),
-            [](nanodbc::datasource const& dsn)
-            { return dsn.name == nanodbc::test::convert("testdsn"); });
+        bool test_dsn_found =
+            std::any_of(dsns.cbegin(), dsns.cend(), [](nanodbc::datasource const& dsn) {
+                return dsn.name == nanodbc::test::convert("testdsn");
+            });
         if (test_dsn_found)
         {
             auto const driver_name = connection_string_parameter(NANODBC_TEXT("DRIVER"));
             REQUIRE(!driver_name.empty());
 
             bool found = std::any_of(
-                dsns.cbegin(),
-                dsns.cend(),
-                [&driver_name](nanodbc::datasource const& dsn) {
+                dsns.cbegin(), dsns.cend(), [&driver_name](nanodbc::datasource const& dsn) {
                     return dsn.name == nanodbc::test::convert("testdsn") &&
                            dsn.driver == driver_name;
                 });
@@ -1932,15 +1928,16 @@ struct test_case_fixture : public base_test_fixture
         std::size_t const batch_size = 9;
         int integers[batch_size] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
         float floats[batch_size] = {1.123f, 2.345f, 3.1f, 4.5f, 5.678f, 6.f, 7.89f, 8.90f, 9.1234f};
-        nanodbc::string::value_type trunc_float[batch_size][6] = {NANODBC_TEXT("1.100"),
-                                                                  NANODBC_TEXT("2.300"),
-                                                                  NANODBC_TEXT("3.100"),
-                                                                  NANODBC_TEXT("4.500"),
-                                                                  NANODBC_TEXT("5.700"),
-                                                                  NANODBC_TEXT("6.000"),
-                                                                  NANODBC_TEXT("7.900"),
-                                                                  NANODBC_TEXT("8.900"),
-                                                                  NANODBC_TEXT("9.100")};
+        nanodbc::string::value_type trunc_float[batch_size][6] = {
+            NANODBC_TEXT("1.100"),
+            NANODBC_TEXT("2.300"),
+            NANODBC_TEXT("3.100"),
+            NANODBC_TEXT("4.500"),
+            NANODBC_TEXT("5.700"),
+            NANODBC_TEXT("6.000"),
+            NANODBC_TEXT("7.900"),
+            NANODBC_TEXT("8.900"),
+            NANODBC_TEXT("9.100")};
         nanodbc::string::value_type strings[batch_size][60] = {
             NANODBC_TEXT("first string"),
             NANODBC_TEXT("second string"),
