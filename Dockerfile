@@ -1,6 +1,8 @@
 FROM ubuntu:17.04
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
+RUN sed -i -re 's/([a-z]{2}\.)?archive.ubuntu.com|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list
+
 # NOTE: install apt-utils since it is Priority: important, should really be installed otherwise
 #       'debconf: delaying package configuration, since apt-utils is not installed'
 RUN apt-get -qy update && apt-get -qy install --no-upgrade --no-install-recommends \
@@ -35,6 +37,7 @@ RUN apt-get -qy update && apt-get -qy install --no-upgrade --no-install-recommen
         && apt-get clean \
         && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get update
 RUN ACCEPT_EULA=Y apt-get -qy install --no-upgrade --no-install-recommends \
         msodbcsql \
         mssql-tools
