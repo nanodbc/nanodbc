@@ -3230,8 +3230,9 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
         const int bytes = std::snprintf(
             const_cast<char*>(buffer.data()),
             width + 1,
-            "%.*lf",    // restrict the number of digits
-            col.scale_, // number of digits after the decimal point
+            "%f", // do not restrict the number of digits, because for floating-point
+                  // columns the scale is undefined - number of digits to the right
+                  // of the decimal point is not fixed
             data);
         if (bytes == -1)
             throw type_incompatible_error();
