@@ -1104,10 +1104,7 @@ struct test_case_fixture : public base_test_fixture
         execute(connection, create_table_sql);
 
         nanodbc::statement statement(connection);
-        const int i = 0;
-        prepare(statement, NANODBC_TEXT("insert into test_error (i) values (?);"));
-        REQUIRE(statement.parameters() == 1);
-        statement.bind(0, &i, 1, nullptr, nanodbc::statement::PARAM_IN);
+        prepare(statement, NANODBC_TEXT("insert into test_error (i) values (0);"));
         execute(statement);
 
         nanodbc::database_error error = nanodbc::database_error(nullptr, 0);
