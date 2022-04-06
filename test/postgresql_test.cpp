@@ -108,6 +108,11 @@ TEST_CASE_METHOD(postgresql_fixture, "test_decimal_conversion", "[postgresql][de
     test_decimal_conversion();
 }
 
+TEST_CASE_METHOD(postgresql_fixture, "test_error", "[postgresql][error]")
+{
+    test_error();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_exception", "[postgresql][exception]")
 {
     test_exception();

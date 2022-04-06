@@ -577,6 +577,11 @@ TEST_CASE_METHOD(mssql_fixture, "test_decimal_conversion", "[mssql][decimal][con
     test_decimal_conversion();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_error", "[mssql][error]")
+{
+    test_error();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_exception", "[mssql][exception]")
 {
     test_exception();
