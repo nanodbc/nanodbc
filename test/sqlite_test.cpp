@@ -254,6 +254,11 @@ TEST_CASE_METHOD(sqlite_fixture, "test_decimal_conversion", "[sqlite][decimal][c
     REQUIRE(results.get<nanodbc::string>(0) == NANODBC_TEXT("-1.333"));
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "test_error", "[sqlite][error]")
+{
+    test_error();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_exception", "[sqlite][exception]")
 {
     test_exception();

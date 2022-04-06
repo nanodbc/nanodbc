@@ -69,6 +69,11 @@ TEST_CASE_METHOD(odbc_fixture, "test_decimal_conversion", "[odbc][decimal][conve
     test_decimal_conversion();
 }
 
+TEST_CASE_METHOD(odbc_fixture, "test_error", "[odbc][error]")
+{
+    test_error();
+}
+
 TEST_CASE_METHOD(odbc_fixture, "test_exception", "[odbc][exception]")
 {
     test_exception();

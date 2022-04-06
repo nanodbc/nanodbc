@@ -1079,6 +1079,83 @@ struct test_case_fixture : public base_test_fixture
         }
     }
 
+    void test_error()
+    {
+        nanodbc::connection connection = connect();
+
+        drop_table(connection, NANODBC_TEXT("test_error"));
+        nanodbc::string create_table_sql = NANODBC_TEXT("create table test_error (i int not null");
+        if (vendor_ == database_vendor::mysql)
+        {
+            create_table_sql =
+                create_table_sql + NANODBC_TEXT(", constraint test_error_pk primary key (i)");
+        }
+        else
+        {
+            create_table_sql =
+                create_table_sql + NANODBC_TEXT(" constraint test_error_pk primary key");
+        }
+        if (vendor_ == database_vendor::vertica)
+        {
+            create_table_sql = create_table_sql + NANODBC_TEXT(" enabled");
+        }
+        create_table_sql = create_table_sql + NANODBC_TEXT(");");
+
+        execute(connection, create_table_sql);
+
+        nanodbc::statement statement(connection);
+        prepare(statement, NANODBC_TEXT("insert into test_error (i) values (0);"));
+        execute(statement);
+
+        nanodbc::database_error error = nanodbc::database_error(nullptr, 0);
+
+        try
+        {
+            statement.execute();
+        }
+        catch (const nanodbc::database_error& e)
+        {
+            error = e;
+        }
+
+        struct error_result
+        {
+            int n = 0;
+            std::string s;
+            std::string w;
+        } error_result;
+
+        switch (vendor_)
+        {
+        case database_vendor::mysql:
+            error_result = {1062, "23000", "Duplicate entry"};
+            break;
+        case database_vendor::oracle:
+            error_result = {1, "25S03", "ORA-00001"};
+            break;
+        case database_vendor::postgresql:
+            error_result = {1, "23505", "duplicate key value violates unique constraint"};
+            break;
+        case database_vendor::sqlite:
+            error_result = {19, "HY000", "[SQLite]UNIQUE constraint failed"};
+            break;
+        case database_vendor::sqlserver:
+            error_result = {2627, "23000", "Violation of PRIMARY KEY constraint"};
+            break;
+        case database_vendor::vertica:
+            // todo validate vertica
+            //  https://www.vertica.com/docs/11.1.x/HTML/Content/Authoring/ErrorCodes/SqlState-23505.htm
+            error_result = {6745, "23505", "Duplicate key values"};
+            break;
+        default:
+            FAIL("Database vendor is unknown.");
+        }
+
+        REQUIRE(error.native() == error_result.n);
+        REQUIRE_THAT(error.state(), Catch::Matches(error_result.s));
+        REQUIRE_THAT(error.what(), Catch::Contains(error_result.w));
+    }
+
     void test_exception()
     {
         nanodbc::connection connection = connect();

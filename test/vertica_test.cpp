@@ -86,6 +86,11 @@ TEST_CASE_METHOD(vertica_fixture, "test_decimal_conversion", "[vertica][decimal]
     test_decimal_conversion();
 }
 
+TEST_CASE_METHOD(vertica_fixture, "test_error", "[vertica][error]")
+{
+    test_error();
+}
+
 TEST_CASE_METHOD(vertica_fixture, "test_exception", "[vertica][exception]")
 {
     test_exception();
