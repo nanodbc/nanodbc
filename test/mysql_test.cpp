@@ -173,6 +173,11 @@ TEST_CASE_METHOD(mysql_fixture, "test_decimal_conversion", "[mysql][decimal][con
     test_decimal_conversion();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_error", "[mysql][error]")
+{
+    test_error();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_exception", "[mysql][exception]")
 {
     test_exception();
