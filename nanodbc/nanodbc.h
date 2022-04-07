@@ -247,6 +247,16 @@ typedef unspecified - type null_type;
 #endif
 #endif
 
+// forward declare
+#ifndef NANODBC_DISABLE_MSSQL_TVP
+class table_valued_parameter;
+#endif
+class statement;
+class connection;
+class transaction;
+class catalog;
+class result;
+
 // clang-format off
 // 8888888888                                      888    888                        888 888 d8b
 // 888                                             888    888                        888 888 Y8P
@@ -473,6 +483,202 @@ private:
 private:
     std::shared_ptr<transaction_impl> impl_;
 };
+
+#ifndef NANODBC_DISABLE_MSSQL_TVP
+/// \brief Support for table-valued parameter
+class table_valued_parameter
+{
+public:
+    table_valued_parameter();
+    table_valued_parameter(const table_valued_parameter& rhs);
+    table_valued_parameter(table_valued_parameter&& rhs) noexcept;
+    table_valued_parameter(statement& stmt, short param_index, size_t row_count);
+
+    ~table_valued_parameter() noexcept;
+
+    void open(statement& stmt, short param_index, std::size_t row_count);
+    void close();
+
+    /// \addtogroup bind_multi Binding multiple non-string values
+    /// \brief Binds given values to given parameter placeholder number in the prepared statement.
+    ///
+    /// If your prepared SQL query has any parameter markers, ? (question  mark) placeholders,
+    /// this is how you bind values to them.
+    /// Parameter markers are numbered using Zero-based index from left to right.
+    ///
+    /// It is possible to use these functions for batch operations.
+    ///
+    /// \param param_index Zero-based index of parameter marker (placeholder position).
+    /// \param values Values to substitute into placeholder.
+    /// \param batch_size The number of values being bound. batch_size should greater or equal than
+    /// row_count
+    /// \param null_sentry Value which should represent a null value.
+    /// \param nulls Flags for values that should be set to a null value.
+    /// \param param_direction ODBC parameter direction.
+    /// \throws database_error
+    ///
+    /// @{
+
+    /// \brief Binds multiple values.
+    /// \see bind_multi
+    template <class T>
+    void bind(short param_index, T const* values, std::size_t batch_size);
+
+    /// \brief Binds multiple values.
+    /// \see bind_multi
+    template <class T>
+    void bind(short param_index, T const* values, std::size_t batch_size, T const* null_sentry);
+
+    /// \brief Binds multiple values.
+    /// \see bind_multi
+    template <class T>
+    void bind(short param_index, T const* values, std::size_t batch_size, bool const* nulls);
+
+    /// \brief Binds multiple values.
+    /// \see bind_multi
+    void bind(short param_index, std::vector<std::vector<uint8_t>> const& values);
+
+    /// \brief Binds multiple values.
+    /// \see bind_multi
+    void
+    bind(short param_index, std::vector<std::vector<uint8_t>> const& values, bool const* nulls);
+
+    /// \brief Binds multiple values.
+    /// \see bind_multi
+    void bind(
+        short param_index,
+        std::vector<std::vector<uint8_t>> const& values,
+        uint8_t const* null_sentry);
+
+    /// @}
+
+    /// \addtogroup bind_strings Binding multiple string values
+    /// \brief Binds given string values to parameter marker in prepared statement.
+    ///
+    /// If your prepared SQL query has any parameter markers, ? (question  mark) placeholders,
+    /// this is how you bind values to them.
+    /// Parameter markers are numbered using Zero-based index from left to right.
+    ///
+    /// It is possible to use these functions for batch operations.
+    ///
+    /// \param param_index Zero-based index of parameter marker (placeholder position).
+    /// \param values Array of values to substitute into parameter placeholders.
+    /// \param value_size Maximum length of string value in array.
+    /// \param batch_size Number of string values to bind. Otherwise template parameter BatchSize is
+    /// taken as the number of values. batch_size should greater or equal than row_count
+    /// \param null_sentry Value which should represent a null value.
+    /// \param nulls Flags for values that should be set to a null value.
+    /// \throws database_error
+    ///
+    /// @{
+
+    /// \brief Binds multiple string values.
+    /// \see bind_strings
+    template <class T, typename = enable_if_character<T>>
+    void bind_strings(
+        short param_index,
+        T const* values,
+        std::size_t value_size,
+        std::size_t batch_size);
+
+    /// \brief Binds multiple string values.
+    ///
+    /// Size of the values vector indicates number of values to bind.
+    /// Longest string in the array determines maximum length of individual value.
+    ///
+    /// \see bind_strings
+    template <class T, typename = enable_if_string<T>>
+    void bind_strings(short param_index, std::vector<T> const& values);
+
+    /// \brief Binds multiple string values.
+    /// \see bind_strings
+    template <
+        std::size_t BatchSize,
+        std::size_t ValueSize,
+        class T,
+        typename = enable_if_character<T>>
+    void bind_strings(short param_index, T const (&values)[BatchSize][ValueSize])
+    {
+        auto param_values = reinterpret_cast<T const*>(values);
+        bind_strings(param_index, param_values, ValueSize, BatchSize);
+    }
+
+    /// \brief Binds multiple string values.
+    /// \see bind_strings
+    template <class T, typename = enable_if_character<T>>
+    void bind_strings(
+        short param_index,
+        T const* values,
+        std::size_t value_size,
+        std::size_t batch_size,
+        T const* null_sentry);
+
+    /// \brief Binds multiple string values.
+    /// \see bind_strings
+    template <class T, typename = enable_if_string<T>>
+    void bind_strings(
+        short param_index,
+        std::vector<T> const& values,
+        typename T::value_type const* null_sentry);
+
+    /// \brief Binds multiple string values.
+    /// \see bind_strings
+    template <
+        std::size_t BatchSize,
+        std::size_t ValueSize,
+        class T,
+        typename = enable_if_character<T>>
+    void
+    bind_strings(short param_index, T const (&values)[BatchSize][ValueSize], T const* null_sentry)
+    {
+        auto param_values = reinterpret_cast<T const*>(values);
+        bind_strings(param_index, param_values, ValueSize, BatchSize, nullptr, null_sentry);
+    }
+
+    /// \brief Binds multiple string values.
+    /// \see bind_strings
+    template <class T, typename = enable_if_character<T>>
+    void bind_strings(
+        short param_index,
+        T const* values,
+        std::size_t value_size,
+        std::size_t batch_size,
+        bool const* nulls);
+
+    /// \brief Binds multiple string values.
+    /// \see bind_strings
+    template <class T, typename = enable_if_string<T>>
+    void bind_strings(short param_index, std::vector<T> const& values, bool const* nulls);
+
+    /// \brief Binds multiple string values.
+    /// \see bind_strings
+    template <
+        std::size_t BatchSize,
+        std::size_t ValueSize,
+        class T,
+        typename = enable_if_character<T>>
+    void bind_strings(short param_index, T const (&values)[BatchSize][ValueSize], bool const* nulls)
+    {
+        auto param_values = reinterpret_cast<T const*>(values);
+        bind_strings(param_index, param_values, ValueSize, BatchSize, nulls);
+    }
+
+    void bind_null(short param_index);
+
+    void describe_parameters(
+        const std::vector<short>& idx,
+        const std::vector<short>& type,
+        const std::vector<unsigned long>& size,
+        const std::vector<short>& scale);
+
+private:
+    class table_valued_parameter_impl;
+    friend class statement;
+
+private:
+    std::shared_ptr<table_valued_parameter_impl> impl_;
+};
+#endif // NANODBC_DISABLE_MSSQL_TVP
 
 // clang-format off
 //  .d8888b.  888             888                                            888
@@ -1040,6 +1246,9 @@ private:
 private:
     class statement_impl;
     friend class nanodbc::result;
+#ifndef NANODBC_DISABLE_MSSQL_TVP
+    friend class nanodbc::table_valued_parameter::table_valued_parameter_impl;
+#endif
 
 private:
     std::shared_ptr<statement_impl> impl_;

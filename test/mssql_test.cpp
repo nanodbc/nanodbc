@@ -27,6 +27,70 @@ struct mssql_fixture : public test_case_fixture
         if (connection_string_.empty())
             connection_string_ = get_env("NANODBC_TEST_CONNSTR_MSSQL");
     }
+
+    // `name` is a type name
+    // `def` is a comma separated column definitions, trailing '(' and ')' are optional.
+    void create_table_type(
+        nanodbc::connection& connection,
+        nanodbc::string const& name,
+        nanodbc::string def) const
+    {
+        nanodbc::string sql(NANODBC_TEXT("CREATE TYPE "));
+        sql += name;
+        sql += NANODBC_TEXT(" AS TABLE ");
+        sql += def;
+        sql += NANODBC_TEXT(';');
+
+        drop_table_type(connection, name);
+        execute(connection, sql);
+    }
+
+    virtual void drop_table_type(nanodbc::connection& connection, nanodbc::string const& name) const
+    {
+        bool type_exists = true;
+
+        try
+        {
+            auto sql =
+                NANODBC_TEXT("SELECT 1 FROM sys.types WHERE is_table_type = 1 AND name = '") +
+                name + NANODBC_TEXT("';");
+            nanodbc::result results = execute(connection, sql);
+            results.next();
+            type_exists = (0 < results.rows());
+        }
+        catch (...)
+        {
+            type_exists = false;
+        }
+
+        if (type_exists)
+        {
+            execute(connection, NANODBC_TEXT("DROP TYPE ") + name + NANODBC_TEXT(";"));
+        }
+    }
+
+    virtual void drop_procedure(nanodbc::connection& connection, nanodbc::string const& name) const
+    {
+        bool procedure_exists = true;
+
+        try
+        {
+            auto sql = NANODBC_TEXT("SELECT 1 FROM sys.procedures WHERE name = '") + name +
+                       NANODBC_TEXT("';");
+            nanodbc::result results = execute(connection, sql);
+            results.next();
+            procedure_exists = (0 < results.rows());
+        }
+        catch (...)
+        {
+            procedure_exists = false;
+        }
+
+        if (procedure_exists)
+        {
+            execute(connection, NANODBC_TEXT("DROP PROCEDURE ") + name + NANODBC_TEXT(";"));
+        }
+    }
 };
 } // namespace
 
@@ -151,8 +215,9 @@ TEST_CASE_METHOD(mssql_fixture, "test_multi_statement_insert_select", "[mssql]")
 
     // Type of IDENTITY(seed,increment) return value is NUMERIC(38,0)
     // and the function may generate negative values too.
-    auto const sid = r.get<nanodbc::string>(0);
-    REQUIRE(NANODBC_TEXT("1") == sid);
+    auto const sid = r.get<std::string>(0);
+    auto const nid = std::stoll(sid);
+    REQUIRE(nid == 1);
 }
 
 TEST_CASE_METHOD(mssql_fixture, "test_blob", "[mssql][blob][binary][varbinary]")
@@ -949,6 +1014,43 @@ TEST_CASE_METHOD(mssql_fixture, "test_async", "[mssql][async]")
 }
 #endif
 
+TEST_CASE_METHOD(mssql_fixture, "test_bind_float", "[mssql][number][float]")
+{
+    auto conn = connect();
+    create_table(
+        conn,
+        NANODBC_TEXT("test_bind_float"),
+        NANODBC_TEXT("(r real, f float, f24 float(24), f53 float(53), d double precision)"));
+
+    nanodbc::statement stmt(conn);
+    prepare(stmt, NANODBC_TEXT("insert into test_bind_float(r,f,f24,f53,d) values (?,?,?,?,?)"));
+
+    float r(1.123f);
+    float f(3.123f);
+    double d(7.123);
+    stmt.bind(0, &r);
+    stmt.bind(1, &f);
+    stmt.bind(2, &f);
+    stmt.bind(3, &f);
+    stmt.bind(4, &d);
+
+    nanodbc::transact(stmt, 1);
+    {
+        auto result = nanodbc::execute(conn, NANODBC_TEXT("select r,f,f24,f53,d from test_bind_float"));
+        result.next();
+        REQUIRE(result.get<float>(0) == static_cast<float>(r));
+        REQUIRE(result.get<std::string>(0).substr(0, 5) == "1.123");
+        REQUIRE(result.get<float>(1) == static_cast<float>(f));
+        REQUIRE(result.get<std::string>(1).substr(0, 5) == "3.123");
+        REQUIRE(result.get<float>(2) == static_cast<float>(f));
+        REQUIRE(result.get<std::string>(2).substr(0, 5) == "3.123");
+        REQUIRE(result.get<float>(3) == static_cast<float>(f));
+        REQUIRE(result.get<std::string>(3).substr(0, 5) == "3.123");
+        REQUIRE(result.get<double>(4) == static_cast<double>(d));
+        REQUIRE(result.get<std::string>(4).substr(0, 5) == "7.123");
+    }
+}
+
 #if defined(_MSC_VER) && defined(_UNICODE)
 TEST_CASE_METHOD(mssql_fixture, "test_bind_variant", "[mssql][variant]")
 {
@@ -1021,39 +1123,256 @@ TEST_CASE_METHOD(mssql_fixture, "test_bind_variant", "[mssql][variant]")
 }
 #endif
 
-TEST_CASE_METHOD(mssql_fixture, "test_bind_float", "[mssql][number][float]")
+#ifndef NANODBC_DISABLE_MSSQL_TVP
+struct mssql_table_valued_parameter_fixture : mssql_fixture
+{
+    mssql_table_valued_parameter_fixture()
+        : mssql_fixture()
+    {
+        auto conn = connect();
+
+        // drop tvp_test first, next drop tvp_param.
+        drop_procedure(conn, NANODBC_TEXT("tvp_test"));
+        drop_table_type(conn, NANODBC_TEXT("tvp_param"));
+
+        // create type tvp_param
+        create_table_type(
+            conn,
+            NANODBC_TEXT("tvp_param"),
+            NANODBC_TEXT("(col0 INT,"
+                         " col1 BIGINT NULL,"
+                         " col2 VARCHAR(MAX) NULL,"
+                         " col3 NVARCHAR(MAX) NULL,"
+                         " col4 VARBINARY(MAX) NULL)"));
+
+        // create procedure tvp_test
+        execute(
+            conn,
+            NANODBC_TEXT(
+                "CREATE PROCEDURE tvp_test(@p0 INT, @p1 tvp_param READONLY, @p2 NVARCHAR(MAX))"
+                " AS"
+                " BEGIN"
+                "    SET NOCOUNT ON;"
+                "    SELECT @p0 as p0, col0, col1, col2, col3, col4, @p2 as p2"
+                "         FROM @p1 "
+                "         ORDER BY col0;"
+                "    RETURN 0;"
+                " END"));
+
+        // prepare parameter data
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        num_rows_ = std::uniform_int_distribution<>(4, 10)(gen);
+        p0_ = std::uniform_int_distribution<>(0, 100000)(gen);
+
+        p1_col0_.resize(num_rows_);
+        p1_col1_.resize(num_rows_);
+        p1_col2_.resize(num_rows_);
+        p1_col3_.resize(num_rows_);
+        p1_col4_.resize(num_rows_);
+
+        for (int i = 0; i < num_rows_; ++i)
+        {
+            p1_col0_[i] = i + 1;
+            p1_col1_[i] = std::uniform_int_distribution<int64_t>()(gen);
+            p1_col2_[i] = create_random_string<std::string>(16 * 1024, 32 * 1024);
+            p1_col3_[i] = create_random_string<nanodbc::wide_string>(16 * 1024, 32 * 1024);
+            p1_col4_[i] = create_random_binary(16 * 1024, 32 * 1024);
+        };
+
+        p2_ = create_random_string<nanodbc::string>(16 * 1024, 32 * 1024);
+    }
+
+    int num_rows_;
+    int p0_;
+    std::vector<int> p1_col0_;
+    std::vector<int64_t> p1_col1_;
+    std::vector<std::string> p1_col2_;
+    std::vector<nanodbc::wide_string> p1_col3_;
+    std::vector<std::vector<uint8_t>> p1_col4_;
+    nanodbc::string p2_;
+};
+
+TEST_CASE_METHOD(
+    mssql_table_valued_parameter_fixture,
+    "test_table_valued_parameter_with_no_record",
+    "[mssql][table_valued_paramter]")
 {
     auto conn = connect();
-    create_table(
-        conn,
-        NANODBC_TEXT("test_bind_float"),
-        NANODBC_TEXT("(r real, f float, f24 float(24), f53 float(53), d double precision)"));
 
-    nanodbc::statement stmt(conn);
-    prepare(stmt, NANODBC_TEXT("insert into test_bind_float(r,f,f24,f53,d) values (?,?,?,?,?)"));
+    auto stmt = nanodbc::statement(conn);
+    stmt.prepare(NANODBC_TEXT("{ CALL tvp_test(?, ?, ?) }"));
 
-    float r(1.123f);
-    float f(3.123f);
-    double d(7.123);
-    stmt.bind(0, &r);
-    stmt.bind(1, &f);
-    stmt.bind(2, &f);
-    stmt.bind(3, &f);
-    stmt.bind(4, &d);
+    // bind param 0
+    stmt.bind(0, &p0_);
+    // bind param 1, row_count = 0
+    auto p1 = nanodbc::table_valued_parameter(stmt, 1, 0);
+    p1.close();
+    // bind param 2
+    stmt.bind(2, p2_.c_str());
 
-    nanodbc::transact(stmt, 1);
+    // check results
+    auto result = stmt.execute();
+    REQUIRE(!result.next());
+    REQUIRE(0 == result.rows());
+}
+
+TEST_CASE_METHOD(
+    mssql_table_valued_parameter_fixture,
+    "test_table_valued_parameter_with_records",
+    "[mssql][table_valued_paramter]")
+{
+    auto conn = connect();
+
+    auto stmt = nanodbc::statement(conn);
+    stmt.prepare(NANODBC_TEXT("{ CALL tvp_test(?, ?, ?) }"));
+
+    // bind param 0
+    stmt.bind(0, &p0_);
+    // bind param 1
+    auto p1 = nanodbc::table_valued_parameter(stmt, 1, num_rows_);
+    p1.bind(0, p1_col0_.data(), p1_col0_.size());
+    p1.bind(1, p1_col1_.data(), p1_col1_.size());
+    p1.bind_strings(2, p1_col2_);
+    p1.bind_strings(3, p1_col3_);
+    p1.bind(4, p1_col4_);
+    p1.close();
+    // bind param 2
+    stmt.bind(2, p2_.c_str());
+
+    // check results
+    auto results = stmt.execute();
+    int rcnt = 0;
+    while (results.next())
     {
-        auto result = nanodbc::execute(conn, NANODBC_TEXT("select r,f,f24,f53,d from test_bind_float"));
-        result.next();
-        REQUIRE(result.get<float>(0) == static_cast<float>(r));
-        REQUIRE(result.get<std::string>(0).substr(0, 5) == "1.123");
-        REQUIRE(result.get<float>(1) == static_cast<float>(f));
-        REQUIRE(result.get<std::string>(1).substr(0, 5) == "3.123");
-        REQUIRE(result.get<float>(2) == static_cast<float>(f));
-        REQUIRE(result.get<std::string>(2).substr(0, 5) == "3.123");
-        REQUIRE(result.get<float>(3) == static_cast<float>(f));
-        REQUIRE(result.get<std::string>(3).substr(0, 5) == "3.123");
-        REQUIRE(result.get<double>(4) == static_cast<double>(d));
-        REQUIRE(result.get<std::string>(4).substr(0, 5) == "7.123");
+        REQUIRE(p0_ == results.get<int>(0));
+        REQUIRE(p1_col0_[rcnt] == results.get<int>(1));
+        REQUIRE(p1_col1_[rcnt] == results.get<int64_t>(2));
+        REQUIRE(p1_col2_[rcnt] == results.get<std::string>(3));
+        REQUIRE(p1_col3_[rcnt] == results.get<nanodbc::wide_string>(4));
+        REQUIRE(p1_col4_[rcnt] == results.get<std::vector<uint8_t>>(5));
+        REQUIRE(p2_ == results.get<nanodbc::string>(6));
+        ++rcnt;
     }
 }
+
+TEST_CASE_METHOD(
+    mssql_table_valued_parameter_fixture,
+    "test_table_valued_parameter_invalid_bind_order",
+    "[mssql][table_valued_paramter]")
+{
+    auto conn = connect();
+
+    auto stmt = nanodbc::statement(conn);
+    stmt.prepare(NANODBC_TEXT("{ CALL tvp_test(?, ?, ?) }"));
+
+    // bind param 0
+    stmt.bind(0, &p0_);
+    // bind param 1, row_count = 0
+    auto p1 = nanodbc::table_valued_parameter(stmt, 1, num_rows_);
+    // bind param 2, before close tvp
+    REQUIRE_THROWS_AS(stmt.bind(2, p2_.c_str()), nanodbc::programming_error);
+}
+
+TEST_CASE_METHOD(
+    mssql_table_valued_parameter_fixture,
+    "test_table_valued_parameter_insufficient_rows",
+    "[mssql][table_valued_paramter]")
+{
+    auto conn = connect();
+
+    auto stmt = nanodbc::statement(conn);
+    stmt.prepare(NANODBC_TEXT("{ CALL tvp_test(?, ?, ?) }"));
+
+    // bind param 0
+    stmt.bind(0, &p0_);
+    // bind param 1
+    auto p1 = nanodbc::table_valued_parameter(stmt, 1, num_rows_);
+
+    // remove item
+    p1_col0_.pop_back();
+
+    // bind param 2. insufficient rows
+    REQUIRE_THROWS_AS(p1.bind(0, p1_col0_.data(), p1_col0_.size()), nanodbc::programming_error);
+}
+
+TEST_CASE_METHOD(
+    mssql_table_valued_parameter_fixture,
+    "test_table_valued_parameter_with_nulls",
+    "[mssql][table_valued_paramter]")
+{
+    auto conn = connect();
+
+    auto stmt = nanodbc::statement(conn);
+    stmt.prepare(NANODBC_TEXT("{ CALL tvp_test(?, ?, ?) }"));
+
+    struct bool_array
+    {
+        bool_array(size_t capacity)
+            : _data(new bool[capacity])
+            , _capacity(capacity)
+        {
+        }
+        ~bool_array() { delete[] _data; }
+        bool* _data;
+        size_t _capacity;
+    };
+
+    bool_array p1_col1_nulls(p1_col1_.size());
+    bool_array p1_col3_nulls(p1_col3_.size());
+
+    std::generate_n(p1_col1_nulls._data, p1_col1_.size(), [] { return 0 == (rand() % 2); });
+    std::generate_n(p1_col3_nulls._data, p1_col3_.size(), [] { return 0 == (rand() % 2); });
+
+    // bind param 0
+    stmt.bind(0, &p0_);
+    // bind param 1
+    auto p1 = nanodbc::table_valued_parameter(stmt, 1, num_rows_);
+    p1.bind(0, p1_col0_.data(), p1_col0_.size());
+    // set nulls some rows
+    p1.bind(1, p1_col1_.data(), p1_col1_.size(), p1_col1_nulls._data);
+    p1.bind_strings(2, p1_col2_);
+    // set nulls some rows
+    p1.bind_strings(3, p1_col3_, p1_col3_nulls._data);
+    // set nulls all rows
+    p1.bind_null(4);
+    p1.close();
+    // bind param 2
+    stmt.bind(2, p2_.c_str());
+
+    // check results
+    auto results = stmt.execute();
+    int rcnt = 0;
+    while (results.next())
+    {
+        REQUIRE(p0_ == results.get<int>(0));
+        REQUIRE(p1_col0_[rcnt] == results.get<int>(1));
+
+        if (!p1_col1_nulls._data[rcnt])
+        {
+            REQUIRE(p1_col1_[rcnt] == results.get<int64_t>(2));
+        }
+        REQUIRE(p1_col1_nulls._data[rcnt] == results.is_null(2));
+
+        REQUIRE(p1_col2_[rcnt] == results.get<std::string>(3));
+
+        // we need call get/get_ref function first,
+        // for get correct is_null() value nvarchar(max) column
+        auto p1_col3_result = results.get<nanodbc::wide_string>(4);
+        if (!p1_col3_nulls._data[rcnt])
+        {
+            REQUIRE(p1_col3_[rcnt] == p1_col3_result);
+        }
+        REQUIRE(p1_col3_nulls._data[rcnt] == results.is_null(4));
+
+        // we need call get/get_ref function first,
+        // for get correct is_null() value nvarchar(max) column
+        auto p1_col4_result = results.get<std::vector<uint8_t>>(5);
+        REQUIRE(results.is_null(5));
+
+        REQUIRE(p2_ == results.get<nanodbc::string>(6));
+        ++rcnt;
+    }
+}
+
+#endif
