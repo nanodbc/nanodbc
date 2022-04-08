@@ -1281,7 +1281,7 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(results.next());
 
         // NOTE: Parentheses around REQIURE() expressions are to silence error:
-        //       suggest parentheses around comparison in operand of ‘==’ [-Werror=parentheses]
+        //       suggest parentheses around comparison in operand of '==' [-Werror=parentheses]
         T ref;
         p = 0;
         results.get_ref(p, ref);
