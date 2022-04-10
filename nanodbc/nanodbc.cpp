@@ -4170,7 +4170,7 @@ std::unique_ptr<T, std::function<void(T*)>> result::result_impl::ensure_pdata(sh
         // Return a unique_ptr with a no-op deleter as this memory allocation
         // is managed (allocated and released) elsewhere.
         return std::unique_ptr<T, std::function<void(T*)>>(
-            (T*)(col.pdata_ + rowset_position_ * col.clen_), [](T* ptr) {});
+            (T*)(col.pdata_ + rowset_position_ * col.clen_), [](T*) {});
     }
 
     T* buffer = new T;
