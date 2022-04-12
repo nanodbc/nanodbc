@@ -19,8 +19,8 @@ indent_size = 2
 indent_style = space
 trim_trailing_whitespace = true
 
-# CI configuration files
-[{.travis.yml,appveyor.yml,Vagrantfile}]
+# YAML files
+[*.{yml,yaml},Vagrantfile}]
 indent_size = 2
 indent_style = space
 trim_trailing_whitespace = true
