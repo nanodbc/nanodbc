@@ -14,13 +14,13 @@ insert_final_newline = true
 trim_trailing_whitespace = true
 
 # CMake configuration files
-[{CMakeLists.txt,CMakeSettings.json,*.cmake}]
+[{CMakeLists.txt,CMakePresets.json,CMakeUserPresets.json,CMakeSettings.json,*.cmake}]
 indent_size = 2
 indent_style = space
 trim_trailing_whitespace = true
 
-# YAML files
-[*.{yml,yaml},Vagrantfile}]
+# JSON and YAML files
+[*.{json,yml,yaml},Vagrantfile}]
 indent_size = 2
 indent_style = space
 trim_trailing_whitespace = true
