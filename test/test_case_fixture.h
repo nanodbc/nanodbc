@@ -1144,7 +1144,9 @@ struct test_case_fixture : public base_test_fixture
             error_result = {7, "23505", "duplicate key value violates unique constraint"};
             break;
         case database_vendor::sqlite:
-            error_result = {19, "HY000", "[SQLite]UNIQUE constraint failed"};
+            // Skip checking SQL Native Code as some versions of SQLite3 ODBC Driver
+            // report 19 while other report 0.
+            error_result = {-1, "HY000", "UNIQUE constraint"};
             break;
         case database_vendor::sqlserver:
             // 01000: [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Violation of PRIMARY KEY
@@ -1153,7 +1155,7 @@ struct test_case_fixture : public base_test_fixture
             error_result = {3621, "01000", "Violation of PRIMARY KEY constraint"};
             break;
         case database_vendor::vertica:
-            // todo validate vertica
+            // TODO: Validate vertica
             //  https://www.vertica.com/docs/11.1.x/HTML/Content/Authoring/ErrorCodes/SqlState-23505.htm
             error_result = {6745, "23505", "Duplicate key values"};
             break;
@@ -1161,7 +1163,8 @@ struct test_case_fixture : public base_test_fixture
             FAIL("Database vendor is unknown.");
         }
 
-        REQUIRE(error.native() == error_result.n);
+        // Negative means skip
+        REQUIRE(error_result.n < 0 || error.native() == error_result.n);
         REQUIRE_THAT(error.state(), Catch::Matches(error_result.s));
         REQUIRE_THAT(error.what(), Catch::Contains(error_result.w));
     }
