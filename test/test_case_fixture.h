@@ -1118,11 +1118,18 @@ struct test_case_fixture : public base_test_fixture
             error = e;
         }
 
-        struct error_result
+        struct error_result_t
         {
             int n = 0;
             std::string s;
             std::string w;
+            error_result_t() = default;
+            error_result_t(int n, std::string s, std::string w)
+                : n(n)
+                , s(s)
+                , w(w)
+            {
+            }
         } error_result;
 
         switch (vendor_)
