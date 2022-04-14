@@ -1141,7 +1141,7 @@ struct test_case_fixture : public base_test_fixture
             error_result = {1, "25S03", "ORA-00001"};
             break;
         case database_vendor::postgresql:
-            error_result = {1, "23505", "duplicate key value violates unique constraint"};
+            error_result = {7, "23505", "duplicate key value violates unique constraint"};
             break;
         case database_vendor::sqlite:
             error_result = {19, "HY000", "[SQLite]UNIQUE constraint failed"};
