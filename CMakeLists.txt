@@ -12,6 +12,7 @@ option(NANODBC_DISABLE_EXAMPLES "Do not build examples" OFF)
 option(NANODBC_DISABLE_INSTALL "Do not generate install target" OFF)
 option(NANODBC_DISABLE_LIBCXX "Do not use libc++, if available." OFF)
 option(NANODBC_DISABLE_TESTS "Do not build tests" OFF)
+option(NANODBC_DISABLE_MSSQL_TVP "Do not use MSSQL Table-valued parameter" OFF)
 option(NANODBC_ENABLE_COVERAGE "Enable test coverage reporting for GCC/clang" OFF)
 option(NANODBC_ENABLE_BOOST "Use Boost for Unicode string convertions (requires Boost.Locale)" OFF)
 option(NANODBC_ENABLE_UNICODE "Enable Unicode support" OFF)
@@ -20,7 +21,7 @@ option(NANODBC_ENABLE_WORKAROUND_NODATA "Enable SQL_NO_DATA workaround (see Issu
 ########################################
 ## nanodbc version
 ########################################
-file(STRINGS VERSION NANODBC_VERSION REGEX "[0-9]+\\.[0-9]+\\.[0-9]+")
+file(STRINGS VERSION.txt NANODBC_VERSION REGEX "[0-9]+\\.[0-9]+\\.[0-9]+")
 string(REGEX REPLACE "^([0-9]+)\\.[0-9]+\\.[0-9]+" "\\1" NANODBC_VERSION_MAJOR "${NANODBC_VERSION}")
 string(REGEX REPLACE "^[0-9]+\\.([0-9])+\\.[0-9]+" "\\1" NANODBC_VERSION_MINOR "${NANODBC_VERSION}")
 string(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]+)" "\\1" NANODBC_VERSION_PATCH "${NANODBC_VERSION}")
@@ -29,13 +30,13 @@ message(STATUS "nanodbc version: ${NANODBC_VERSION}")
 ########################################
 ## require and enable C++0x/11/14
 ########################################
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 14 CACHE STRING "The C++ standard to use for NANODBC")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 message(STATUS "nanodbc compile: C++${CMAKE_CXX_STANDARD}")
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wnarrowing -Werror")
   include(CheckCXXCompilerFlag)
 
   if (NANODBC_ENABLE_COVERAGE)
@@ -87,6 +88,11 @@ if(NANODBC_DISABLE_ASYNC)
 endif()
 message(STATUS "nanodbc feature: Disable async features - ${NANODBC_DISABLE_ASYNC}")
 
+if(NANODBC_DISABLE_MSSQL_TVP)
+  add_definitions(-DNANODBC_DISABLE_MSSQL_TVP)
+endif()
+message(STATUS "nanodbc feature: Disable MSSQL Table-valued parameter - ${NANODBC_DISABLE_MSSQL_TVP}")
+
 if(NANODBC_ENABLE_UNICODE)
   add_definitions(-DNANODBC_ENABLE_UNICODE)
   if(MSVC)
@@ -112,7 +118,7 @@ message(STATUS "nanodbc feature: Enable SQL_NO_DATA bug workaround - ${NANODBC_E
 if(UNIX)
   # Try to find unixODBC first via odbc_config program.
   find_program(ODBC_CONFIG odbc_config
-    $ENV{ODBC_PATH}/bin /usr/bin /usr/local/bin PATHS)
+    PATHS $ENV{ODBC_PATH}/bin /usr/bin /usr/local/bin)
   if(ODBC_CONFIG)
     message(STATUS "nanodbc build: ODBC on Unix - unixODBC")
     set(ODBCLIB odbc)
@@ -144,7 +150,7 @@ if(UNIX)
   # Fallback to using iODBC
   if(NOT ODBC_CONFIG)
     find_program(ODBC_CONFIG iodbc-config
-      $ENV{ODBC_PATH}/bin /usr/bin /usr/local/bin PATHS)
+      PATHS $ENV{ODBC_PATH}/bin /usr/bin /usr/local/bin)
     if(ODBC_CONFIG)
       message(STATUS "nanodbc build: ODBC on Unix - iODBC")
       set(ODBCLIB iodbc)
@@ -262,7 +268,11 @@ if(NOT NANODBC_DISABLE_INSTALL)
   install(FILES nanodbc/nanodbc.h DESTINATION include/nanodbc)
   # Make project importable from the install directory
   ## Generate and install *-config.cmake exporting targets from install tree.
-  install(EXPORT ${NANODBC_CONFIG} DESTINATION cmake)
+  if (WIN32 AND NOT MINGW)
+    install(EXPORT ${NANODBC_CONFIG} DESTINATION "cmake")
+  else()
+    install(EXPORT ${NANODBC_CONFIG} DESTINATION "lib/cmake/nanodbc")
+  endif()
   # Make project importable from the build directory
   ## Generate file *-config.cmake exporting targets from build tree.
   export(TARGETS nanodbc FILE ${NANODBC_CONFIG}.cmake)

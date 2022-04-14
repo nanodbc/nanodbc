@@ -8,12 +8,11 @@ configuration: Release
 
 branches:
   only:
-    - master
-    - latest
-    - release
+    - main
+  except:
+    - gh-pages
 
-shallow_clone: true
-clone_depth: 5
+clone_depth: 1
 
 notifications:
   - provider: Webhook
@@ -61,6 +60,7 @@ environment:
     - DB: SQLite
       G: "Visual Studio 15 2017 Win64"
     - DB: SQLite
+      P: x86-32
       G: "Visual Studio 15 2017"
 
     - DB: SQLite
@@ -81,25 +81,35 @@ matrix:
     - G: "Visual Studio 15 2017 Win64"
       ANALYSIS: "/p:RunCodeAnalysis=true /p:EnableCppCoreCheck=true"
 
+cache:
+  - c:\downloads\
+
 init:
   # For MinGW make to work correctly sh.exe must NOT be in your path.
   - set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
-  - ps: |
-      Write-Host "Build worker environment variables:" -ForegroundColor Magenta
-      Get-ChildItem Env: | %{"{0}={1}" -f $_.Name,$_.Value}
   - if "%G%"=="NMake Makefiles" if "%P%"=="x86-32" call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86
   - if "%G%"=="NMake Makefiles" if "%P%"=="x86-64" "C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x64
 
 install:
   - ps: |
       if ($env:DB -Match "SQLite") {
-        Write-Host "Installing SQLite ODBC Driver:" -ForegroundColor Magenta
-        $sqliteodbc64Path = "$($env:TEMP)\sqliteodbc_w64.exe"
-        $sqliteodbc32Path = "$($env:TEMP)\sqliteodbc.exe"
-        (New-Object Net.WebClient).DownloadFile('http://www.ch-werner.de/sqliteodbc/sqliteodbc_w64.exe', $sqliteodbc64Path)
-        (New-Object Net.WebClient).DownloadFile('http://www.ch-werner.de/sqliteodbc/sqliteodbc.exe', $sqliteodbc32Path)
+        $sqliteodbc64Path = "c:\downloads\sqliteodbc_w64.exe"
+        $sqliteodbc32Path = "c:\downloads\sqliteodbc.exe"
+        if (-not (Test-Path c:\downloads -PathType Container)) {
+          New-Item -ItemType Directory -Path c:\downloads
+        }
+        if (-not (Test-Path $sqliteodbc64Path -PathType Leaf)) {
+          Write-Host "Downloading 64-bit SQLite ODBC Driver" -ForegroundColor Magenta
+          (New-Object Net.WebClient).DownloadFile('http://www.ch-werner.de/sqliteodbc/sqliteodbc_w64.exe', $sqliteodbc64Path)
+        }
+        if (-not (Test-Path $sqliteodbc32Path -PathType Leaf)) {
+          Write-Host "Downloading 32-bit SQLite ODBC Driver" -ForegroundColor Magenta
+          (New-Object Net.WebClient).DownloadFile('http://www.ch-werner.de/sqliteodbc/sqliteodbc.exe', $sqliteodbc32Path)
+        }
+        Write-Host "Installing 64-bit SQLite ODBC Driver" -ForegroundColor Magenta
         cmd /c start /wait $sqliteodbc64Path /S
         if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
+        Write-Host "Installing 32-bit SQLite ODBC Driver" -ForegroundColor Magenta
         cmd /c start /wait $sqliteodbc32Path /S
         if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
        }
@@ -181,28 +191,42 @@ test_script:
           $host.SetShouldExit($LastExitCode)
         }
         if ($env:DB -Match "MSSQL2008") {
-          $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 11 for SQL Server};Server=(local)\SQL2008R2SP2;Database=master;UID=sa;PWD=Password12!;"
+          $test_driver = "ODBC Driver 11 for SQL Server"
+          $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={${test_driver}};Server=(local)\SQL2008R2SP2;Database=master;UID=sa;PWD=Password12!;"
           $test_name = "mssql_test"
         } elseif ($env:DB -Match "MSSQL2012") {
-          $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 11 for SQL Server};Server=(local)\SQL2012SP1;Database=master;UID=sa;PWD=Password12!;"
+          $test_driver = "ODBC Driver 11 for SQL Server"
+          $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={${test_driver}};Server=(local)\SQL2012SP1;Database=master;UID=sa;PWD=Password12!;"
           $test_name = "mssql_test"
         } elseif ($env:DB -Match "MSSQL2014") {
-          $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 11 for SQL Server};Server=(local)\SQL2014;Database=master;UID=sa;PWD=Password12!;"
+          $test_driver = "ODBC Driver 11 for SQL Server"
+          $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={${test_driver}};Server=(local)\SQL2014;Database=master;UID=sa;PWD=Password12!;"
           $test_name = "mssql_test"
         } elseif ($env:DB -Match "MSSQL2016") {
-          $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 11 for SQL Server};Server=(local)\SQL2016;Database=master;UID=sa;PWD=Password12!;"
+          $test_driver = "ODBC Driver 11 for SQL Server"
+          $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={${test_driver}};Server=(local)\SQL2016;Database=master;UID=sa;PWD=Password12!;"
           $test_name = "mssql_test"
         } elseif ($env:DB -Match "MySQL") {
-          $env:NANODBC_TEST_CONNSTR_MYSQL="Driver={MySQL ODBC 5.3 ANSI Driver};Server=127.0.0.1;Database=nanodbc_test;User=root;Password=Password12!;big_packets=1;"
+          $test_driver = "MySQL ODBC 5.3 ANSI Driver"
+          $env:NANODBC_TEST_CONNSTR_MYSQL="Driver={${test_driver}};Server=127.0.0.1;Database=nanodbc_test;User=root;Password=Password12!;big_packets=1;"
           $test_name = "mysql_test"
         } elseif ($env:DB -Match "PostgreSQL") {
-          $env:NANODBC_TEST_CONNSTR_PGSQL="Driver={PostgreSQL ANSI(x64)};Server=127.0.0.1;Port=5432;Database=nanodbc_test;Uid=postgres;Pwd=Password12!;"
+          $test_driver = "PostgreSQL ANSI(x64)"
+          $env:NANODBC_TEST_CONNSTR_PGSQL="Driver={${test_driver}};Server=127.0.0.1;Port=5432;Database=nanodbc_test;Uid=postgres;Pwd=Password12!;"
           $test_name = "postgresql_test"
         } elseif ($env:DB -Match "SQLite") {
+          $test_driver = "SQLite3 ODBC Driver"
           $test_name = "sqlite_test"
         } else {
           throw 'Database ' + $env:DB + ' not configured yet'
         }
+        if ($env:P -Match "x86-32") {
+          Add-OdbcDsn -Name testdsn -DriverName "$test_driver" -Platform "32-bit" -DsnType System -SetPropertyValue @("Database=db01")
+        } else {
+          Add-OdbcDsn -Name testdsn -DriverName "$test_driver" -DsnType System -SetPropertyValue @("Database=db01")
+        }
+        Write-Host "Installed ODBC data sources:" -ForegroundColor Magenta
+        Get-OdbcDsn | Select-Object -ExpandProperty Name
         Write-Host "Running $Env:CONFIGURATION build test: $test_name" -ForegroundColor Magenta
         $cmd = 'ctest -V --output-on-failure -C ' + $Env:CONFIGURATION + ' -R ' + $test_name
         iex "& $cmd"

@@ -18,15 +18,26 @@
 # CLion
 /.idea
 
+# Node (for docs build)
+node_modules
+package-lock.json
+
+# Python (for docs build)
+.venv
+.pyvenv
+
 # VS2017 / VSCode
 /.vs*
 /CMakeSettings.json
 /launch.vs.json
+*.code-workspace
 
 # Miscelenaous
 *.log
+/doc/build/
 /.vagrant
 /*build*/
+/out/
 /[Dd]ebug
 /[Rr]elease
 /[Ww]in32
@@ -34,7 +45,10 @@
 /*.dir
 /*.local.bat
 /docker_build/
-example
 example.dSYM/
 /example/empty.cpp
+website/
+* Copy.*
+*.csv
+*.db
 

@@ -1,0 +1,16 @@
+name: "Lint: clang-format"
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: ".h .cpp"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: DoozyX/clang-format-lint-action@v0.12
+      with:
+        source: '.'
+        extensions: 'h,cpp'
+        clangFormatVersion: 9
+        inplace: True

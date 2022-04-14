@@ -6,7 +6,7 @@ A small C++ wrapper for the native C ODBC API. Please see the [online documentat
 user information, example usage, propaganda, and detailed source level documentation.
 
 [![GitHub release](https://img.shields.io/github/tag/nanodbc/nanodbc.svg)](https://github.com/nanodbc/nanodbc/releases)
-[![GitHub commits](https://img.shields.io/github/commits-since/nanodbc/nanodbc/v2.12.4.svg?style=flat-square)](https://github.com/nanodbc/nanodbc/releases/tag/v2.12.4)
+[![GitHub commits](https://img.shields.io/github/commits-since/nanodbc/nanodbc/v2.14.0.svg?style=flat-square)](https://github.com/nanodbc/nanodbc/releases/tag/v2.14.0)
 [![License](https://img.shields.io/github/license/nanodbc/nanodbc.svg?style=flat-square)](https://github.com/nanodbc/nanodbc/blob/master/LICENSE)
 
 [![Gitter](https://img.shields.io/gitter/room/nanodbc/nanodbc.svg?style=flat-square)](https://gitter.im/nanodbc-help/Lobby)
@@ -15,7 +15,7 @@ user information, example usage, propaganda, and detailed source level documenta
 
 | Branch |  Linux/OSX | Windows | Coverage | Coverity | Documentation |
 |:--- |:--- |:--- |:--- |:---|:---|
-| `master`  | [![master][travis-badge-master]][travis] | [![master][appveyor-badge]][appveyor] | [![codecov](https://codecov.io/gh/nanodbc/nanodbc/branch/master/graph/badge.svg)](https://codecov.io/gh/nanodbc/nanodbc) | [![coverity_scan][coverity-badge]][coverity] | [![CircleCI](https://circleci.com/gh/nanodbc/nanodbc/tree/master.svg?style=shield)](https://circleci.com/gh/nanodbc/nanodbc/tree/master) |
+| `master`  | none | [![master][appveyor-badge]][appveyor] | [![codecov](https://codecov.io/gh/nanodbc/nanodbc/branch/master/graph/badge.svg)](https://codecov.io/gh/nanodbc/nanodbc) | [![coverity_scan][coverity-badge]][coverity] | [![CircleCI](https://circleci.com/gh/nanodbc/nanodbc/tree/master.svg?style=shield)](https://circleci.com/gh/nanodbc/nanodbc/tree/master) |
 
 > **Note:** The Coverity status uses the [coverity_scan][nanodbc-coverity] branch.
 > When `master` has had a significant amount of work pushed to it,
@@ -35,7 +35,8 @@ release notes will clarify required C++ features and/or standards for particular
 ### Design Decisions
 
 All complex objects in nanodbc follow the [pimpl (Pointer to IMPLementation)][pimpl] idiom to
-provide separation between interface and implementation, value semantics, and a clean `nanodbc.h` header file that includes nothing but standard C++ headers.
+provide separation between interface and implementation, value semantics, and a clean `nanodbc.h`
+header file that includes nothing but standard C++ headers.
 
 nanodbc wraps ODBC code, providing a simpler way to do the same thing. We try to be as featureful
 as possible, but I can't guarantee you'll never have to write supporting ODBC code. Personally, I
@@ -43,21 +44,21 @@ have never had to do so.
 
 Major features beyond what's already supported by ODBC are not within the scope of nanodbc. This is
 where the *nano* part of nanodbc becomes relevant: This library is _as minimal as possible_. That
-means no dependencies beyond standard C++ and typical ODBC headers. No features unsupported by
-existing ODBC API calls.
+means no dependencies beyond standard C++ and typical ODBC headers and libraries to link against.
+No features unsupported by existing ODBC API calls.
 
 ## Building
 
 nanodbc is intentionally small enough that you can drag and drop the header and implementation
 files into your project and run with it. For those that want it, I have also provided
-[CMake][cmake] files which build a library object, or build and run the included tests. The CMake
-files will also support out of source builds.
+[CMake][cmake] files which build a library object, or build and run the included tests.
+The CMake files will also support out of source builds.
 
 Tests use the [Catch][catch] test framework, and CMake will automatically fetch the latest version
-of Catch for you at build time. To build the tests you will also need to have either unixODBC or
-iODBC installed and discoverable by CMake. This is easy on OS X where you can use [Homebrew][brew]
-to install unixODBC with `brew install unixodbc`, or use the system provided iODBC if you have OS X
-10.9 or earlier.
+of Catch for you at build time. To build the nanodbc and the tests you will also need to have
+either [unixODBC] or [iODBC] installed and discoverable by CMake.
+This is easy on OS X where you can use [Homebrew][brew] to install unixODBC with `brew install unixodbc`,
+or use the system provided iODBC if you have OS X 10.9 or earlier.
 
 The tests attempt to connect to a [SQLite][sqlite] database, so you will have to have that and a
 SQLite ODBC driver installed. At the time of this writing, there happens to be a nice
@@ -105,11 +106,13 @@ The following build options are available via [CMake command-line option][cmake-
 are not using CMake to build nanodbc, you will need to set the corresponding `-D` compile define
 flags yourself.
 
-All boolean options follow the CMake [OPTION][cmake-option] default value convention: if no initial value is provided, `OFF` is used.
+All boolean options follow the CMake [OPTION][cmake-option] default value convention:
+if no initial value is provided, `OFF` is used.
 
 Use the standard CMake option `-DBUILD_SHARED_LIBS=ON` to build nanodbc as shared library.
 
-If you need to use the `NANODBC_ENABLE_BOOST=ON` option, you will have to configure your environment to use [Boost][boost].
+If you need to use the `NANODBC_ENABLE_BOOST=ON` option, you will have to configure your
+environment to use [Boost][boost].
 
 | CMake&nbsp;Option                  | Possible&nbsp;Values | Details |
 | -----------------------------------| ---------------------| ------- |
@@ -131,10 +134,9 @@ Under Windows `sizeof(wchar_t) == sizeof(SQLWCHAR) == 2`, yet on Unix systems
 and drivers. If building against iODBC and the build option `NANODBC_USE_UNICODE` is `ON`, then
 `nanodbc::string` will be `std::u32string`. In **ALL** other cases it will be `std::u16string`.
 
-Continuous integration tests run on [Travis-CI][travis]. The build platform does not make available
-a Unicode-enabled iODBC driver. As such there is no guarantee that tests will pass in entirety on a
-system using iODBC. My recommendation is to use unixODBC. If you must use iODBC, consider
-_disabling_ unicode mode to avoid `wchar_t` issues.
+The CI builds do not exercise a Unicode-enabled iODBC driver. As such there is no guarantee
+that tests will pass in entirety on a system using iODBC. My recommendation is to use unixODBC.
+If you must use iODBC, consider _disabling_ unicode mode to avoid `wchar_t` issues.
 
 ---
 
@@ -145,8 +147,8 @@ _disabling_ unicode mode to avoid `wchar_t` issues.
 [`clang-format`][clang-format] handles all C++ code formatting for nanodbc. This utility is
 [brew-installable][brew] on OS X (`brew install clang-format`) and is available on all major
 platforms. See our `.clang-format` configuration file for details on the style. The script
-`utility/style.sh` formats all code in the repository automatically. To run `clang-format` on a
-single file use the following.
+`utility/style.sh` formats all code in the repository automatically.
+To run `clang-format` on a single file use the following.
 
 ```shell
 clang-format -i /path/to/file
@@ -156,19 +158,9 @@ clang-format -i /path/to/file
 
 ### Source Level Documentation
 
-Source level documentation provided via [GitHub's gh-pages][gh-pages] is available at
-[nanodbc.io][nanodbc]. To re-build and update it, preform the following steps from the
-root directory of the repository:
-
-1. `git clone -b gh-pages git@github.com:nanodbc/nanodbc.git doc` Necessary the first time,
-   not subsequently.
-2. `cd doc`
-3. `make` Generates updated documentation locally.
-4. `make commit` Adds and commits any updated documentation.
-5. `git push origin gh-pages` Deploys the changes to github.
-
-Building documentation and gh-pages requires the use of [Doxygen][doxygen] and
-[jekyll][jekyll]. See the [`Makefile` on the `gh-pages` branch][nanodbc-makefile] for more details.
+Source level documentation provided via [GitHub's gh-pages][gh-pages] is available
+at [nanodbc.io][nanodbc]. To re-build and update it, preform the following steps
+from the [doc/README.md](doc/README.md) file.
 
 ### Quick Setup for Testing or Development Environments
 
@@ -243,9 +235,11 @@ If a feature requires a database-specific test case for each database, then skip
 
 Once your local `master` branch is ready for publishing
 (i.e. [semantic versioning][semver]), use the `utility/publish.sh` script. This script
-bumps the major, minor, or patch version, then updates the repository's `VERSION` file, adds a
+bumps the major, minor, or patch version, then updates the repository's `VERSION.txt` file, adds a
 "Preparing" commit, and creates git tags appropriately. For example to make a minor update you
 would run `./utility/publish.sh minor`.
+Review files of CMake configuration, documentation and Sphinx configuration,
+and update version number wherever necessary.
 
 > **Important:** Always update [`CHANGELOG.md`](CHANGELOG.md) with information about new changes,
 > bug fixes, and features when making a new release.
@@ -255,11 +249,15 @@ would run `./utility/publish.sh minor`.
 To do this manually instead, use the following steps &mdash; for example a minor update from
 `2.9.x` to `2.10.0`:
 
-1. `echo "2.10.0" > VERSION`
-2. `git add VERSION`
+1. `echo "2.10.0" > VERSION.txt`
+2. `git add VERSION.txt`
 3. `git commit -m "Preparing 2.10.0 release."`
 4. `git tag -f "v2.10.0"`
 5. `git push -f origin "v2.10.0"`
+
+Next, switch to `gh-pages` branch, build latest documentation, commit and push.
+
+Finally, announce the new release to the public.
 
 ## Future work
 
@@ -303,15 +301,14 @@ To do this manually instead, use the following steps &mdash; for example a minor
 [docker]:       https://www.docker.com/
 [doxygen]:      http://www.doxygen.org
 [gh-pages]:     https://help.github.com/articles/what-are-github-pages/
+[iodbc]:        http://www.iodbc.org/
 [jekyll]:       https://jekyllrb.com/
 [pimpl]:        http://c2.com/cgi/wiki?PimplIdiom
 [semver]:       http://semver.org/
 [sqlite]:       https://www.sqlite.org/
 [sqliteodbc]:   http://www.ch-werner.de/sqliteodbc/
+[unixodbc]:     http://www.unixodbc.org/
 [vagrant]:      https://www.vagrantup.com/
-
-[travis]:               https://travis-ci.org/nanodbc/nanodbc
-[travis-badge-master]:  https://travis-ci.org/nanodbc/nanodbc.svg?branch=master
 
 [appveyor]:         https://ci.appveyor.com/project/nanodbc/nanodbc?branch=master
 [appveyor-badge]:   https://ci.appveyor.com/api/projects/status/pvgwgg3qgdcnylp1/branch/master?svg=true

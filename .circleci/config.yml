@@ -3,32 +3,31 @@ version: 2
 jobs:
   lint:
     docker:
-      - image: circleci/python:2.7
+      - image: circleci/python:3.8.0-buster
     steps:
       - checkout
       - run:
           name: install markdownlint
           command: |
-            curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+            curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
             sudo apt-get install -y nodejs
             sudo npm install -g markdownlint-cli
             markdownlint --version
       - run:
-          name: install restructuredtext_lint
+          name: install rstcheck
           command: |
-            sudo pip install restructuredtext_lint
-            rst-lint --version
+            sudo pip install rstcheck
+            rstcheck --version
       - run:
           name: lint README.md
           command: markdownlint --config .markdownlint.json README.md
       - run:
           name: lint docs/
           command: |
-            cd doc
-            echo "TODO: rst-lint index.rst"
+            rstcheck -r doc
   build-deploy:
     docker:
-      - image: circleci/python:2.7
+      - image: circleci/python:3.8.0-buster
     steps:
       - checkout
       - run:
@@ -37,7 +36,7 @@ jobs:
             sudo apt-get update -q
             sudo apt-get install -y python-sphinx doxygen
             sudo pip install sphinx_rtd_theme
-            sudo pip install breathe
+            sudo pip install "breathe<=4.29.0"
       - run:
           name: generate docs
           command: |

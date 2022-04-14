@@ -12,7 +12,7 @@ struct odbc_fixture : public test_case_fixture
             connection_string_ = get_env("NANODBC_TEST_CONNSTR_ODBC");
     }
 };
-}
+} // namespace
 
 TEST_CASE_METHOD(odbc_fixture, "test_driver", "[odbc][driver]")
 {
@@ -69,6 +69,11 @@ TEST_CASE_METHOD(odbc_fixture, "test_decimal_conversion", "[odbc][decimal][conve
     test_decimal_conversion();
 }
 
+TEST_CASE_METHOD(odbc_fixture, "test_error", "[odbc][error]")
+{
+    test_error();
+}
+
 TEST_CASE_METHOD(odbc_fixture, "test_exception", "[odbc][exception]")
 {
     test_exception();
@@ -122,6 +127,11 @@ TEST_CASE_METHOD(odbc_fixture, "test_string", "[odbc][string]")
 TEST_CASE_METHOD(odbc_fixture, "test_string_vector", "[odbc][string]")
 {
     test_string_vector();
+}
+
+TEST_CASE_METHOD(odbc_fixture, "test_string_view_vector", "[odbc][string]")
+{
+    test_string_view_vector();
 }
 
 TEST_CASE_METHOD(odbc_fixture, "test_batch_binary", "[odbc][binary]")

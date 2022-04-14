@@ -31,10 +31,10 @@ handles all C++ code formatting for nanodbc.
 This utility is `brew-installable <https://brew.sh/>`_ on OS X
 (``brew install clang-format``) and is available on all major platforms.
 
-See our `.clang-format <https://github.com/nanodbc/nanodbc/blob/master/.clang-format>`_
+See our `.clang-format <https://github.com/nanodbc/nanodbc/blob/v2.14.0/.clang-format>`_
 configuration file for details on the style.
 
-The script `utility/style.sh <https://github.com/nanodbc/nanodbc/blob/master/utility/style.sh>`_
+The script `utility/style.sh <https://github.com/nanodbc/nanodbc/blob/v2.14.0/utility/style.sh>`_
 formats all code in the repository automatically.
 To run ``clang-format`` on a single file use the following.
 
@@ -91,18 +91,18 @@ Launch vagrant VM (using VirtualBox provider for example),
 Test
 ******************************************************************************
 
-*TODO*: How to test your feature for nanodbc
+See `README.md`_.
 
 ******************************************************************************
 Release
 ******************************************************************************
 
-*TODO*: How to release and publish source code
+See `README.md`_.
 
 Documentation
 ==============================================================================
 
-*TODO*: How to generate and publish documentation
+See `doc/README.md`_.
 
 ******************************************************************************
 Future
@@ -119,3 +119,6 @@ Good to Have / Want Someday
 * Provide more examples in documentation, more details, and point out any gotchas.
 * Versioned generated source level API documentation for release and latest. For each major and minor published versions too?
 * Add "HOWTO Build" documentation for Windows, OS X, and Linux.
+
+.. _`README.md`: https://github.com/nanodbc/nanodbc/blob/v2.14.0/README.md
+.. _`doc/README.md`: https://github.com/nanodbc/nanodbc/blob/v2.14.0/doc/README.md

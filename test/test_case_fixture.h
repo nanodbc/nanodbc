@@ -570,6 +570,111 @@ struct test_case_fixture : public base_test_fixture
         }
     }
 
+    void test_catalog_procedure_columns()
+    {
+        nanodbc::connection connection = connect();
+        nanodbc::catalog catalog(connection);
+
+        // Check we can iterate over any procedures
+        {
+            nanodbc::catalog::procedures procedures = catalog.find_procedures();
+            long count = 0;
+            while (procedures.next())
+            {
+                // This values (procedure name) must not be NULL (returned as empty string)
+                REQUIRE(!procedures.procedure_name().empty());
+                count++;
+            }
+            REQUIRE(count > 0);
+        }
+
+        nanodbc::string const procedure_name(NANODBC_TEXT("test_catalog_procedure"));
+
+        // Find a procedure with known name
+        {
+            try
+            {
+                nanodbc::result results =
+                    execute(connection, NANODBC_TEXT("DROP PROCEDURE " + procedure_name));
+            }
+            catch (...)
+            {
+            }
+            execute(
+                connection,
+                NANODBC_TEXT("CREATE PROCEDURE " + procedure_name) +
+                    NANODBC_TEXT(" @arg_varchar VARCHAR(10), @arg_int INT "
+                                 "AS "
+                                 "BEGIN "
+                                 "        SELECT @arg_varchar AS A, @arg_int AS B, GETDATE() AS C "
+                                 "END;"));
+
+            // Use brute-force look-up
+            {
+                nanodbc::catalog::procedures procedures = catalog.find_procedures();
+                bool found = false;
+                while (procedures.next())
+                {
+                    // Can not expect name to be exactly the same.
+                    if (procedures.procedure_name().find(procedure_name) != std::string::npos)
+                    {
+                        // Unclear whether we can form reliable expectations around the procedure
+                        // type
+                        found = true;
+                        break;
+                    }
+                }
+                REQUIRE(found);
+            }
+
+            // Use SQLProcedures pattern search capabilities
+            {
+                nanodbc::catalog::procedures procedures = catalog.find_procedures(procedure_name);
+                // expect single record with the wanted procedure
+                REQUIRE(procedures.next());
+                REQUIRE(procedures.procedure_name().find(procedure_name) != std::string::npos);
+                // expect no more records
+                REQUIRE(!procedures.next());
+            }
+        }
+        // Now over to find_procedure_columns
+        {
+            // Check we can iterate over any columns
+            {
+                nanodbc::catalog::procedure_columns columns = catalog.find_procedure_columns();
+                long count = 0;
+                while (columns.next())
+                {
+                    // These values must not be NULL (returned as empty string)
+                    REQUIRE(!columns.column_name().empty());
+                    count++;
+                }
+                REQUIRE(count > 0);
+            }
+            // Find a procedure with known name and verify its known columns
+            {
+                nanodbc::catalog::procedure_columns columns =
+                    catalog.find_procedure_columns(NANODBC_TEXT("%"), procedure_name);
+                long count = 0;
+                while (columns.next())
+                {
+                    // Verify that the expected columns make an appearance
+                    // as well as column_type is as expected.
+                    // All of the remaining attribtues are shared with the SQLColumns
+                    // API call and are tested there
+                    if (columns.column_name().find(NANODBC_TEXT("arg_int")) != std::string::npos ||
+                        columns.column_name().find(NANODBC_TEXT("arg_varchar")) !=
+                            std::string::npos)
+                    {
+                        REQUIRE(columns.column_type() == SQL_PARAM_INPUT);
+                        count++;
+                    }
+                }
+                REQUIRE(count == 2);
+            }
+        }
+    }
+
     void test_catalog_tables()
     {
         nanodbc::connection connection = connect();
@@ -944,10 +1049,125 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(!driver_name.empty());
         auto const drivers = nanodbc::list_drivers();
         bool found = std::any_of(
-            drivers.cbegin(), drivers.cend(), [&driver_name](nanodbc::driver const& drv) {
-                return driver_name == drv.name;
-            });
+            drivers.cbegin(),
+            drivers.cend(),
+            [&driver_name](nanodbc::driver const& drv) { return driver_name == drv.name; });
         REQUIRE(found);
+    }
+
+    void test_datasources()
+    {
+        auto const dsns = nanodbc::list_datasources();
+        bool test_dsn_found = std::any_of(
+            dsns.cbegin(),
+            dsns.cend(),
+            [](nanodbc::datasource const& dsn)
+            { return dsn.name == nanodbc::test::convert("testdsn"); });
+        if (test_dsn_found)
+        {
+            auto const driver_name = connection_string_parameter(NANODBC_TEXT("DRIVER"));
+            REQUIRE(!driver_name.empty());
+
+            bool found = std::any_of(
+                dsns.cbegin(),
+                dsns.cend(),
+                [&driver_name](nanodbc::datasource const& dsn) {
+                    return dsn.name == nanodbc::test::convert("testdsn") &&
+                           dsn.driver == driver_name;
+                });
+            REQUIRE(found);
+        }
+    }
+
+    void test_error()
+    {
+        nanodbc::connection connection = connect();
+
+        drop_table(connection, NANODBC_TEXT("test_error"));
+        nanodbc::string create_table_sql = NANODBC_TEXT("create table test_error (i int not null");
+        if (vendor_ == database_vendor::mysql)
+        {
+            create_table_sql =
+                create_table_sql + NANODBC_TEXT(", constraint test_error_pk primary key (i)");
+        }
+        else
+        {
+            create_table_sql =
+                create_table_sql + NANODBC_TEXT(" constraint test_error_pk primary key");
+        }
+        if (vendor_ == database_vendor::vertica)
+        {
+            create_table_sql = create_table_sql + NANODBC_TEXT(" enabled");
+        }
+        create_table_sql = create_table_sql + NANODBC_TEXT(");");
+
+        execute(connection, create_table_sql);
+
+        nanodbc::statement statement(connection);
+        prepare(statement, NANODBC_TEXT("insert into test_error (i) values (0);"));
+        execute(statement);
+
+        nanodbc::database_error error = nanodbc::database_error(nullptr, 0);
+
+        try
+        {
+            statement.execute();
+        }
+        catch (const nanodbc::database_error& e)
+        {
+            error = e;
+        }
+
+        struct error_result_t
+        {
+            int n = 0;
+            std::string s;
+            std::string w;
+            error_result_t() = default;
+            error_result_t(int n, std::string s, std::string w)
+                : n(n)
+                , s(s)
+                , w(w)
+            {
+            }
+        } error_result;
+
+        switch (vendor_)
+        {
+        case database_vendor::mysql:
+            error_result = {1062, "23000", "Duplicate entry"};
+            break;
+        case database_vendor::oracle:
+            error_result = {1, "25S03", "ORA-00001"};
+            break;
+        case database_vendor::postgresql:
+            error_result = {7, "23505", "duplicate key value violates unique constraint"};
+            break;
+        case database_vendor::sqlite:
+            // Skip checking SQL Native Code as some versions of SQLite3 ODBC Driver
+            // report 19 while other report 0.
+            error_result = {-1, "HY000", "UNIQUE constraint"};
+            break;
+        case database_vendor::sqlserver:
+            // 01000: [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Violation of PRIMARY KEY
+            // constraint 'test_error_pk'. [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]The
+            // statement has been terminated.
+            error_result = {3621, "01000", "Violation of PRIMARY KEY constraint"};
+            break;
+        case database_vendor::vertica:
+            // TODO: Validate vertica
+            //  https://www.vertica.com/docs/11.1.x/HTML/Content/Authoring/ErrorCodes/SqlState-23505.htm
+            error_result = {6745, "23505", "Duplicate key values"};
+            break;
+        default:
+            FAIL("Database vendor is unknown.");
+        }
+
+        // Negative means skip
+        if (error_result.n >= 0)
+            REQUIRE(error.native() == error_result.n);
+        REQUIRE_THAT(error.state(), Catch::Matches(error_result.s));
+        REQUIRE_THAT(error.what(), Catch::Contains(error_result.w));
     }
 
     void test_exception()
@@ -1075,7 +1295,7 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(results.next());
 
         // NOTE: Parentheses around REQIURE() expressions are to silence error:
-        //       suggest parentheses around comparison in operand of ‘==’ [-Werror=parentheses]
+        //       suggest parentheses around comparison in operand of '==' [-Werror=parentheses]
         T ref;
         p = 0;
         results.get_ref(p, ref);
@@ -1499,6 +1719,70 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(results.is_null(2));
     }
 
+    void test_string_view_vector()
+    {
+// std::string_view is only supported since C++17 compliant compilers
+#if __cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L)
+        nanodbc::connection connection = connect();
+        REQUIRE(connection.native_dbc_handle() != nullptr);
+        REQUIRE(connection.native_env_handle() != nullptr);
+        REQUIRE(connection.transactions() == std::size_t(0));
+
+        const std::vector<nanodbc::string> first_name_str = {
+            NANODBC_TEXT("Fred"), NANODBC_TEXT("Barney"), NANODBC_TEXT("Dino")};
+        const std::vector<nanodbc::string> last_name_str = {
+            NANODBC_TEXT("Flintstone"), NANODBC_TEXT("Rubble"), NANODBC_TEXT("")};
+        const std::vector<nanodbc::string> gender_str = {
+            NANODBC_TEXT("Male"), NANODBC_TEXT("Male"), NANODBC_TEXT("")};
+
+        const std::vector<nanodbc::string_view> first_name(
+            first_name_str.begin(), first_name_str.end());
+        const std::vector<nanodbc::string_view> last_name(
+            last_name_str.begin(), last_name_str.end());
+        const std::vector<nanodbc::string_view> gender(gender_str.begin(), gender_str.end());
+
+        drop_table(connection, NANODBC_TEXT("test_string_view_vector"));
+        execute(
+            connection,
+            NANODBC_TEXT("create table test_string_view_vector (first varchar(10), last "
+                         "varchar(10), gender varchar(10));"));
+
+        nanodbc::statement query(connection);
+        prepare(
+            query,
+            NANODBC_TEXT(
+                "insert into test_string_view_vector(first, last, gender) values(?, ?, ?)"));
+        REQUIRE(query.parameters() == 3);
+
+        // Without nulls
+        query.bind_strings(0, first_name);
+
+        // With null vector
+        bool nulls[3] = {false, false, true};
+        query.bind_strings(1, last_name, nulls);
+
+        // With null sentry
+        query.bind_strings(2, gender, NANODBC_TEXT(""));
+
+        nanodbc::execute(query, 3);
+
+        nanodbc::result results = execute(
+            connection, NANODBC_TEXT("select first,last,gender from test_string_view_vector"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<nanodbc::string>(0) == NANODBC_TEXT("Fred"));
+        REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("Flintstone"));
+        REQUIRE(results.get<nanodbc::string>(2) == NANODBC_TEXT("Male"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<nanodbc::string>(0) == NANODBC_TEXT("Barney"));
+        REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("Rubble"));
+        REQUIRE(results.get<nanodbc::string>(2) == NANODBC_TEXT("Male"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<nanodbc::string>(0) == NANODBC_TEXT("Dino"));
+        REQUIRE(results.is_null(1));
+        REQUIRE(results.is_null(2));
+#endif //__cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L)
+    }
+
     void test_string_vector_null_vector()
     {
         nanodbc::connection connection = connect();
@@ -1703,6 +1987,74 @@ struct test_case_fixture : public base_test_fixture
         {
             results.next();
             REQUIRE(results.get<int>(0) == i--);
+        }
+    }
+
+    void test_batch_insert_describe_param()
+    {
+        std::size_t const batch_size = 9;
+        int integers[batch_size] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        float floats[batch_size] = {1.123f, 2.345f, 3.1f, 4.5f, 5.678f, 6.f, 7.89f, 8.90f, 9.1234f};
+        nanodbc::string::value_type trunc_float[batch_size][6] = {
+            NANODBC_TEXT("1.100"),
+            NANODBC_TEXT("2.300"),
+            NANODBC_TEXT("3.100"),
+            NANODBC_TEXT("4.500"),
+            NANODBC_TEXT("5.700"),
+            NANODBC_TEXT("6.000"),
+            NANODBC_TEXT("7.900"),
+            NANODBC_TEXT("8.900"),
+            NANODBC_TEXT("9.100")};
+        nanodbc::string::value_type strings[batch_size][60] = {
+            NANODBC_TEXT("first string"),
+            NANODBC_TEXT("second string"),
+            NANODBC_TEXT("third string"),
+            NANODBC_TEXT("this is fourth string"),
+            NANODBC_TEXT("finally, the fifthstring"),
+            NANODBC_TEXT(""),
+            NANODBC_TEXT("sixth string"),
+            NANODBC_TEXT("A"),
+            NANODBC_TEXT("ninth string")};
+
+        auto conn = connect();
+        create_table(
+            conn,
+            NANODBC_TEXT("test_batch_insert_param_type"),
+            NANODBC_TEXT("(i int, s varchar(60), f float, d decimal(9, 3))"));
+        nanodbc::string insert(NANODBC_TEXT(
+            "insert into test_batch_insert_param_type (i, s, f, d) values(?, ?, ?, ?)"));
+        nanodbc::statement stmt(conn);
+        prepare(stmt, insert);
+
+        // Set parameter description for 2 of the four parameters
+        // For the int, float, let nanodbc infer parameter meta data
+        // during bind.
+        std::vector<short> idx{1, 3};
+        std::vector<short> type{12, 3};
+        std::vector<unsigned long> size{60, 9};
+        std::vector<short> scale{0, 1}; // round to one decimal
+        stmt.describe_parameters(idx, type, size, scale);
+
+        stmt.bind(0, integers, batch_size);
+        stmt.bind_strings(1, strings);
+        stmt.bind(2, floats, batch_size);
+        stmt.bind(3, floats, batch_size);
+        nanodbc::transact(stmt, batch_size);
+        {
+            auto result = nanodbc::execute(
+                conn,
+                NANODBC_TEXT("select i, f, s, d from test_batch_insert_param_type order by i asc"));
+            std::size_t i = 0;
+            while (result.next())
+            {
+                REQUIRE(result.get<int>(0) == integers[i]);
+                REQUIRE(
+                    result.get<float>(1) == floats[i]); // exact test might fail, switch to Approx
+                REQUIRE(result.get<nanodbc::string>(2) == strings[i]);
+                REQUIRE(result.get<nanodbc::string>(3) == trunc_float[i]);
+                ++i;
+            }
+            REQUIRE(i == batch_size);
         }
     }
 };
