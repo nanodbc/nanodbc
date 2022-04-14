@@ -499,7 +499,7 @@ const char* index_range_error::what() const noexcept
     return std::runtime_error::what();
 }
 
-programming_error::programming_error(const std::string& info)
+programming_error::programming_error(std::string const& info)
     : std::runtime_error(info.c_str())
 {
 }
@@ -509,7 +509,7 @@ const char* programming_error::what() const noexcept
     return std::runtime_error::what();
 }
 
-database_error::database_error(SQLHANDLE handle, short handle_type, const std::string& info)
+database_error::database_error(SQLHANDLE handle, short handle_type, std::string const& info)
     : std::runtime_error(info)
     , native_error(0)
     , sql_state("00000")
@@ -706,8 +706,8 @@ struct sql_ctype<nanodbc::timestamp>
 class bound_column
 {
 public:
-    bound_column(const bound_column& rhs) = delete;
-    bound_column& operator=(bound_column rhs) = delete;
+    bound_column(bound_column const& rhs) = delete;
+    bound_column& operator=(bound_column const& rhs) = delete;
 
     bound_column()
         : name_()
@@ -858,8 +858,8 @@ namespace nanodbc
 class connection::connection_impl
 {
 public:
-    connection_impl(const connection_impl&) = delete;
-    connection_impl& operator=(const connection_impl&) = delete;
+    connection_impl(connection_impl const&) = delete;
+    connection_impl& operator=(connection_impl const&) = delete;
 
     connection_impl()
         : env_(nullptr)
@@ -870,7 +870,7 @@ public:
     {
     }
 
-    connection_impl(const string& dsn, const string& user, const string& pass, long timeout)
+    connection_impl(string const& dsn, string const& user, string const& pass, long timeout)
         : env_(nullptr)
         , dbc_(nullptr)
         , connected_(false)
@@ -890,7 +890,7 @@ public:
         }
     }
 
-    connection_impl(const string& connection_string, long timeout)
+    connection_impl(string const& connection_string, long timeout)
         : env_(nullptr)
         , dbc_(nullptr)
         , connected_(false)
@@ -981,9 +981,9 @@ public:
 #endif // !NANODBC_DISABLE_ASYNC && SQL_ATTR_ASYNC_DBC_EVENT
 
     RETCODE connect(
-        const string& dsn,
-        const string& user,
-        const string& pass,
+        string const& dsn,
+        string const& user,
+        string const& pass,
         long timeout,
         void* event_handle = nullptr)
     {
@@ -1034,7 +1034,7 @@ public:
     }
 
     RETCODE
-    connect(const string& connection_string, long timeout, void* event_handle = nullptr)
+    connect(string const& connection_string, long timeout, void* event_handle = nullptr)
     {
         allocate_env_handle(env_);
         disconnect();
@@ -1236,10 +1236,10 @@ namespace nanodbc
 class transaction::transaction_impl
 {
 public:
-    transaction_impl(const transaction_impl&) = delete;
-    transaction_impl& operator=(const transaction_impl&) = delete;
+    transaction_impl(transaction_impl const&) = delete;
+    transaction_impl& operator=(transaction_impl const&) = delete;
 
-    transaction_impl(const class connection& conn)
+    transaction_impl(class connection const& conn)
         : conn_(conn)
         , committed_(false)
     {
@@ -1337,8 +1337,8 @@ namespace nanodbc
 class statement::statement_impl
 {
 public:
-    statement_impl(const statement_impl&) = delete;
-    statement_impl& operator=(const statement_impl&) = delete;
+    statement_impl(statement_impl const&) = delete;
+    statement_impl& operator=(statement_impl const&) = delete;
 
     statement_impl()
         : stmt_(0)
@@ -1378,7 +1378,7 @@ public:
         open(conn);
     }
 
-    statement_impl(class connection& conn, const string& query, long timeout)
+    statement_impl(class connection& conn, string const& query, long timeout)
         : stmt_(0)
         , open_(false)
         , conn_()
@@ -1487,13 +1487,13 @@ public:
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     }
 
-    void prepare(class connection& conn, const string& query, long timeout)
+    void prepare(class connection& conn, string const& query, long timeout)
     {
         open(conn);
         prepare(query, timeout);
     }
 
-    RETCODE prepare(const string& query, long timeout, void* event_handle = nullptr)
+    RETCODE prepare(string const& query, long timeout, void* event_handle = nullptr)
     {
         if (!open())
             throw programming_error("statement has no associated open connection");
@@ -1601,7 +1601,7 @@ public:
         }
     }
 
-    bool async_prepare(const string& query, void* event_handle, long timeout)
+    bool async_prepare(string const& query, void* event_handle, long timeout)
     {
         return async_helper(prepare(query, timeout, event_handle));
     }
@@ -1609,7 +1609,7 @@ public:
     bool async_execute_direct(
         class connection& conn,
         void* event_handle,
-        const string& query,
+        string const& query,
         long batch_operations,
         long timeout,
         statement& statement)
@@ -1647,7 +1647,7 @@ public:
 #endif
     result execute_direct(
         class connection& conn,
-        const string& query,
+        string const& query,
         long batch_operations,
         long timeout,
         statement& statement)
@@ -1664,7 +1664,7 @@ public:
 
     RETCODE just_execute_direct(
         class connection& conn,
-        const string& query,
+        string const& query,
         long batch_operations,
         long timeout,
         statement&, // statement
@@ -1767,10 +1767,10 @@ public:
     }
 
     result procedure_columns(
-        const string& catalog,
-        const string& schema,
-        const string& procedure,
-        const string& column,
+        string const& catalog,
+        string const& schema,
+        string const& procedure,
+        string const& column,
         statement& statement)
     {
         if (!open())
@@ -2153,7 +2153,7 @@ public:
 
     // comparator for null sentry values
     template <class T>
-    bool equals(const T& lhs, const T& rhs)
+    bool equals(T const& lhs, T const& rhs)
     {
         return lhs == rhs;
     }
@@ -2290,7 +2290,7 @@ void statement::statement_impl::bind_strings(
 }
 
 template <>
-bool statement::statement_impl::equals(const std::string& lhs, const std::string& rhs)
+bool statement::statement_impl::equals(std::string const& lhs, std::string const& rhs)
 {
     return std::strncmp(lhs.c_str(), rhs.c_str(), lhs.size()) == 0;
 }
@@ -2785,7 +2785,7 @@ public:
 
     // comparator for null sentry values
     template <class T>
-    bool equals(const T& lhs, const T& rhs)
+    bool equals(T const& lhs, T const& rhs)
     {
         return lhs == rhs;
     }
@@ -2920,8 +2920,8 @@ void table_valued_parameter::table_valued_parameter_impl::bind_strings(
 
 template <>
 bool table_valued_parameter::table_valued_parameter_impl::equals(
-    const std::string& lhs,
-    const std::string& rhs)
+    std::string const& lhs,
+    std::string const& rhs)
 {
     return std::strncmp(lhs.c_str(), rhs.c_str(), lhs.size()) == 0;
 }
@@ -3005,8 +3005,8 @@ namespace nanodbc
 class result::result_impl
 {
 public:
-    result_impl(const result_impl&) = delete;
-    result_impl& operator=(const result_impl&) = delete;
+    result_impl(result_impl const&) = delete;
+    result_impl& operator=(result_impl const&) = delete;
 
     result_impl(statement stmt, long rowset_size)
         : stmt_(stmt)
@@ -3188,7 +3188,7 @@ public:
         return col.cbdata_[static_cast<size_t>(rowset_position_)] == SQL_NULL_DATA;
     }
 
-    bool is_null(const string& column_name) const
+    bool is_null(string const& column_name) const
     {
         const short column = this->column(column_name);
         return is_null(column);
@@ -3201,13 +3201,13 @@ public:
         return col.bound_;
     }
 
-    bool is_bound(const string& column_name) const
+    bool is_bound(string const& column_name) const
     {
         const short column = this->column(column_name);
         return is_bound(column);
     }
 
-    short column(const string& column_name) const
+    short column(string const& column_name) const
     {
         typedef std::map<string, bound_column*>::const_iterator iter;
         iter i = bound_columns_by_name_.find(column_name);
@@ -3230,7 +3230,7 @@ public:
         return static_cast<long>(col.sqlsize_);
     }
 
-    long column_size(const string& column_name) const
+    long column_size(string const& column_name) const
     {
         const short column = this->column(column_name);
         return column_size(column);
@@ -3243,7 +3243,7 @@ public:
         return col.scale_;
     }
 
-    int column_decimal_digits(const string& column_name) const
+    int column_decimal_digits(string const& column_name) const
     {
         const short column = this->column(column_name);
         bound_column& col = bound_columns_[column];
@@ -3257,7 +3257,7 @@ public:
         return col.sqltype_;
     }
 
-    int column_datatype(const string& column_name) const
+    int column_datatype(string const& column_name) const
     {
         const short column = this->column(column_name);
         bound_column& col = bound_columns_[column];
@@ -3289,7 +3289,7 @@ public:
         return string(type_name, type_name + len);
     }
 
-    string column_datatype_name(const string& column_name) const
+    string column_datatype_name(string const& column_name) const
     {
         return column_datatype_name(this->column(column_name));
     }
@@ -3301,7 +3301,7 @@ public:
         return col.ctype_;
     }
 
-    int column_c_datatype(const string& column_name) const
+    int column_c_datatype(string const& column_name) const
     {
         const short column = this->column(column_name);
         bound_column& col = bound_columns_[column];
@@ -3327,7 +3327,7 @@ public:
 
     void unbind()
     {
-        const short n_columns = columns();
+        short const n_columns = columns();
         if (n_columns < 1)
             return;
         for (short i = 0; i < n_columns; ++i)
@@ -3359,9 +3359,9 @@ public:
         }
     }
 
-    void unbind(const string& column_name)
+    void unbind(string const& column_name)
     {
-        const short column = this->column(column_name);
+        short const column = this->column(column_name);
         unbind(column);
     }
 
@@ -3375,7 +3375,7 @@ public:
     }
 
     template <class T>
-    void get_ref(short column, const T& fallback, T& result) const
+    void get_ref(short column, T const& fallback, T& result) const
     {
         throw_if_column_is_out_of_range(column);
         if (is_null(column))
@@ -3387,7 +3387,7 @@ public:
     }
 
     template <class T>
-    void get_ref(const string& column_name, T& result) const
+    void get_ref(string const& column_name, T& result) const
     {
         const short column = this->column(column_name);
         if (is_null(column))
@@ -3396,7 +3396,7 @@ public:
     }
 
     template <class T>
-    void get_ref(const string& column_name, const T& fallback, T& result) const
+    void get_ref(string const& column_name, T const& fallback, T& result) const
     {
         const short column = this->column(column_name);
         if (is_null(column))
@@ -3416,7 +3416,7 @@ public:
     }
 
     template <class T>
-    T get(short column, const T& fallback) const
+    T get(short column, T const& fallback) const
     {
         T result;
         get_ref(column, fallback, result);
@@ -3424,7 +3424,7 @@ public:
     }
 
     template <class T>
-    T get(const string& column_name) const
+    T get(string const& column_name) const
     {
         T result;
         get_ref(column_name, result);
@@ -3432,7 +3432,7 @@ public:
     }
 
     template <class T>
-    T get(const string& column_name, const T& fallback) const
+    T get(string const& column_name, T const& fallback) const
     {
         T result;
         get_ref(column_name, fallback, result);
@@ -4377,13 +4377,13 @@ std::list<driver> list_drivers()
     return drivers;
 }
 
-result execute(connection& conn, const string& query, long batch_operations, long timeout)
+result execute(connection& conn, string const& query, long batch_operations, long timeout)
 {
     class statement statement;
     return statement.execute_direct(conn, query, batch_operations, timeout);
 }
 
-void just_execute(connection& conn, const string& query, long batch_operations, long timeout)
+void just_execute(connection& conn, string const& query, long batch_operations, long timeout)
 {
     class statement statement;
     statement.just_execute_direct(conn, query, batch_operations, timeout);
@@ -4414,7 +4414,7 @@ void just_transact(statement& stmt, long batch_operations)
     transaction.commit();
 }
 
-void prepare(statement& stmt, const string& query, long timeout)
+void prepare(statement& stmt, string const& query, long timeout)
 {
     stmt.prepare(stmt.connection(), query, timeout);
 }
@@ -4463,12 +4463,12 @@ void connection::swap(connection& rhs) noexcept
     swap(impl_, rhs.impl_);
 }
 
-connection::connection(const string& dsn, const string& user, const string& pass, long timeout)
+connection::connection(string const& dsn, string const& user, string const& pass, long timeout)
     : impl_(new connection_impl(dsn, user, pass, timeout))
 {
 }
 
-connection::connection(const string& connection_string, long timeout)
+connection::connection(string const& connection_string, long timeout)
     : impl_(new connection_impl(connection_string, timeout))
 {
 }
@@ -4485,28 +4485,28 @@ void connection::deallocate()
     impl_->deallocate();
 }
 
-void connection::connect(const string& dsn, const string& user, const string& pass, long timeout)
+void connection::connect(string const& dsn, string const& user, string const& pass, long timeout)
 {
     impl_->connect(dsn, user, pass, timeout);
 }
 
-void connection::connect(const string& connection_string, long timeout)
+void connection::connect(string const& connection_string, long timeout)
 {
     impl_->connect(connection_string, timeout);
 }
 
 #if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_EVENT)
 bool connection::async_connect(
-    const string& dsn,
-    const string& user,
-    const string& pass,
+    string const& dsn,
+    string const& user,
+    string const& pass,
     void* event_handle,
     long timeout)
 {
     return impl_->connect(dsn, user, pass, timeout, event_handle) == SQL_STILL_EXECUTING;
 }
 
-bool connection::async_connect(const string& connection_string, void* event_handle, long timeout)
+bool connection::async_connect(string const& connection_string, void* event_handle, long timeout)
 {
     return impl_->connect(connection_string, timeout, event_handle) == SQL_STILL_EXECUTING;
 }
@@ -4701,7 +4701,7 @@ statement::statement(statement&& rhs) noexcept
 {
 }
 
-statement::statement(class connection& conn, const string& query, long timeout)
+statement::statement(class connection& conn, string const& query, long timeout)
     : impl_(new statement_impl(conn, query, timeout))
 {
 }
@@ -4765,12 +4765,12 @@ void statement::cancel()
     impl_->cancel();
 }
 
-void statement::prepare(class connection& conn, const string& query, long timeout)
+void statement::prepare(class connection& conn, string const& query, long timeout)
 {
     impl_->prepare(conn, query, timeout);
 }
 
-void statement::prepare(const string& query, long timeout)
+void statement::prepare(string const& query, long timeout)
 {
     impl_->prepare(query, timeout);
 }
@@ -4782,7 +4782,7 @@ void statement::timeout(long timeout)
 
 result statement::execute_direct(
     class connection& conn,
-    const string& query,
+    string const& query,
     long batch_operations,
     long timeout)
 {
@@ -4790,7 +4790,7 @@ result statement::execute_direct(
 }
 
 #if defined(NANODBC_DO_ASYNC_IMPL)
-bool statement::async_prepare(const string& query, void* event_handle, long timeout)
+bool statement::async_prepare(string const& query, void* event_handle, long timeout)
 {
     return impl_->async_prepare(query, event_handle, timeout);
 }
@@ -4798,7 +4798,7 @@ bool statement::async_prepare(const string& query, void* event_handle, long time
 bool statement::async_execute_direct(
     class connection& conn,
     void* event_handle,
-    const string& query,
+    string const& query,
     long batch_operations,
     long timeout)
 {
@@ -4838,7 +4838,7 @@ void statement::disable_async() const
 
 void statement::just_execute_direct(
     class connection& conn,
-    const string& query,
+    string const& query,
     long batch_operations,
     long timeout)
 {
@@ -4856,10 +4856,10 @@ void statement::just_execute(long batch_operations, long timeout)
 }
 
 result statement::procedure_columns(
-    const string& catalog,
-    const string& schema,
-    const string& procedure,
-    const string& column)
+    string const& catalog,
+    string const& schema,
+    string const& procedure,
+    string const& column)
 {
     return impl_->procedure_columns(catalog, schema, procedure, column, *this);
 }
@@ -5721,10 +5721,10 @@ catalog::catalog(connection& conn)
 }
 
 catalog::tables catalog::find_tables(
-    const string& table,
-    const string& type,
-    const string& schema,
-    const string& catalog)
+    string const& table,
+    string const& type,
+    string const& schema,
+    string const& catalog)
 {
     // Passing a null pointer to a search pattern argument does not
     // constrain the search for that argument; that is, a null pointer and
@@ -5755,7 +5755,7 @@ catalog::tables catalog::find_tables(
 }
 
 catalog::procedures
-catalog::find_procedures(const string& procedure, const string& schema, const string& catalog)
+catalog::find_procedures(string const& procedure, string const& schema, string const& catalog)
 {
     // Passing a null pointer to a search pattern argument does not
     // constrain the search for that argument; that is, a null pointer and
@@ -5784,10 +5784,10 @@ catalog::find_procedures(const string& procedure, const string& schema, const st
 }
 
 catalog::procedure_columns catalog::find_procedure_columns(
-    const string& column,
-    const string& procedure,
-    const string& schema,
-    const string& catalog)
+    string const& column,
+    string const& procedure,
+    string const& schema,
+    string const& catalog)
 {
     statement stmt(conn_);
     RETCODE rc;
@@ -5811,7 +5811,7 @@ catalog::procedure_columns catalog::find_procedure_columns(
 }
 
 catalog::table_privileges
-catalog::find_table_privileges(const string& catalog, const string& table, const string& schema)
+catalog::find_table_privileges(string const& catalog, string const& table, string const& schema)
 {
     // Passing a null pointer to a search pattern argument does not
     // constrain the search for that argument; that is, a null pointer and
@@ -5840,10 +5840,10 @@ catalog::find_table_privileges(const string& catalog, const string& table, const
 }
 
 catalog::columns catalog::find_columns(
-    const string& column,
-    const string& table,
-    const string& schema,
-    const string& catalog)
+    string const& column,
+    string const& table,
+    string const& schema,
+    string const& catalog)
 {
     statement stmt(conn_);
     RETCODE rc;
@@ -5867,7 +5867,7 @@ catalog::columns catalog::find_columns(
 }
 
 catalog::primary_keys
-catalog::find_primary_keys(const string& table, const string& schema, const string& catalog)
+catalog::find_primary_keys(string const& table, string const& schema, string const& catalog)
 {
     statement stmt(conn_);
     RETCODE rc;
@@ -6090,7 +6090,7 @@ bool result::is_null(short column) const
     return impl_->is_null(column);
 }
 
-bool result::is_null(const string& column_name) const
+bool result::is_null(string const& column_name) const
 {
     return impl_->is_null(column_name);
 }
@@ -6100,12 +6100,12 @@ bool result::is_bound(short column) const
     return impl_->is_bound(column);
 }
 
-bool result::is_bound(const string& column_name) const
+bool result::is_bound(string const& column_name) const
 {
     return impl_->is_bound(column_name);
 }
 
-short result::column(const string& column_name) const
+short result::column(string const& column_name) const
 {
     return impl_->column(column_name);
 }
@@ -6120,7 +6120,7 @@ long result::column_size(short column) const
     return impl_->column_size(column);
 }
 
-long result::column_size(const string& column_name) const
+long result::column_size(string const& column_name) const
 {
     return impl_->column_size(column_name);
 }
@@ -6130,7 +6130,7 @@ int result::column_decimal_digits(short column) const
     return impl_->column_decimal_digits(column);
 }
 
-int result::column_decimal_digits(const string& column_name) const
+int result::column_decimal_digits(string const& column_name) const
 {
     return impl_->column_decimal_digits(column_name);
 }
@@ -6140,7 +6140,7 @@ int result::column_datatype(short column) const
     return impl_->column_datatype(column);
 }
 
-int result::column_datatype(const string& column_name) const
+int result::column_datatype(string const& column_name) const
 {
     return impl_->column_datatype(column_name);
 }
@@ -6150,7 +6150,7 @@ string result::column_datatype_name(short column) const
     return impl_->column_datatype_name(column);
 }
 
-string result::column_datatype_name(const string& column_name) const
+string result::column_datatype_name(string const& column_name) const
 {
     return impl_->column_datatype_name(column_name);
 }
@@ -6160,7 +6160,7 @@ int result::column_c_datatype(short column) const
     return impl_->column_c_datatype(column);
 }
 
-int result::column_c_datatype(const string& column_name) const
+int result::column_c_datatype(string const& column_name) const
 {
     return impl_->column_c_datatype(column_name);
 }
@@ -6180,7 +6180,7 @@ void result::unbind(short column)
     impl_->unbind(column);
 }
 
-void result::unbind(const string& column_name)
+void result::unbind(string const& column_name)
 {
     impl_->unbind(column_name);
 }
@@ -6192,19 +6192,19 @@ void result::get_ref(short column, T& result) const
 }
 
 template <class T>
-void result::get_ref(short column, const T& fallback, T& result) const
+void result::get_ref(short column, T const& fallback, T& result) const
 {
     return impl_->get_ref<T>(column, fallback, result);
 }
 
 template <class T>
-void result::get_ref(const string& column_name, T& result) const
+void result::get_ref(string const& column_name, T& result) const
 {
     return impl_->get_ref<T>(column_name, result);
 }
 
 template <class T>
-void result::get_ref(const string& column_name, const T& fallback, T& result) const
+void result::get_ref(string const& column_name, T const& fallback, T& result) const
 {
     return impl_->get_ref<T>(column_name, fallback, result);
 }
@@ -6216,19 +6216,19 @@ T result::get(short column) const
 }
 
 template <class T>
-T result::get(short column, const T& fallback) const
+T result::get(short column, T const& fallback) const
 {
     return impl_->get<T>(column, fallback);
 }
 
 template <class T>
-T result::get(const string& column_name) const
+T result::get(string const& column_name) const
 {
     return impl_->get<T>(column_name);
 }
 
 template <class T>
-T result::get(const string& column_name, const T& fallback) const
+T result::get(string const& column_name, T const& fallback) const
 {
     return impl_->get<T>(column_name, fallback);
 }
@@ -6257,23 +6257,23 @@ template void result::get_ref(short, time&) const;
 template void result::get_ref(short, timestamp&) const;
 template void result::get_ref(short, std::vector<std::uint8_t>&) const;
 
-template void result::get_ref(const string&, std::string::value_type&) const;
-template void result::get_ref(const string&, wide_string::value_type&) const;
-template void result::get_ref(const string&, short&) const;
-template void result::get_ref(const string&, unsigned short&) const;
-template void result::get_ref(const string&, int&) const;
-template void result::get_ref(const string&, unsigned int&) const;
-template void result::get_ref(const string&, long int&) const;
-template void result::get_ref(const string&, unsigned long int&) const;
-template void result::get_ref(const string&, long long int&) const;
-template void result::get_ref(const string&, unsigned long long int&) const;
-template void result::get_ref(const string&, float&) const;
-template void result::get_ref(const string&, double&) const;
-template void result::get_ref(const string&, string&) const;
-template void result::get_ref(const string&, date&) const;
-template void result::get_ref(const string&, time&) const;
-template void result::get_ref(const string&, timestamp&) const;
-template void result::get_ref(const string&, std::vector<std::uint8_t>&) const;
+template void result::get_ref(string const&, std::string::value_type&) const;
+template void result::get_ref(string const&, wide_string::value_type&) const;
+template void result::get_ref(string const&, short&) const;
+template void result::get_ref(string const&, unsigned short&) const;
+template void result::get_ref(string const&, int&) const;
+template void result::get_ref(string const&, unsigned int&) const;
+template void result::get_ref(string const&, long int&) const;
+template void result::get_ref(string const&, unsigned long int&) const;
+template void result::get_ref(string const&, long long int&) const;
+template void result::get_ref(string const&, unsigned long long int&) const;
+template void result::get_ref(string const&, float&) const;
+template void result::get_ref(string const&, double&) const;
+template void result::get_ref(string const&, string&) const;
+template void result::get_ref(string const&, date&) const;
+template void result::get_ref(string const&, time&) const;
+template void result::get_ref(string const&, timestamp&) const;
+template void result::get_ref(string const&, std::vector<std::uint8_t>&) const;
 
 // The following are the only supported instantiations of result::get_ref() with fallback.
 template void
@@ -6290,7 +6290,7 @@ template void result::get_ref(short, const long long int&, long long int&) const
 template void result::get_ref(short, const unsigned long long int&, unsigned long long int&) const;
 template void result::get_ref(short, const float&, float&) const;
 template void result::get_ref(short, const double&, double&) const;
-template void result::get_ref(short, const string&, string&) const;
+template void result::get_ref(short, string const&, string&) const;
 template void result::get_ref(short, const date&, date&) const;
 template void result::get_ref(short, const time&, time&) const;
 template void result::get_ref(short, const timestamp&, timestamp&) const;
@@ -6298,27 +6298,27 @@ template void
 result::get_ref(short, const std::vector<std::uint8_t>&, std::vector<std::uint8_t>&) const;
 
 template void
-result::get_ref(const string&, const std::string::value_type&, std::string::value_type&) const;
+result::get_ref(string const&, const std::string::value_type&, std::string::value_type&) const;
 template void
-result::get_ref(const string&, const wide_string::value_type&, wide_string::value_type&) const;
-template void result::get_ref(const string&, const short&, short&) const;
-template void result::get_ref(const string&, const unsigned short&, unsigned short&) const;
-template void result::get_ref(const string&, const int&, int&) const;
-template void result::get_ref(const string&, const unsigned int&, unsigned int&) const;
-template void result::get_ref(const string&, const long int&, long int&) const;
-template void result::get_ref(const string&, const unsigned long int&, unsigned long int&) const;
-template void result::get_ref(const string&, const long long int&, long long int&) const;
+result::get_ref(string const&, const wide_string::value_type&, wide_string::value_type&) const;
+template void result::get_ref(string const&, const short&, short&) const;
+template void result::get_ref(string const&, const unsigned short&, unsigned short&) const;
+template void result::get_ref(string const&, const int&, int&) const;
+template void result::get_ref(string const&, const unsigned int&, unsigned int&) const;
+template void result::get_ref(string const&, const long int&, long int&) const;
+template void result::get_ref(string const&, const unsigned long int&, unsigned long int&) const;
+template void result::get_ref(string const&, const long long int&, long long int&) const;
 template void
-result::get_ref(const string&, const unsigned long long int&, unsigned long long int&) const;
-template void result::get_ref(const string&, const float&, float&) const;
-template void result::get_ref(const string&, const double&, double&) const;
-template void result::get_ref(const string&, const std::string&, std::string&) const;
-template void result::get_ref(const string&, const wide_string&, wide_string&) const;
-template void result::get_ref(const string&, const date&, date&) const;
-template void result::get_ref(const string&, const time&, time&) const;
-template void result::get_ref(const string&, const timestamp&, timestamp&) const;
+result::get_ref(string const&, const unsigned long long int&, unsigned long long int&) const;
+template void result::get_ref(string const&, const float&, float&) const;
+template void result::get_ref(string const&, const double&, double&) const;
+template void result::get_ref(string const&, std::string const&, std::string&) const;
+template void result::get_ref(string const&, const wide_string&, wide_string&) const;
+template void result::get_ref(string const&, const date&, date&) const;
+template void result::get_ref(string const&, const time&, time&) const;
+template void result::get_ref(string const&, const timestamp&, timestamp&) const;
 template void
-result::get_ref(const string&, const std::vector<std::uint8_t>&, std::vector<std::uint8_t>&) const;
+result::get_ref(string const&, const std::vector<std::uint8_t>&, std::vector<std::uint8_t>&) const;
 
 // The following are the only supported instantiations of result::get().
 template std::string::value_type result::get(short) const;
@@ -6340,24 +6340,24 @@ template time result::get(short) const;
 template timestamp result::get(short) const;
 template std::vector<std::uint8_t> result::get(short) const;
 
-template std::string::value_type result::get(const string&) const;
-template wide_string::value_type result::get(const string&) const;
-template short result::get(const string&) const;
-template unsigned short result::get(const string&) const;
-template int result::get(const string&) const;
-template unsigned int result::get(const string&) const;
-template long int result::get(const string&) const;
-template unsigned long int result::get(const string&) const;
-template long long int result::get(const string&) const;
-template unsigned long long int result::get(const string&) const;
-template float result::get(const string&) const;
-template double result::get(const string&) const;
-template std::string result::get(const string&) const;
-template wide_string result::get(const string&) const;
-template date result::get(const string&) const;
-template time result::get(const string&) const;
-template timestamp result::get(const string&) const;
-template std::vector<std::uint8_t> result::get(const string&) const;
+template std::string::value_type result::get(string const&) const;
+template wide_string::value_type result::get(string const&) const;
+template short result::get(string const&) const;
+template unsigned short result::get(string const&) const;
+template int result::get(string const&) const;
+template unsigned int result::get(string const&) const;
+template long int result::get(string const&) const;
+template unsigned long int result::get(string const&) const;
+template long long int result::get(string const&) const;
+template unsigned long long int result::get(string const&) const;
+template float result::get(string const&) const;
+template double result::get(string const&) const;
+template std::string result::get(string const&) const;
+template wide_string result::get(string const&) const;
+template date result::get(string const&) const;
+template time result::get(string const&) const;
+template timestamp result::get(string const&) const;
+template std::vector<std::uint8_t> result::get(string const&) const;
 
 // The following are the only supported instantiations of result::get() with fallback.
 template std::string::value_type result::get(short, const std::string::value_type&) const;
@@ -6372,32 +6372,32 @@ template long long int result::get(short, const long long int&) const;
 template unsigned long long int result::get(short, const unsigned long long int&) const;
 template float result::get(short, const float&) const;
 template double result::get(short, const double&) const;
-template std::string result::get(short, const std::string&) const;
+template std::string result::get(short, std::string const&) const;
 template wide_string result::get(short, const wide_string&) const;
 template date result::get(short, const date&) const;
 template time result::get(short, const time&) const;
 template timestamp result::get(short, const timestamp&) const;
 template std::vector<std::uint8_t> result::get(short, const std::vector<std::uint8_t>&) const;
 
-template std::string::value_type result::get(const string&, const std::string::value_type&) const;
-template wide_string::value_type result::get(const string&, const wide_string::value_type&) const;
-template short result::get(const string&, const short&) const;
-template unsigned short result::get(const string&, const unsigned short&) const;
-template int result::get(const string&, const int&) const;
-template unsigned int result::get(const string&, const unsigned int&) const;
-template long int result::get(const string&, const long int&) const;
-template unsigned long int result::get(const string&, const unsigned long int&) const;
-template long long int result::get(const string&, const long long int&) const;
-template unsigned long long int result::get(const string&, const unsigned long long int&) const;
-template float result::get(const string&, const float&) const;
-template double result::get(const string&, const double&) const;
-template std::string result::get(const string&, const std::string&) const;
-template wide_string result::get(const string&, const wide_string&) const;
-template date result::get(const string&, const date&) const;
-template time result::get(const string&, const time&) const;
-template timestamp result::get(const string&, const timestamp&) const;
+template std::string::value_type result::get(string const&, const std::string::value_type&) const;
+template wide_string::value_type result::get(string const&, const wide_string::value_type&) const;
+template short result::get(string const&, const short&) const;
+template unsigned short result::get(string const&, const unsigned short&) const;
+template int result::get(string const&, const int&) const;
+template unsigned int result::get(string const&, const unsigned int&) const;
+template long int result::get(string const&, const long int&) const;
+template unsigned long int result::get(string const&, const unsigned long int&) const;
+template long long int result::get(string const&, const long long int&) const;
+template unsigned long long int result::get(string const&, const unsigned long long int&) const;
+template float result::get(string const&, const float&) const;
+template double result::get(string const&, const double&) const;
+template std::string result::get(string const&, std::string const&) const;
+template wide_string result::get(string const&, const wide_string&) const;
+template date result::get(string const&, const date&) const;
+template time result::get(string const&, const time&) const;
+template timestamp result::get(string const&, const timestamp&) const;
 template std::vector<std::uint8_t>
-result::get(const string&, const std::vector<std::uint8_t>&) const;
+result::get(string const&, const std::vector<std::uint8_t>&) const;
 
 } // namespace nanodbc
 #endif // NANODBC_DISABLE_NANODBC_NAMESPACE_FOR_INTERNAL_TESTS

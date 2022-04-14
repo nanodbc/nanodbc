@@ -288,7 +288,7 @@ class type_incompatible_error : public std::runtime_error
 {
 public:
     type_incompatible_error();
-    const char* what() const noexcept;
+    char const* what() const noexcept;
 };
 
 /// \brief Accessed null data.
@@ -297,7 +297,7 @@ class null_access_error : public std::runtime_error
 {
 public:
     null_access_error();
-    const char* what() const noexcept;
+    char const* what() const noexcept;
 };
 
 /// \brief Index out of range.
@@ -306,7 +306,7 @@ class index_range_error : public std::runtime_error
 {
 public:
     index_range_error();
-    const char* what() const noexcept;
+    char const* what() const noexcept;
 };
 
 /// \brief Programming logic error.
@@ -314,8 +314,8 @@ public:
 class programming_error : public std::runtime_error
 {
 public:
-    explicit programming_error(const std::string& info);
-    const char* what() const noexcept;
+    explicit programming_error(std::string const& info);
+    char const* what() const noexcept;
 };
 
 /// \brief General database error.
@@ -327,8 +327,8 @@ public:
     /// \param handle The native ODBC statement or connection handle.
     /// \param handle_type The native ODBC handle type code for the given handle.
     /// \param info Additional info that will be appended to the beginning of the error message.
-    database_error(void* handle, short handle_type, const std::string& info = "");
-    const char* what() const noexcept;
+    database_error(void* handle, short handle_type, std::string const& info = "");
+    char const* what() const noexcept;
     long native() const noexcept;
     const std::string state() const noexcept;
 
@@ -721,7 +721,7 @@ public:
     /// \param query The SQL query statement.
     /// \param timeout The number in seconds before query timeout. Default: 0 meaning no timeout.
     /// \see execute(), just_execute(), execute_direct(), just_execute_direct(), open(), prepare()
-    statement(class connection& conn, const string& query, long timeout = 0);
+    statement(class connection& conn, string const& query, long timeout = 0);
 
     /// \brief Copy constructor.
     statement(const statement& rhs);
@@ -772,7 +772,7 @@ public:
     /// \param timeout The number in seconds before query timeout. Default 0 meaning no timeout.
     /// \see open()
     /// \throws database_error
-    void prepare(class connection& conn, const string& query, long timeout = 0);
+    void prepare(class connection& conn, string const& query, long timeout = 0);
 
     /// \brief Prepares the given statement to execute its associated connection.
     /// \note If the statement is not open throws programming_error.
@@ -780,7 +780,7 @@ public:
     /// \param timeout The number in seconds before query timeout. Default 0 meaning no timeout.
     /// \see open()
     /// \throws database_error, programming_error
-    void prepare(const string& query, long timeout = 0);
+    void prepare(string const& query, long timeout = 0);
 
     /// \brief Sets the number in seconds before query timeout. Default is 0 indicating no timeout.
     /// \throws database_error
@@ -798,7 +798,7 @@ public:
     /// \see open(), prepare(), execute(), result, transaction
     class result execute_direct(
         class connection& conn,
-        const string& query,
+        string const& query,
         long batch_operations = 1,
         long timeout = 0);
 
@@ -819,7 +819,7 @@ public:
     /// \throws database_error
     /// \return Boolean: true if the event handle needs to be awaited, false is result is ready now.
     /// \see complete_prepare()
-    bool async_prepare(const string& query, void* event_handle, long timeout = 0);
+    bool async_prepare(string const& query, void* event_handle, long timeout = 0);
 
     /// \brief Completes a previously initiated asynchronous query preparation.
     ///
@@ -856,7 +856,7 @@ public:
     bool async_execute_direct(
         class connection& conn,
         void* event_handle,
-        const string& query,
+        string const& query,
         long batch_operations = 1,
         long timeout = 0);
 
@@ -918,7 +918,7 @@ public:
     /// \see open(), prepare(), execute(), execute_direct(), result, transaction
     void just_execute_direct(
         class connection& conn,
-        const string& query,
+        string const& query,
         long batch_operations = 1,
         long timeout = 0);
 
@@ -950,10 +950,10 @@ public:
     /// \throws database_error
     /// \return A result set object.
     class result procedure_columns(
-        const string& catalog,
-        const string& schema,
-        const string& procedure,
-        const string& column);
+        string const& catalog,
+        string const& schema,
+        string const& procedure,
+        string const& column);
 
     /// \brief Returns rows affected by the request or -1 if affected rows is not available.
     /// \throws database_error
@@ -1295,7 +1295,7 @@ public:
     /// \param timeout Seconds before connection timeout. Default 0 meaning no timeout.
     /// \throws database_error
     /// \see connected(), connect()
-    connection(const string& dsn, const string& user, const string& pass, long timeout = 0);
+    connection(string const& dsn, string const& user, string const& pass, long timeout = 0);
 
     /// \brief Create new connection object and immediately connect using the given connection
     /// string.
@@ -1306,7 +1306,7 @@ public:
     /// \param timeout Seconds before connection timeout. Default is 0 indicating no timeout.
     /// \throws database_error
     /// \see connected(), connect()
-    connection(const string& connection_string, long timeout = 0);
+    connection(string const& connection_string, long timeout = 0);
 
     /// \brief Automatically disconnects from the database and frees all associated resources.
     ///
@@ -1335,14 +1335,14 @@ public:
     /// \param timeout Seconds before connection timeout. Default is 0 indicating no timeout.
     /// \throws database_error
     /// \see connected()
-    void connect(const string& dsn, const string& user, const string& pass, long timeout = 0);
+    void connect(string const& dsn, string const& user, string const& pass, long timeout = 0);
 
     /// \brief Connect using the given connection string.
     /// \param connection_string The connection string for establishing a connection.
     /// \param timeout Seconds before connection timeout. Default is 0 indicating no timeout.
     /// \throws database_error
     /// \see connected()
-    void connect(const string& connection_string, long timeout = 0);
+    void connect(string const& connection_string, long timeout = 0);
 
 #if !defined(NANODBC_DISABLE_ASYNC)
     /// \brief Initiate an asynchronous connection operation to the given data source.
@@ -1363,9 +1363,9 @@ public:
     /// \return Boolean: true if event handle needs to be awaited, false if connection is ready now.
     /// \see connected()
     bool async_connect(
-        const string& dsn,
-        const string& user,
-        const string& pass,
+        string const& dsn,
+        string const& user,
+        string const& pass,
         void* event_handle,
         long timeout = 0);
 
@@ -1384,7 +1384,7 @@ public:
     /// \throws database_error
     /// \return Boolean: true if event handle needs to be awaited, false if connection is ready now.
     /// \see connected()
-    bool async_connect(const string& connection_string, void* event_handle, long timeout = 0);
+    bool async_connect(string const& connection_string, void* event_handle, long timeout = 0);
 
     /// \brief Completes a previously initiated asynchronous connection operation.
     ///
@@ -1576,7 +1576,7 @@ public:
     ///
     /// \param column_name string Name of column we wish to unbind.
     /// \throws index_range_error, database_error
-    void unbind(const string& column_name);
+    void unbind(string const& column_name);
 
     /// \brief Unbind data buffers for specific columns in the result set.
     ///
@@ -1613,7 +1613,7 @@ public:
     /// \param result The column's value will be written to this parameter.
     /// \throws database_error, index_range_error, type_incompatible_error
     template <class T>
-    void get_ref(short column, const T& fallback, T& result) const;
+    void get_ref(short column, T const& fallback, T& result) const;
 
     /// \brief Gets data from the given column by name of the current rowset.
     ///
@@ -1621,7 +1621,7 @@ public:
     /// \param result The column's value will be written to this parameter.
     /// \throws database_error, index_range_error, type_incompatible_error, null_access_error
     template <class T>
-    void get_ref(const string& column_name, T& result) const;
+    void get_ref(string const& column_name, T& result) const;
 
     /// \brief Gets data from the given column by name of the current rowset.
     ///
@@ -1632,7 +1632,7 @@ public:
     /// \param result The column's value will be written to this parameter.
     /// \throws database_error, index_range_error, type_incompatible_error
     template <class T>
-    void get_ref(const string& column_name, const T& fallback, T& result) const;
+    void get_ref(string const& column_name, T const& fallback, T& result) const;
 
     /// \brief Gets data from the given column of the current rowset.
     ///
@@ -1651,14 +1651,14 @@ public:
     /// \param fallback if value is null, return fallback instead.
     /// \throws database_error, index_range_error, type_incompatible_error
     template <class T>
-    T get(short column, const T& fallback) const;
+    T get(short column, T const& fallback) const;
 
     /// \brief Gets data from the given column by name of the current rowset.
     ///
     /// \param column_name column's name.
     /// \throws database_error, index_range_error, type_incompatible_error, null_access_error
     template <class T>
-    T get(const string& column_name) const;
+    T get(string const& column_name) const;
 
     /// \brief Gets data from the given column by name of the current rowset.
     ///
@@ -1668,7 +1668,7 @@ public:
     /// \param fallback if value is null, return fallback instead.
     /// \throws database_error, index_range_error, type_incompatible_error
     template <class T>
-    T get(const string& column_name, const T& fallback) const;
+    T get(string const& column_name, T const& fallback) const;
 
     /// \brief Returns true if and only if the given column of the current rowset is null.
     ///
@@ -1690,7 +1690,7 @@ public:
     /// \see is_null()
     /// \param column_name column's name.
     /// \throws database_error, index_range_error
-    bool is_null(const string& column_name) const;
+    bool is_null(string const& column_name) const;
 
     /// \brief Returns true if we have bound a buffer to the given column.
     ///
@@ -1710,14 +1710,14 @@ public:
     /// \see is_bound()
     /// \param column_name column's name.
     /// \throws index_range_error
-    bool is_bound(const string& column_name) const;
+    bool is_bound(string const& column_name) const;
 
     /// \brief Returns the column number of the specified column name.
     ///
     /// Columns are numbered from left to right and 0-indexed.
     /// \param column_name column's name.
     /// \throws index_range_error
-    short column(const string& column_name) const;
+    short column(string const& column_name) const;
 
     /// \brief Returns the name of the specified column.
     ///
@@ -1734,7 +1734,7 @@ public:
     long column_size(short column) const;
 
     /// \brief Returns the size of the specified column by name.
-    long column_size(const string& column_name) const;
+    long column_size(string const& column_name) const;
 
     /// \brief Returns the number of decimal digits of the specified column.
     ///
@@ -1747,13 +1747,13 @@ public:
     int column_decimal_digits(short column) const;
 
     /// \brief Returns the number of decimal digits of the specified column by name.
-    int column_decimal_digits(const string& column_name) const;
+    int column_decimal_digits(string const& column_name) const;
 
     /// \brief Returns a identifying integer value representing the SQL type of this column.
     int column_datatype(short column) const;
 
     /// \brief Returns a identifying integer value representing the SQL type of this column by name.
-    int column_datatype(const string& column_name) const;
+    int column_datatype(string const& column_name) const;
 
     /// \brief Returns data source dependent data type name of this column.
     ///
@@ -1771,13 +1771,13 @@ public:
     /// If the type is unknown, an empty string is returned.
     /// \note Unlike other column metadata functions (eg. column_datatype()),
     /// this function cost is an extra ODBC API call.
-    string column_datatype_name(const string& column_name) const;
+    string column_datatype_name(string const& column_name) const;
 
     /// \brief Returns a identifying integer value representing the C type of this column.
     int column_c_datatype(short column) const;
 
     /// \brief Returns a identifying integer value representing the C type of this column by name.
-    int column_c_datatype(const string& column_name) const;
+    int column_c_datatype(string const& column_name) const;
 
     /// \brief Returns the next result, e.g. when stored procedure returns multiple result sets.
     bool next_result();
@@ -2081,10 +2081,10 @@ public:
     /// All arguments are treated as the Pattern Value Arguments.
     /// Empty string argument is equivalent to passing the search pattern '%'.
     catalog::tables find_tables(
-        const string& table = string(),
-        const string& type = string(),
-        const string& schema = string(),
-        const string& catalog = string());
+        string const& table = string(),
+        string const& type = string(),
+        string const& schema = string(),
+        string const& catalog = string());
 
     /// \brief Creates result set with tables and the privileges associated with each table.
     /// Tables information is obtained by executing `SQLTablePrivileges` function within
@@ -2100,9 +2100,9 @@ public:
     /// \note Due to the fact catalog cannot is not the Pattern Value Argument,
     ///       order of parameters is different than in the other catalog look-up functions.
     catalog::table_privileges find_table_privileges(
-        const string& catalog,
-        const string& table = string(),
-        const string& schema = string());
+        string const& catalog,
+        string const& table = string(),
+        string const& schema = string());
 
     /// \brief Creates result set with columns in one or more tables.
     ///
@@ -2114,10 +2114,10 @@ public:
     /// All arguments are treated as the Pattern Value Arguments.
     /// Empty string argument is equivalent to passing the search pattern '%'.
     catalog::columns find_columns(
-        const string& column = string(),
-        const string& table = string(),
-        const string& schema = string(),
-        const string& catalog = string());
+        string const& column = string(),
+        string const& table = string(),
+        string const& schema = string(),
+        string const& catalog = string());
 
     /// \brief Creates result set with columns that compose the primary key of a single table.
     ///
@@ -2128,9 +2128,9 @@ public:
     /// All arguments are treated as the Pattern Value Arguments.
     /// Empty string argument is equivalent to passing the search pattern '%'.
     catalog::primary_keys find_primary_keys(
-        const string& table,
-        const string& schema = string(),
-        const string& catalog = string());
+        string const& table,
+        string const& schema = string(),
+        string const& catalog = string());
 
     /// \brief Creates result set with catalog, schema, procedure, and procedure types.
     ///
@@ -2143,9 +2143,9 @@ public:
     /// Empty string argument is equivalent to passing the search pattern '%'.
 
     catalog::procedures find_procedures(
-        const string& procedure = string(),
-        const string& schema = string(),
-        const string& catalog = string());
+        string const& procedure = string(),
+        string const& schema = string(),
+        string const& catalog = string());
 
     /// \brief Creates result set with columns in one or more procedures.
     ///
@@ -2158,10 +2158,10 @@ public:
     /// All arguments are treated as the Pattern Value Arguments.
     /// Empty string argument is equivalent to passing the search pattern '%'.
     catalog::procedure_columns find_procedure_columns(
-        const string& column = string(),
-        const string& procedure = string(),
-        const string& schema = string(),
-        const string& catalog = string());
+        string const& column = string(),
+        string const& procedure = string(),
+        string const& schema = string(),
+        string const& catalog = string());
 
     /// \brief Returns names of all catalogs (or databases) available in connected data source.
     ///
@@ -2233,7 +2233,7 @@ std::list<datasource> list_datasources();
 /// \attention You will want to use transactions if you are doing batch operations because it will
 ///            prevent auto commits from occurring after each individual operation is executed.
 /// \see open(), prepare(), execute(), result, transaction
-result execute(connection& conn, const string& query, long batch_operations = 1, long timeout = 0);
+result execute(connection& conn, string const& query, long batch_operations = 1, long timeout = 0);
 
 /// \brief Opens, prepares, and executes query directly without creating result object.
 /// \param conn The connection where the statement will be executed.
@@ -2246,7 +2246,7 @@ result execute(connection& conn, const string& query, long batch_operations = 1,
 /// \see open(), prepare(), execute(), result, transaction
 void just_execute(
     connection& conn,
-    const string& query,
+    string const& query,
     long batch_operations = 1,
     long timeout = 0);
 
@@ -2298,7 +2298,7 @@ void just_transact(statement& stmt, long batch_operations);
 /// \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
 /// \see open()
 /// \throws database_error, programming_error
-void prepare(statement& stmt, const string& query, long timeout = 0);
+void prepare(statement& stmt, string const& query, long timeout = 0);
 
 /// @}
 
