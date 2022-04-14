@@ -521,7 +521,7 @@ TEST_CASE_METHOD(
     create_table(
         connection,
         NANODBC_TEXT("test_blob_retrieve_out_of_order"),
-        NANODBC_TEXT("(c1 int, c2 varchar(max), c3 int, c4 text)"));
+        NANODBC_TEXT("(c1_bound int, c2_unbound varchar(max), c3_bound int, c4_unbound text)"));
     execute(
         connection,
         NANODBC_TEXT("insert into test_blob_retrieve_out_of_order values "
@@ -531,7 +531,8 @@ TEST_CASE_METHOD(
     {
         nanodbc::result results = nanodbc::execute(
             connection,
-            NANODBC_TEXT("select c1, c2, c3, c4 from test_blob_retrieve_out_of_order;"));
+            NANODBC_TEXT("select c1_bound, c2_unbound, c3_bound, c4_unbound from "
+                         "test_blob_retrieve_out_of_order;"));
         REQUIRE(results.next());
         REQUIRE(results.get<int>(0) == 1);
         REQUIRE_THROWS_WITH(
@@ -542,7 +543,8 @@ TEST_CASE_METHOD(
     {
         nanodbc::result results = nanodbc::execute(
             connection,
-            NANODBC_TEXT("select c1, c3, c2, c4 from test_blob_retrieve_out_of_order;"));
+            NANODBC_TEXT("select c1_bound, c3_bound, c2_unbound, c4_unbound from "
+                         "test_blob_retrieve_out_of_order;"));
         REQUIRE(results.next());
         REQUIRE(results.get<int>(0) == 1);
         REQUIRE(results.get<int>(1) == 11);
@@ -554,7 +556,8 @@ TEST_CASE_METHOD(
     {
         nanodbc::result results = nanodbc::execute(
             connection,
-            NANODBC_TEXT("select c1, c2, c3, c4 from test_blob_retrieve_out_of_order;"));
+            NANODBC_TEXT("select c1_bound, c2_unbound, c3_bound, c4_unbound from "
+                         "test_blob_retrieve_out_of_order;"));
         results.unbind();
         REQUIRE(results.next());
         REQUIRE(results.get<int>(0) == 1);
@@ -567,10 +570,11 @@ TEST_CASE_METHOD(
     {
         nanodbc::result results = nanodbc::execute(
             connection,
-            NANODBC_TEXT("select c1, c2, c3, c4 from test_blob_retrieve_out_of_order;"));
+            NANODBC_TEXT("select c1_bound, c2_unbound, c3_bound, c4_unbound from "
+                         "test_blob_retrieve_out_of_order;"));
         REQUIRE(results.is_bound(0));
         REQUIRE(results.is_bound(2));
-        results.unbind(2);
+        results.unbind(2); // make c3_bound an unbound column
         REQUIRE(results.next());
         REQUIRE(results.get<int>(0) == 1);
         REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("this is varchar max"));
