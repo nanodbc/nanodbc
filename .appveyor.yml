@@ -8,9 +8,9 @@ configuration: Release
 
 branches:
   only:
-    - master
-    - latest
-    - release
+    - main
+  except:
+    - gh-pages
 
 clone_depth: 1
 

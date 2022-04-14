@@ -15,7 +15,7 @@ user information, example usage, propaganda, and detailed source level documenta
 
 | Branch |  Linux/OSX | Windows | Coverage | Coverity | Documentation |
 |:--- |:--- |:--- |:--- |:---|:---|
-| `master`  | [![master][travis-badge-master]][travis] | [![master][appveyor-badge]][appveyor] | [![codecov](https://codecov.io/gh/nanodbc/nanodbc/branch/master/graph/badge.svg)](https://codecov.io/gh/nanodbc/nanodbc) | [![coverity_scan][coverity-badge]][coverity] | [![CircleCI](https://circleci.com/gh/nanodbc/nanodbc/tree/master.svg?style=shield)](https://circleci.com/gh/nanodbc/nanodbc/tree/master) |
+| `master`  | none | [![master][appveyor-badge]][appveyor] | [![codecov](https://codecov.io/gh/nanodbc/nanodbc/branch/master/graph/badge.svg)](https://codecov.io/gh/nanodbc/nanodbc) | [![coverity_scan][coverity-badge]][coverity] | [![CircleCI](https://circleci.com/gh/nanodbc/nanodbc/tree/master.svg?style=shield)](https://circleci.com/gh/nanodbc/nanodbc/tree/master) |
 
 > **Note:** The Coverity status uses the [coverity_scan][nanodbc-coverity] branch.
 > When `master` has had a significant amount of work pushed to it,
@@ -134,10 +134,9 @@ Under Windows `sizeof(wchar_t) == sizeof(SQLWCHAR) == 2`, yet on Unix systems
 and drivers. If building against iODBC and the build option `NANODBC_USE_UNICODE` is `ON`, then
 `nanodbc::string` will be `std::u32string`. In **ALL** other cases it will be `std::u16string`.
 
-Continuous integration tests run on [Travis-CI][travis]. The build platform does not make available
-a Unicode-enabled iODBC driver. As such there is no guarantee that tests will pass in entirety on a
-system using iODBC. My recommendation is to use unixODBC. If you must use iODBC, consider
-_disabling_ unicode mode to avoid `wchar_t` issues.
+The CI builds do not exercise a Unicode-enabled iODBC driver. As such there is no guarantee
+that tests will pass in entirety on a system using iODBC. My recommendation is to use unixODBC.
+If you must use iODBC, consider _disabling_ unicode mode to avoid `wchar_t` issues.
 
 ---
 
@@ -310,9 +309,6 @@ Finally, announce the new release to the public.
 [sqliteodbc]:   http://www.ch-werner.de/sqliteodbc/
 [unixodbc]:     http://www.unixodbc.org/
 [vagrant]:      https://www.vagrantup.com/
-
-[travis]:               https://travis-ci.org/nanodbc/nanodbc
-[travis-badge-master]:  https://travis-ci.org/nanodbc/nanodbc.svg?branch=master
 
 [appveyor]:         https://ci.appveyor.com/project/nanodbc/nanodbc?branch=master
 [appveyor-badge]:   https://ci.appveyor.com/api/projects/status/pvgwgg3qgdcnylp1/branch/master?svg=true

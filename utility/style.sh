@@ -9,12 +9,11 @@ usage()
     exit 1
 }
 
-if echo "$*" | egrep -q -- "--help|-h"; then
+if echo "$*" | grep -E -q -- "--help|-h"; then
     usage
 fi
 
-pushd "$(git rev-parse --show-toplevel)" >/dev/null
-source utility/shell_control.sh
+pushd "$(git rev-parse --show-toplevel)" >/dev/null || exit 1
 
 for I in nanodbc/*.{h,cpp}; do
     clang-format -i "$I"

@@ -186,11 +186,11 @@ struct base_test_fixture
     {
         // Connection string not specified in command line, try environment variable
         if (connection_string_.empty())
-            connection_string_ = get_env("TEST_NANODBC_CONNSTR");
+            connection_string_ = get_env("NANODBC_TEST_CONNSTR");
 
         // Path to data folder with data files used in some tests
         if (data_path_.empty())
-            data_path_ = nanodbc::test::convert(get_env("TEST_NANODBC_DATADIR"));
+            data_path_ = nanodbc::test::convert(get_env("NANODBC_TEST_DATADIR"));
     }
 
     virtual ~base_test_fixture() noexcept {}
