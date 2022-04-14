@@ -3042,7 +3042,7 @@ public:
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
 
-        auto_bind();
+        auto_bind_columns();
     }
 
     ~result_impl() noexcept { cleanup_bound_columns(); }
@@ -3321,7 +3321,7 @@ public:
             return false;
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
-        auto_bind();
+        auto_bind_columns();
         return true;
     }
 
@@ -3336,26 +3336,12 @@ public:
 
     void unbind(short column)
     {
-        RETCODE rc;
         throw_if_column_is_out_of_range(column);
-        bound_column& col = bound_columns_[column];
 
         if (is_bound(column))
         {
-            NANODBC_CALL_RC(
-                SQLBindCol,
-                rc,
-                stmt_.native_statement_handle(),
-                column + 1,
-                col.ctype_,
-                0,
-                0,
-                col.cbdata_); // Re-use existing cbdata_ buffer
-            if (!success(rc))
-                NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
-            delete[] col.pdata_;
-            col.pdata_ = 0;
-            col.bound_ = false;
+            bound_column& col = bound_columns_[column];
+            unbind_column(col);
         }
     }
 
@@ -3519,7 +3505,7 @@ private:
         return true;
     }
 
-    void auto_bind()
+    void auto_bind_columns()
     {
         cleanup_bound_columns();
 
@@ -3680,35 +3666,55 @@ private:
             col.cbdata_ = new null_type[static_cast<size_t>(rowset_size_)];
             if (col.blob_)
             {
-                NANODBC_CALL_RC(
-                    SQLBindCol,
-                    rc,
-                    stmt_.native_statement_handle(),
-                    i + 1,
-                    col.ctype_,
-                    0,
-                    0,
-                    col.cbdata_);
-                if (!success(rc))
-                    NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
+                unbind_column(col);
             }
             else
             {
                 col.pdata_ = new char[rowset_size_ * col.clen_];
-                NANODBC_CALL_RC(
-                    SQLBindCol,
-                    rc,
-                    stmt_.native_statement_handle(),
-                    i + 1,        // ColumnNumber
-                    col.ctype_,   // TargetType
-                    col.pdata_,   // TargetValuePtr
-                    col.clen_,    // BufferLength
-                    col.cbdata_); // StrLen_or_Ind
-                if (!success(rc))
-                    NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
-                col.bound_ = true;
+                bind_column(col);
             }
         }
+    }
+
+    void bind_column(bound_column& column)
+    {
+        NANODBC_ASSERT(column.pdata_);
+        NANODBC_ASSERT(column.cbdata_);
+
+        RETCODE rc;
+        NANODBC_CALL_RC(
+            SQLBindCol,
+            rc,
+            stmt_.native_statement_handle(),
+            column.column_ + 1, // ColumnNumber
+            column.ctype_,      // TargetType
+            column.pdata_,      // TargetValuePtr
+            column.clen_,       // BufferLength
+            column.cbdata_);    // StrLen_or_Ind
+        if (!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
+        column.bound_ = true;
+    }
+
+    void unbind_column(bound_column& column)
+    {
+        NANODBC_ASSERT(column.cbdata_);
+
+        RETCODE rc;
+        NANODBC_CALL_RC(
+            SQLBindCol,
+            rc,
+            stmt_.native_statement_handle(),
+            column.column_ + 1,
+            column.ctype_,
+            0,
+            0,
+            column.cbdata_); // re-use existing cbdata_ buffer
+        if (!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
+        delete[] column.pdata_;
+        column.pdata_ = nullptr;
+        column.bound_ = false;
     }
 
 private:
