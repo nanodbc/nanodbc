@@ -1164,7 +1164,8 @@ struct test_case_fixture : public base_test_fixture
         }
 
         // Negative means skip
-        REQUIRE(error_result.n < 0 || error.native() == error_result.n);
+        if (error_result.n >= 0)
+            REQUIRE(error.native() == error_result.n);
         REQUIRE_THAT(error.state(), Catch::Matches(error_result.s));
         REQUIRE_THAT(error.what(), Catch::Contains(error_result.w));
     }
