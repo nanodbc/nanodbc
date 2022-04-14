@@ -1140,7 +1140,10 @@ struct test_case_fixture : public base_test_fixture
             error_result = {19, "HY000", "[SQLite]UNIQUE constraint failed"};
             break;
         case database_vendor::sqlserver:
-            error_result = {2627, "23000", "Violation of PRIMARY KEY constraint"};
+            // 01000: [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Violation of PRIMARY KEY
+            // constraint 'test_error_pk'. [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]The
+            // statement has been terminated.
+            error_result = {3621, "01000", "Violation of PRIMARY KEY constraint"};
             break;
         case database_vendor::vertica:
             // todo validate vertica
