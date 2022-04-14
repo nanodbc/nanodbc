@@ -5288,7 +5288,7 @@ void table_valued_parameter::describe_parameters(
 {
     impl_->describe_parameters(idx, type, size, scale);
 }
-}
+} // namespace nanodbc
 #endif // NANODBC_ENABLE_TVP
 
 namespace nanodbc

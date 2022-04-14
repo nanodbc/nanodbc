@@ -1040,7 +1040,8 @@ TEST_CASE_METHOD(mssql_fixture, "test_bind_float", "[mssql][number][float]")
 
     nanodbc::transact(stmt, 1);
     {
-        auto result = nanodbc::execute(conn, NANODBC_TEXT("select r,f,f24,f53,d from test_bind_float"));
+        auto result =
+            nanodbc::execute(conn, NANODBC_TEXT("select r,f,f24,f53,d from test_bind_float"));
         result.next();
         REQUIRE(result.get<float>(0) == static_cast<float>(r));
         REQUIRE(result.get<std::string>(0).substr(0, 5) == "1.123");
