@@ -30,6 +30,7 @@ package-lock.json
 /.vs*
 /CMakeSettings.json
 /launch.vs.json
+*.code-workspace
 
 # Miscelenaous
 *.log
