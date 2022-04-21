@@ -11,8 +11,9 @@ jobs:
         fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
     - name: Install Doxygen
       run: sudo apt-get update -y && sudo apt-get install -y doxygen
-    - name: Install Sphinx
+    - name: Install Python
       uses: actions/setup-python@v3
+    - name: Install Sphinx
       run: pip install -r doc/requirements.txt
     - name: Build Documentation
       run: make html
