@@ -1,9 +1,9 @@
-name: "Lint"
+name: "lint"
 
 on: [push, pull_request]
 
 jobs:
-  lint:
+  sources:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -13,6 +13,10 @@ jobs:
         extensions: 'h,cpp'
         clangFormatVersion: 12
         inplace: True
+  documentation:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
     - uses: avto-dev/markdown-lint@v1
       with:
         args: '**/*.md'
@@ -21,6 +25,16 @@ jobs:
         args: --short --error-format=github
       env:
         DOCS_DIR: 'doc/'
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
     - uses: hadolint/hadolint-action@v2.0.0
       with:
         dockerfile: Dockerfile
+  vagrant:
+    runs-on: macos-10.15
+    steps:
+    - uses: actions/checkout@v2
+    - run: vagrant version
+    - run: vagrant validate
