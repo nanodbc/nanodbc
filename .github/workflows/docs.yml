@@ -10,4 +10,4 @@ jobs:
     - uses: ammaraskar/sphinx-action@master
       with:
         docs-folder: "doc/"
-        pre-build-command: 'apt-get update -y -q && apt-get install -y doxygen && pip install "breathe<=4.29.0"'
+        pre-build-command: "apt-get update -y -q && apt-get install -y doxygen"
