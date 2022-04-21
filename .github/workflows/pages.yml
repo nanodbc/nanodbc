@@ -15,7 +15,7 @@ jobs:
       with:
         fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
     - name: Install doxygen
-      run: apt-get update -y && apt-get install -y doxygen
+      run: sudo apt-get update -y && sudo apt-get install -y doxygen
     - name: Build and Commit
       uses: sphinx-notes/pages@v2
       with:
