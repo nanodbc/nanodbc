@@ -14,12 +14,11 @@ branches:
 
 skip_commits:
   files:
-    - '.github/*'
-    - '.github/workflows/*'
     - '*file'
     - '*lint.*'
-    - 'doc/*'
-    - 'website/*'
+    - .github/**/*
+    - doc/**/*
+    - website/**/*
 
 clone_depth: 1
 
