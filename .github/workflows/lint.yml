@@ -14,7 +14,6 @@ jobs:
         clangFormatVersion: 12
         inplace: True
   documentation:
-    needs: sources
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -27,7 +26,6 @@ jobs:
       env:
         DOCS_DIR: 'doc/'
   docker:
-    needs: documentation
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
