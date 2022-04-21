@@ -17,6 +17,7 @@ jobs:
     needs: sources
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v2
     - uses: avto-dev/markdown-lint@v1
       with:
         args: '**/*.md'
@@ -25,10 +26,13 @@ jobs:
         args: --short --error-format=github
       env:
         DOCS_DIR: 'doc/'
-  utilities:
+  auxiliary:
     needs: documentation
-    runs-on: ubuntu-latest
+    runs-on: macos-10.15
     steps:
+    - uses: actions/checkout@v2
     - uses: hadolint/hadolint-action@v2.0.0
       with:
         dockerfile: Dockerfile
+    - run: vagrant version
+    - run: vagrant validate
