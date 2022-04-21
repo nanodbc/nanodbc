@@ -1,0 +1,26 @@
+name: "Lint: clang-format"
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: DoozyX/clang-format-lint-action@v0.13
+      with:
+        source: '.'
+        extensions: 'h,cpp'
+        clangFormatVersion: 12
+        inplace: True
+    - uses: avto-dev/markdown-lint@v1
+      with:
+        args: '**/*.md'
+    - uses: docker://oskarstark/doctor-rst
+      with:
+        args: --short --error-format=github
+      env:
+        DOCS_DIR: 'doc/'
+    - uses: hadolint/hadolint-action@v2.0.0
+      with:
+        dockerfile: Dockerfile
