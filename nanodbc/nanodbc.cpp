@@ -4826,11 +4826,6 @@ result statement::complete_execute(long batch_operations)
     return impl_->complete_execute(batch_operations, *this);
 }
 
-result statement::async_complete(long batch_operations)
-{
-    return impl_->complete_execute(batch_operations, *this);
-}
-
 void statement::enable_async(void* event_handle)
 {
     impl_->enable_async(event_handle);

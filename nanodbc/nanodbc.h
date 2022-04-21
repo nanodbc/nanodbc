@@ -895,11 +895,6 @@ public:
     /// \see async_execute(), async_execute_direct()
     class result complete_execute(long batch_operations = 1);
 
-    /// \brief Completes a previously initiated asynchronous query execution, returning the result.
-    ///
-    /// \deprecated Use complete_execute instead.
-    NANODBC_DEPRECATED class result async_complete(long batch_operations = 1);
-
     /// undocumented - for internal use only (used from result_impl)
     void enable_async(void* event_handle);
 
