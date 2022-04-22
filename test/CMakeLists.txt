@@ -75,7 +75,7 @@ foreach(test_item ${test_list})
   add_test(NAME ${test_name} COMMAND ${test_name})
 
   set_tests_properties(${test_name} PROPERTIES
-    ENVIRONMENT "TEST_NANODBC_DATADIR=${CMAKE_CURRENT_SOURCE_DIR}/data")
+    ENVIRONMENT "NANODBC_TEST_DATADIR=${CMAKE_CURRENT_SOURCE_DIR}/data")
 
   add_definitions(-DNANODBC_TEST_DATA="${CMAKE_CURRENT_SOURCE_DIR}/data")
 

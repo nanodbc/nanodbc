@@ -12,6 +12,7 @@
 #include <iomanip>
 #include <iostream>
 #include <locale>
+#include <random>
 #include <sstream>
 
 #ifdef NANODBC_ENABLE_BOOST
@@ -141,7 +142,7 @@ public:
     // include any provided data (the begin/ end in this case) and
     // be written as if it were stating a fact (in the output it will be
     // preceded by the value under test).
-    virtual std::string describe() const
+    virtual std::string describe() const override
     {
         std::ostringstream ss;
         ss << "is not member of values [";
@@ -157,8 +158,8 @@ inline IntAnyOf IsAnyOf(std::initializer_list<int> v)
 {
     return IntAnyOf(std::move(v));
 }
-}
-} // namespace nanodbc::test
+} // namespace test
+} // namespace nanodbc
 
 extern nanodbc::test::Config cfg;
 
@@ -185,11 +186,11 @@ struct base_test_fixture
     {
         // Connection string not specified in command line, try environment variable
         if (connection_string_.empty())
-            connection_string_ = get_env("TEST_NANODBC_CONNSTR");
+            connection_string_ = get_env("NANODBC_TEST_CONNSTR");
 
         // Path to data folder with data files used in some tests
         if (data_path_.empty())
-            data_path_ = nanodbc::test::convert(get_env("TEST_NANODBC_DATADIR"));
+            data_path_ = nanodbc::test::convert(get_env("NANODBC_TEST_DATADIR"));
     }
 
     virtual ~base_test_fixture() noexcept {}
@@ -260,7 +261,7 @@ struct base_test_fixture
         }
     }
 
-    void check_data_type_size(nanodbc::string const& name, int column_size, short radix = -1)
+    void check_data_type_size(nanodbc::string const& name, long column_size, short radix = -1)
     {
         if (name == NANODBC_TEXT("float"))
         {
@@ -519,6 +520,48 @@ struct base_test_fixture
         {
             execute(connection, NANODBC_TEXT("DROP TABLE ") + name + NANODBC_TEXT(";"));
         }
+    }
+
+    // returns random string [min_size, max_size]
+    template <class T, typename = nanodbc::enable_if_string<T>>
+    T create_random_string(size_t min_size, size_t max_size)
+    {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<size_t> dist_size(min_size, max_size);
+        std::uniform_int_distribution<size_t> dist_alpha(0, 25);
+
+        T result;
+        result.resize(dist_size(gen));
+
+        for (auto& dst : result)
+        {
+            // set 'A' to 'Z'
+            dst = static_cast<typename T::value_type>('A') +
+                  static_cast<typename T::value_type>(dist_alpha(gen));
+        }
+
+        return result;
+    }
+
+    // returns random binary [min_size, max_size]
+    std::vector<uint8_t> create_random_binary(size_t min_size, size_t max_size)
+    {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<size_t> dist_size(min_size, max_size);
+        std::uniform_int_distribution<size_t> dist_bin(0, 255);
+
+        std::vector<uint8_t> result;
+        result.resize(dist_size(gen));
+
+        for (auto& dst : result)
+        {
+            // set 0x00 to 0xFF
+            dst = static_cast<uint8_t>(dist_bin(gen));
+        }
+
+        return result;
     }
 };
 

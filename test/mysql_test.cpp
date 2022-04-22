@@ -16,13 +16,18 @@ struct mysql_fixture : public test_case_fixture
             connection_string_ = get_env("NANODBC_TEST_CONNSTR_MYSQL");
     }
 };
-}
+} // namespace
 
 // FIXME: No catlog_* tests for MySQL. Not supported?
 
 TEST_CASE_METHOD(mysql_fixture, "test_driver", "[mysql][driver]")
 {
     test_driver();
+}
+
+TEST_CASE_METHOD(mysql_fixture, "test_datasources", "[mysql][datasources]")
+{
+    test_datasources();
 }
 
 TEST_CASE_METHOD(mysql_fixture, "test_affected_rows", "[mysql][affected_rows]")
@@ -168,6 +173,11 @@ TEST_CASE_METHOD(mysql_fixture, "test_decimal_conversion", "[mysql][decimal][con
     test_decimal_conversion();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_error", "[mysql][error]")
+{
+    test_error();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_exception", "[mysql][exception]")
 {
     test_exception();
@@ -224,6 +234,11 @@ TEST_CASE_METHOD(mysql_fixture, "test_string", "[mysql][string]")
 TEST_CASE_METHOD(mysql_fixture, "test_string_vector", "[mysql][string]")
 {
     test_string_vector();
+}
+
+TEST_CASE_METHOD(mysql_fixture, "test_string_view_vector", "[mysql][string]")
+{
+    test_string_view_vector();
 }
 
 TEST_CASE_METHOD(mysql_fixture, "test_batch_binary", "[mysql][binary]")

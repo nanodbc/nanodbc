@@ -12,13 +12,18 @@ struct vertica_fixture : public test_case_fixture
             connection_string_ = get_env("NANODBC_TEST_CONNSTR_VERTICA");
     }
 };
-}
+} // namespace
 
 // TODO: add blob (bytea) test
 
 TEST_CASE_METHOD(vertica_fixture, "test_driver", "[vertica][driver]")
 {
     test_driver();
+}
+
+TEST_CASE_METHOD(vertica_fixture, "test_datasources", "[vertica][datasources]")
+{
+    test_datasources();
 }
 
 TEST_CASE_METHOD(vertica_fixture, "test_batch_insert_integer", "[vertica][batch][integral]")
@@ -81,6 +86,11 @@ TEST_CASE_METHOD(vertica_fixture, "test_decimal_conversion", "[vertica][decimal]
     test_decimal_conversion();
 }
 
+TEST_CASE_METHOD(vertica_fixture, "test_error", "[vertica][error]")
+{
+    test_error();
+}
+
 TEST_CASE_METHOD(vertica_fixture, "test_exception", "[vertica][exception]")
 {
     test_exception();
@@ -132,6 +142,11 @@ TEST_CASE_METHOD(vertica_fixture, "test_string", "[vertica][string]")
 TEST_CASE_METHOD(vertica_fixture, "test_string_vector", "[vertica][string]")
 {
     test_string_vector();
+}
+
+TEST_CASE_METHOD(vertica_fixture, "test_string_view_vector", "[vertica][string]")
+{
+    test_string_view_vector();
 }
 
 TEST_CASE_METHOD(vertica_fixture, "test_time", "[vertica][time]")

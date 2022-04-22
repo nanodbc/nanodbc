@@ -1,7 +1,7 @@
 # nanodbc examples build configuration
 
 add_custom_target(examples DEPENDS example)
-set(examples northwind usage rowset_iteration table_schema)
+set(examples northwind usage rowset_iteration table_schema table_valued_parameter)
 
 include_directories(${CMAKE_SOURCE_DIR} ${ODBC_INCLUDE_DIR})
 link_directories(${CMAKE_BINARY_DIR}/lib)

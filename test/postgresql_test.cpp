@@ -15,13 +15,18 @@ struct postgresql_fixture : public test_case_fixture
             connection_string_ = get_env("NANODBC_TEST_CONNSTR_PGSQL");
     }
 };
-}
+} // namespace
 
 // TODO: add blob (bytea) test
 
 TEST_CASE_METHOD(postgresql_fixture, "test_driver", "[postgresql][driver]")
 {
     test_driver();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "test_datasources", "[postgresql][datasources]")
+{
+    test_datasources();
 }
 
 TEST_CASE_METHOD(postgresql_fixture, "test_batch_insert_integer", "[postgresql][batch][integral]")
@@ -103,6 +108,11 @@ TEST_CASE_METHOD(postgresql_fixture, "test_decimal_conversion", "[postgresql][de
     test_decimal_conversion();
 }
 
+TEST_CASE_METHOD(postgresql_fixture, "test_error", "[postgresql][error]")
+{
+    test_error();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_exception", "[postgresql][exception]")
 {
     test_exception();
@@ -154,6 +164,11 @@ TEST_CASE_METHOD(postgresql_fixture, "test_string", "[postgresql][string]")
 TEST_CASE_METHOD(postgresql_fixture, "test_string_vector", "[postgresql][string]")
 {
     test_string_vector();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "test_string_view_vector", "[postgresql][string]")
+{
+    test_string_view_vector();
 }
 
 TEST_CASE_METHOD(postgresql_fixture, "test_batch_binary", "[postgresql][binary]")

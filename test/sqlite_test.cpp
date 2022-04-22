@@ -40,7 +40,7 @@ struct sqlite_fixture : public test_case_fixture
             conn, NANODBC_TEXT("catalog_tables_test"), NANODBC_TEXT("(a int PRIMARY KEY, b text)"));
     }
 };
-}
+} // namespace
 
 // Unicode build on Ubuntu 12.04 with unixODBC 2.2.14p2 and libsqliteodbc 0.91-3 throws:
 // test/sqlite_test.cpp:42: FAILED:
@@ -108,6 +108,11 @@ TEST_CASE_METHOD(sqlite_fixture, "test_affected_rows", "[sqlite][affected_rows]"
 TEST_CASE_METHOD(sqlite_fixture, "test_driver", "[sqlite][driver]")
 {
     test_driver();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_datasources", "[sqlite][datasources]")
+{
+    test_datasources();
 }
 
 // TODO: Investigate why these tests fail on Linux
@@ -247,6 +252,11 @@ TEST_CASE_METHOD(sqlite_fixture, "test_decimal_conversion", "[sqlite][decimal][c
 
     REQUIRE(results.next());
     REQUIRE(results.get<nanodbc::string>(0) == NANODBC_TEXT("-1.333"));
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_error", "[sqlite][error]")
+{
+    test_error();
 }
 
 TEST_CASE_METHOD(sqlite_fixture, "test_exception", "[sqlite][exception]")
@@ -433,6 +443,11 @@ TEST_CASE_METHOD(sqlite_fixture, "test_string", "[sqlite][string]")
 TEST_CASE_METHOD(sqlite_fixture, "test_string_vector", "[sqlite][string]")
 {
     test_string_vector();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_string_view_vector", "[sqlite][string]")
+{
+    test_string_view_vector();
 }
 
 TEST_CASE_METHOD(sqlite_fixture, "test_batch_binary", "[sqlite][binary]")
