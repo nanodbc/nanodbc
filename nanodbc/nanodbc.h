@@ -779,7 +779,8 @@ public:
     /// \param query The SQL query that will be executed.
     /// \param timeout The number in seconds before query timeout. Default 0 meaning no timeout.
     /// \see open()
-    /// \throws database_error, programming_error
+    /// \throws database_error
+    /// \throws programming_error
     void prepare(string const& query, long timeout = 0);
 
     /// \brief Sets the number in seconds before query timeout. Default is 0 indicating no timeout.
@@ -1567,7 +1568,8 @@ public:
     /// \brief Unbind data buffers for all columns in the result set.
     ///
     /// Wraps unbind(short column)
-    /// \throws index_range_error, database_error
+    /// \throws index_range_error
+    /// \throws database_error
     void unbind();
 
     /// \brief Unbind data buffers for specific columns in the result set.
@@ -1575,7 +1577,8 @@ public:
     /// Wraps unbind(short column)
     ///
     /// \param column_name string Name of column we wish to unbind.
-    /// \throws index_range_error, database_error
+    /// \throws index_range_error
+    /// \throws database_error
     void unbind(string const& column_name);
 
     /// \brief Unbind data buffers for specific columns in the result set.
@@ -1591,7 +1594,8 @@ public:
     /// not support out-of-order retrieval of long data.
     ///
     /// \param column short Zero-based index of column we wish to unbind.
-    /// \throws index_range_error, database_error
+    /// \throws index_range_error
+    /// \throws database_error
     void unbind(short column);
 
     /// \brief Gets data from the given column of the current rowset.
@@ -1599,7 +1603,10 @@ public:
     /// Columns are numbered from left to right and 0-indexed.
     /// \param column position.
     /// \param result The column's value will be written to this parameter.
-    /// \throws database_error, index_range_error, type_incompatible_error, null_access_error
+    /// \throws database_error
+    /// \throws index_range_error
+    /// \throws type_incompatible_error
+    /// \throws null_access_error
     template <class T>
     void get_ref(short column, T& result) const;
 
@@ -1611,7 +1618,9 @@ public:
     /// \param column position.
     /// \param fallback if value is null, return fallback instead.
     /// \param result The column's value will be written to this parameter.
-    /// \throws database_error, index_range_error, type_incompatible_error
+    /// \throws database_error
+    /// \throws index_range_error
+    /// \throws type_incompatible_error
     template <class T>
     void get_ref(short column, T const& fallback, T& result) const;
 
@@ -1619,7 +1628,10 @@ public:
     ///
     /// \param column_name column's name.
     /// \param result The column's value will be written to this parameter.
-    /// \throws database_error, index_range_error, type_incompatible_error, null_access_error
+    /// \throws database_error
+    /// \throws index_range_error
+    /// \throws type_incompatible_error
+    /// \throws null_access_error
     template <class T>
     void get_ref(string const& column_name, T& result) const;
 
@@ -1630,7 +1642,9 @@ public:
     /// \param column_name column's name.
     /// \param fallback if value is null, return fallback instead.
     /// \param result The column's value will be written to this parameter.
-    /// \throws database_error, index_range_error, type_incompatible_error
+    /// \throws database_error
+    /// \throws index_range_error
+    /// \throws type_incompatible_error
     template <class T>
     void get_ref(string const& column_name, T const& fallback, T& result) const;
 
@@ -1638,7 +1652,10 @@ public:
     ///
     /// Columns are numbered from left to right and 0-indexed.
     /// \param column position.
-    /// \throws database_error, index_range_error, type_incompatible_error, null_access_error
+    /// \throws database_error
+    /// \throws index_range_error
+    /// \throws type_incompatible_error
+    /// \throws null_access_error
     template <class T>
     T get(short column) const;
 
@@ -1649,14 +1666,19 @@ public:
     /// Columns are numbered from left to right and 0-indexed.
     /// \param column position.
     /// \param fallback if value is null, return fallback instead.
-    /// \throws database_error, index_range_error, type_incompatible_error
+    /// \throws database_error
+    /// \throws index_range_error
+    /// \throws type_incompatible_error
     template <class T>
     T get(short column, T const& fallback) const;
 
     /// \brief Gets data from the given column by name of the current rowset.
     ///
     /// \param column_name column's name.
-    /// \throws database_error, index_range_error, type_incompatible_error, null_access_error
+    /// \throws database_error
+    /// \throws index_range_error
+    /// \throws type_incompatible_error
+    /// \throws null_access_error
     template <class T>
     T get(string const& column_name) const;
 
@@ -1666,7 +1688,9 @@ public:
     ///
     /// \param column_name column's name.
     /// \param fallback if value is null, return fallback instead.
-    /// \throws database_error, index_range_error, type_incompatible_error
+    /// \throws database_error
+    /// \throws index_range_error
+    /// \throws type_incompatible_error
     template <class T>
     T get(string const& column_name, T const& fallback) const;
 
@@ -1681,7 +1705,8 @@ public:
     /// Columns are numbered from left to right and 0-indexed.
     /// \see get(), get_ref()
     /// \param column position.
-    /// \throws database_error, index_range_error
+    /// \throws database_error
+    /// \throws index_range_error
     bool is_null(short column) const;
 
     /// \brief Returns true if and only if the given column by name of the current rowset is null.
@@ -1689,7 +1714,8 @@ public:
     /// See is_null(short column) for details on a bug/limitation of some ODBC drivers.
     /// \see is_null()
     /// \param column_name column's name.
-    /// \throws database_error, index_range_error
+    /// \throws database_error
+    /// \throws index_range_error
     bool is_null(string const& column_name) const;
 
     /// \brief Returns true if we have bound a buffer to the given column.
@@ -2297,7 +2323,8 @@ void just_transact(statement& stmt, long batch_operations);
 /// \param query The SQL query that will be executed.
 /// \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
 /// \see open()
-/// \throws database_error, programming_error
+/// \throws database_error
+/// \throws programming_error
 void prepare(statement& stmt, string const& query, long timeout = 0);
 
 /// @}

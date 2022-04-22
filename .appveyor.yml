@@ -12,6 +12,14 @@ branches:
   except:
     - gh-pages
 
+skip_commits:
+  files:
+    - '*file'
+    - '*lint.*'
+    - .github/**/*
+    - doc/**/*
+    - website/**/*
+
 clone_depth: 1
 
 notifications:
