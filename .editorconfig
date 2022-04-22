@@ -20,7 +20,7 @@ indent_style = space
 trim_trailing_whitespace = true
 
 # JSON and YAML files
-[*.{json,yml,yaml},Vagrantfile}]
+[*.{json,yml,yaml},Dockerfile,Vagrantfile}]
 indent_size = 2
 indent_style = space
 trim_trailing_whitespace = true
