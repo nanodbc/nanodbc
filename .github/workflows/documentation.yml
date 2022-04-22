@@ -1,5 +1,5 @@
- # GHA workflow to build documentation and deploy with website in gh-pages branch
- name: "documentation"
+# GHA workflow to build documentation and deploy with website in gh-pages branch
+name: "documentation"
 
 on: [push, pull_request]
 
