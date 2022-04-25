@@ -1261,6 +1261,53 @@ TEST_CASE_METHOD(
     }
 }
 
+#ifdef NANODBC_SUPPORT_STRING_VIEW
+TEST_CASE_METHOD(
+    mssql_table_valued_parameter_fixture,
+    "test_table_valued_parameter_with_records_string_view",
+    "[mssql][table_valued_paramter]")
+{
+    auto conn = connect();
+
+    auto stmt = nanodbc::statement(conn);
+    stmt.prepare(NANODBC_TEXT("{ CALL tvp_test(?, ?, ?) }"));
+
+    std::vector<std::string_view> p1_col2_view;
+    for (auto& p : p1_col2_) { p1_col2_view.emplace_back(p); }
+
+    std::vector<nanodbc::wide_string_view> p1_col3_view;
+    for (auto& p : p1_col3_) { p1_col3_view.emplace_back(p); }
+
+    // bind param 0
+    stmt.bind(0, &p0_);
+    // bind param 1
+    auto p1 = nanodbc::table_valued_parameter(stmt, 1, num_rows_);
+    p1.bind(0, p1_col0_.data(), p1_col0_.size());
+    p1.bind(1, p1_col1_.data(), p1_col1_.size());
+    p1.bind_strings(2, p1_col2_view);
+    p1.bind_strings(3, p1_col3_view);
+    p1.bind(4, p1_col4_);
+    p1.close();
+    // bind param 2
+    stmt.bind(2, p2_.c_str());
+
+    // check results
+    auto results = stmt.execute();
+    int rcnt = 0;
+    while (results.next())
+    {
+        REQUIRE(p0_ == results.get<int>(0));
+        REQUIRE(p1_col0_[rcnt] == results.get<int>(1));
+        REQUIRE(p1_col1_[rcnt] == results.get<int64_t>(2));
+        REQUIRE(p1_col2_[rcnt] == results.get<std::string>(3));
+        REQUIRE(p1_col3_[rcnt] == results.get<nanodbc::wide_string>(4));
+        REQUIRE(p1_col4_[rcnt] == results.get<std::vector<uint8_t>>(5));
+        REQUIRE(p2_ == results.get<nanodbc::string>(6));
+        ++rcnt;
+    }
+}
+#endif
+
 TEST_CASE_METHOD(
     mssql_table_valued_parameter_fixture,
     "test_table_valued_parameter_invalid_bind_order",
