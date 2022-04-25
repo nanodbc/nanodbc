@@ -1273,10 +1273,16 @@ TEST_CASE_METHOD(
     stmt.prepare(NANODBC_TEXT("{ CALL tvp_test(?, ?, ?) }"));
 
     std::vector<std::string_view> p1_col2_view;
-    for (auto& p : p1_col2_) { p1_col2_view.emplace_back(p); }
+    for (auto& p : p1_col2_)
+    {
+        p1_col2_view.emplace_back(p);
+    }
 
     std::vector<nanodbc::wide_string_view> p1_col3_view;
-    for (auto& p : p1_col3_) { p1_col3_view.emplace_back(p); }
+    for (auto& p : p1_col3_)
+    {
+        p1_col3_view.emplace_back(p);
+    }
 
     // bind param 0
     stmt.bind(0, &p0_);
