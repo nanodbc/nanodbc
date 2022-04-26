@@ -73,8 +73,8 @@
 /// See http://www.codeguru.com/submission-guidelines.php for details.
 /// </div>
 
-#ifndef NANODBC_H
-#define NANODBC_H
+#ifndef NANODBC_NANODBC_H
+#define NANODBC_NANODBC_H
 
 #include <cstddef>
 #include <functional>
