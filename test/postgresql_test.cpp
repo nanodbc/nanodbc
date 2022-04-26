@@ -357,6 +357,14 @@ TEST_CASE_METHOD(
 {
     test_win32_variant_null_literal();
 }
+
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_win32_variant_row_cached_result",
+    "[postgresql][variant][windows]")
+{
+    test_win32_variant_row_cached_result();
+}
 #endif // _MSC_VER
 
 TEST_CASE_METHOD(postgresql_fixture, "test_while_not_end_iteration", "[postgresql][looping]")
