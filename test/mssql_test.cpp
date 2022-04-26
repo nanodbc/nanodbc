@@ -527,7 +527,8 @@ TEST_CASE_METHOD(
         NANODBC_TEXT("insert into test_blob_retrieve_out_of_order values "
                      "(1, 'this is varchar max', 11, 'this is text');"));
 
-    // Out of order
+    // Query bound and unbound interleaved.
+    // Access in order of increasing column number.
     {
         nanodbc::result results = nanodbc::execute(
             connection,
@@ -539,7 +540,8 @@ TEST_CASE_METHOD(
             results.get<nanodbc::string>(1), Catch::Contains("Invalid Descriptor Index"));
     }
 
-    // Bound first, then unbound
+    // Query bound first, then unbound.
+    // Access in order of increasing column number.
     {
         nanodbc::result results = nanodbc::execute(
             connection,
@@ -552,7 +554,37 @@ TEST_CASE_METHOD(
         REQUIRE(results.get<nanodbc::string>(3) == NANODBC_TEXT("this is text"));
     }
 
-    // Unbind all columns
+    // Query bound first, then unbound.
+    // Access bound NOT in order and unbound in order of increasing column number.
+    {
+        nanodbc::result results = nanodbc::execute(
+            connection,
+            NANODBC_TEXT("select c1_bound, c3_bound, c2_unbound, c4_unbound from "
+                         "test_blob_retrieve_out_of_order;"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<int>(0) == 1);
+        REQUIRE(results.get<nanodbc::string>(2) == NANODBC_TEXT("this is varchar max"));
+        REQUIRE(results.get<int>(1) == 11); // no error "Invalid Descriptor Index"
+        REQUIRE(results.get<nanodbc::string>(3) == NANODBC_TEXT("this is text"));
+    }
+    // Query bound first, then unbound.
+    // Access bound in order and unbound NOT in order of increasing column number.
+    {
+        nanodbc::result results = nanodbc::execute(
+            connection,
+            NANODBC_TEXT("select c1_bound, c3_bound, c2_unbound, c4_unbound from "
+                         "test_blob_retrieve_out_of_order;"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<int>(0) == 1);
+        REQUIRE(results.get<int>(1) == 11);
+        REQUIRE(results.get<nanodbc::string>(3) == NANODBC_TEXT("this is text"));
+        REQUIRE_THROWS_WITH(
+            results.get<nanodbc::string>(2), Catch::Contains("Invalid Descriptor Index"));
+    }
+
+    // Query bound and unbound interleaved.
+    // Unbind all columns.
+    // Access in order of increasing column number.
     {
         nanodbc::result results = nanodbc::execute(
             connection,
@@ -565,8 +597,22 @@ TEST_CASE_METHOD(
         REQUIRE(results.get<int>(2) == 11);
         REQUIRE(results.get<nanodbc::string>(3) == NANODBC_TEXT("this is text"));
     }
+    // Query bound and unbound interleaved.
+    // Unbind all columns.
+    // Access NOT in order of increasing column number.
+    {
+        nanodbc::result results = nanodbc::execute(
+            connection,
+            NANODBC_TEXT("select c1_bound, c2_unbound, c3_bound, c4_unbound from "
+                         "test_blob_retrieve_out_of_order;"));
+        results.unbind();
+        REQUIRE(results.next());
+        REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("this is varchar max"));
+        REQUIRE_THROWS_WITH(results.get<int>(0), Catch::Contains("Invalid Descriptor Index"));
+    }
 
-    // Unbind offending column only
+    // Query bound and unbound interleaved.
+    // Unbind offending column only, and access in order of increasing column number.
     {
         nanodbc::result results = nanodbc::execute(
             connection,
@@ -575,6 +621,20 @@ TEST_CASE_METHOD(
         REQUIRE(results.is_bound(0));
         REQUIRE(results.is_bound(2));
         results.unbind(2); // make c3_bound an unbound column
+        REQUIRE(results.next());
+        REQUIRE(results.get<int>(0) == 1);
+        REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("this is varchar max"));
+        REQUIRE(results.get<int>(2) == 11);
+        REQUIRE(results.get<nanodbc::string>(3) == NANODBC_TEXT("this is text"));
+    }
+
+    // Unbind all columns, and access NOT in order of increasing column number
+    {
+        nanodbc::result results = nanodbc::execute(
+            connection,
+            NANODBC_TEXT("select c1_bound, c2_unbound, c3_bound, c4_unbound from "
+                         "test_blob_retrieve_out_of_order;"));
+        results.unbind();
         REQUIRE(results.next());
         REQUIRE(results.get<int>(0) == 1);
         REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("this is varchar max"));
@@ -1260,6 +1320,59 @@ TEST_CASE_METHOD(
         ++rcnt;
     }
 }
+
+#ifdef NANODBC_SUPPORT_STRING_VIEW
+TEST_CASE_METHOD(
+    mssql_table_valued_parameter_fixture,
+    "test_table_valued_parameter_with_records_string_view",
+    "[mssql][table_valued_paramter]")
+{
+    auto conn = connect();
+
+    auto stmt = nanodbc::statement(conn);
+    stmt.prepare(NANODBC_TEXT("{ CALL tvp_test(?, ?, ?) }"));
+
+    std::vector<std::string_view> p1_col2_view;
+    for (auto& p : p1_col2_)
+    {
+        p1_col2_view.emplace_back(p);
+    }
+
+    std::vector<nanodbc::wide_string_view> p1_col3_view;
+    for (auto& p : p1_col3_)
+    {
+        p1_col3_view.emplace_back(p);
+    }
+
+    // bind param 0
+    stmt.bind(0, &p0_);
+    // bind param 1
+    auto p1 = nanodbc::table_valued_parameter(stmt, 1, num_rows_);
+    p1.bind(0, p1_col0_.data(), p1_col0_.size());
+    p1.bind(1, p1_col1_.data(), p1_col1_.size());
+    p1.bind_strings(2, p1_col2_view);
+    p1.bind_strings(3, p1_col3_view);
+    p1.bind(4, p1_col4_);
+    p1.close();
+    // bind param 2
+    stmt.bind(2, p2_.c_str());
+
+    // check results
+    auto results = stmt.execute();
+    int rcnt = 0;
+    while (results.next())
+    {
+        REQUIRE(p0_ == results.get<int>(0));
+        REQUIRE(p1_col0_[rcnt] == results.get<int>(1));
+        REQUIRE(p1_col1_[rcnt] == results.get<int64_t>(2));
+        REQUIRE(p1_col2_[rcnt] == results.get<std::string>(3));
+        REQUIRE(p1_col3_[rcnt] == results.get<nanodbc::wide_string>(4));
+        REQUIRE(p1_col4_[rcnt] == results.get<std::vector<uint8_t>>(5));
+        REQUIRE(p2_ == results.get<nanodbc::string>(6));
+        ++rcnt;
+    }
+}
+#endif
 
 TEST_CASE_METHOD(
     mssql_table_valued_parameter_fixture,
