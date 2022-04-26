@@ -10,6 +10,7 @@
   "environments": [
     { "BuildDir": "${workspaceRoot}\\_build" },
     { "InstallDir": "${workspaceRoot}\\_install" },
+    { "NANODBC_DEFAULT_D_CXX_STANDARD": "17" },
     { "NANODBC_DEFAULT_D_DISABLE_ASYNC": "OFF" },
     { "NANODBC_DEFAULT_D_DISABLE_EXAMPLES": "OFF" },
     { "NANODBC_DEFAULT_D_DISABLE_INSTALL": "OFF" },
@@ -32,6 +33,7 @@
       "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
       "variables": [
+        { "name": "CMAKE_CXX_STANDARD", "value": "${env.NANODBC_DEFAULT_D_CXX_STANDARD}" },
         { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
         { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
         { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
@@ -54,6 +56,7 @@
       "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
       "variables": [
+        { "name": "CMAKE_CXX_STANDARD", "value": "${env.NANODBC_DEFAULT_D_CXX_STANDARD}" },
         { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
         { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
         { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
@@ -76,6 +79,7 @@
       "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
       "variables": [
+        { "name": "CMAKE_CXX_STANDARD", "value": "${env.NANODBC_DEFAULT_D_CXX_STANDARD}" },
         { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
         { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
         { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
@@ -98,6 +102,7 @@
       "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
       "variables": [
+        { "name": "CMAKE_CXX_STANDARD", "value": "${env.NANODBC_DEFAULT_D_CXX_STANDARD}" },
         { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
         { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
         { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
@@ -119,6 +124,7 @@
       "cmakeCommandArgs": "",
       "ctestCommandArgs": "",
       "variables": [
+        { "name": "CMAKE_CXX_STANDARD", "value": "${env.NANODBC_DEFAULT_D_CXX_STANDARD}" },
         { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
         { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
         { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
@@ -140,6 +146,7 @@
       "cmakeCommandArgs": "",
       "ctestCommandArgs": "",
       "variables": [
+        { "name": "CMAKE_CXX_STANDARD", "value": "${env.NANODBC_DEFAULT_D_CXX_STANDARD}" },
         { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
         { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
         { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
@@ -161,6 +168,7 @@
       "cmakeCommandArgs": "",
       "ctestCommandArgs": "",
       "variables": [
+        { "name": "CMAKE_CXX_STANDARD", "value": "${env.NANODBC_DEFAULT_D_CXX_STANDARD}" },
         { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
         { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
         { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
@@ -182,6 +190,7 @@
       "cmakeCommandArgs": "",
       "ctestCommandArgs": "",
       "variables": [
+        { "name": "CMAKE_CXX_STANDARD", "value": "${env.NANODBC_DEFAULT_D_CXX_STANDARD}" },
         { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
         { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
         { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
