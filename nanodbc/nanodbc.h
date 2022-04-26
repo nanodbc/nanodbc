@@ -25,6 +25,7 @@
 /// \section license License
 /// <div class="license">
 /// Copyright (C) 2013 lexicalunit <lexicalunit@lexicalunit.com>
+/// Copyright (C) 2015-2022 Mateusz Loskot <mateusz@loskot.net>
 ///
 /// The MIT License
 ///
