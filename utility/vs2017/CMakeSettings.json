@@ -110,8 +110,8 @@
       ]
     },
     {
-      "name": "x64-Debug-VS2017",
-      "generator": "Visual Studio 15 2017 Win64",
+      "name": "x64-Debug-VS2022",
+      "generator": "Visual Studio 17 2022 Win64",
       "configurationType": "Debug",
       "buildRoot": "${env.BuildDir}\\${name}",
       "installRoot": "${env.InstallDir}\\${name}",
@@ -131,8 +131,8 @@
       ]
     },
     {
-      "name": "x64-Release-VS2017",
-      "generator": "Visual Studio 15 2017 Win64",
+      "name": "x64-Release-VS2022",
+      "generator": "Visual Studio 17 2022 Win64",
       "configurationType": "Release",
       "buildRoot": "${env.BuildDir}\\${name}",
       "installRoot": "${env.InstallDir}\\${name}",
@@ -152,8 +152,8 @@
       ]
     },
     {
-      "name": "x86-Debug-VS2017",
-      "generator": "Visual Studio 15 2017",
+      "name": "x86-Debug-VS2022",
+      "generator": "Visual Studio 17 2022",
       "configurationType": "Debug",
       "buildRoot": "${env.BuildDir}\\${name}",
       "installRoot": "${env.InstallDir}\\${name}",
@@ -173,92 +173,8 @@
       ]
     },
     {
-      "name": "x86-Release-VS2017",
-      "generator": "Visual Studio 15 2017",
-      "configurationType": "Release",
-      "buildRoot": "${env.BuildDir}\\${name}",
-      "installRoot": "${env.InstallDir}\\${name}",
-      "buildCommandArgs": "-m",
-      "cmakeCommandArgs": "",
-      "ctestCommandArgs": "",
-      "variables": [
-        { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
-        { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
-        { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
-        { "name": "NANODBC_DISABLE_LIBCXX", "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}" },
-        { "name": "NANODBC_DISABLE_TESTS", "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}" },
-        { "name": "NANODBC_ENABLE_COVERAGE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}" },
-        { "name": "NANODBC_ENABLE_BOOST", "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}" },
-        { "name": "NANODBC_ENABLE_UNICODE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}" },
-        { "name": "NANODBC_ENABLE_WORKAROUND_NODATA", "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}" }
-      ]
-    },
-    {
-      "name": "x64-Debug-VS2019",
-      "generator": "Visual Studio 16 2019 Win64",
-      "configurationType": "Debug",
-      "buildRoot": "${env.BuildDir}\\${name}",
-      "installRoot": "${env.InstallDir}\\${name}",
-      "buildCommandArgs": "-m",
-      "cmakeCommandArgs": "",
-      "ctestCommandArgs": "",
-      "variables": [
-        { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
-        { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
-        { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
-        { "name": "NANODBC_DISABLE_LIBCXX", "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}" },
-        { "name": "NANODBC_DISABLE_TESTS", "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}" },
-        { "name": "NANODBC_ENABLE_COVERAGE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}" },
-        { "name": "NANODBC_ENABLE_BOOST", "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}" },
-        { "name": "NANODBC_ENABLE_UNICODE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}" },
-        { "name": "NANODBC_ENABLE_WORKAROUND_NODATA", "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}" }
-      ]
-    },
-    {
-      "name": "x64-Release-VS2019",
-      "generator": "Visual Studio 16 2019 Win64",
-      "configurationType": "Release",
-      "buildRoot": "${env.BuildDir}\\${name}",
-      "installRoot": "${env.InstallDir}\\${name}",
-      "buildCommandArgs": "-m",
-      "cmakeCommandArgs": "",
-      "ctestCommandArgs": "",
-      "variables": [
-        { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
-        { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
-        { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
-        { "name": "NANODBC_DISABLE_LIBCXX", "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}" },
-        { "name": "NANODBC_DISABLE_TESTS", "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}" },
-        { "name": "NANODBC_ENABLE_COVERAGE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}" },
-        { "name": "NANODBC_ENABLE_BOOST", "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}" },
-        { "name": "NANODBC_ENABLE_UNICODE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}" },
-        { "name": "NANODBC_ENABLE_WORKAROUND_NODATA", "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}" }
-      ]
-    },
-    {
-      "name": "x86-Debug-VS2019",
-      "generator": "Visual Studio 16 2019",
-      "configurationType": "Debug",
-      "buildRoot": "${env.BuildDir}\\${name}",
-      "installRoot": "${env.InstallDir}\\${name}",
-      "buildCommandArgs": "-m",
-      "cmakeCommandArgs": "",
-      "ctestCommandArgs": "",
-      "variables": [
-        { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
-        { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
-        { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
-        { "name": "NANODBC_DISABLE_LIBCXX", "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}" },
-        { "name": "NANODBC_DISABLE_TESTS", "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}" },
-        { "name": "NANODBC_ENABLE_COVERAGE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}" },
-        { "name": "NANODBC_ENABLE_BOOST", "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}" },
-        { "name": "NANODBC_ENABLE_UNICODE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}" },
-        { "name": "NANODBC_ENABLE_WORKAROUND_NODATA", "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}" }
-      ]
-    },
-    {
-      "name": "x86-Release-VS2019",
-      "generator": "Visual Studio 16 2019",
+      "name": "x86-Release-VS2022",
+      "generator": "Visual Studio 17 2022",
       "configurationType": "Release",
       "buildRoot": "${env.BuildDir}\\${name}",
       "installRoot": "${env.InstallDir}\\${name}",
