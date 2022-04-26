@@ -244,6 +244,10 @@ if(BUILD_SHARED_LIBS)
     VERSION ${NANODBC_VERSION})
 endif()
 
+target_compile_definitions(nanodbc
+  PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING>)
+
 ########################################
 ## install targets
 ########################################
