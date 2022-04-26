@@ -77,11 +77,15 @@
 #define NANODBC_NANODBC_H
 
 #include <cstddef>
+#include <exception>
 #include <functional>
+#include <iterator>
 #include <list>
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 #ifndef __clang__
