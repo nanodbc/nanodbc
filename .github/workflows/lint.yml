@@ -1,3 +1,4 @@
+# GHA workflow to check well-formedness of sources, docs and auxiliary files
 name: "lint"
 
 on: [push, pull_request]

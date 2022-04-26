@@ -13,9 +13,9 @@ user information, example usage, propaganda, and detailed source level documenta
 
 ## Build Status
 
-| Branch |  Linux/OSX | Windows | Coverage | Coverity | Documentation |
-|:--- |:--- |:--- |:--- |:---|:---|
-| `master`  | none | [![master][appveyor-badge]][appveyor] | [![codecov](https://codecov.io/gh/nanodbc/nanodbc/branch/master/graph/badge.svg)](https://codecov.io/gh/nanodbc/nanodbc) | [![coverity_scan][coverity-badge]][coverity] | [![CircleCI](https://circleci.com/gh/nanodbc/nanodbc/tree/master.svg?style=shield)](https://circleci.com/gh/nanodbc/nanodbc/tree/master) |
+| Branch | Linux/OSX | Windows | Coverage | Coverity |
+| :---   |:---       |:---     |:---      |:---      |
+|`master`| none      | [![master][appveyor-badge]][appveyor] | [![codecov](https://codecov.io/gh/nanodbc/nanodbc/branch/master/graph/badge.svg)](https://codecov.io/gh/nanodbc/nanodbc) | [![coverity_scan][coverity-badge]][coverity] |
 
 > **Note:** The Coverity status uses the [coverity_scan][nanodbc-coverity] branch.
 > When `master` has had a significant amount of work pushed to it,
