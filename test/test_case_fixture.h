@@ -1451,6 +1451,40 @@ struct test_case_fixture : public base_test_fixture
         }
     }
 
+    void test_result_at_end()
+    {
+        nanodbc::connection connection = connect();
+
+        // Test empty result (current position == number of rows == 0)
+        {
+            create_table(connection, NANODBC_TEXT("test_result_at_end"), NANODBC_TEXT("(i int)"));
+            nanodbc::result results =
+                execute(connection, NANODBC_TEXT("select * from test_result_at_end;"));
+            REQUIRE(results.at_end());
+            REQUIRE(!results.next());
+            REQUIRE(results.at_end());
+        }
+        // Test non-empty result, but not moved at first
+        {
+            create_table(connection, NANODBC_TEXT("test_result_at_end"), NANODBC_TEXT("(i int)"));
+            execute(connection, NANODBC_TEXT("insert into test_result_at_end values (1);"));
+            nanodbc::result results =
+                execute(connection, NANODBC_TEXT("select * from test_result_at_end;"));
+            REQUIRE(results.at_end());
+        }
+        // Test non-empty result and moved at first
+        {
+            create_table(connection, NANODBC_TEXT("test_result_at_end"), NANODBC_TEXT("(i int)"));
+            execute(connection, NANODBC_TEXT("insert into test_result_at_end values (1);"));
+            nanodbc::result results =
+                execute(connection, NANODBC_TEXT("select * from test_result_at_end;"));
+            REQUIRE(results.next());
+            REQUIRE(!results.at_end());
+            REQUIRE(!results.next());
+            REQUIRE(results.at_end());
+        }
+    }
+
     void test_result_iterator()
     {
         nanodbc::connection connection = connect();

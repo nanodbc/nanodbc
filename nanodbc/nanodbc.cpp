@@ -3176,7 +3176,9 @@ public:
             &pos,
             SQL_IS_UINTEGER,
             0);
-        return (!success(rc) || rows() < 0 || pos - 1 > static_cast<unsigned long>(rows()));
+
+        SQLULEN const rows_count = rows();
+        return (!success(rc) || rows_count < 0 || !(pos < rows_count));
     }
 
     bool is_null(short column) const

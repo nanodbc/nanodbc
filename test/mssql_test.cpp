@@ -749,7 +749,12 @@ TEST_CASE_METHOD(mssql_fixture, "test_nullptr_nulls", "[mssql][null]")
     test_nullptr_nulls();
 }
 
-TEST_CASE_METHOD(mssql_fixture, "test_result_iterator", "[mssql][iterator]")
+TEST_CASE_METHOD(mssql_fixture, "test_result_at_end", "[mssql][result]")
+{
+    test_result_at_end();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_result_iterator", "[mssql][result][iterator]")
 {
     test_result_iterator();
 }

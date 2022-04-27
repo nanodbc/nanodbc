@@ -109,6 +109,11 @@ TEST_CASE_METHOD(odbc_fixture, "test_nullptr_nulls", "[odbc][null]")
     test_nullptr_nulls();
 }
 
+TEST_CASE_METHOD(odbc_fixture, "test_result_at_end", "[mssql][result]")
+{
+    test_result_at_end();
+}
+
 TEST_CASE_METHOD(odbc_fixture, "test_result_iterator", "[odbc][iterator]")
 {
     test_result_iterator();
