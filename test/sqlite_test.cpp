@@ -425,6 +425,11 @@ TEST_CASE_METHOD(sqlite_fixture, "test_nullptr_nulls", "[sqlite][null]")
     test_nullptr_nulls();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "test_result_at_end", "[mssql][result]")
+{
+    test_result_at_end();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_result_iterator", "[sqlite][iterator]")
 {
     test_result_iterator();

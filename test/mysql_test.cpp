@@ -216,6 +216,11 @@ TEST_CASE_METHOD(mysql_fixture, "test_nullptr_nulls", "[mysql][null]")
     test_nullptr_nulls();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_result_at_end", "[mssql][result]")
+{
+    test_result_at_end();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_result_iterator", "[mysql][iterator]")
 {
     test_result_iterator();

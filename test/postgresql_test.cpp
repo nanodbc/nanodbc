@@ -146,6 +146,11 @@ TEST_CASE_METHOD(postgresql_fixture, "test_null", "[postgresql][null]")
     test_null();
 }
 
+TEST_CASE_METHOD(postgresql_fixture, "test_result_at_end", "[mssql][result]")
+{
+    test_result_at_end();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_result_iterator", "[postgresql][iterator]")
 {
     test_result_iterator();
