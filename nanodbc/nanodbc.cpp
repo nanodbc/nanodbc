@@ -3177,8 +3177,18 @@ public:
             SQL_IS_UINTEGER,
             0);
 
+        // MSDN (https://msdn.microsoft.com/en-us/library/ms712631.aspx):
+        // If the number of the current row cannot be determined or
+        // there is no current row, the driver returns 0.
+        // Otherwise, valid row number is returned, starting at 1.
+        //
+        // NOTE: We try to address incorrect implementation in some drivers (e.g. SQLite ODBC)
+        // which instead of 0 return SQL_ROW_NUMBER_UNKNOWN(-2) .
+        if (pos == 0 || pos == static_cast<SQLULEN>(SQL_ROW_NUMBER_UNKNOWN))
+            return true;
+
         SQLULEN const rows_count = rows();
-        return (!success(rc) || rows_count < 0 || !(pos < rows_count));
+        return (!success(rc) || !(pos < rows_count));
     }
 
     bool is_null(short column) const

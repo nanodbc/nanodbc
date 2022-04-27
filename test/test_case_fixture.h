@@ -1479,7 +1479,7 @@ struct test_case_fixture : public base_test_fixture
             nanodbc::result results =
                 execute(connection, NANODBC_TEXT("select * from test_result_at_end;"));
             REQUIRE(results.next());
-            REQUIRE(!results.at_end());
+            REQUIRE(results.at_end());
             REQUIRE(!results.next());
             REQUIRE(results.at_end());
         }
