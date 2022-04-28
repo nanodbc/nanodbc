@@ -3378,16 +3378,24 @@ public:
         throw_if_column_is_out_of_range(column);
         if (is_null(column))
         {
+            NANODBC_ASSERT(is_bound(column));
             result = fallback;
             return;
         }
         get_ref_impl<T>(column, result);
+
+        // for unbound columns, null indicator is determined by SQLGetData call
+        if (is_null(column))
+        {
+            NANODBC_ASSERT(!is_bound(column));
+            result = fallback;
+        }
     }
 
     template <class T>
     void get_ref(string const& column_name, T& result) const
     {
-        const short column = this->column(column_name);
+        short const column = this->column(column_name);
         if (is_null(column))
             throw null_access_error();
         get_ref_impl<T>(column, result);
@@ -3396,13 +3404,21 @@ public:
     template <class T>
     void get_ref(string const& column_name, T const& fallback, T& result) const
     {
-        const short column = this->column(column_name);
+        short const column = this->column(column_name);
         if (is_null(column))
         {
+            NANODBC_ASSERT(is_bound(column));
             result = fallback;
             return;
         }
         get_ref_impl<T>(column, result);
+
+        // for unbound columns, null indicator is determined by SQLGetData call
+        if (is_null(column))
+        {
+            NANODBC_ASSERT(!is_bound(column));
+            result = fallback;
+        }
     }
 
     template <class T>
@@ -4206,9 +4222,10 @@ std::unique_ptr<T, std::function<void(T*)>> result::result_impl::ensure_pdata(sh
 
     if (ValueLenOrInd == SQL_NULL_DATA)
         col.cbdata_[static_cast<size_t>(rowset_position_)] = (SQLINTEGER)SQL_NULL_DATA;
+    else
+        NANODBC_ASSERT(ValueLenOrInd == (SQLLEN)buffer_size);
     if (!success(rc))
         NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
-    NANODBC_ASSERT(ValueLenOrInd == (SQLLEN)buffer_size);
 
     // Return a traditional unique_ptr since we just allocated this buffer, and
     // we most certainly want this memory returned to the heap when the result

@@ -146,12 +146,20 @@ TEST_CASE_METHOD(postgresql_fixture, "test_null", "[postgresql][null]")
     test_null();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "test_result_at_end", "[mssql][result]")
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_null_with_bound_columns_unbound",
+    "[postgresql][null][unbound]")
+{
+    test_null_with_bound_columns_unbound();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "test_result_at_end", "[postgresql][result]")
 {
     test_result_at_end();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "test_result_iterator", "[postgresql][iterator]")
+TEST_CASE_METHOD(postgresql_fixture, "test_result_iterator", "[postgresql][result][iterator]")
 {
     test_result_iterator();
 }

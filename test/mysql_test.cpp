@@ -216,7 +216,12 @@ TEST_CASE_METHOD(mysql_fixture, "test_nullptr_nulls", "[mysql][null]")
     test_nullptr_nulls();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "test_result_at_end", "[mssql][result]")
+TEST_CASE_METHOD(mysql_fixture, "test_null_with_bound_columns_unbound", "[mysql][null][unbound]")
+{
+    test_null_with_bound_columns_unbound();
+}
+
+TEST_CASE_METHOD(mysql_fixture, "test_result_at_end", "[mysql][result][result]")
 {
     test_result_at_end();
 }
