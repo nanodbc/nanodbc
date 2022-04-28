@@ -1481,11 +1481,17 @@ struct test_case_fixture : public base_test_fixture
 
         REQUIRE(results.next());
 
-        REQUIRE(!results.is_null(0)); // false as undetermined until SQLGetData is called
+        if (vendor_ == database_vendor::mysql)
+            REQUIRE(results.is_null(0)); // MySQL: Bug or non-standard behaviour? SQLBindCol sets the indicator to SQL_NULL_DATA
+        else
+            REQUIRE(!results.is_null(0)); // false as undetermined until SQLGetData is called
         REQUIRE(results.get<int>(0, -1) == -1);
         REQUIRE(results.is_null(0)); // determined
 
-        REQUIRE(!results.is_null(1)); // false as undetermined until SQLGetData is called
+        if (vendor_ == database_vendor::mysql)
+            REQUIRE(results.is_null(1)); // MySQL: Bug or non-standard behaviour? SQLBindCol sets the indicator to SQL_NULL_DATA
+        else
+            REQUIRE(!results.is_null(1)); // false as undetermined until SQLGetData is called
         REQUIRE(results.get<double>(1, 1.23) >= 1.23);
         REQUIRE(results.is_null(1)); // determined
     }
