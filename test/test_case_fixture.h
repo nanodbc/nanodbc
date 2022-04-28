@@ -1392,14 +1392,20 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(results.next());
         REQUIRE(results.is_null(0));
         REQUIRE(results.is_null(1));
+        REQUIRE(results.get<int>(0, -1) == -1);
+        REQUIRE(results.get<int>(1, -2) == -2);
 
         REQUIRE(results.next());
         REQUIRE(results.is_null(0));
         REQUIRE(results.is_null(1));
+        REQUIRE(results.get<int>(0, -3) == -3);
+        REQUIRE(results.get<int>(1, -4) == -4);
 
         REQUIRE(results.next());
         REQUIRE(results.is_null(0));
         REQUIRE(results.is_null(1));
+        REQUIRE(results.get<int>(0, -5) == -5);
+        REQUIRE(results.get<int>(1, -6) == -6);
 
         REQUIRE(!results.next());
     }
@@ -1449,6 +1455,45 @@ struct test_case_fixture : public base_test_fixture
 
             REQUIRE(results.get<int>(0) == i);
         }
+    }
+
+    void test_null_with_bound_columns_unbound()
+    {
+        nanodbc::connection conn = connect();
+        create_table(
+            conn,
+            NANODBC_TEXT("test_null_with_bound_columns_unbound"),
+            NANODBC_TEXT("(a int, b float)"));
+
+        nanodbc::statement statement(conn);
+        prepare(
+            statement,
+            NANODBC_TEXT("insert into test_null_with_bound_columns_unbound (a, b) values (?, ?);"));
+        REQUIRE(statement.parameters() == 2);
+        statement.bind_null(0);
+        statement.bind_null(1);
+        execute(statement, 2);
+
+        nanodbc::result results = execute(
+            conn,
+            NANODBC_TEXT("select a, b from test_null_with_bound_columns_unbound order by a;"));
+        results.unbind();
+
+        REQUIRE(results.next());
+
+        if (vendor_ == database_vendor::mysql)
+            REQUIRE(results.is_null(0)); // MySQL: Bug or non-standard behaviour? SQLBindCol sets the indicator to SQL_NULL_DATA
+        else
+            REQUIRE(!results.is_null(0)); // false as undetermined until SQLGetData is called
+        REQUIRE(results.get<int>(0, -1) == -1);
+        REQUIRE(results.is_null(0)); // determined
+
+        if (vendor_ == database_vendor::mysql)
+            REQUIRE(results.is_null(1)); // MySQL: Bug or non-standard behaviour? SQLBindCol sets the indicator to SQL_NULL_DATA
+        else
+            REQUIRE(!results.is_null(1)); // false as undetermined until SQLGetData is called
+        REQUIRE(results.get<double>(1, 1.23) >= 1.23);
+        REQUIRE(results.is_null(1)); // determined
     }
 
     void test_result_at_end()

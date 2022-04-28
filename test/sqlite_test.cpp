@@ -425,12 +425,17 @@ TEST_CASE_METHOD(sqlite_fixture, "test_nullptr_nulls", "[sqlite][null]")
     test_nullptr_nulls();
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "test_result_at_end", "[mssql][result]")
+TEST_CASE_METHOD(sqlite_fixture, "test_null_with_bound_columns_unbound", "[sqlite][null][unbound]")
+{
+    test_null_with_bound_columns_unbound();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_result_at_end", "[sqlite][result]")
 {
     test_result_at_end();
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "test_result_iterator", "[sqlite][iterator]")
+TEST_CASE_METHOD(sqlite_fixture, "test_result_iterator", "[sqlite][result][iterator]")
 {
     test_result_iterator();
 }

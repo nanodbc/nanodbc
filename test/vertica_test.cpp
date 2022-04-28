@@ -124,12 +124,20 @@ TEST_CASE_METHOD(vertica_fixture, "test_null", "[vertica][null]")
     test_null();
 }
 
-TEST_CASE_METHOD(vertica_fixture, "test_result_at_end", "[mssql][result]")
+TEST_CASE_METHOD(
+    vertica_fixture,
+    "test_null_with_bound_columns_unbound",
+    "[vertica][null][unbound]")
+{
+    test_null_with_bound_columns_unbound();
+}
+
+TEST_CASE_METHOD(vertica_fixture, "test_result_at_end", "[vertica][result]")
 {
     test_result_at_end();
 }
 
-TEST_CASE_METHOD(vertica_fixture, "test_result_iterator", "[vertica][iterator]")
+TEST_CASE_METHOD(vertica_fixture, "test_result_iterator", "[vertica][result][iterator]")
 {
     test_result_iterator();
 }
