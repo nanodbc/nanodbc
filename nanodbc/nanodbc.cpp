@@ -4240,7 +4240,7 @@ inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant
         std::wstring v;
         get_ref_impl(column, v);
         DECIMAL d;
-        if (FAILED(::VarDecFromStr(v.c_str(), LOCALE_INVARIANT, 0, &d)))
+        if (FAILED(::VarDecFromStr(static_cast <LPCOLESTR>(v.c_str()), LOCALE_INVARIANT, 0, &d)))
             throw type_incompatible_error();
         result = d;
         break;
