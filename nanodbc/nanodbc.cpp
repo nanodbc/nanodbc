@@ -61,6 +61,18 @@
 #include <sql.h>
 #include <sqlext.h>
 
+// _variant_t support on Windows platform only
+#ifdef _WIN32
+#include <comutil.h>
+#if defined(_MSC_VER)
+#if defined(_DEBUG)
+#pragma comment(lib, "comsuppwd.lib")
+#else
+#pragma comment(lib, "comsuppw.lib")
+#endif
+#endif
+#endif
+
 // Driver specific SQL data type defines.
 // Microsoft has -150 thru -199 reserved for Microsoft SQL Server Native Client driver usage.
 // Originally, defined in sqlncli.h (old SQL Server Native Client driver)
@@ -4126,6 +4138,183 @@ inline void result::result_impl::get_ref_impl<std::vector<std::uint8_t>>(
     throw type_incompatible_error();
 }
 
+#if defined(_WIN32)
+template <>
+inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant_t& result) const
+{
+    result.Clear(); // VT_EMPTY, not SQL-like VT_NULL
+    bound_column& col = bound_columns_[column];
+    auto c_type = col.ctype_;
+
+    // SQL type to C type mapping could have been simplified by auto-binding
+    // FIXME: Correct the auto_bind_columns to not to 'flatten' types
+    auto const sql_type = col.sqltype_;
+    switch (sql_type)
+    {
+    case SQL_BIT:
+        c_type = SQL_C_BIT;
+        break;
+    case SQL_DECIMAL:
+    case SQL_NUMERIC:
+        c_type = SQL_C_NUMERIC;
+        break;
+    }
+
+    switch (c_type)
+    {
+    case SQL_C_BINARY:
+    {
+        // TODO: Optimise with bespoke implementation of get_ref_impl<SAFEARRAY>
+        std::vector<std::uint8_t> v;
+        get_ref_impl(column, v);
+        ::SAFEARRAYBOUND bounds[1] = {static_cast<unsigned long>(v.size()), 0};
+        result.vt = VT_ARRAY | VT_UI1;
+        result.parray = ::SafeArrayCreate(VT_UI1, 1, bounds);
+        if (!v.empty())
+        {
+            void* data = nullptr;
+            ::SafeArrayAccessData(result.parray, &data);
+            std::memcpy(data, &v[0], v.size());
+            ::SafeArrayUnaccessData(result.parray);
+        }
+        break;
+    }
+    case SQL_C_BIT:
+    {
+        auto const v = *(ensure_pdata<short>(column));
+        result = _variant_t(!!v ? VARIANT_TRUE : VARIANT_FALSE, VT_BOOL);
+        break;
+    }
+    case SQL_C_CHAR:
+    {
+        std::string v;
+        get_ref_impl(column, v);
+        result = v.c_str();
+        break;
+    }
+    case SQL_C_WCHAR:
+    {
+        std::wstring v;
+        get_ref_impl(column, v);
+        result = v.c_str();
+        break;
+    }
+    case SQL_C_TINYINT:
+    case SQL_C_STINYINT:
+        result = (char)*(ensure_pdata<short>(column));
+        break;
+    case SQL_C_UTINYINT:
+        result = (unsigned char)*(ensure_pdata<unsigned short>(column));
+        break;
+    case SQL_C_SHORT:
+    case SQL_C_SSHORT:
+        result = *(ensure_pdata<short>(column));
+        break;
+    case SQL_C_USHORT:
+        result = *(ensure_pdata<unsigned short>(column));
+        break;
+    case SQL_C_LONG:
+    case SQL_C_SLONG:
+        result = *(ensure_pdata<int32_t>(column));
+        break;
+    case SQL_C_ULONG:
+        result = *(ensure_pdata<uint32_t>(column));
+        break;
+    case SQL_C_SBIGINT:
+        result = *(ensure_pdata<int64_t>(column));
+        break;
+    case SQL_C_UBIGINT:
+        result = *(ensure_pdata<uint64_t>(column));
+        break;
+    case SQL_C_DOUBLE:
+        result = *(ensure_pdata<double>(column));
+        break;
+    case SQL_C_FLOAT:
+        result = *(ensure_pdata<float>(column));
+        break;
+    case SQL_C_NUMERIC:
+    {
+        // FIXME: Likely, this is never called as SQL_DECIMAL is auto-bound as SQL_C_CHAR
+        // TODO: Review this for SQL Server (and other databases?) types money, smallmoney as VT_CY
+        std::wstring v;
+        get_ref_impl(column, v);
+        DECIMAL d;
+        if (FAILED(::VarDecFromStr(v.c_str(), LOCALE_INVARIANT, 0, &d)))
+            throw type_incompatible_error();
+        result = d;
+        break;
+    }
+    case SQL_C_DATE:
+    case SQL_C_TYPE_DATE:
+    {
+        nanodbc::date v;
+        get_ref_impl(column, v);
+        ::SYSTEMTIME st{
+            static_cast<WORD>(v.year),
+            static_cast<WORD>(v.month),
+            0,
+            static_cast<WORD>(v.day),
+            0,
+            0,
+            0,
+            0};
+        ::DATE date{0};
+        if (!::SystemTimeToVariantTime(&st, &date))
+            throw type_incompatible_error();
+        result = _variant_t(date, VT_DATE);
+        break;
+    }
+    case SQL_C_TIME:
+    case SQL_C_TYPE_TIME:
+    {
+        nanodbc::time v;
+        get_ref_impl(column, v);
+        ::SYSTEMTIME st{
+            0,
+            0,
+            0,
+            0,
+            static_cast<WORD>(v.hour),
+            static_cast<WORD>(v.min),
+            static_cast<WORD>(v.sec),
+            0};
+        ::DATE date{0};
+        if (!::SystemTimeToVariantTime(&st, &date))
+            throw type_incompatible_error();
+        result = _variant_t(date, VT_DATE);
+        break;
+    }
+    case SQL_C_TIMESTAMP:
+    case SQL_C_TYPE_TIMESTAMP:
+    {
+        nanodbc::timestamp v;
+        get_ref_impl(column, v);
+        SYSTEMTIME st{
+            static_cast<WORD>(v.year),
+            static_cast<WORD>(v.month),
+            0,
+            static_cast<WORD>(v.day),
+            static_cast<WORD>(v.hour),
+            static_cast<WORD>(v.min),
+            static_cast<WORD>(v.sec),
+            static_cast<unsigned short>(v.fract)};
+        DATE date;
+        if (!::SystemTimeToVariantTime(&st, &date))
+            throw type_incompatible_error();
+        result = _variant_t(date, VT_DATE);
+        break;
+    }
+    default:
+        std::wstring v;
+        get_ref_impl(column, v);
+        result = v.c_str();
+    }
+
+    if (is_null(column))
+        result.ChangeType(VT_NULL);
+}
+#endif
+
 namespace detail
 {
 auto from_string(std::string const& s, float)
@@ -4158,6 +4347,14 @@ auto from_string(std::string const& s, R)
         throw std::range_error("from_string argument out of range");
     return static_cast<R>(integer);
 }
+
+#if defined(_WIN32)
+auto from_string(std::string const& s, _variant_t)
+{
+    return s.c_str();
+}
+#endif
+
 } // namespace detail
 
 template <typename R>
@@ -6296,6 +6493,9 @@ template void result::get_ref(short, date&) const;
 template void result::get_ref(short, time&) const;
 template void result::get_ref(short, timestamp&) const;
 template void result::get_ref(short, std::vector<std::uint8_t>&) const;
+#if defined(_WIN32)
+template void result::get_ref(short, _variant_t&) const;
+#endif
 
 template void result::get_ref(string const&, std::string::value_type&) const;
 template void result::get_ref(string const&, wide_string::value_type&) const;
@@ -6314,6 +6514,9 @@ template void result::get_ref(string const&, date&) const;
 template void result::get_ref(string const&, time&) const;
 template void result::get_ref(string const&, timestamp&) const;
 template void result::get_ref(string const&, std::vector<std::uint8_t>&) const;
+#if defined(_WIN32)
+template void result::get_ref(string const&, _variant_t&) const;
+#endif
 
 // The following are the only supported instantiations of result::get_ref() with fallback.
 template void
@@ -6336,6 +6539,9 @@ template void result::get_ref(short, const time&, time&) const;
 template void result::get_ref(short, const timestamp&, timestamp&) const;
 template void
 result::get_ref(short, const std::vector<std::uint8_t>&, std::vector<std::uint8_t>&) const;
+#if defined(_WIN32)
+template void result::get_ref(short, _variant_t const&, _variant_t&) const;
+#endif
 
 template void
 result::get_ref(string const&, const std::string::value_type&, std::string::value_type&) const;
@@ -6359,6 +6565,9 @@ template void result::get_ref(string const&, const time&, time&) const;
 template void result::get_ref(string const&, const timestamp&, timestamp&) const;
 template void
 result::get_ref(string const&, const std::vector<std::uint8_t>&, std::vector<std::uint8_t>&) const;
+#if defined(_WIN32)
+template void result::get_ref(string const&, _variant_t const&, _variant_t&) const;
+#endif
 
 // The following are the only supported instantiations of result::get().
 template std::string::value_type result::get(short) const;
@@ -6379,6 +6588,9 @@ template date result::get(short) const;
 template time result::get(short) const;
 template timestamp result::get(short) const;
 template std::vector<std::uint8_t> result::get(short) const;
+#if defined(_WIN32)
+template _variant_t result::get(short) const;
+#endif
 
 template std::string::value_type result::get(string const&) const;
 template wide_string::value_type result::get(string const&) const;
@@ -6398,6 +6610,9 @@ template date result::get(string const&) const;
 template time result::get(string const&) const;
 template timestamp result::get(string const&) const;
 template std::vector<std::uint8_t> result::get(string const&) const;
+#if defined(_WIN32)
+template _variant_t result::get(string const&) const;
+#endif
 
 // The following are the only supported instantiations of result::get() with fallback.
 template std::string::value_type result::get(short, const std::string::value_type&) const;
@@ -6418,6 +6633,9 @@ template date result::get(short, const date&) const;
 template time result::get(short, const time&) const;
 template timestamp result::get(short, const timestamp&) const;
 template std::vector<std::uint8_t> result::get(short, const std::vector<std::uint8_t>&) const;
+#if defined(_WIN32)
+template _variant_t result::get(short, _variant_t const&) const;
+#endif
 
 template std::string::value_type result::get(string const&, const std::string::value_type&) const;
 template wide_string::value_type result::get(string const&, const wide_string::value_type&) const;
@@ -6438,6 +6656,9 @@ template time result::get(string const&, const time&) const;
 template timestamp result::get(string const&, const timestamp&) const;
 template std::vector<std::uint8_t>
 result::get(string const&, const std::vector<std::uint8_t>&) const;
+#if defined(_WIN32)
+template _variant_t result::get(string const&, _variant_t const&) const;
+#endif
 
 } // namespace nanodbc
 #endif // NANODBC_DISABLE_NANODBC_NAMESPACE_FOR_INTERNAL_TESTS
