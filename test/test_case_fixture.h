@@ -2172,16 +2172,7 @@ struct test_case_fixture : public base_test_fixture
         {
             auto rs = execute(cn, NANODBC_TEXT("select NULL as n;"));
             rs.next();
-            // TODO: Confirm which driver one is buggy or displays non-standard behaviour
-            if (vendor_ == database_vendor ::postgresql)
-            {
-                auto v = rs.get<_variant_t>(0);
-                REQUIRE(v == v_null);
-            }
-            else
-            {
-                REQUIRE_THROWS_AS(rs.get<_variant_t>(0), nanodbc::null_access_error);
-            }
+            REQUIRE_THROWS_AS(rs.get<_variant_t>(0), nanodbc::null_access_error);
         }
         {
             auto rs = execute(cn, NANODBC_TEXT("select NULL as n;"));
