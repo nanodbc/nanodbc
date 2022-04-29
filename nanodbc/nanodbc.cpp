@@ -3390,7 +3390,8 @@ public:
         throw_if_column_is_out_of_range(column);
         if (is_null(column))
         {
-            NANODBC_ASSERT(is_bound(column));
+            // MySQL: Bug or non-standard behaviour? SQLBindCol sets the indicator to SQL_NULL_DATA
+            // NANODBC_ASSERT(is_bound(column));
             result = fallback;
             return;
         }
