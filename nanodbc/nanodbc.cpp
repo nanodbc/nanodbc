@@ -1862,7 +1862,7 @@ public:
             SQLDescribeParam,
             rc,
             stmt_,
-            param_index + 1,
+            static_cast<SQLUSMALLINT>(param_index + 1),
             &data_type,
             &parameter_size,
             0,
@@ -1917,7 +1917,7 @@ public:
                 SQLDescribeParam,
                 rc,
                 stmt_,
-                param_index + 1,
+                static_cast<SQLUSMALLINT>(param_index + 1),
                 &param.type_,
                 &param.size_,
                 &param.scale_,
@@ -2394,7 +2394,7 @@ public:
             SQLBindParameter,
             rc,
             hstmt,
-            param_index + 1,
+            static_cast<SQLUSMALLINT>(param_index + 1),
             SQL_PARAM_INPUT,
             SQL_C_DEFAULT,
             SQL_SS_TABLE,
@@ -3287,7 +3287,7 @@ public:
             NANODBC_FUNC(SQLColAttribute),
             rc,
             stmt_.native_statement_handle(),
-            column + 1,
+            static_cast<SQLUSMALLINT>(column + 1),
             SQL_DESC_TYPE_NAME,
             type_name,
             sizeof(type_name),
@@ -3561,7 +3561,7 @@ private:
                 NANODBC_FUNC(SQLDescribeCol),
                 rc,
                 stmt_.native_statement_handle(),
-                i + 1,
+                static_cast<SQLUSMALLINT>(i + 1),
                 (NANODBC_SQLCHAR*)column_name,
                 sizeof(column_name) / sizeof(NANODBC_SQLCHAR),
                 &len,
@@ -3714,7 +3714,7 @@ private:
             SQLBindCol,
             rc,
             stmt_.native_statement_handle(),
-            column.column_ + 1, // ColumnNumber
+            static_cast<SQLUSMALLINT>(column.column_ + 1), // ColumnNumber
             column.ctype_,      // TargetType
             column.pdata_,      // TargetValuePtr
             column.clen_,       // BufferLength
@@ -3733,7 +3733,7 @@ private:
             SQLBindCol,
             rc,
             stmt_.native_statement_handle(),
-            column.column_ + 1,
+            static_cast<SQLUSMALLINT>(column.column_ + 1), // ColumnNumber
             column.ctype_,
             0,
             0,
@@ -3853,7 +3853,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
                     SQLGetData,
                     rc,
                     handle,          // StatementHandle
-                    column + 1,      // Col_or_Param_Num
+                    static_cast<SQLUSMALLINT>(column + 1), // Col_or_Param_Num
                     col.ctype_,      // TargetType
                     buffer,          // TargetValuePtr
                     buffer_size,     // BufferLength
@@ -3910,7 +3910,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
                     SQLGetData,
                     rc,
                     handle,          // StatementHandle
-                    column + 1,      // Col_or_Param_Num
+                    static_cast<SQLUSMALLINT>(column + 1), // Col_or_Param_Num
                     col.ctype_,      // TargetType
                     buffer,          // TargetValuePtr
                     buffer_size,     // BufferLength
@@ -4006,7 +4006,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
     case SQL_C_DATE:
     {
         const date d = *ensure_pdata<date>(column);
-        std::tm st = {0};
+        std::tm st ;
         st.tm_year = d.year - 1900;
         st.tm_mon = d.month - 1;
         st.tm_mday = d.day;
@@ -4022,7 +4022,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
     case SQL_C_TIME:
     {
         const time t = *ensure_pdata<time>(column);
-        std::tm st = {0};
+        std::tm st ;
         st.tm_hour = t.hour;
         st.tm_min = t.min;
         st.tm_sec = t.sec;
@@ -4038,7 +4038,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
     case SQL_C_TIMESTAMP:
     {
         const timestamp stamp = *ensure_pdata<timestamp>(column);
-        std::tm st = {0};
+        std::tm st ;
         st.tm_year = stamp.year - 1900;
         st.tm_mon = stamp.month - 1;
         st.tm_mday = stamp.day;
@@ -4092,7 +4092,7 @@ inline void result::result_impl::get_ref_impl<std::vector<std::uint8_t>>(
                     SQLGetData,
                     rc,
                     handle,          // StatementHandle
-                    column + 1,      // Col_or_Param_Num
+                    static_cast<SQLUSMALLINT>(column + 1), // Col_or_Param_Num
                     SQL_C_BINARY,    // TargetType
                     buffer,          // TargetValuePtr
                     buffer_size,     // BufferLength
@@ -4214,7 +4214,7 @@ std::unique_ptr<T, std::function<void(T*)>> result::result_impl::ensure_pdata(sh
         SQLGetData,
         rc,
         handle,              // StatementHandle
-        column + 1,          // Col_or_Param_Num
+        static_cast<SQLUSMALLINT>(column + 1), // Col_or_Param_Num
         sql_ctype<T>::value, // TargetType
         buffer,              // TargetValuePtr
         buffer_size,         // BufferLength
