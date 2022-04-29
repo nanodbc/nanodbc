@@ -32,7 +32,7 @@ notifications:
 environment:
   matrix:
     - DB: MSSQL2016
-      G: "Visual Studio 15 2017 Win64"
+      G: "Visual Studio 16 2017 Win64"
     - DB: MSSQL2016
       G: "Visual Studio 15 2017 Win64"
       ENABLE_UNICODE: ON
@@ -91,6 +91,9 @@ matrix:
 
 cache:
   - c:\downloads\
+
+services:
+  - postgresql13
 
 init:
   # For MinGW make to work correctly sh.exe must NOT be in your path.
@@ -175,10 +178,9 @@ before_test:
           $cmd = '"C:\Program Files\MySQL\MySQL Server 5.7\bin\mysql" -e "create database nanodbc_test;" --user=root'
           iex "& $cmd"
         } elseif ($env:DB -Match "PostgreSQL") {
-          Start-Service postgresql-x64-9.5
           $env:PGUSER="postgres"
           $env:PGPASSWORD="Password12!"
-          $cmd = '"C:\Program Files\PostgreSQL\9.6\bin\createdb" nanodbc_test'
+          $cmd = '"C:\Program Files\PostgreSQL\13\bin\createdb" nanodbc_test'
           iex "& $cmd"
         }
       }
