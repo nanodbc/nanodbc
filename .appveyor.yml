@@ -39,13 +39,8 @@ environment:
 
     - DB: MSSQL2014
       G: "Visual Studio 15 2017 Win64"
-    - DB: MSSQL2014
-      G: "Visual Studio 15 2017 Win64"
       ENABLE_UNICODE: ON
 
-    - DB: MSSQL2012
-      G: "Visual Studio 14 2015 Win64"
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
     - DB: MSSQL2012
       G: "Visual Studio 14 2015 Win64"
       ENABLE_UNICODE: ON
