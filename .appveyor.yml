@@ -93,7 +93,7 @@ cache:
   - c:\downloads\
 
 services:
-  - postgresql13
+  - postgresql12
 
 init:
   # For MinGW make to work correctly sh.exe must NOT be in your path.
@@ -180,7 +180,7 @@ before_test:
         } elseif ($env:DB -Match "PostgreSQL") {
           $env:PGUSER="postgres"
           $env:PGPASSWORD="Password12!"
-          $cmd = '"C:\Program Files\PostgreSQL\13\bin\createdb" nanodbc_test'
+          $cmd = '"C:\Program Files\PostgreSQL\12\bin\createdb" nanodbc_test'
           iex "& $cmd"
         }
       }
