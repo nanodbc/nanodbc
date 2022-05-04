@@ -93,7 +93,7 @@ cache:
   - c:\downloads\
 
 services:
-  - postgresql
+  - postgresql13
 
 init:
   # For MinGW make to work correctly sh.exe must NOT be in your path.
