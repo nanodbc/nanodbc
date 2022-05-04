@@ -59,6 +59,7 @@ environment:
 
     - DB: PostgreSQL
       G: "Visual Studio 15 2017 Win64"
+      ENABLE_UNICODE: ON
 
     - DB: SQLite
       G: "Visual Studio 15 2017 Win64"
@@ -216,7 +217,7 @@ test_script:
           $env:NANODBC_TEST_CONNSTR_MYSQL="Driver={${test_driver}};Server=127.0.0.1;Database=nanodbc_test;User=root;Password=Password12!;big_packets=1;"
           $test_name = "mysql_test"
         } elseif ($env:DB -Match "PostgreSQL") {
-          $test_driver = "PostgreSQL ANSI(x64)"
+          $test_driver = "PostgreSQL UNICODE(x64)"
           $env:NANODBC_TEST_CONNSTR_PGSQL="Driver={${test_driver}};Server=127.0.0.1;Port=5432;Database=nanodbc_test;Uid=postgres;Pwd=Password12!;"
           $test_name = "postgresql_test"
         } elseif ($env:DB -Match "SQLite") {
