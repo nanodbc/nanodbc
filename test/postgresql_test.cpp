@@ -57,8 +57,12 @@ TEST_CASE_METHOD(postgresql_fixture, "test_catalog_list_schemas", "[postgresql][
     test_catalog_list_schemas();
 }
 
-// TODO: Check why this tests is failing against 12.x-14.x on AppVeyor CI,
-//       but works against 9.x on AppVeyor and against 12.x-14.x locally.
+// TODO: Check why this tests is failing against 12.x-14.x on AppVeyor CI:
+//      C:\projects\nanodbc\test\postgresql_test.cpp(60): FAILED:
+//      C :\projects\nanodbc\nanodbc\nanodbc.cpp: 5903: HY000: Error while executing the query
+// but works against 9.x on AppVeyor and against 12.x-14.x locally.
+// Could be due to psqlODBC version?
+//
 //TEST_CASE_METHOD(postgresql_fixture, "test_catalog_columns", "[postgresql][catalog][columns]")
 //{
 //    test_catalog_columns();
