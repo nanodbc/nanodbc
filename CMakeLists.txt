@@ -221,10 +221,6 @@ else()
   message(STATUS "nanodbc build: Enable nanodbc target - STATIC")
 endif()
 
-if(WIN32 AND NOT MINGW AND BUILD_SHARED_LIBS)
-  message(FATAL_ERROR "Building shared libraries on Windows needs MinGW")
-endif()
-
 add_library(nanodbc nanodbc/nanodbc.cpp nanodbc/nanodbc.h)
 
 target_link_libraries(nanodbc ${Boost_LIBRARIES} ${ODBC_LIBRARIES})
@@ -242,6 +238,8 @@ endif()
 if(BUILD_SHARED_LIBS)
   set_target_properties(nanodbc PROPERTIES
     VERSION ${NANODBC_VERSION})
+    # export all symobols from windows DLL
+    set_target_properties(nanodbc PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
 endif()
 
 target_compile_definitions(nanodbc
