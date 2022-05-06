@@ -318,6 +318,18 @@ TEST_CASE_METHOD(postgresql_fixture, "test_transaction", "[postgresql][transacti
     test_transaction();
 }
 
+#if defined(_MSC_VER)
+TEST_CASE_METHOD(postgresql_fixture, "test_win32_variant", "[postgresql][variant][windows]")
+{
+    test_win32_variant();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "test_win32_variant_null", "[postgresql][variant][windows]")
+{
+    test_win32_variant_null();
+}
+#endif // _MSC_VER
+
 TEST_CASE_METHOD(postgresql_fixture, "test_while_not_end_iteration", "[postgresql][looping]")
 {
     test_while_not_end_iteration();

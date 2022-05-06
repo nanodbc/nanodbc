@@ -266,6 +266,18 @@ TEST_CASE_METHOD(mysql_fixture, "test_transaction", "[mysql][transaction]")
     test_transaction();
 }
 
+#if defined(_MSC_VER)
+TEST_CASE_METHOD(mysql_fixture, "test_win32_variant", "[mysql][variant][windows]")
+{
+    test_win32_variant();
+}
+
+TEST_CASE_METHOD(mysql_fixture, "test_win32_variant_null", "[mysql][variant][windows]")
+{
+    test_win32_variant_null();
+}
+#endif // _MSC_VER
+
 TEST_CASE_METHOD(mysql_fixture, "test_while_not_end_iteration", "[mysql][looping]")
 {
     test_while_not_end_iteration();
