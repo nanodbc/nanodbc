@@ -465,7 +465,7 @@ TEST_CASE_METHOD(sqlite_fixture, "test_batch_binary", "[sqlite][binary]")
     test_batch_binary();
 }
 
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 TEST_CASE_METHOD(sqlite_fixture, "test_win32_variant", "[sqlite][variant][windows]")
 {
     test_win32_variant();
@@ -475,7 +475,7 @@ TEST_CASE_METHOD(sqlite_fixture, "test_win32_variant_null", "[sqlite][variant][w
 {
     test_win32_variant_null();
 }
-#endif // _WIN32
+#endif // _MSC_VER
 
 TEST_CASE_METHOD(sqlite_fixture, "test_time", "[sqlite][time]")
 {

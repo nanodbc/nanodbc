@@ -4139,7 +4139,7 @@ inline void result::result_impl::get_ref_impl<std::vector<std::uint8_t>>(
     throw type_incompatible_error();
 }
 
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 template <>
 inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant_t& result) const
 {
@@ -4355,7 +4355,7 @@ auto from_string(std::string const& s, R)
     return static_cast<R>(integer);
 }
 
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 auto from_string(std::string const& s, _variant_t)
 {
     return s.c_str();
@@ -6500,7 +6500,7 @@ template void result::get_ref(short, date&) const;
 template void result::get_ref(short, time&) const;
 template void result::get_ref(short, timestamp&) const;
 template void result::get_ref(short, std::vector<std::uint8_t>&) const;
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 template void result::get_ref(short, _variant_t&) const;
 #endif
 
@@ -6521,7 +6521,7 @@ template void result::get_ref(string const&, date&) const;
 template void result::get_ref(string const&, time&) const;
 template void result::get_ref(string const&, timestamp&) const;
 template void result::get_ref(string const&, std::vector<std::uint8_t>&) const;
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 template void result::get_ref(string const&, _variant_t&) const;
 #endif
 
@@ -6546,7 +6546,7 @@ template void result::get_ref(short, const time&, time&) const;
 template void result::get_ref(short, const timestamp&, timestamp&) const;
 template void
 result::get_ref(short, const std::vector<std::uint8_t>&, std::vector<std::uint8_t>&) const;
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 template void result::get_ref(short, _variant_t const&, _variant_t&) const;
 #endif
 
@@ -6572,7 +6572,7 @@ template void result::get_ref(string const&, const time&, time&) const;
 template void result::get_ref(string const&, const timestamp&, timestamp&) const;
 template void
 result::get_ref(string const&, const std::vector<std::uint8_t>&, std::vector<std::uint8_t>&) const;
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 template void result::get_ref(string const&, _variant_t const&, _variant_t&) const;
 #endif
 
@@ -6595,7 +6595,7 @@ template date result::get(short) const;
 template time result::get(short) const;
 template timestamp result::get(short) const;
 template std::vector<std::uint8_t> result::get(short) const;
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 template _variant_t result::get(short) const;
 #endif
 
@@ -6617,7 +6617,7 @@ template date result::get(string const&) const;
 template time result::get(string const&) const;
 template timestamp result::get(string const&) const;
 template std::vector<std::uint8_t> result::get(string const&) const;
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 template _variant_t result::get(string const&) const;
 #endif
 
@@ -6640,7 +6640,7 @@ template date result::get(short, const date&) const;
 template time result::get(short, const time&) const;
 template timestamp result::get(short, const timestamp&) const;
 template std::vector<std::uint8_t> result::get(short, const std::vector<std::uint8_t>&) const;
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 template _variant_t result::get(short, _variant_t const&) const;
 #endif
 
@@ -6663,7 +6663,7 @@ template time result::get(string const&, const time&) const;
 template timestamp result::get(string const&, const timestamp&) const;
 template std::vector<std::uint8_t>
 result::get(string const&, const std::vector<std::uint8_t>&) const;
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 template _variant_t result::get(string const&, _variant_t const&) const;
 #endif
 

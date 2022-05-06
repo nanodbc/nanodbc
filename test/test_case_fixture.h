@@ -12,7 +12,7 @@
 #include <tuple>
 #include <vector>
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #include <comutil.h> // static nanodbc links w/ #pragma comment(lib, "comsuppw.lib")
 #endif
 
@@ -2040,7 +2040,7 @@ struct test_case_fixture : public base_test_fixture
         check_rows_equal(execute(connection, query), 0);
     }
 
-#if defined(_WIN32)
+#if defined(_MSC_VER)
     void test_win32_variant()
     {
         auto cn = connect();
@@ -2208,7 +2208,7 @@ struct test_case_fixture : public base_test_fixture
         }
     }
 
-#endif
+#endif // _MSC_VER
 
     void test_while_next_iteration()
     {

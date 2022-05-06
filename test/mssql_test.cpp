@@ -1051,7 +1051,7 @@ TEST_CASE_METHOD(mssql_fixture, "test_transaction", "[mssql][transaction]")
     test_transaction();
 }
 
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 TEST_CASE_METHOD(mssql_fixture, "test_win32_variant", "[mssql][variant][windows]")
 {
     test_win32_variant();
@@ -1094,7 +1094,7 @@ TEST_CASE_METHOD(mssql_fixture, "test_win32_variant_timestamp", "[mssql][variant
     REQUIRE(t0.wSecond <= 60);
     REQUIRE(t0.wMilliseconds <= 100);
 }
-#endif // _WIN32
+#endif // _MSC_VER
 
 TEST_CASE_METHOD(mssql_fixture, "test_while_not_end_iteration", "[mssql][looping]")
 {
