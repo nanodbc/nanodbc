@@ -13,6 +13,10 @@ foreach(example ${examples})
   else()
     target_link_libraries(example_${example} nanodbc ${ODBC_LIBRARIES})
   endif()
+  target_compile_definitions(example_${example}
+    PRIVATE
+      $<$<CXX_COMPILER_ID:MSVC>:_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING>)
+
   add_dependencies(examples example_${example})
 
   set_target_properties(example_${example}
@@ -30,6 +34,9 @@ if (BUILD_SHARED_LIBS)
 else()
   target_link_libraries(example_empty nanodbc ${ODBC_LIBRARIES})
 endif()
+target_compile_definitions(example_empty
+  PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING>)
 add_dependencies(examples example_empty)
 
 set_target_properties(example_empty

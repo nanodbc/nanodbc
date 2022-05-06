@@ -25,6 +25,7 @@
 /// \section license License
 /// <div class="license">
 /// Copyright (C) 2013 lexicalunit <lexicalunit@lexicalunit.com>
+/// Copyright (C) 2015-2022 Mateusz Loskot <mateusz@loskot.net>
 ///
 /// The MIT License
 ///
@@ -73,15 +74,19 @@
 /// See http://www.codeguru.com/submission-guidelines.php for details.
 /// </div>
 
-#ifndef NANODBC_H
-#define NANODBC_H
+#ifndef NANODBC_NANODBC_H
+#define NANODBC_NANODBC_H
 
 #include <cstddef>
+#include <exception>
 #include <functional>
+#include <iterator>
 #include <list>
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 #ifndef __clang__

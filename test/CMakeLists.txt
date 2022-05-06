@@ -69,6 +69,9 @@ foreach(test_item ${test_list})
   else()
     target_link_libraries(${test_name} nanodbc Catch ${ODBC_LIBRARIES})
   endif()
+  target_compile_definitions(${test_name}
+    PRIVATE
+      $<$<CXX_COMPILER_ID:MSVC>:_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING>)
   set_target_properties(${test_name}
     PROPERTIES
     VERSION ${NANODBC_VERSION})
