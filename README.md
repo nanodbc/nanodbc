@@ -7,7 +7,7 @@ user information, example usage, propaganda, and detailed source level documenta
 
 [![GitHub release](https://img.shields.io/github/tag/nanodbc/nanodbc.svg)](https://github.com/nanodbc/nanodbc/releases)
 [![GitHub commits](https://img.shields.io/github/commits-since/nanodbc/nanodbc/v2.14.0.svg?style=flat-square)](https://github.com/nanodbc/nanodbc/releases/tag/v2.14.0)
-[![License](https://img.shields.io/github/license/nanodbc/nanodbc.svg?style=flat-square)](https://github.com/nanodbc/nanodbc/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/nanodbc/nanodbc.svg?style=flat-square)](https://github.com/nanodbc/nanodbc/blob/main/LICENSE)
 
 [![Gitter](https://img.shields.io/gitter/room/nanodbc/nanodbc.svg?style=flat-square)](https://gitter.im/nanodbc-help/Lobby)
 
@@ -15,10 +15,10 @@ user information, example usage, propaganda, and detailed source level documenta
 
 | Branch | Linux/OSX | Windows | Coverage | Coverity |
 | :---   |:---       |:---     |:---      |:---      |
-|`master`| none      | [![master][appveyor-badge]][appveyor] | [![codecov](https://codecov.io/gh/nanodbc/nanodbc/branch/master/graph/badge.svg)](https://codecov.io/gh/nanodbc/nanodbc) | [![coverity_scan][coverity-badge]][coverity] |
+|`main`| none      | [![main][appveyor-badge]][appveyor] | [![codecov](https://codecov.io/gh/nanodbc/nanodbc/branch/main/graph/badge.svg)](https://codecov.io/gh/nanodbc/nanodbc) | [![coverity_scan][coverity-badge]][coverity] |
 
 > **Note:** The Coverity status uses the [coverity_scan][nanodbc-coverity] branch.
-> When `master` has had a significant amount of work pushed to it,
+> When `main` has had a significant amount of work pushed to it,
 > merge those changes into `coverity_scan` as well to keep the status up to date.
 
 ## Philosophy
@@ -233,7 +233,7 @@ If a feature requires a database-specific test case for each database, then skip
 
 ## Publish and Release Process
 
-Once your local `master` branch is ready for publishing
+Once your local `main` branch is ready for publishing
 (i.e. [semantic versioning][semver]), use the `utility/publish.sh` script. This script
 bumps the major, minor, or patch version, then updates the repository's `VERSION.txt` file, adds a
 "Preparing" commit, and creates git tags appropriately. For example to make a minor update you
@@ -310,8 +310,8 @@ Finally, announce the new release to the public.
 [unixodbc]:     http://www.unixodbc.org/
 [vagrant]:      https://www.vagrantup.com/
 
-[appveyor]:         https://ci.appveyor.com/project/nanodbc/nanodbc?branch=master
-[appveyor-badge]:   https://ci.appveyor.com/api/projects/status/pvgwgg3qgdcnylp1/branch/master?svg=true
+[appveyor]:         https://ci.appveyor.com/project/nanodbc/nanodbc?branch=main
+[appveyor-badge]:   https://ci.appveyor.com/api/projects/status/pvgwgg3qgdcnylp1/branch/main?svg=true
 
 [coverity]:         https://scan.coverity.com/projects/nanodbc-nanodbc
 [coverity-badge]:   https://scan.coverity.com/projects/7437/badge.svg
