@@ -2172,7 +2172,16 @@ struct test_case_fixture : public base_test_fixture
         {
             auto rs = execute(cn, NANODBC_TEXT("select NULL as n;"));
             rs.next();
-            REQUIRE_THROWS_AS(rs.get<_variant_t>(0), nanodbc::null_access_error);
+            // TODO: Confirm which driver one is buggy or displays non-standard behaviour
+            if (vendor_ != database_vendor::postgresql)
+            {
+                REQUIRE_THROWS_AS(rs.get<_variant_t>(0), nanodbc::null_access_error);
+            }
+            else
+            {
+                auto v = rs.get<_variant_t>(0);
+                REQUIRE(v == v_null);
+            }
         }
         {
             auto rs = execute(cn, NANODBC_TEXT("select NULL as n;"));
@@ -2186,7 +2195,7 @@ struct test_case_fixture : public base_test_fixture
             rs.unbind();
             rs.next();
             // TODO: Confirm which driver one is buggy or displays non-standard behaviour
-            if (vendor_ == database_vendor ::mysql)
+            if (vendor_ == database_vendor::mysql)
             {
                 REQUIRE_THROWS_AS(rs.get<_variant_t>(0), nanodbc::null_access_error);
             }
