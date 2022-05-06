@@ -4240,7 +4240,13 @@ inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant
         std::wstring v;
         get_ref_impl(column, v);
         DECIMAL d;
-        if (FAILED(::VarDecFromStr(static_cast <LPCOLESTR>(v.c_str()), LOCALE_INVARIANT, 0, &d)))
+        #ifdef __MINGW32__
+        //  See https://sourceforge.net/p/mingw-w64/bugs/940/
+        auto s = const_cast<LPOLESTR>(static_cast<LPCOLESTR>(v.c_str()));
+        #else
+        auto s = static_cast<LPCOLESTR>(v.c_str());
+        #endif
+        if (FAILED(::VarDecFromStr(s, LOCALE_INVARIANT, 0, &d)))
             throw type_incompatible_error();
         result = d;
         break;
