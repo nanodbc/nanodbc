@@ -92,8 +92,6 @@ Major features beyond what's already supported by ODBC are not within the scope 
 .. _`pimpl`: http://wiki.c2.com/?PimplIdiom
 .. _`releases`: https://github.com/nanodbc/nanodbc/releases
 
-.. |travis-master| image:: https://travis-ci.org/nanodbc/nanodbc.svg?branch=master
-    :target: https://travis-ci.org/nanodbc/nanodbc
 .. |appveyor-master| image:: https://ci.appveyor.com/api/projects/status/pvgwgg3qgdcnylp1/branch/master?svg=true
     :target: https://ci.appveyor.com/project/nanodbc/nanodbc?branch=master
 .. |coverity-master| image:: https://scan.coverity.com/projects/7437/badge.svg

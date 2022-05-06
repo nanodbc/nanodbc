@@ -1,12 +1,12 @@
 # nanodbc tests build configuration
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
-  # Workaround for Travis CI + Catch: `error: ignoring #pragma gcc diagnostic`
+  # Workaround for AppVeyor + Catch: `error: ignoring #pragma gcc diagnostic`
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
 endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  # Workaround for Travis CI|AppVeyor + Catch: `suggest parentheses around comparison in operand of '=='`
+  # Workaround for AppVeyor + Catch: `suggest parentheses around comparison in operand of '=='`
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=parentheses")
 endif()
 
@@ -43,7 +43,7 @@ add_dependencies(tests utility_tests)
 # Database-specific tests
 set(test_list mssql mysql postgresql sqlite vertica) # odbc_test.cpp is a dummy
 
-# Travis CI and AppVeyor set common environment variable CI
+# AppVeyor set common environment variable CI
 # and nanodbc-specific DB (in CI build configuration).
 # The CI builds enable DB test for DB specified in build job configuration.
 if (DEFINED ENV{CI} AND DEFINED ENV{DB})
