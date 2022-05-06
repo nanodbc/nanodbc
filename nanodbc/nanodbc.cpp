@@ -61,6 +61,18 @@
 #include <sql.h>
 #include <sqlext.h>
 
+// _variant_t support on Windows platform only
+#ifdef _WIN32
+#include <comutil.h>
+#if defined(_MSC_VER)
+#if defined(_DEBUG)
+#pragma comment(lib, "comsuppwd.lib")
+#else
+#pragma comment(lib, "comsuppw.lib")
+#endif
+#endif
+#endif
+
 // Driver specific SQL data type defines.
 // Microsoft has -150 thru -199 reserved for Microsoft SQL Server Native Client driver usage.
 // Originally, defined in sqlncli.h (old SQL Server Native Client driver)
@@ -1862,7 +1874,7 @@ public:
             SQLDescribeParam,
             rc,
             stmt_,
-            param_index + 1,
+            static_cast<SQLUSMALLINT>(param_index + 1),
             &data_type,
             &parameter_size,
             0,
@@ -1917,7 +1929,7 @@ public:
                 SQLDescribeParam,
                 rc,
                 stmt_,
-                param_index + 1,
+                static_cast<SQLUSMALLINT>(param_index + 1),
                 &param.type_,
                 &param.size_,
                 &param.scale_,
@@ -2394,7 +2406,7 @@ public:
             SQLBindParameter,
             rc,
             hstmt,
-            param_index + 1,
+            static_cast<SQLUSMALLINT>(param_index + 1),
             SQL_PARAM_INPUT,
             SQL_C_DEFAULT,
             SQL_SS_TABLE,
@@ -3176,7 +3188,19 @@ public:
             &pos,
             SQL_IS_UINTEGER,
             0);
-        return (!success(rc) || rows() < 0 || pos - 1 > static_cast<unsigned long>(rows()));
+
+        // MSDN (https://msdn.microsoft.com/en-us/library/ms712631.aspx):
+        // If the number of the current row cannot be determined or
+        // there is no current row, the driver returns 0.
+        // Otherwise, valid row number is returned, starting at 1.
+        //
+        // NOTE: We try to address incorrect implementation in some drivers (e.g. SQLite ODBC)
+        // which instead of 0 return SQL_ROW_NUMBER_UNKNOWN(-2) .
+        if (pos == 0 || pos == static_cast<SQLULEN>(SQL_ROW_NUMBER_UNKNOWN))
+            return true;
+
+        SQLULEN const rows_count = rows();
+        return (!success(rc) || !(pos < rows_count));
     }
 
     bool is_null(short column) const
@@ -3275,7 +3299,7 @@ public:
             NANODBC_FUNC(SQLColAttribute),
             rc,
             stmt_.native_statement_handle(),
-            column + 1,
+            static_cast<SQLUSMALLINT>(column + 1),
             SQL_DESC_TYPE_NAME,
             type_name,
             sizeof(type_name),
@@ -3366,16 +3390,25 @@ public:
         throw_if_column_is_out_of_range(column);
         if (is_null(column))
         {
+            // MySQL: Bug or non-standard behaviour? SQLBindCol sets the indicator to SQL_NULL_DATA
+            // NANODBC_ASSERT(is_bound(column));
             result = fallback;
             return;
         }
         get_ref_impl<T>(column, result);
+
+        // for unbound columns, null indicator is determined by SQLGetData call
+        if (is_null(column))
+        {
+            NANODBC_ASSERT(!is_bound(column));
+            result = fallback;
+        }
     }
 
     template <class T>
     void get_ref(string const& column_name, T& result) const
     {
-        const short column = this->column(column_name);
+        short const column = this->column(column_name);
         if (is_null(column))
             throw null_access_error();
         get_ref_impl<T>(column, result);
@@ -3384,13 +3417,21 @@ public:
     template <class T>
     void get_ref(string const& column_name, T const& fallback, T& result) const
     {
-        const short column = this->column(column_name);
+        short const column = this->column(column_name);
         if (is_null(column))
         {
+            NANODBC_ASSERT(is_bound(column));
             result = fallback;
             return;
         }
         get_ref_impl<T>(column, result);
+
+        // for unbound columns, null indicator is determined by SQLGetData call
+        if (is_null(column))
+        {
+            NANODBC_ASSERT(!is_bound(column));
+            result = fallback;
+        }
     }
 
     template <class T>
@@ -3533,7 +3574,7 @@ private:
                 NANODBC_FUNC(SQLDescribeCol),
                 rc,
                 stmt_.native_statement_handle(),
-                i + 1,
+                static_cast<SQLUSMALLINT>(i + 1),
                 (NANODBC_SQLCHAR*)column_name,
                 sizeof(column_name) / sizeof(NANODBC_SQLCHAR),
                 &len,
@@ -3686,7 +3727,7 @@ private:
             SQLBindCol,
             rc,
             stmt_.native_statement_handle(),
-            column.column_ + 1, // ColumnNumber
+            static_cast<SQLUSMALLINT>(column.column_ + 1), // ColumnNumber
             column.ctype_,      // TargetType
             column.pdata_,      // TargetValuePtr
             column.clen_,       // BufferLength
@@ -3705,7 +3746,7 @@ private:
             SQLBindCol,
             rc,
             stmt_.native_statement_handle(),
-            column.column_ + 1,
+            static_cast<SQLUSMALLINT>(column.column_ + 1), // ColumnNumber
             column.ctype_,
             0,
             0,
@@ -3825,7 +3866,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
                     SQLGetData,
                     rc,
                     handle,          // StatementHandle
-                    column + 1,      // Col_or_Param_Num
+                    static_cast<SQLUSMALLINT>(column + 1), // Col_or_Param_Num
                     col.ctype_,      // TargetType
                     buffer,          // TargetValuePtr
                     buffer_size,     // BufferLength
@@ -3882,7 +3923,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
                     SQLGetData,
                     rc,
                     handle,          // StatementHandle
-                    column + 1,      // Col_or_Param_Num
+                    static_cast<SQLUSMALLINT>(column + 1), // Col_or_Param_Num
                     col.ctype_,      // TargetType
                     buffer,          // TargetValuePtr
                     buffer_size,     // BufferLength
@@ -3978,7 +4019,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
     case SQL_C_DATE:
     {
         const date d = *ensure_pdata<date>(column);
-        std::tm st = {0};
+        std::tm st ;
         st.tm_year = d.year - 1900;
         st.tm_mon = d.month - 1;
         st.tm_mday = d.day;
@@ -3994,7 +4035,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
     case SQL_C_TIME:
     {
         const time t = *ensure_pdata<time>(column);
-        std::tm st = {0};
+        std::tm st ;
         st.tm_hour = t.hour;
         st.tm_min = t.min;
         st.tm_sec = t.sec;
@@ -4010,7 +4051,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
     case SQL_C_TIMESTAMP:
     {
         const timestamp stamp = *ensure_pdata<timestamp>(column);
-        std::tm st = {0};
+        std::tm st ;
         st.tm_year = stamp.year - 1900;
         st.tm_mon = stamp.month - 1;
         st.tm_mday = stamp.day;
@@ -4064,7 +4105,7 @@ inline void result::result_impl::get_ref_impl<std::vector<std::uint8_t>>(
                     SQLGetData,
                     rc,
                     handle,          // StatementHandle
-                    column + 1,      // Col_or_Param_Num
+                    static_cast<SQLUSMALLINT>(column + 1), // Col_or_Param_Num
                     SQL_C_BINARY,    // TargetType
                     buffer,          // TargetValuePtr
                     buffer_size,     // BufferLength
@@ -4098,6 +4139,189 @@ inline void result::result_impl::get_ref_impl<std::vector<std::uint8_t>>(
     throw type_incompatible_error();
 }
 
+#if defined(_MSC_VER)
+template <>
+inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant_t& result) const
+{
+    result.Clear(); // VT_EMPTY, not SQL-like VT_NULL
+    bound_column& col = bound_columns_[column];
+    auto c_type = col.ctype_;
+
+    // SQL type to C type mapping could have been simplified by auto-binding
+    // FIXME: Correct the auto_bind_columns to not to 'flatten' types
+    auto const sql_type = col.sqltype_;
+    switch (sql_type)
+    {
+    case SQL_BIT:
+        c_type = SQL_C_BIT;
+        break;
+    case SQL_DECIMAL:
+    case SQL_NUMERIC:
+        c_type = SQL_C_NUMERIC;
+        break;
+    }
+
+    switch (c_type)
+    {
+    case SQL_C_BINARY:
+    {
+        // TODO: Optimise with bespoke implementation of get_ref_impl<SAFEARRAY>
+        std::vector<std::uint8_t> v;
+        get_ref_impl(column, v);
+        ::SAFEARRAYBOUND bounds[1] = {static_cast<unsigned long>(v.size()), 0};
+        result.vt = VT_ARRAY | VT_UI1;
+        result.parray = ::SafeArrayCreate(VT_UI1, 1, bounds);
+        if (!v.empty())
+        {
+            void* data = nullptr;
+            ::SafeArrayAccessData(result.parray, &data);
+            std::memcpy(data, &v[0], v.size());
+            ::SafeArrayUnaccessData(result.parray);
+        }
+        break;
+    }
+    case SQL_C_BIT:
+    {
+        auto const v = *(ensure_pdata<short>(column));
+        result = _variant_t(!!v ? VARIANT_TRUE : VARIANT_FALSE, VT_BOOL);
+        break;
+    }
+    case SQL_C_CHAR:
+    {
+        std::string v;
+        get_ref_impl(column, v);
+        result = v.c_str();
+        break;
+    }
+    case SQL_C_WCHAR:
+    {
+        std::wstring v;
+        get_ref_impl(column, v);
+        result = v.c_str();
+        break;
+    }
+    case SQL_C_TINYINT:
+    case SQL_C_STINYINT:
+        result = (char)*(ensure_pdata<short>(column));
+        break;
+    case SQL_C_UTINYINT:
+        result = (unsigned char)*(ensure_pdata<unsigned short>(column));
+        break;
+    case SQL_C_SHORT:
+    case SQL_C_SSHORT:
+        result = *(ensure_pdata<short>(column));
+        break;
+    case SQL_C_USHORT:
+        result = *(ensure_pdata<unsigned short>(column));
+        break;
+    case SQL_C_LONG:
+    case SQL_C_SLONG:
+        result = *(ensure_pdata<int32_t>(column));
+        break;
+    case SQL_C_ULONG:
+        result = *(ensure_pdata<uint32_t>(column));
+        break;
+    case SQL_C_SBIGINT:
+        result = *(ensure_pdata<int64_t>(column));
+        break;
+    case SQL_C_UBIGINT:
+        result = *(ensure_pdata<uint64_t>(column));
+        break;
+    case SQL_C_DOUBLE:
+        result = *(ensure_pdata<double>(column));
+        break;
+    case SQL_C_FLOAT:
+        result = *(ensure_pdata<float>(column));
+        break;
+    case SQL_C_NUMERIC:
+    {
+        // FIXME: Likely, this is never called as SQL_DECIMAL is auto-bound as SQL_C_CHAR
+        // TODO: Review this for SQL Server (and other databases?) types money, smallmoney as VT_CY
+        std::wstring v;
+        get_ref_impl(column, v);
+        DECIMAL d;
+        #ifdef __MINGW32__
+        //  See https://sourceforge.net/p/mingw-w64/bugs/940/
+        auto s = const_cast<LPOLESTR>(static_cast<LPCOLESTR>(v.c_str()));
+        #else
+        auto s = static_cast<LPCOLESTR>(v.c_str());
+        #endif
+        if (FAILED(::VarDecFromStr(s, LOCALE_INVARIANT, 0, &d)))
+            throw type_incompatible_error();
+        result = d;
+        break;
+    }
+    case SQL_C_DATE:
+    case SQL_C_TYPE_DATE:
+    {
+        nanodbc::date v;
+        get_ref_impl(column, v);
+        ::SYSTEMTIME st{
+            static_cast<WORD>(v.year),
+            static_cast<WORD>(v.month),
+            0,
+            static_cast<WORD>(v.day),
+            0,
+            0,
+            0,
+            0};
+        ::DATE date{0};
+        if (!::SystemTimeToVariantTime(&st, &date))
+            throw type_incompatible_error();
+        result = _variant_t(date, VT_DATE);
+        break;
+    }
+    case SQL_C_TIME:
+    case SQL_C_TYPE_TIME:
+    {
+        nanodbc::time v;
+        get_ref_impl(column, v);
+        ::SYSTEMTIME st{
+            0,
+            0,
+            0,
+            0,
+            static_cast<WORD>(v.hour),
+            static_cast<WORD>(v.min),
+            static_cast<WORD>(v.sec),
+            0};
+        ::DATE date{0};
+        if (!::SystemTimeToVariantTime(&st, &date))
+            throw type_incompatible_error();
+        result = _variant_t(date, VT_DATE);
+        break;
+    }
+    case SQL_C_TIMESTAMP:
+    case SQL_C_TYPE_TIMESTAMP:
+    {
+        nanodbc::timestamp v;
+        get_ref_impl(column, v);
+        SYSTEMTIME st{
+            static_cast<WORD>(v.year),
+            static_cast<WORD>(v.month),
+            0,
+            static_cast<WORD>(v.day),
+            static_cast<WORD>(v.hour),
+            static_cast<WORD>(v.min),
+            static_cast<WORD>(v.sec),
+            static_cast<unsigned short>(v.fract)};
+        DATE date;
+        if (!::SystemTimeToVariantTime(&st, &date))
+            throw type_incompatible_error();
+        result = _variant_t(date, VT_DATE);
+        break;
+    }
+    default:
+        std::wstring v;
+        get_ref_impl(column, v);
+        result = v.c_str();
+    }
+
+    if (is_null(column))
+        result.ChangeType(VT_NULL);
+}
+#endif
+
 namespace detail
 {
 auto from_string(std::string const& s, float)
@@ -4130,6 +4354,14 @@ auto from_string(std::string const& s, R)
         throw std::range_error("from_string argument out of range");
     return static_cast<R>(integer);
 }
+
+#if defined(_MSC_VER)
+auto from_string(std::string const& s, _variant_t)
+{
+    return s.c_str();
+}
+#endif
+
 } // namespace detail
 
 template <typename R>
@@ -4186,7 +4418,7 @@ std::unique_ptr<T, std::function<void(T*)>> result::result_impl::ensure_pdata(sh
         SQLGetData,
         rc,
         handle,              // StatementHandle
-        column + 1,          // Col_or_Param_Num
+        static_cast<SQLUSMALLINT>(column + 1), // Col_or_Param_Num
         sql_ctype<T>::value, // TargetType
         buffer,              // TargetValuePtr
         buffer_size,         // BufferLength
@@ -4194,9 +4426,10 @@ std::unique_ptr<T, std::function<void(T*)>> result::result_impl::ensure_pdata(sh
 
     if (ValueLenOrInd == SQL_NULL_DATA)
         col.cbdata_[static_cast<size_t>(rowset_position_)] = (SQLINTEGER)SQL_NULL_DATA;
+    else
+        NANODBC_ASSERT(ValueLenOrInd == (SQLLEN)buffer_size);
     if (!success(rc))
         NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
-    NANODBC_ASSERT(ValueLenOrInd == (SQLLEN)buffer_size);
 
     // Return a traditional unique_ptr since we just allocated this buffer, and
     // we most certainly want this memory returned to the heap when the result
@@ -5172,6 +5405,11 @@ NANODBC_INSTANTIATE_TVP_BINDS(timestamp);
 
 NANODBC_INSTANTIATE_TVP_BIND_STRINGS(std::string);
 NANODBC_INSTANTIATE_TVP_BIND_STRINGS(wide_string);
+
+#ifdef NANODBC_SUPPORT_STRING_VIEW
+NANODBC_INSTANTIATE_TVP_BIND_STRINGS(std::string_view);
+NANODBC_INSTANTIATE_TVP_BIND_STRINGS(wide_string_view);
+#endif
 
 #undef NANODBC_INSTANTIATE_TVP_BINDS
 #undef NANODBC_INSTANTIATE_TVP_BIND_STRINGS
@@ -6262,6 +6500,9 @@ template void result::get_ref(short, date&) const;
 template void result::get_ref(short, time&) const;
 template void result::get_ref(short, timestamp&) const;
 template void result::get_ref(short, std::vector<std::uint8_t>&) const;
+#if defined(_MSC_VER)
+template void result::get_ref(short, _variant_t&) const;
+#endif
 
 template void result::get_ref(string const&, std::string::value_type&) const;
 template void result::get_ref(string const&, wide_string::value_type&) const;
@@ -6280,6 +6521,9 @@ template void result::get_ref(string const&, date&) const;
 template void result::get_ref(string const&, time&) const;
 template void result::get_ref(string const&, timestamp&) const;
 template void result::get_ref(string const&, std::vector<std::uint8_t>&) const;
+#if defined(_MSC_VER)
+template void result::get_ref(string const&, _variant_t&) const;
+#endif
 
 // The following are the only supported instantiations of result::get_ref() with fallback.
 template void
@@ -6302,6 +6546,9 @@ template void result::get_ref(short, const time&, time&) const;
 template void result::get_ref(short, const timestamp&, timestamp&) const;
 template void
 result::get_ref(short, const std::vector<std::uint8_t>&, std::vector<std::uint8_t>&) const;
+#if defined(_MSC_VER)
+template void result::get_ref(short, _variant_t const&, _variant_t&) const;
+#endif
 
 template void
 result::get_ref(string const&, const std::string::value_type&, std::string::value_type&) const;
@@ -6325,6 +6572,9 @@ template void result::get_ref(string const&, const time&, time&) const;
 template void result::get_ref(string const&, const timestamp&, timestamp&) const;
 template void
 result::get_ref(string const&, const std::vector<std::uint8_t>&, std::vector<std::uint8_t>&) const;
+#if defined(_MSC_VER)
+template void result::get_ref(string const&, _variant_t const&, _variant_t&) const;
+#endif
 
 // The following are the only supported instantiations of result::get().
 template std::string::value_type result::get(short) const;
@@ -6345,6 +6595,9 @@ template date result::get(short) const;
 template time result::get(short) const;
 template timestamp result::get(short) const;
 template std::vector<std::uint8_t> result::get(short) const;
+#if defined(_MSC_VER)
+template _variant_t result::get(short) const;
+#endif
 
 template std::string::value_type result::get(string const&) const;
 template wide_string::value_type result::get(string const&) const;
@@ -6364,6 +6617,9 @@ template date result::get(string const&) const;
 template time result::get(string const&) const;
 template timestamp result::get(string const&) const;
 template std::vector<std::uint8_t> result::get(string const&) const;
+#if defined(_MSC_VER)
+template _variant_t result::get(string const&) const;
+#endif
 
 // The following are the only supported instantiations of result::get() with fallback.
 template std::string::value_type result::get(short, const std::string::value_type&) const;
@@ -6384,6 +6640,9 @@ template date result::get(short, const date&) const;
 template time result::get(short, const time&) const;
 template timestamp result::get(short, const timestamp&) const;
 template std::vector<std::uint8_t> result::get(short, const std::vector<std::uint8_t>&) const;
+#if defined(_MSC_VER)
+template _variant_t result::get(short, _variant_t const&) const;
+#endif
 
 template std::string::value_type result::get(string const&, const std::string::value_type&) const;
 template wide_string::value_type result::get(string const&, const wide_string::value_type&) const;
@@ -6404,6 +6663,9 @@ template time result::get(string const&, const time&) const;
 template timestamp result::get(string const&, const timestamp&) const;
 template std::vector<std::uint8_t>
 result::get(string const&, const std::vector<std::uint8_t>&) const;
+#if defined(_MSC_VER)
+template _variant_t result::get(string const&, _variant_t const&) const;
+#endif
 
 } // namespace nanodbc
 #endif // NANODBC_DISABLE_NANODBC_NAMESPACE_FOR_INTERNAL_TESTS

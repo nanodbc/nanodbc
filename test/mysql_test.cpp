@@ -216,6 +216,16 @@ TEST_CASE_METHOD(mysql_fixture, "test_nullptr_nulls", "[mysql][null]")
     test_nullptr_nulls();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_null_with_bound_columns_unbound", "[mysql][null][unbound]")
+{
+    test_null_with_bound_columns_unbound();
+}
+
+TEST_CASE_METHOD(mysql_fixture, "test_result_at_end", "[mysql][result][result]")
+{
+    test_result_at_end();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_result_iterator", "[mysql][iterator]")
 {
     test_result_iterator();
@@ -255,6 +265,18 @@ TEST_CASE_METHOD(mysql_fixture, "test_transaction", "[mysql][transaction]")
 {
     test_transaction();
 }
+
+#if defined(_MSC_VER)
+TEST_CASE_METHOD(mysql_fixture, "test_win32_variant", "[mysql][variant][windows]")
+{
+    test_win32_variant();
+}
+
+TEST_CASE_METHOD(mysql_fixture, "test_win32_variant_null", "[mysql][variant][windows]")
+{
+    test_win32_variant_null();
+}
+#endif // _MSC_VER
 
 TEST_CASE_METHOD(mysql_fixture, "test_while_not_end_iteration", "[mysql][looping]")
 {

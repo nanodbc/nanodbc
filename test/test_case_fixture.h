@@ -5,11 +5,16 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <cstring>
 #include <limits>
 #include <random>
 #include <set>
 #include <tuple>
 #include <vector>
+
+#ifdef _MSC_VER
+#include <comutil.h> // static nanodbc links w/ #pragma comment(lib, "comsuppw.lib")
+#endif
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -1392,14 +1397,20 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(results.next());
         REQUIRE(results.is_null(0));
         REQUIRE(results.is_null(1));
+        REQUIRE(results.get<int>(0, -1) == -1);
+        REQUIRE(results.get<int>(1, -2) == -2);
 
         REQUIRE(results.next());
         REQUIRE(results.is_null(0));
         REQUIRE(results.is_null(1));
+        REQUIRE(results.get<int>(0, -3) == -3);
+        REQUIRE(results.get<int>(1, -4) == -4);
 
         REQUIRE(results.next());
         REQUIRE(results.is_null(0));
         REQUIRE(results.is_null(1));
+        REQUIRE(results.get<int>(0, -5) == -5);
+        REQUIRE(results.get<int>(1, -6) == -6);
 
         REQUIRE(!results.next());
     }
@@ -1448,6 +1459,81 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(results.next());
 
             REQUIRE(results.get<int>(0) == i);
+        }
+    }
+
+    void test_null_with_bound_columns_unbound()
+    {
+        nanodbc::connection conn = connect();
+        create_table(
+            conn,
+            NANODBC_TEXT("test_null_with_bound_columns_unbound"),
+            NANODBC_TEXT("(a int, b float)"));
+
+        nanodbc::statement statement(conn);
+        prepare(
+            statement,
+            NANODBC_TEXT("insert into test_null_with_bound_columns_unbound (a, b) values (?, ?);"));
+        REQUIRE(statement.parameters() == 2);
+        statement.bind_null(0);
+        statement.bind_null(1);
+        execute(statement, 2);
+
+        nanodbc::result results = execute(
+            conn,
+            NANODBC_TEXT("select a, b from test_null_with_bound_columns_unbound order by a;"));
+        results.unbind();
+
+        REQUIRE(results.next());
+
+        if (vendor_ == database_vendor::mysql)
+            REQUIRE(results.is_null(0)); // MySQL: Bug or non-standard behaviour? SQLBindCol sets
+                                         // the indicator to SQL_NULL_DATA
+        else
+            REQUIRE(!results.is_null(0)); // false as undetermined until SQLGetData is called
+        REQUIRE(results.get<int>(0, -1) == -1);
+        REQUIRE(results.is_null(0)); // determined
+
+        if (vendor_ == database_vendor::mysql)
+            REQUIRE(results.is_null(1)); // MySQL: Bug or non-standard behaviour? SQLBindCol sets
+                                         // the indicator to SQL_NULL_DATA
+        else
+            REQUIRE(!results.is_null(1)); // false as undetermined until SQLGetData is called
+        REQUIRE(results.get<double>(1, 1.23) >= 1.23);
+        REQUIRE(results.is_null(1)); // determined
+    }
+
+    void test_result_at_end()
+    {
+        nanodbc::connection connection = connect();
+
+        // Test empty result (current position == number of rows == 0)
+        {
+            create_table(connection, NANODBC_TEXT("test_result_at_end"), NANODBC_TEXT("(i int)"));
+            nanodbc::result results =
+                execute(connection, NANODBC_TEXT("select * from test_result_at_end;"));
+            REQUIRE(results.at_end());
+            REQUIRE(!results.next());
+            REQUIRE(results.at_end());
+        }
+        // Test non-empty result, but not moved at first
+        {
+            create_table(connection, NANODBC_TEXT("test_result_at_end"), NANODBC_TEXT("(i int)"));
+            execute(connection, NANODBC_TEXT("insert into test_result_at_end values (1);"));
+            nanodbc::result results =
+                execute(connection, NANODBC_TEXT("select * from test_result_at_end;"));
+            REQUIRE(results.at_end());
+        }
+        // Test non-empty result and moved at first
+        {
+            create_table(connection, NANODBC_TEXT("test_result_at_end"), NANODBC_TEXT("(i int)"));
+            execute(connection, NANODBC_TEXT("insert into test_result_at_end values (1);"));
+            nanodbc::result results =
+                execute(connection, NANODBC_TEXT("select * from test_result_at_end;"));
+            REQUIRE(results.next());
+            REQUIRE(results.at_end());
+            REQUIRE(!results.next());
+            REQUIRE(results.at_end());
         }
     }
 
@@ -1953,6 +2039,176 @@ struct test_case_fixture : public base_test_fixture
 
         check_rows_equal(execute(connection, query), 0);
     }
+
+#if defined(_MSC_VER)
+    void test_win32_variant()
+    {
+        auto cn = connect();
+        create_table(
+            cn,
+            NANODBC_TEXT("test_win32_variant"),
+            NANODBC_TEXT("(i int, f float, d decimal(9, 3), dt date, t time, s varchar(60), b ") +
+                get_binary_type_name(16) + NANODBC_TEXT(")"));
+
+        // test data
+        int i = 7;
+        double f = 3.14159265359;
+        double d = 3.141;
+        nanodbc::date dt{2022, 4, 29};
+        nanodbc::time t{19, 31, 13};
+        nanodbc::string s = NANODBC_TEXT("this is text");
+        // GUID: {7330F811-F47F-41BC-A4FF-E792D073F41F}
+        // INT: 23885548255760334674942869530154890271
+        std::vector<std::vector<std::uint8_t>> b = {from_hex("11f830737ff4bc41a4ffe792d073f41f")};
+
+        // prepare test table
+        {
+            nanodbc::statement st(cn);
+            prepare(
+                st,
+                NANODBC_TEXT(
+                    "insert into test_win32_variant(i,f,d,dt,t,s,b) values (?,?,?,?,?,?,?);"));
+
+            st.bind(0, &i);
+            st.bind(1, &f);
+            st.bind(2, &d);
+            st.bind(3, &dt);
+            st.bind(4, &t);
+            st.bind_strings(5, s.c_str(), s.size(), 1);
+            st.bind(6, b);
+            execute(st);
+        }
+
+        auto rs = execute(cn, NANODBC_TEXT("select i,f,d,dt,t,s,b from test_win32_variant;"));
+        rs.next();
+        {
+            auto v = rs.get<_variant_t>(0);
+            REQUIRE(v.vt == VT_I8);
+            REQUIRE(static_cast<int>(v) == i);
+        }
+        {
+            auto v = rs.get<_variant_t>(1);
+            REQUIRE(v.vt == VT_R8);
+            REQUIRE(static_cast<double>(v) == Approx(f));
+        }
+        {
+            auto v = rs.get<_variant_t>(2);
+            if (vendor_ == database_vendor::sqlite)
+            {
+                REQUIRE(v.vt == VT_BSTR);
+                REQUIRE(static_cast<_bstr_t>(v) == _bstr_t("3.141"));
+            }
+            else
+            {
+                REQUIRE(v.vt == VT_DECIMAL);
+                REQUIRE(static_cast<double>(v) == Approx(d));
+            }
+        }
+        {
+            ::SYSTEMTIME st{
+                static_cast<WORD>(dt.year),
+                static_cast<WORD>(dt.month),
+                0,
+                static_cast<WORD>(dt.day),
+                0,
+                0,
+                0,
+                0};
+            ::DATE date{0};
+            REQUIRE(::SystemTimeToVariantTime(&st, &date));
+            _variant_t v_date(date, VT_DATE);
+
+            auto v = rs.get<_variant_t>(3);
+            REQUIRE(v.vt == VT_DATE);
+            REQUIRE(v == Approx(v_date));
+        }
+        {
+            ::SYSTEMTIME st{
+                0,
+                0,
+                0,
+                0,
+                static_cast<WORD>(t.hour),
+                static_cast<WORD>(t.min),
+                static_cast<WORD>(t.sec),
+                0};
+            ::DATE date{0};
+            REQUIRE(::SystemTimeToVariantTime(&st, &date));
+            _variant_t v_date(date, VT_DATE);
+
+            auto v = rs.get<_variant_t>(4);
+            REQUIRE(v.vt == VT_DATE);
+            REQUIRE(v == Approx(v_date));
+        }
+        {
+            auto v = rs.get<_variant_t>(5);
+            REQUIRE(v.vt == VT_BSTR);
+            REQUIRE(static_cast<_bstr_t>(v).length() == s.size());
+            REQUIRE(static_cast<_bstr_t>(v) == _bstr_t(s.c_str()));
+        }
+        {
+            auto v = rs.get<_variant_t>(6);
+            REQUIRE(v.vt == (VT_ARRAY | VT_UI1));
+
+            std::vector<std::uint8_t> b_from_v(b[0].size(), 0);
+            {
+                void* v_data = nullptr;
+                REQUIRE(SUCCEEDED(::SafeArrayAccessData(v.parray, &v_data)));
+                std::memcpy(&b_from_v[0], v_data, b_from_v.size());
+                REQUIRE(SUCCEEDED(::SafeArrayUnaccessData(v.parray)));
+            }
+            REQUIRE(b_from_v == b[0]);
+        }
+    }
+
+    void test_win32_variant_null()
+    {
+        auto cn = connect();
+
+        // test data
+        _variant_t v_null;
+        v_null.ChangeType(VT_NULL);
+
+        // bound
+        {
+            auto rs = execute(cn, NANODBC_TEXT("select NULL as n;"));
+            rs.next();
+            // TODO: Confirm which driver one is buggy or displays non-standard behaviour
+            if (vendor_ != database_vendor::postgresql)
+            {
+                REQUIRE_THROWS_AS(rs.get<_variant_t>(0), nanodbc::null_access_error);
+            }
+            else
+            {
+                auto v = rs.get<_variant_t>(0);
+                REQUIRE(v == v_null);
+            }
+        }
+        {
+            auto rs = execute(cn, NANODBC_TEXT("select NULL as n;"));
+            rs.next();
+            auto v = rs.get<_variant_t>(0, v_null);
+            REQUIRE(v == v_null);
+        }
+        // unbound
+        {
+            auto rs = execute(cn, NANODBC_TEXT("select NULL as n;"));
+            rs.unbind();
+            rs.next();
+            // TODO: Confirm which driver one is buggy or displays non-standard behaviour
+            if (vendor_ == database_vendor::mysql)
+            {
+                REQUIRE_THROWS_AS(rs.get<_variant_t>(0), nanodbc::null_access_error);
+            }
+            else
+            {
+                auto v = rs.get<_variant_t>(0);
+                REQUIRE(v == v_null);
+            }
+        }
+    }
+
+#endif // _MSC_VER
 
     void test_while_next_iteration()
     {
