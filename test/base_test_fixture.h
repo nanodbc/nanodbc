@@ -223,17 +223,25 @@ struct base_test_fixture
             return database_vendor::unknown;
     }
 
-    nanodbc::string get_binary_type_name()
+    nanodbc::string get_binary_type_name(int size=0)
     {
+        nanodbc::string s;
+        {
+            std::string t;
+            if (size)
+                t = "(" + std::to_string(size) + ")";
+            s = nanodbc::test::convert(t);
+        }
+
         switch (vendor_)
         {
         case database_vendor::sqlite:
         case database_vendor::mysql:
-            return NANODBC_TEXT("blob");
+            return NANODBC_TEXT("blob") + s;
         case database_vendor::postgresql:
             return NANODBC_TEXT("bytea");
         default:
-            return NANODBC_TEXT("varbinary"); // Oracle, MySQL, SQL Server,...standard type?
+            return NANODBC_TEXT("varbinary") + s; // Oracle, MySQL, SQL Server,...standard type?
         }
     }
 

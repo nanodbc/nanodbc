@@ -749,7 +749,17 @@ TEST_CASE_METHOD(mssql_fixture, "test_nullptr_nulls", "[mssql][null]")
     test_nullptr_nulls();
 }
 
-TEST_CASE_METHOD(mssql_fixture, "test_result_iterator", "[mssql][iterator]")
+TEST_CASE_METHOD(mssql_fixture, "test_null_with_bound_columns_unbound", "[mssql][null][unbound]")
+{
+    test_null_with_bound_columns_unbound();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_result_at_end", "[mssql][result]")
+{
+    test_result_at_end();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_result_iterator", "[mssql][result][iterator]")
 {
     test_result_iterator();
 }
@@ -1040,6 +1050,51 @@ TEST_CASE_METHOD(mssql_fixture, "test_transaction", "[mssql][transaction]")
 {
     test_transaction();
 }
+
+#if defined(_MSC_VER)
+TEST_CASE_METHOD(mssql_fixture, "test_win32_variant", "[mssql][variant][windows]")
+{
+    test_win32_variant();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_win32_variant_null", "[mssql][variant][windows]")
+{
+    test_win32_variant_null();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_win32_variant_bit", "[mssql][variant][windows]")
+{
+    auto cn = connect();
+    auto rs = execute(cn, NANODBC_TEXT("select CAST(1 AS BIT) as b;"));
+    rs.next();
+
+    auto v = rs.get<_variant_t>(0);
+    REQUIRE(v.vt == VT_BOOL);
+    REQUIRE(static_cast<bool>(v) == true);
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_win32_variant_timestamp", "[mssql][variant][windows]")
+{
+    auto cn = connect();
+    auto rs = execute(cn, NANODBC_TEXT("select CURRENT_TIMESTAMP as t;"));
+    rs.next();
+
+    auto v = rs.get<_variant_t>(0);
+    REQUIRE(v.vt == VT_DATE);
+    ::SYSTEMTIME t0{0};
+    REQUIRE(::VariantTimeToSystemTime(v, &t0));
+    ::SYSTEMTIME t1{0};
+    ::GetSystemTime(&t1);
+    REQUIRE(t0.wYear == t1.wYear);
+    REQUIRE(t0.wMonth == t1.wMonth);
+    REQUIRE(t0.wDay == t1.wDay);
+    REQUIRE(t0.wDayOfWeek == t1.wDayOfWeek);
+    REQUIRE(t0.wHour <= 24);
+    REQUIRE(t0.wMinute <= 60);
+    REQUIRE(t0.wSecond <= 60);
+    REQUIRE(t0.wMilliseconds <= 100);
+}
+#endif // _MSC_VER
 
 TEST_CASE_METHOD(mssql_fixture, "test_while_not_end_iteration", "[mssql][looping]")
 {

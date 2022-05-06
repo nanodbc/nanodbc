@@ -425,7 +425,17 @@ TEST_CASE_METHOD(sqlite_fixture, "test_nullptr_nulls", "[sqlite][null]")
     test_nullptr_nulls();
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "test_result_iterator", "[sqlite][iterator]")
+TEST_CASE_METHOD(sqlite_fixture, "test_null_with_bound_columns_unbound", "[sqlite][null][unbound]")
+{
+    test_null_with_bound_columns_unbound();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_result_at_end", "[sqlite][result]")
+{
+    test_result_at_end();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_result_iterator", "[sqlite][result][iterator]")
 {
     test_result_iterator();
 }
@@ -454,6 +464,18 @@ TEST_CASE_METHOD(sqlite_fixture, "test_batch_binary", "[sqlite][binary]")
 {
     test_batch_binary();
 }
+
+#if defined(_MSC_VER)
+TEST_CASE_METHOD(sqlite_fixture, "test_win32_variant", "[sqlite][variant][windows]")
+{
+    test_win32_variant();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_win32_variant_null", "[sqlite][variant][windows]")
+{
+    test_win32_variant_null();
+}
+#endif // _MSC_VER
 
 TEST_CASE_METHOD(sqlite_fixture, "test_time", "[sqlite][time]")
 {
