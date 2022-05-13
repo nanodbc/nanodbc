@@ -1,3 +1,8 @@
+# GHA workflow to run MSVC Code Analysis + GitHub Code Scanning Alerts
+name: "analyse"
+
+on: [push, pull_request]
+
 env:
   build: '${{ github.workspace }}/build'
   config: 'Debug'
