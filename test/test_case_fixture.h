@@ -1583,6 +1583,54 @@ struct test_case_fixture : public base_test_fixture
         }
     }
 
+    void test_statement_usable_when_result_gone()
+    {
+        // https://github.com/nanodbc/nanodbc/issues/333
+        auto c = connect();
+
+        create_table(
+            c,
+            NANODBC_TEXT("test_statement_usable_when_result_gone"),
+            NANODBC_TEXT("(a int, b varchar(10))"));
+        execute(
+            c,
+            NANODBC_TEXT("insert into test_statement_usable_when_result_gone values (1, 'one');"));
+        execute(
+            c,
+            NANODBC_TEXT("insert into test_statement_usable_when_result_gone values (2, 'two');"));
+        execute(
+            c,
+            NANODBC_TEXT("insert into test_statement_usable_when_result_gone values (3, 'tri');"));
+
+        nanodbc::statement s;
+        s.prepare(
+            c, NANODBC_TEXT("select a, b from test_statement_usable_when_result_gone order by a;"));
+
+        auto process_data_and_throw = [](int i)
+        {
+            if (i == 2)
+                throw std::runtime_error("a==2");
+        };
+
+        try
+        {
+            nanodbc::result r = s.execute();
+            while (r.next())
+                process_data_and_throw(r.get<int>(0));
+            REQUIRE(false); // should never get here
+        }
+        catch (std::runtime_error const& e)
+        {
+            REQUIRE_THAT(e.what(), Catch::Contains("a==2"));
+            REQUIRE(s.open());
+            nanodbc::result r = s.execute(); // statement remains usable, re-execute it
+            int sum = 0;
+            while (r.next())
+                sum += r.get<int>(0);
+            REQUIRE(sum == 1 + 2 + 3);
+        }
+    }
+
     void test_simple()
     {
         nanodbc::connection connection = connect();

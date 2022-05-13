@@ -236,6 +236,11 @@ TEST_CASE_METHOD(mysql_fixture, "test_simple", "[mysql]")
     test_simple();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_statement_usable_when_result_gone", "[mysql][statement]")
+{
+    test_statement_usable_when_result_gone();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_string", "[mysql][string]")
 {
     test_string();

@@ -769,6 +769,20 @@ TEST_CASE_METHOD(mssql_fixture, "test_simple", "[mssql]")
     test_simple();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_statement_usable_when_result_gone", "[mssql][statement]")
+{
+    test_statement_usable_when_result_gone();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_statement_with_empty_connection", "[mssql][statement]")
+{
+    nanodbc::connection c;
+    c.allocate();
+    nanodbc::statement s;
+    REQUIRE_THROWS_AS(s.open(c), nanodbc::database_error);
+    REQUIRE_THROWS_WITH(s.open(c), Catch::Contains("Connection"));
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_string", "[mssql][string]")
 {
     test_string();
@@ -1035,15 +1049,6 @@ TEST_CASE_METHOD(mssql_fixture, "test_datetimeoffset", "[mssql][datetime]")
         REQUIRE(*it++ == '-');
         ;
     }
-}
-
-TEST_CASE_METHOD(mssql_fixture, "test_statement_with_empty_connection", "[mssql][statement]")
-{
-    nanodbc::connection c;
-    c.allocate();
-    nanodbc::statement s;
-    REQUIRE_THROWS_AS(s.open(c), nanodbc::database_error);
-    REQUIRE_THROWS_WITH(s.open(c), Catch::Contains("Connection"));
 }
 
 TEST_CASE_METHOD(mssql_fixture, "test_transaction", "[mssql][transaction]")
