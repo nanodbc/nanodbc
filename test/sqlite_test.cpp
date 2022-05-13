@@ -445,6 +445,11 @@ TEST_CASE_METHOD(sqlite_fixture, "test_simple", "[sqlite]")
     test_simple();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "test_statement_usable_when_result_gone", "[sqlite][statement]")
+{
+    test_statement_usable_when_result_gone();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_string", "[sqlite][string]")
 {
     test_string();

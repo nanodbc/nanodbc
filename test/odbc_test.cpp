@@ -129,6 +129,11 @@ TEST_CASE_METHOD(odbc_fixture, "test_simple", "[odbc]")
     test_simple();
 }
 
+TEST_CASE_METHOD(odbc_fixture, "test_statement_usable_when_result_gone", "[odbc][statement]")
+{
+    test_statement_usable_when_result_gone();
+}
+
 TEST_CASE_METHOD(odbc_fixture, "test_string", "[odbc][string]")
 {
     test_string();

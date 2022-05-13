@@ -147,6 +147,11 @@ TEST_CASE_METHOD(vertica_fixture, "test_simple", "[vertica]")
     test_simple();
 }
 
+TEST_CASE_METHOD(vertica_fixture, "test_statement_usable_when_result_gone", "[vertica][statement]")
+{
+    test_statement_usable_when_result_gone();
+}
+
 TEST_CASE_METHOD(vertica_fixture, "test_string", "[vertica][string]")
 {
     test_string();

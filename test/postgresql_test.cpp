@@ -175,6 +175,11 @@ TEST_CASE_METHOD(postgresql_fixture, "test_simple", "[postgresql]")
     test_simple();
 }
 
+TEST_CASE_METHOD(postgresql_fixture, "test_statement_usable_when_result_gone", "[postgresql][statement]")
+{
+    test_statement_usable_when_result_gone();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_string", "[postgresql][string]")
 {
     test_string();
