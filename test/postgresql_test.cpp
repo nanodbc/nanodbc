@@ -63,7 +63,7 @@ TEST_CASE_METHOD(postgresql_fixture, "test_catalog_list_schemas", "[postgresql][
 // but works against 9.x on AppVeyor and against 12.x-14.x locally.
 // Could be due to psqlODBC version?
 //
-//TEST_CASE_METHOD(postgresql_fixture, "test_catalog_columns", "[postgresql][catalog][columns]")
+// TEST_CASE_METHOD(postgresql_fixture, "test_catalog_columns", "[postgresql][catalog][columns]")
 //{
 //    test_catalog_columns();
 //}
@@ -175,7 +175,10 @@ TEST_CASE_METHOD(postgresql_fixture, "test_simple", "[postgresql]")
     test_simple();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "test_statement_usable_when_result_gone", "[postgresql][statement]")
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_statement_usable_when_result_gone",
+    "[postgresql][statement]")
 {
     test_statement_usable_when_result_gone();
 }
