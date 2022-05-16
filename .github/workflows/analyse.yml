@@ -29,7 +29,7 @@ jobs:
           # Ruleset file that will determine what checks will be run
           ruleset: CppCoreCheckRules.ruleset
           # Paths to ignore analysis of CMake targets and includes
-          #ignoredPaths: ${{ github.workspace }}/test/catch;
+          ignoredPaths: ${{ github.workspace }}/test/catch
 
       # Upload SARIF file to GitHub Code Scanning Alerts
       - name: Upload SARIF to GitHub
