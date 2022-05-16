@@ -1151,7 +1151,7 @@ public:
             &length);
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
-        return {&name[0], &name[size(name)] };
+        return {&name[0], &name[size(name)]};
     }
 
     std::size_t ref_transaction() { return ++transactions_; }
@@ -1205,7 +1205,7 @@ string connection::connection_impl::get_info_impl<string>(short info_type) const
         &length);
     if (!success(rc))
         NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
-    return {&value[0], &value[size(value)] };
+    return {&value[0], &value[size(value)]};
 }
 
 string connection::connection_impl::dbms_name() const
@@ -1438,7 +1438,7 @@ public:
                 deallocate_handle(stmt_, SQL_HANDLE_STMT);
             }
         }
-        catch(...)
+        catch (...)
         {
             // ignore exceptions
         }
@@ -3090,10 +3090,7 @@ public:
         auto_bind_columns();
     }
 
-    ~result_impl() noexcept
-    {
-        cleanup_bound_columns();
-    }
+    ~result_impl() noexcept { cleanup_bound_columns(); }
 
     void* native_statement_handle() const { return stmt_.native_statement_handle(); }
 

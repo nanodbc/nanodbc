@@ -223,7 +223,7 @@ struct base_test_fixture
             return database_vendor::unknown;
     }
 
-    nanodbc::string get_binary_type_name(int size=0)
+    nanodbc::string get_binary_type_name(int size = 0)
     {
         nanodbc::string s;
         {
