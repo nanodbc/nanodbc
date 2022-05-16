@@ -4018,7 +4018,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
     case SQL_C_DATE:
     {
         const date d = *ensure_pdata<date>(column);
-        std::tm st;
+        std::tm st{};
         st.tm_year = d.year - 1900;
         st.tm_mon = d.month - 1;
         st.tm_mday = d.day;
@@ -4034,7 +4034,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
     case SQL_C_TIME:
     {
         const time t = *ensure_pdata<time>(column);
-        std::tm st;
+        std::tm st{};
         st.tm_hour = t.hour;
         st.tm_min = t.min;
         st.tm_sec = t.sec;
@@ -4050,7 +4050,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
     case SQL_C_TIMESTAMP:
     {
         const timestamp stamp = *ensure_pdata<timestamp>(column);
-        std::tm st;
+        std::tm st{};
         st.tm_year = stamp.year - 1900;
         st.tm_mon = stamp.month - 1;
         st.tm_mday = stamp.day;
