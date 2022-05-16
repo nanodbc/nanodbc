@@ -1912,7 +1912,7 @@ inline result_iterator begin(result& r)
 /// Dereferencing or incrementing it further is undefined.
 inline result_iterator end(result& /*r*/)
 {
-    return result_iterator();
+    return {};
 }
 
 // clang-format off

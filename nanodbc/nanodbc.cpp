@@ -1143,7 +1143,7 @@ public:
             &length);
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
-        return string(&name[0], &name[size(name)]);
+        return {&name[0], &name[size(name)] };
     }
 
     std::size_t ref_transaction() { return ++transactions_; }
@@ -1197,7 +1197,7 @@ string connection::connection_impl::get_info_impl<string>(short info_type) const
         &length);
     if (!success(rc))
         NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
-    return string(&value[0], &value[size(value)]);
+    return {&value[0], &value[size(value)] };
 }
 
 string connection::connection_impl::dbms_name() const
@@ -1671,7 +1671,7 @@ public:
 #else
         just_execute_direct(conn, query, batch_operations, timeout, statement);
 #endif
-        return result(statement, batch_operations);
+        return {statement, batch_operations};
     }
 
     RETCODE just_execute_direct(
@@ -1721,7 +1721,7 @@ public:
 #else
         just_execute(batch_operations, timeout, statement);
 #endif
-        return result(statement, batch_operations);
+        return {statement, batch_operations};
     }
 
     RETCODE just_execute(
@@ -1809,7 +1809,7 @@ public:
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
-        return result(statement, 1);
+        return {statement, 1};
     }
 
     long affected_rows() const
@@ -3310,7 +3310,7 @@ public:
 
         NANODBC_ASSERT(len % sizeof(NANODBC_SQLCHAR) == 0);
         len = len / sizeof(NANODBC_SQLCHAR);
-        return string(type_name, type_name + len);
+        return {type_name, type_name + len};
     }
 
     string column_datatype_name(string const& column_name) const
@@ -5994,7 +5994,8 @@ catalog::tables catalog::find_tables(
         NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
 
     result find_result(stmt, 1);
-    return catalog::tables(find_result);
+    catalog::tables tables(find_result);
+    return tables;
 }
 
 catalog::procedures
@@ -6023,7 +6024,8 @@ catalog::find_procedures(string const& procedure, string const& schema, string c
         NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
 
     result find_result(stmt, 1);
-    return catalog::procedures(find_result);
+    catalog::procedures procedures(find_result);
+    return procedures;
 }
 
 catalog::procedure_columns catalog::find_procedure_columns(
@@ -6050,7 +6052,8 @@ catalog::procedure_columns catalog::find_procedure_columns(
         NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
 
     result find_result(stmt, 1);
-    return catalog::procedure_columns(find_result);
+    catalog::procedure_columns columns(find_result);
+    return columns;
 }
 
 catalog::table_privileges
@@ -6079,7 +6082,8 @@ catalog::find_table_privileges(string const& catalog, string const& table, strin
         NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
 
     result find_result(stmt, 1);
-    return catalog::table_privileges(find_result);
+    catalog::table_privileges privileges(find_result);
+    return privileges;
 }
 
 catalog::columns catalog::find_columns(
@@ -6106,7 +6110,8 @@ catalog::columns catalog::find_columns(
         NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
 
     result find_result(stmt, 1);
-    return catalog::columns(find_result);
+    catalog::columns columns(find_result);
+    return columns;
 }
 
 catalog::primary_keys
@@ -6128,7 +6133,8 @@ catalog::find_primary_keys(string const& table, string const& schema, string con
         NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
 
     result find_result(stmt, 1);
-    return catalog::primary_keys(find_result);
+    catalog::primary_keys keys(find_result);
+    return keys;
 }
 
 std::list<string> catalog::list_catalogs()
