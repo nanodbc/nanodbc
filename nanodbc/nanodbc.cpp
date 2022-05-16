@@ -6224,7 +6224,7 @@ result::result()
 result::~result() noexcept {}
 
 result::result(statement stmt, long rowset_size)
-    : impl_(new result_impl(stmt, rowset_size))
+    : impl_(new result_impl(std::move(stmt), rowset_size))
 {
 }
 
