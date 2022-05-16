@@ -1251,7 +1251,7 @@ public:
     transaction_impl(transaction_impl const&) = delete;
     transaction_impl& operator=(transaction_impl const&) = delete;
 
-    transaction_impl(class connection const& conn)
+    explicit transaction_impl(class connection const& conn)
         : conn_(conn)
         , committed_(false)
     {
@@ -1369,7 +1369,7 @@ public:
     {
     }
 
-    statement_impl(class connection& conn)
+    explicit statement_impl(class connection& conn)
         : stmt_(nullptr)
         , open_(false)
         , conn_()

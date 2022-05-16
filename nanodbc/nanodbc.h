@@ -1312,7 +1312,7 @@ public:
     /// \param timeout Seconds before connection timeout. Default is 0 indicating no timeout.
     /// \throws database_error
     /// \see connected(), connect()
-    connection(string const& connection_string, long timeout = 0);
+    explicit connection(string const& connection_string, long timeout = 0);
 
     /// \brief Automatically disconnects from the database and frees all associated resources.
     ///
@@ -1952,7 +1952,7 @@ public:
 
     private:
         friend class nanodbc::catalog;
-        tables(result& find_result);
+        explicit tables(result& find_result);
         result result_;
     };
 
@@ -1992,7 +1992,7 @@ public:
 
     private:
         friend class nanodbc::catalog;
-        columns(result& find_result);
+        explicit columns(result& find_result);
         result result_;
     };
 
@@ -2017,7 +2017,7 @@ public:
 
     private:
         friend class nanodbc::catalog;
-        primary_keys(result& find_result);
+        explicit primary_keys(result& find_result);
         result result_;
     };
 
@@ -2037,7 +2037,7 @@ public:
 
     private:
         friend class nanodbc::catalog;
-        table_privileges(result& find_result);
+        explicit table_privileges(result& find_result);
         result result_;
     };
 
@@ -2054,7 +2054,7 @@ public:
 
     private:
         friend class nanodbc::catalog;
-        procedures(result& find_result);
+        explicit procedures(result& find_result);
         result result_;
     };
 
@@ -2095,7 +2095,7 @@ public:
 
     private:
         friend class nanodbc::catalog;
-        procedure_columns(result& find_result);
+        explicit procedure_columns(result& find_result);
         result result_;
     };
 
