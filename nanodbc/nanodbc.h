@@ -335,7 +335,7 @@ public:
     database_error(void* handle, short handle_type, std::string const& info = "");
     char const* what() const noexcept override;
     long native() const noexcept;
-    const std::string state() const noexcept;
+    std::string const& state() const noexcept;
 
 private:
     long native_error;

@@ -540,7 +540,7 @@ long database_error::native() const noexcept
     return native_error;
 }
 
-const std::string database_error::state() const noexcept
+std::string const& database_error::state() const noexcept
 {
     return sql_state;
 }
