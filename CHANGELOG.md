@@ -1,5 +1,20 @@
 # ChangeLog
 
+## v2.15.0
+
+### New Features
+
+- BREAKING: Public API function `complete` has been removed, use `complete_execute` instead [`#314`](https://github.com/nanodbc/nanodbc/pull/314).
+
+### Changes
+
+### Bug Fixes
+
+### Acknowledgements
+
+[Amy Troschinetz](https://github.com/lexicalunit),
+[Mateusz Loskot](https://github.com/mloskot),
+
 ## v2.14.0
 
 ### New Features
