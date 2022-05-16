@@ -293,7 +293,7 @@ class type_incompatible_error : public std::runtime_error
 {
 public:
     type_incompatible_error();
-    char const* what() const noexcept;
+    char const* what() const noexcept override;
 };
 
 /// \brief Accessed null data.
@@ -302,7 +302,7 @@ class null_access_error : public std::runtime_error
 {
 public:
     null_access_error();
-    char const* what() const noexcept;
+    char const* what() const noexcept override;
 };
 
 /// \brief Index out of range.
@@ -311,7 +311,7 @@ class index_range_error : public std::runtime_error
 {
 public:
     index_range_error();
-    char const* what() const noexcept;
+    char const* what() const noexcept override;
 };
 
 /// \brief Programming logic error.
@@ -320,7 +320,7 @@ class programming_error : public std::runtime_error
 {
 public:
     explicit programming_error(std::string const& info);
-    char const* what() const noexcept;
+    char const* what() const noexcept override;
 };
 
 /// \brief General database error.
@@ -333,7 +333,7 @@ public:
     /// \param handle_type The native ODBC handle type code for the given handle.
     /// \param info Additional info that will be appended to the beginning of the error message.
     database_error(void* handle, short handle_type, std::string const& info = "");
-    char const* what() const noexcept;
+    char const* what() const noexcept override;
     long native() const noexcept;
     const std::string state() const noexcept;
 
