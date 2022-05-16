@@ -293,7 +293,7 @@ class type_incompatible_error : public std::runtime_error
 {
 public:
     type_incompatible_error();
-    char const* what() const noexcept;
+    char const* what() const noexcept override;
 };
 
 /// \brief Accessed null data.
@@ -302,7 +302,7 @@ class null_access_error : public std::runtime_error
 {
 public:
     null_access_error();
-    char const* what() const noexcept;
+    char const* what() const noexcept override;
 };
 
 /// \brief Index out of range.
@@ -311,7 +311,7 @@ class index_range_error : public std::runtime_error
 {
 public:
     index_range_error();
-    char const* what() const noexcept;
+    char const* what() const noexcept override;
 };
 
 /// \brief Programming logic error.
@@ -320,7 +320,7 @@ class programming_error : public std::runtime_error
 {
 public:
     explicit programming_error(std::string const& info);
-    char const* what() const noexcept;
+    char const* what() const noexcept override;
 };
 
 /// \brief General database error.
@@ -333,9 +333,9 @@ public:
     /// \param handle_type The native ODBC handle type code for the given handle.
     /// \param info Additional info that will be appended to the beginning of the error message.
     database_error(void* handle, short handle_type, std::string const& info = "");
-    char const* what() const noexcept;
+    char const* what() const noexcept override;
     long native() const noexcept;
-    const std::string state() const noexcept;
+    std::string const& state() const noexcept;
 
 private:
     long native_error;
@@ -1312,7 +1312,7 @@ public:
     /// \param timeout Seconds before connection timeout. Default is 0 indicating no timeout.
     /// \throws database_error
     /// \see connected(), connect()
-    connection(string const& connection_string, long timeout = 0);
+    explicit connection(string const& connection_string, long timeout = 0);
 
     /// \brief Automatically disconnects from the database and frees all associated resources.
     ///
@@ -1912,7 +1912,7 @@ inline result_iterator begin(result& r)
 /// Dereferencing or incrementing it further is undefined.
 inline result_iterator end(result& /*r*/)
 {
-    return result_iterator();
+    return {};
 }
 
 // clang-format off
@@ -1952,7 +1952,7 @@ public:
 
     private:
         friend class nanodbc::catalog;
-        tables(result& find_result);
+        explicit tables(result& find_result);
         result result_;
     };
 
@@ -1992,7 +1992,7 @@ public:
 
     private:
         friend class nanodbc::catalog;
-        columns(result& find_result);
+        explicit columns(result& find_result);
         result result_;
     };
 
@@ -2017,7 +2017,7 @@ public:
 
     private:
         friend class nanodbc::catalog;
-        primary_keys(result& find_result);
+        explicit primary_keys(result& find_result);
         result result_;
     };
 
@@ -2037,7 +2037,7 @@ public:
 
     private:
         friend class nanodbc::catalog;
-        table_privileges(result& find_result);
+        explicit table_privileges(result& find_result);
         result result_;
     };
 
@@ -2054,7 +2054,7 @@ public:
 
     private:
         friend class nanodbc::catalog;
-        procedures(result& find_result);
+        explicit procedures(result& find_result);
         result result_;
     };
 
@@ -2095,7 +2095,7 @@ public:
 
     private:
         friend class nanodbc::catalog;
-        procedure_columns(result& find_result);
+        explicit procedure_columns(result& find_result);
         result result_;
     };
 
