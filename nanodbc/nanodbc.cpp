@@ -1251,8 +1251,8 @@ public:
     transaction_impl(transaction_impl const&) = delete;
     transaction_impl& operator=(transaction_impl const&) = delete;
 
-    explicit transaction_impl(class connection const& conn)
-        : conn_(conn)
+    explicit transaction_impl(class connection conn)
+        : conn_(std::move(conn))
         , committed_(false)
     {
         if (conn_.transactions() == 0 && conn_.connected())
@@ -3021,7 +3021,7 @@ public:
     result_impl& operator=(result_impl const&) = delete;
 
     result_impl(statement stmt, long rowset_size)
-        : stmt_(stmt)
+        : stmt_(std::move(stmt))
         , rowset_size_(rowset_size)
         , row_count_(0)
         , bound_columns_(nullptr)
