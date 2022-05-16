@@ -2994,7 +2994,7 @@ table_valued_parameter::table_valued_parameter_impl::get_bound_string_data(short
 
 } // namespace nanodbc
 
-#endif // NANODBC_ENABLE_TVP
+#endif // NANODBC_DISABLE_MSSQL_TVP
 
 // clang-format off
 // 8888888b.                            888 888              8888888                        888
@@ -5532,7 +5532,7 @@ void table_valued_parameter::describe_parameters(
     impl_->describe_parameters(idx, type, size, scale);
 }
 } // namespace nanodbc
-#endif // NANODBC_ENABLE_TVP
+#endif // NANODBC_DISABLE_MSSQL_TVP
 
 namespace nanodbc
 {
