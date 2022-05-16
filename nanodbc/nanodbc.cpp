@@ -4590,8 +4590,8 @@ std::list<driver> list_drivers()
             // Split "Key1=Value1\0Key2=Value2\0\0" into list of key-value pairs
             auto beg = &attrs[0];
             auto const end = &attrs[attrs_len_ret];
-            auto pair_end = end;
-            while ((pair_end = std::find(beg, end, NANODBC_TEXT('\0'))) != end)
+            for (auto pair_end = std::find(beg, end, NANODBC_TEXT('\0')); pair_end != end;
+                 pair_end = std::find(beg, end, NANODBC_TEXT('\0')))
             {
                 auto const eq_pos = std::find(beg, pair_end, NANODBC_TEXT('='));
                 if (eq_pos == end)
