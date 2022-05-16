@@ -1,5 +1,5 @@
 # GHA workflow to run MSVC with C++ Core Guidelines checkers + GitHub Code Scanning Alerts
-name: "CppCoreCheck"
+name: "Analysis"
 
 on: [push, pull_request]
 
@@ -8,8 +8,8 @@ env:
   config: 'Debug'
 
 jobs:
-  analyze:
-    name: Analyze
+  core:
+    name: CppCoreCheckRules
     runs-on: windows-latest
 
     steps:
