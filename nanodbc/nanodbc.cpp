@@ -410,7 +410,7 @@ recent_error(SQLHANDLE handle, SQLSMALLINT handle_type, long& native, std::strin
             (SQLSMALLINT)i,
             sql_state,
             &native_error,
-            0,
+            nullptr,
             0,
             &total_bytes);
 
@@ -730,8 +730,8 @@ public:
         , ctype_(0)
         , clen_(0)
         , blob_(false)
-        , cbdata_(0)
-        , pdata_(0)
+        , cbdata_(nullptr)
+        , pdata_(nullptr)
         , bound_(false)
     {
     }
@@ -1033,9 +1033,9 @@ public:
             dbc_,
             (NANODBC_SQLCHAR*)dsn.c_str(),
             SQL_NTS,
-            !user.empty() ? (NANODBC_SQLCHAR*)user.c_str() : 0,
+            !user.empty() ? (NANODBC_SQLCHAR*)user.c_str() : nullptr,
             SQL_NTS,
-            !pass.empty() ? (NANODBC_SQLCHAR*)pass.c_str() : 0,
+            !pass.empty() ? (NANODBC_SQLCHAR*)pass.c_str() : nullptr,
             SQL_NTS);
         if (!success(rc) && (event_handle == nullptr || rc != SQL_STILL_EXECUTING))
             NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
@@ -1080,7 +1080,7 @@ public:
             NANODBC_FUNC(SQLDriverConnect),
             rc,
             dbc_,
-            0,
+            nullptr,
             (NANODBC_SQLCHAR*)connection_string.c_str(),
             SQL_NTS,
             nullptr,
@@ -1353,7 +1353,7 @@ public:
     statement_impl& operator=(statement_impl const&) = delete;
 
     statement_impl()
-        : stmt_(0)
+        : stmt_(nullptr)
         , open_(false)
         , conn_()
         , bind_len_or_null_()
@@ -1370,7 +1370,7 @@ public:
     }
 
     statement_impl(class connection& conn)
-        : stmt_(0)
+        : stmt_(nullptr)
         , open_(false)
         , conn_()
         , bind_len_or_null_()
@@ -1391,7 +1391,7 @@ public:
     }
 
     statement_impl(class connection& conn, string const& query, long timeout)
-        : stmt_(0)
+        : stmt_(nullptr)
         , open_(false)
         , conn_()
         , bind_len_or_null_()
@@ -1461,7 +1461,7 @@ public:
         }
 
         open_ = false;
-        stmt_ = 0;
+        stmt_ = nullptr;
     }
 
 #ifndef NANODBC_DISABLE_MSSQL_TVP
@@ -1877,7 +1877,7 @@ public:
             static_cast<SQLUSMALLINT>(param_index + 1),
             &data_type,
             &parameter_size,
-            0,
+            nullptr,
             &nullable);
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
@@ -2449,7 +2449,7 @@ public:
                     rc,
                     stmt_.native_statement_handle(),
                     SQL_SOPT_SS_PARAM_FOCUS,
-                    (SQLPOINTER)0,
+                    nullptr,
                     SQL_IS_INTEGER);
                 if (!success(rc))
                     NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
@@ -2534,13 +2534,13 @@ public:
             NANODBC_FUNC(SQLColumns),
             rc,
             hstmt,
-            NULL,
+            nullptr,
             0,
-            NULL,
+            nullptr,
             0,
             (NANODBC_SQLCHAR*)tvp_name_.data(),
             SQL_NTS,
-            NULL,
+            nullptr,
             0);
         if (SQL_SUCCESS != rc && SQL_SUCCESS_WITH_INFO != rc)
             NANODBC_THROW_DATABASE_ERROR(hstmt, SQL_HANDLE_STMT);
@@ -3024,7 +3024,7 @@ public:
         : stmt_(stmt)
         , rowset_size_(rowset_size)
         , row_count_(0)
-        , bound_columns_(0)
+        , bound_columns_(nullptr)
         , bound_columns_size_(0)
         , rowset_position_(0)
         , bound_columns_by_name_()
@@ -3156,7 +3156,7 @@ public:
             SQL_ATTR_ROW_NUMBER,
             &pos,
             SQL_IS_UINTEGER,
-            0);
+            nullptr);
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
 
@@ -3187,7 +3187,7 @@ public:
             SQL_ATTR_ROW_NUMBER,
             &pos,
             SQL_IS_UINTEGER,
-            0);
+            nullptr);
 
         // MSDN (https://msdn.microsoft.com/en-us/library/ms712631.aspx):
         // If the number of the current row cannot be determined or
@@ -3505,7 +3505,7 @@ private:
         NANODBC_ASSERT(column < bound_columns_size_);
         bound_column& col = bound_columns_[column];
         delete[] col.pdata_;
-        col.pdata_ = 0;
+        col.pdata_ = nullptr;
         col.clen_ = 0;
     }
 
@@ -3748,7 +3748,7 @@ private:
             stmt_.native_statement_handle(),
             static_cast<SQLUSMALLINT>(column.column_ + 1), // ColumnNumber
             column.ctype_,
-            0,
+            nullptr,
             0,
             column.cbdata_); // re-use existing cbdata_ buffer
         if (!success(rc))
