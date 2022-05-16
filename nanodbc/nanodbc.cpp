@@ -4426,8 +4426,7 @@ std::unique_ptr<T, std::function<void(T*)>> result::result_impl::ensure_pdata(sh
 
     if (ValueLenOrInd == SQL_NULL_DATA)
         col.cbdata_[static_cast<size_t>(rowset_position_)] = (SQLINTEGER)SQL_NULL_DATA;
-    else
-        NANODBC_ASSERT(ValueLenOrInd == (SQLLEN)buffer_size);
+
     if (!success(rc))
         NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
 
