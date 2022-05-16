@@ -690,7 +690,7 @@ public:
     {
     }
 
-    ~bound_column()
+    ~bound_column() noexcept
     {
         delete[] cbdata_;
         delete[] pdata_;
@@ -884,9 +884,17 @@ public:
         }
         catch (...)
         {
-            // ignore exceptions thrown during disconnect
+            // ignore exceptions
         }
-        deallocate();
+
+        try
+        {
+            deallocate();
+        }
+        catch (...)
+        {
+            // ignore exceptions
+        }
     }
 
     void allocate()
@@ -1227,26 +1235,34 @@ public:
 
     ~transaction_impl() noexcept
     {
-        if (!committed_)
+        try
         {
-            conn_.rollback(true);
-            conn_.unref_transaction();
-        }
-
-        if (conn_.transactions() == 0 && conn_.connected())
-        {
-            if (conn_.rollback())
+            if (!committed_)
             {
-                NANODBC_CALL(SQLEndTran, SQL_HANDLE_DBC, conn_.native_dbc_handle(), SQL_ROLLBACK);
-                conn_.rollback(false);
+                conn_.rollback(true);
+                conn_.unref_transaction();
             }
 
-            NANODBC_CALL(
-                SQLSetConnectAttr,
-                conn_.native_dbc_handle(),
-                SQL_ATTR_AUTOCOMMIT,
-                (SQLPOINTER)SQL_AUTOCOMMIT_ON,
-                SQL_IS_UINTEGER);
+            if (conn_.transactions() == 0 && conn_.connected())
+            {
+                if (conn_.rollback())
+                {
+                    NANODBC_CALL(
+                        SQLEndTran, SQL_HANDLE_DBC, conn_.native_dbc_handle(), SQL_ROLLBACK);
+                    conn_.rollback(false);
+                }
+
+                NANODBC_CALL(
+                    SQLSetConnectAttr,
+                    conn_.native_dbc_handle(),
+                    SQL_ATTR_AUTOCOMMIT,
+                    (SQLPOINTER)SQL_AUTOCOMMIT_ON,
+                    SQL_IS_UINTEGER);
+            }
+        }
+        catch (...)
+        {
+            // ignore exceptions
         }
     }
 
@@ -1355,11 +1371,18 @@ public:
 
     ~statement_impl() noexcept
     {
-        if (open() && connected())
+        try
         {
-            NANODBC_CALL(SQLCancel, stmt_);
-            reset_parameters();
-            deallocate_handle(stmt_, SQL_HANDLE_STMT);
+            if (open() && connected())
+            {
+                NANODBC_CALL(SQLCancel, stmt_);
+                reset_parameters();
+                deallocate_handle(stmt_, SQL_HANDLE_STMT);
+            }
+        }
+        catch(...)
+        {
+            // ignore exceptions
         }
     }
 
@@ -2315,7 +2338,10 @@ public:
         auto_bind();
     }
 
-    ~result_impl() noexcept { cleanup_bound_columns(); }
+    ~result_impl() noexcept
+    {
+        cleanup_bound_columns();
+    }
 
     void* native_statement_handle() const { return stmt_.native_statement_handle(); }
 
