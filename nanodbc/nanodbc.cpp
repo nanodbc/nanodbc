@@ -3595,11 +3595,10 @@ private:
                 case SQL_VARCHAR:
                 case SQL_WVARCHAR:
                 case SQL_SS_XML:
-                {
                     // Divide in half, due to sqlsize being 32-bit in Win32 (and 64-bit in x64)
                     // sqlsize = std::numeric_limits<int32_t>::max() / 2 - 1;
                     is_blob = true;
-                }
+                    break;
                 default:
                     is_blob = false;
                 }
