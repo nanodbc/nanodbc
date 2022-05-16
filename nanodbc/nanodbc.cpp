@@ -3600,6 +3600,8 @@ private:
                     // sqlsize = std::numeric_limits<int32_t>::max() / 2 - 1;
                     is_blob = true;
                 }
+                default:
+                    is_blob = false;
                 }
             }
 
