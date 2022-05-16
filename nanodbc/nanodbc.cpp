@@ -4019,7 +4019,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
     case SQL_C_DATE:
     {
         const date d = *ensure_pdata<date>(column);
-        std::tm st ;
+        std::tm st;
         st.tm_year = d.year - 1900;
         st.tm_mon = d.month - 1;
         st.tm_mday = d.day;
@@ -4035,7 +4035,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
     case SQL_C_TIME:
     {
         const time t = *ensure_pdata<time>(column);
-        std::tm st ;
+        std::tm st;
         st.tm_hour = t.hour;
         st.tm_min = t.min;
         st.tm_sec = t.sec;
@@ -4051,7 +4051,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
     case SQL_C_TIMESTAMP:
     {
         const timestamp stamp = *ensure_pdata<timestamp>(column);
-        std::tm st ;
+        std::tm st;
         st.tm_year = stamp.year - 1900;
         st.tm_mon = stamp.month - 1;
         st.tm_mday = stamp.day;
@@ -4240,12 +4240,12 @@ inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant
         std::wstring v;
         get_ref_impl(column, v);
         DECIMAL d;
-        #ifdef __MINGW32__
+#ifdef __MINGW32__
         //  See https://sourceforge.net/p/mingw-w64/bugs/940/
         auto s = const_cast<LPOLESTR>(static_cast<LPCOLESTR>(v.c_str()));
-        #else
+#else
         auto s = static_cast<LPCOLESTR>(v.c_str());
-        #endif
+#endif
         if (FAILED(::VarDecFromStr(s, LOCALE_INVARIANT, 0, &d)))
             throw type_incompatible_error();
         result = d;
