@@ -3233,8 +3233,7 @@ public:
 
     short column(string const& column_name) const
     {
-        typedef std::map<string, bound_column*>::const_iterator iter;
-        iter i = bound_columns_by_name_.find(column_name);
+        auto i = bound_columns_by_name_.find(column_name);
         if (i == bound_columns_by_name_.end())
             throw index_range_error();
         return i->second->column_;
