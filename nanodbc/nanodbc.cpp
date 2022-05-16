@@ -4455,8 +4455,6 @@ void result::result_impl::get_ref_impl(short column, T& result) const
         result = (T) * (ensure_pdata<unsigned short>(column));
         return;
     case SQL_C_LONG:
-        result = (T) * (ensure_pdata<int32_t>(column));
-        return;
     case SQL_C_SLONG:
         result = (T) * (ensure_pdata<int32_t>(column));
         return;
