@@ -1,7 +1,9 @@
-# GHA workflow to run MSVC with C++ Core Guidelines checkers + GitHub Code Scanning Alerts
+# GHA workflow to run Static Analysis and submit results to GitHub Code Scanning Alerts
 name: "Analysis"
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main ]
 
 env:
   build: '${{ github.workspace }}/build'
@@ -22,7 +24,7 @@ jobs:
       - name: Run MSVC Code Analysis
         uses: microsoft/msvc-code-analysis-action@v0.1.0
         # Provide a unique ID to access the sarif output path
-        id: run-analysis
+        id: run-core-analysis
         with:
           cmakeBuildDirectory: ${{ env.build }}
           buildConfiguration: ${{ env.config }}
@@ -35,11 +37,69 @@ jobs:
       - name: Upload SARIF to GitHub
         uses: github/codeql-action/upload-sarif@v1
         with:
-          sarif_file: ${{ steps.run-analysis.outputs.sarif }}
+          sarif_file: ${{ steps.run-core-analysis.outputs.sarif }}
 
       # Upload SARIF file as an Artifact to download and view
       - name: Upload SARIF as an Artifact
         uses: actions/upload-artifact@v2
         with:
           name: sarif-file
-          path: ${{ steps.run-analysis.outputs.sarif }}
+          path: ${{ steps.run-core-analysis.outputs.sarif }}
+
+  native:
+    name: NativeRecommendedRules
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Configure CMake
+        run: cmake -B ${{ env.build }} -DCMAKE_BUILD_TYPE=${{ env.config }}
+
+      - name: Run MSVC Code Analysis
+        uses: microsoft/msvc-code-analysis-action@v0.1.0
+        # Provide a unique ID to access the sarif output path
+        id: run-native-analysis
+        with:
+          cmakeBuildDirectory: ${{ env.build }}
+          buildConfiguration: ${{ env.config }}
+          # Ruleset file that will determine what checks will be run
+          ruleset: NativeRecommendedRules.ruleset
+          # Paths to ignore analysis of CMake targets and includes
+          ignoredPaths: ${{ github.workspace }}/test/catch
+
+      # Upload SARIF file to GitHub Code Scanning Alerts
+      - name: Upload SARIF to GitHub
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: ${{ steps.run-native-analysis.outputs.sarif }}
+
+      # Upload SARIF file as an Artifact to download and view
+      - name: Upload SARIF as an Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: sarif-file
+          path: ${{ steps.run-native-analysis.outputs.sarif }}
+
+  flawfinder:
+    name: Flawfinder
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: flawfinder_scan
+        uses: david-a-wheeler/flawfinder@8e4a779ad59dbfaee5da586aa9210853b701959c
+        with:
+          arguments: '--sarif ./'
+          output: 'flawfinder_results.sarif'
+
+      - name: Upload analysis results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: ${{github.workspace}}/flawfinder_results.sarif
