@@ -61,15 +61,13 @@
 #include <sql.h>
 #include <sqlext.h>
 
-// _variant_t support on Windows platform only
-#ifdef _WIN32
-#include <comutil.h>
+// Enable _variant_t support only for Visual C++ on Windows
 #if defined(_MSC_VER)
+#include <comutil.h>
 #if defined(_DEBUG)
 #pragma comment(lib, "comsuppwd.lib")
 #else
 #pragma comment(lib, "comsuppw.lib")
-#endif
 #endif
 #endif
 
