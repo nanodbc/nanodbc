@@ -9,6 +9,7 @@ branches:
     - latest
     - release
     - coverity_scan
+    - ml/*
 
 git:
   depth: 10
