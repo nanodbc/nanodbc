@@ -5350,6 +5350,19 @@ void statement::describe_parameters(
 
 } // namespace nanodbc
 
+
+// clang-format off
+// 888b     d888  .d8888b.   .d8888b.   .d88888b.  888                       88888888888 888     888 8888888b.
+// 8888b   d8888 d88P  Y88b d88P  Y88b d88P" "Y88b 888                           888     888     888 888   Y88b
+// 88888b.d88888 Y88b.      Y88b.      888     888 888                           888     888     888 888    888
+// 888Y88888P888  "Y888b.    "Y888b.   888     888 888                           888     Y88b   d88P 888   d88P
+// 888 Y888P 888     "Y88b.     "Y88b. 888     888 888                           888      Y88b d88P  8888888P"
+// 888  Y8P  888       "888       "888 888 Y8b 888 888           888888          888       Y88o88P   888
+// 888   "   888 Y88b  d88P Y88b  d88P Y88b.Y8b88P 888                           888        Y888P    888
+// 888       888  "Y8888P"   "Y8888P"   "Y888888"  88888888                      888         Y8P     888
+//                                            Y8b
+// MARK: MSSQL - TVP (Table Valued Parameters) -
+// clang-format on
 #ifndef NANODBC_DISABLE_MSSQL_TVP
 namespace nanodbc
 {
@@ -5557,6 +5570,20 @@ void table_valued_parameter::describe_parameters(
 } // namespace nanodbc
 #endif // NANODBC_DISABLE_MSSQL_TVP
 
+// clang-format off
+//  .d8888b.           888             888
+// d88P  Y88b          888             888
+// 888    888          888             888
+// 888         8888b.  888888  8888b.  888  .d88b.   .d88b.
+// 888            "88b 888        "88b 888 d88""88b d88P"88b
+// 888    888 .d888888 888    .d888888 888 888  888 888  888
+// Y88b  d88P 888  888 Y88b.  888  888 888 Y88..88P Y88b 888
+//  "Y8888P"  "Y888888  "Y888 "Y888888 888  "Y88P"   "Y88888
+//                                                       888
+//                                                  Y8b d88P
+//                                                   "Y88P"
+// MARK: Catalog -
+// clang-format on
 namespace nanodbc
 {
 

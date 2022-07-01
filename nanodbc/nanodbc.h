@@ -489,6 +489,18 @@ private:
     std::shared_ptr<transaction_impl> impl_;
 };
 
+// clang-format off
+// 888b     d888  .d8888b.   .d8888b.   .d88888b.  888                       88888888888 888     888 8888888b.
+// 8888b   d8888 d88P  Y88b d88P  Y88b d88P" "Y88b 888                           888     888     888 888   Y88b
+// 88888b.d88888 Y88b.      Y88b.      888     888 888                           888     888     888 888    888
+// 888Y88888P888  "Y888b.    "Y888b.   888     888 888                           888     Y88b   d88P 888   d88P
+// 888 Y888P 888     "Y88b.     "Y88b. 888     888 888                           888      Y88b d88P  8888888P"
+// 888  Y8P  888       "888       "888 888 Y8b 888 888           888888          888       Y88o88P   888
+// 888   "   888 Y88b  d88P Y88b  d88P Y88b.Y8b88P 888                           888        Y888P    888
+// 888       888  "Y8888P"   "Y8888P"   "Y888888"  88888888                      888         Y8P     888
+//                                            Y8b
+// MARK: MSSQL - TVP (Table Valued Parameters) -
+// clang-format on
 #ifndef NANODBC_DISABLE_MSSQL_TVP
 /// \brief Support for table-valued parameter
 class table_valued_parameter
