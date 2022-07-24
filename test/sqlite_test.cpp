@@ -293,6 +293,11 @@ TEST_CASE_METHOD(sqlite_fixture, "test_execute_multiple", "[sqlite][execute]")
     test_execute_multiple();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "test_implementation_row_descriptor", "[sqlite][descriptor][ird]")
+{
+    test_implementation_row_descriptor();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_integral", "[sqlite][integral]")
 {
     test_integral<sqlite_fixture>();
