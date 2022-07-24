@@ -215,6 +215,11 @@ TEST_CASE_METHOD(mysql_fixture, "test_execute_multiple", "[mysql][execute]")
     test_execute_multiple();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_implementation_row_descriptor", "[mysql][descriptor][ird]")
+{
+    test_implementation_row_descriptor();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_integral", "[mysql][integral]")
 {
     test_integral<mysql_fixture>();

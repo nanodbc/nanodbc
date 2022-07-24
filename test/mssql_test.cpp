@@ -788,6 +788,11 @@ TEST_CASE_METHOD(mssql_fixture, "test_execute_multiple", "[mssql][execute]")
     test_execute_multiple();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_implementation_row_descriptor", "[mssql][descriptor][ird]")
+{
+    test_implementation_row_descriptor();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_integral", "[mssql][integral]")
 {
     test_integral<mssql_fixture>();
