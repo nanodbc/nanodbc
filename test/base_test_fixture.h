@@ -500,25 +500,36 @@ struct base_test_fixture
     void create_table(
         nanodbc::connection& connection,
         nanodbc::string const& name,
-        nanodbc::string def) const
+        nanodbc::string def,
+        bool create_view = false) const
     {
-        if (def.front() != NANODBC_TEXT('('))
-            def.insert(0, 1, NANODBC_TEXT('('));
+        if (!create_view) // i.e. SQLite does not like braces in CREATE VIEW x AS (SELECT...)
+        {
+            if (def.front() != NANODBC_TEXT('('))
+                def.insert(0, 1, NANODBC_TEXT('('));
 
-        if (def.back() != NANODBC_TEXT(')'))
-            def.push_back(NANODBC_TEXT(')'));
+            if (def.back() != NANODBC_TEXT(')'))
+                def.push_back(NANODBC_TEXT(')'));
+        }
 
         nanodbc::string sql(NANODBC_TEXT("CREATE TABLE "));
+        if (create_view)
+            sql = NANODBC_TEXT("CREATE VIEW ");
         sql += name;
+        if (create_view)
+            sql += NANODBC_TEXT(" AS ");
         sql += NANODBC_TEXT(" ");
         sql += def;
         sql += NANODBC_TEXT(';');
 
-        drop_table(connection, name);
+        drop_table(connection, name, create_view);
         execute(connection, sql);
     }
 
-    virtual void drop_table(nanodbc::connection& connection, nanodbc::string const& name) const
+    virtual void drop_table(
+        nanodbc::connection& connection,
+        nanodbc::string const& name,
+        bool drop_view = false) const
     {
         bool table_exists = true;
         try
@@ -534,7 +545,10 @@ struct base_test_fixture
 
         if (table_exists)
         {
-            execute(connection, NANODBC_TEXT("DROP TABLE ") + name + NANODBC_TEXT(";"));
+            if (drop_view)
+                execute(connection, NANODBC_TEXT("DROP VIEW ") + name + NANODBC_TEXT(";"));
+            else
+                execute(connection, NANODBC_TEXT("DROP TABLE ") + name + NANODBC_TEXT(";"));
         }
     }
 
