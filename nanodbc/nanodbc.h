@@ -2048,6 +2048,64 @@ inline result_iterator end(result& /*r*/)
 }
 
 // clang-format off
+// 8888888b.                                     d8b          888
+// 888  "Y88b                                    Y8P          888
+// 888    888                                                 888
+// 888    888  .d88b.  .d8888b   .d8888b 888d888 888 88888b.  888888 .d88b.  888d888 .d8888b
+// 888    888 d8P  Y8b 88K      d88P"    888P"   888 888 "88b 888   d88""88b 888P"   88K
+// 888    888 88888888 "Y8888b. 888      888     888 888  888 888   888  888 888     "Y8888b.
+// 888  .d88P Y8b.          X88 Y88b.    888     888 888 d88P Y88b. Y88..88P 888          X88
+// 8888888P"   "Y8888   88888P'  "Y8888P 888     888 88888P"   "Y888 "Y88P"  888      88888P'
+//                                                   888
+//                                                   888
+//                                                   888
+// MARK: Descriptors -
+// clang-format on
+
+/// Provides access to metadata in the Implementation Row Descriptor (IRD)
+/// implicitly allocated for a prepared or executed statement.
+///
+/// The IRD contains information about the columns in a result set,
+/// such as their SQL data types, lengths, and nullability.
+class implementation_row_descriptor
+{
+public:
+    implementation_row_descriptor(result const& result);
+    implementation_row_descriptor(statement const& statement);
+
+    auto base_column_name(short column) const -> string;
+
+    auto base_table_name(short column) const -> string;
+
+    auto column_count() const -> short;
+
+    auto column_name(short column) const -> string;
+
+    auto columns() const -> short;
+
+    auto table_name(short column) const -> string;
+
+private:
+
+    struct sql_col_attribute
+    {
+        sql_col_attribute(implementation_row_descriptor const& ird, short column, std::uint16_t field_identifier);
+        operator std::int64_t() const;
+        operator string() const;
+
+        implementation_row_descriptor const& ird_;
+        short column_;
+        std::uint16_t field_identifier_;
+    };
+    friend sql_col_attribute;
+
+    void throw_if_column_is_out_of_range(short column) const;
+
+    void* statement_handle_{nullptr};
+    short statement_columns_size_{0};
+};
+
+// clang-format off
 //
 //  .d8888b.           888             888
 // d88P  Y88b          888             888
