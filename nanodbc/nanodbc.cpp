@@ -173,6 +173,12 @@ struct is_optional<std::optional<T>> : std::true_type
 #endif
 #endif
 
+#if (NANODBC_ODBC_VERSION >= SQL_OV_ODBC3)
+#define NANODBC_DESC_FIELD_IDENTIFIER(odbc3_id, odbc2_id) odbc3_id
+#else
+#define NANODBC_DESC_FIELD_IDENTIFIER(odbc3_id, odbc2_id) odbc2_id
+#endif
+
 // clang-format off
 // 888     888          d8b                       888
 // 888     888          Y8P                       888
@@ -5645,6 +5651,145 @@ void statement::describe_parameters(
     const std::vector<short>& scale)
 {
     impl_->describe_parameters(idx, type, size, scale);
+}
+
+} // namespace nanodbc
+
+// clang-format off
+// 8888888b.                                     d8b          888
+// 888  "Y88b                                    Y8P          888
+// 888    888                                                 888
+// 888    888  .d88b.  .d8888b   .d8888b 888d888 888 88888b.  888888 .d88b.  888d888 .d8888b
+// 888    888 d8P  Y8b 88K      d88P"    888P"   888 888 "88b 888   d88""88b 888P"   88K
+// 888    888 88888888 "Y8888b. 888      888     888 888  888 888   888  888 888     "Y8888b.
+// 888  .d88P Y8b.          X88 Y88b.    888     888 888 d88P Y88b. Y88..88P 888          X88
+// 8888888P"   "Y8888   88888P'  "Y8888P 888     888 88888P"   "Y888 "Y88P"  888      88888P'
+//                                                   888
+//                                                   888
+//                                                   888
+// MARK: Descriptors -
+// clang-format on
+namespace nanodbc
+{
+
+implementation_row_descriptor::sql_col_attribute::sql_col_attribute(
+    implementation_row_descriptor const& ird,
+    short column,
+    std::uint16_t field_identifier)
+    : ird_(ird)
+    , column_(column)
+    , field_identifier_(field_identifier)
+{
+}
+
+implementation_row_descriptor::sql_col_attribute::operator std::int64_t() const
+{
+    SQLLEN value = 0;
+    RETCODE rc;
+    NANODBC_CALL_RC(
+        NANODBC_FUNC(SQLColAttribute),
+        rc,
+        ird_.statement_handle_,
+        static_cast<SQLUSMALLINT>(column_ + 1),
+        field_identifier_,
+        nullptr,
+        0,
+        nullptr,
+        &value);
+    if (!success(rc))
+        NANODBC_THROW_DATABASE_ERROR(ird_.statement_handle_, SQL_HANDLE_STMT);
+
+    return value;
+}
+
+implementation_row_descriptor::sql_col_attribute::operator string() const
+{
+    NANODBC_SQLCHAR type_name[256] = {0};
+    SQLSMALLINT len = 0; // total number of bytes
+    RETCODE rc;
+    NANODBC_CALL_RC(
+        NANODBC_FUNC(SQLColAttribute),
+        rc,
+        ird_.statement_handle_,
+        static_cast<SQLUSMALLINT>(column_ + 1),
+        field_identifier_,
+        type_name,
+        sizeof(type_name),
+        &len,
+        nullptr);
+    if (!success(rc))
+        NANODBC_THROW_DATABASE_ERROR(ird_.statement_handle_, SQL_HANDLE_STMT);
+
+    NANODBC_ASSERT(len % sizeof(NANODBC_SQLCHAR) == 0);
+    len = len / sizeof(NANODBC_SQLCHAR);
+    return {type_name, type_name + len};
+}
+
+implementation_row_descriptor::implementation_row_descriptor(result const& result)
+    : statement_handle_(result.native_statement_handle())
+    , statement_columns_size_(result.columns())
+{
+}
+
+implementation_row_descriptor::implementation_row_descriptor(statement const& statement)
+    : statement_handle_(statement.native_statement_handle())
+    , statement_columns_size_(statement.columns())
+{
+}
+
+short implementation_row_descriptor::implementation_row_descriptor::columns() const
+{
+    if (statement_columns_size_ == 0)
+    {
+        SQLSMALLINT columns;
+        RETCODE rc;
+
+        NANODBC_CALL_RC(SQLNumResultCols, rc, statement_handle_, &columns);
+        if (!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(statement_handle_, SQL_HANDLE_STMT);
+        const_cast<implementation_row_descriptor*>(this)->statement_columns_size_ = columns;
+    }
+
+    return statement_columns_size_;
+}
+
+void implementation_row_descriptor::throw_if_column_is_out_of_range(short column) const
+{
+    if ((column < 0) || (column >= statement_columns_size_))
+        throw index_range_error();
+}
+
+auto implementation_row_descriptor::base_column_name(short column) const -> string
+{
+    throw_if_column_is_out_of_range(column);
+    return sql_col_attribute(*this, column, SQL_DESC_BASE_COLUMN_NAME);
+}
+
+auto implementation_row_descriptor::base_table_name(short column) const -> string
+{
+    throw_if_column_is_out_of_range(column);
+    return sql_col_attribute(*this, column, SQL_DESC_BASE_TABLE_NAME);
+}
+
+auto implementation_row_descriptor::column_count() const -> short
+{
+    constexpr auto fid = NANODBC_DESC_FIELD_IDENTIFIER(SQL_DESC_COUNT, SQL_COLUMN_COUNT);
+    std::uint64_t value = sql_col_attribute(*this, 0, fid); // 0 for column, ignored
+    return static_cast<short>(value);
+}
+
+auto implementation_row_descriptor::column_name(short column) const -> string
+{
+    throw_if_column_is_out_of_range(column);
+    constexpr auto fid = NANODBC_DESC_FIELD_IDENTIFIER(SQL_DESC_NAME, SQL_COLUMN_NAME);
+    return sql_col_attribute(*this, column, fid);
+}
+
+auto implementation_row_descriptor::table_name(short column) const -> string
+{
+    throw_if_column_is_out_of_range(column);
+    constexpr auto fid = NANODBC_DESC_FIELD_IDENTIFIER(SQL_DESC_TABLE_NAME, SQL_COLUMN_TABLE_NAME);
+    return sql_col_attribute(*this, column, fid);
 }
 
 } // namespace nanodbc
