@@ -5800,6 +5800,22 @@ auto implementation_row_descriptor::column_name(short column) const -> string
     return sql_col_attribute(*this, column, fid);
 }
 
+auto implementation_row_descriptor::column_named(short column) const -> bool
+{
+    throw_if_column_is_out_of_range(column);
+#if (NANODBC_ODBC_VERSION >= SQL_OV_ODBC3)
+    auto const value = sql_col_attribute(*this, column, SQL_DESC_UNNAMED);
+    if (value == SQL_NAMED)
+        return true;
+    else if (value == SQL_UNNAMED)
+        return false;
+    else
+        throw std::out_of_range("SQL_DESC_UNNAMED value unknown");
+#else
+    return false; // value undetermined
+#endif
+}
+
 auto implementation_row_descriptor::schema_name(short column) const -> string
 {
     throw_if_column_is_out_of_range(column);
