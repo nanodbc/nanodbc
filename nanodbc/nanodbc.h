@@ -2073,6 +2073,8 @@ public:
     implementation_row_descriptor(result const& result);
     implementation_row_descriptor(statement const& statement);
 
+    auto auto_unique_value(short column) const -> bool;
+
     auto base_column_name(short column) const -> string;
 
     auto base_table_name(short column) const -> string;

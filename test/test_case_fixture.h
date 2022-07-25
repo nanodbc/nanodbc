@@ -1416,6 +1416,7 @@ PRIMARY KEY(t2_fid)
             REQUIRE(ird.columns() == 2);
             REQUIRE(ird.columns() == ird.column_count());
             // name
+            REQUIRE(!ird.auto_unique_value(0));
             if (vendor_ == database_vendor::sqlite || vendor_ == database_vendor::postgresql)
                 REQUIRE(ird.base_column_name(0) == NANODBC_TEXT("name"));
             else
@@ -1424,6 +1425,7 @@ PRIMARY KEY(t2_fid)
             REQUIRE(ird.base_table_name(0) == NANODBC_TEXT(""));
             REQUIRE(ird.table_name(0) == NANODBC_TEXT(""));
             // age
+            REQUIRE(!ird.auto_unique_value(1));
             if (vendor_ == database_vendor::sqlite || vendor_ == database_vendor::postgresql)
                 REQUIRE(ird.base_column_name(1) == NANODBC_TEXT("age"));
             else
@@ -1447,6 +1449,7 @@ PRIMARY KEY(t2_fid)
             REQUIRE(ird.columns() == 3);
             REQUIRE(ird.columns() == ird.column_count());
             // t1_fid1
+            REQUIRE(!ird.auto_unique_value(0));
             if (vendor_ == database_vendor::sqlite)
                 REQUIRE(ird.base_column_name(0) == NANODBC_TEXT("fid1"));
             else
@@ -1458,6 +1461,7 @@ PRIMARY KEY(t2_fid)
             else
                 REQUIRE(ird.table_name(0) == NANODBC_TEXT("t1"));
             // t1_fid2
+            REQUIRE(!ird.auto_unique_value(1));
             REQUIRE(ird.base_column_name(1) == NANODBC_TEXT("t1_fid2"));
             REQUIRE(ird.column_name(1) == NANODBC_TEXT("t1_fid2"));
             REQUIRE(ird.base_table_name(1) == NANODBC_TEXT("t1"));

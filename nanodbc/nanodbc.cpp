@@ -5759,6 +5759,14 @@ void implementation_row_descriptor::throw_if_column_is_out_of_range(short column
         throw index_range_error();
 }
 
+auto implementation_row_descriptor::auto_unique_value(short column) const -> bool
+{
+    throw_if_column_is_out_of_range(column);
+    constexpr auto fid = NANODBC_DESC_FIELD_IDENTIFIER(SQL_DESC_AUTO_UNIQUE_VALUE, SQL_COLUMN_AUTO_INCREMENT);
+    auto const value = sql_col_attribute(*this, column, fid);
+    return value == SQL_TRUE;
+}
+
 auto implementation_row_descriptor::base_column_name(short column) const -> string
 {
     throw_if_column_is_out_of_range(column);
