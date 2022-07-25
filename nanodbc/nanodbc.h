@@ -2085,6 +2085,8 @@ public:
 
     auto column_name(short column) const -> string;
 
+    auto column_named(short column) const -> bool;
+
     auto columns() const -> short;
 
     auto schema_name(short column) const -> string;
