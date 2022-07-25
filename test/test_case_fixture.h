@@ -1415,6 +1415,34 @@ PRIMARY KEY(t2_fid)
             nanodbc::implementation_row_descriptor ird(s);
             REQUIRE(ird.columns() == 2);
             REQUIRE(ird.columns() == ird.column_count());
+            for (short i = 0; i < ird.columns(); i++)
+            {
+                if (vendor_ == database_vendor::mysql)
+                {
+                    REQUIRE(ird.catalog_name(i) != NANODBC_TEXT(""));
+                    REQUIRE(ird.schema_name(i) == NANODBC_TEXT(""));
+                }
+                else if (vendor_ == database_vendor::postgresql)
+                {
+                    REQUIRE(ird.catalog_name(i) == NANODBC_TEXT(""));
+                    REQUIRE(ird.schema_name(i) == NANODBC_TEXT(""));
+                }
+                else if (vendor_ == database_vendor::sqlite)
+                {
+                    REQUIRE(ird.catalog_name(i) == NANODBC_TEXT(""));
+                    REQUIRE(ird.schema_name(i) == NANODBC_TEXT(""));
+                }
+                else if (vendor_ == database_vendor::sqlserver)
+                {
+                    REQUIRE(ird.catalog_name(i) == NANODBC_TEXT(""));
+                    REQUIRE(ird.schema_name(i) == NANODBC_TEXT(""));
+                }
+                else
+                {
+                    REQUIRE(ird.schema_name(i) != NANODBC_TEXT(""));
+                    REQUIRE(ird.schema_name(i) != NANODBC_TEXT(""));
+                }
+            }
             // name
             REQUIRE(!ird.auto_unique_value(0));
             if (vendor_ == database_vendor::sqlite || vendor_ == database_vendor::postgresql)
@@ -1448,6 +1476,37 @@ PRIMARY KEY(t2_fid)
             nanodbc::implementation_row_descriptor ird(s);
             REQUIRE(ird.columns() == 3);
             REQUIRE(ird.columns() == ird.column_count());
+            for (short i = 0; i < ird.columns(); i++)
+            {
+                if (vendor_ == database_vendor::mysql)
+                {
+                    REQUIRE(ird.catalog_name(i) != NANODBC_TEXT(""));
+                    REQUIRE(ird.schema_name(i) == NANODBC_TEXT(""));
+                }
+                else if (vendor_ == database_vendor::postgresql)
+                {
+                    if (i == 0) // NOTICE: fid1 alias has no catalog!(?)
+                        REQUIRE(ird.catalog_name(i) == NANODBC_TEXT(""));
+                    else
+                        REQUIRE(ird.catalog_name(i) != NANODBC_TEXT(""));
+                    REQUIRE(ird.schema_name(i) == NANODBC_TEXT("public"));
+                }
+                else if (vendor_ == database_vendor::sqlite)
+                {
+                    REQUIRE(ird.catalog_name(i) == NANODBC_TEXT("main"));
+                    REQUIRE(ird.schema_name(i) == NANODBC_TEXT(""));
+                }
+                else if (vendor_ == database_vendor::sqlserver)
+                {
+                    REQUIRE(ird.catalog_name(i) != NANODBC_TEXT(""));
+                    REQUIRE(ird.schema_name(i) == NANODBC_TEXT(""));
+                }
+                else
+                {
+                    REQUIRE(ird.schema_name(i) != NANODBC_TEXT(""));
+                    REQUIRE(ird.schema_name(i) != NANODBC_TEXT(""));
+                }
+            }
             // t1_fid1
             REQUIRE(!ird.auto_unique_value(0));
             if (vendor_ == database_vendor::sqlite)
