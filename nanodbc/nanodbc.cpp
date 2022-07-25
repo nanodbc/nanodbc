@@ -5755,6 +5755,13 @@ auto implementation_row_descriptor::base_table_name(short column) const -> strin
     return sql_col_attribute(*this, column, SQL_DESC_BASE_TABLE_NAME);
 }
 
+auto implementation_row_descriptor::catalog_name(short column) const -> string
+{
+    throw_if_column_is_out_of_range(column);
+    constexpr auto fid = NANODBC_DESC_FIELD_IDENTIFIER(SQL_DESC_CATALOG_NAME, SQL_COLUMN_QUALIFIER_NAME);
+    return sql_col_attribute(*this, column, fid);
+}
+
 auto implementation_row_descriptor::column_count() const -> short
 {
     constexpr auto fid = NANODBC_DESC_FIELD_IDENTIFIER(SQL_DESC_COUNT, SQL_COLUMN_COUNT);
@@ -5766,6 +5773,13 @@ auto implementation_row_descriptor::column_name(short column) const -> string
 {
     throw_if_column_is_out_of_range(column);
     constexpr auto fid = NANODBC_DESC_FIELD_IDENTIFIER(SQL_DESC_NAME, SQL_COLUMN_NAME);
+    return sql_col_attribute(*this, column, fid);
+}
+
+auto implementation_row_descriptor::schema_name(short column) const -> string
+{
+    throw_if_column_is_out_of_range(column);
+    constexpr auto fid = NANODBC_DESC_FIELD_IDENTIFIER(SQL_DESC_SCHEMA_NAME, SQL_COLUMN_OWNER_NAME);
     return sql_col_attribute(*this, column, fid);
 }
 

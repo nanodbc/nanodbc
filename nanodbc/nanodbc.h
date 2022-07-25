@@ -2079,11 +2079,15 @@ public:
 
     auto base_table_name(short column) const -> string;
 
+    auto catalog_name(short column) const -> string;
+
     auto column_count() const -> short;
 
     auto column_name(short column) const -> string;
 
     auto columns() const -> short;
+
+    auto schema_name(short column) const -> string;
 
     auto table_name(short column) const -> string;
 
