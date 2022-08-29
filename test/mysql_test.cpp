@@ -121,6 +121,11 @@ TEST_CASE_METHOD(mysql_fixture, "test_batch_insert_mixed", "[mysql][batch]")
     test_batch_insert_mixed();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_std_optional", "[mysql][optional]")
+{
+    test_std_optional();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_blob", "[mysql][blob]")
 {
     test_blob();
