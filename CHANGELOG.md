@@ -1,5 +1,9 @@
 # ChangeLog
 
+## v2.15.1
+
+Added support for C++17 type std::optional with backward compatibility in C++14 via std::experimental::optional.
+
 ## v2.15.0
 
 ### New Features
