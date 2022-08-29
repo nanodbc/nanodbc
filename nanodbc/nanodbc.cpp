@@ -31,12 +31,12 @@
 #include <cstdint>
 #endif
 
-// if newer than C++14 use <optional> 
-#if __cplusplus > 201402L   
+// if newer than C++14 use <optional>
+#if __cplusplus > 201402L
 #include <optional>
-#define std_optional    std::optional
+#define std_optional std::optional
 template <class T>
-inline static void opt_reset(std_optional<T> &opt)
+inline static void opt_reset(std_optional<T>& opt)
 {
     opt.reset();
     return;
@@ -44,19 +44,23 @@ inline static void opt_reset(std_optional<T> &opt)
 // else use <experimental/optional>
 #else
 #include <experimental/optional>
-#define std_optional    std::experimental::optional
+#define std_optional std::experimental::optional
 template <class T>
-inline static void opt_reset(std_optional<T> &opt)
+inline static void opt_reset(std_optional<T>& opt)
 {
     return;
 }
 #endif
 
 template <typename T, typename Enable = void>
-struct is_optional : std::false_type {};
+struct is_optional : std::false_type
+{
+};
 
 template <typename T>
-struct is_optional<std_optional<T> > : std::true_type {};
+struct is_optional<std_optional<T>> : std::true_type
+{
+};
 
 // User may redefine NANODBC_ASSERT macro in nanodbc/nanodbc.h
 #ifndef NANODBC_ASSERT
@@ -3612,13 +3616,14 @@ public:
     void get_ref(short column, T& result) const
     {
         throw_if_column_is_out_of_range(column);
-        if (is_null(column)){
+        if (is_null(column))
+        {
             opt_reset(result);
             return;
         }
         get_ref_impl<std::remove_reference_t<decltype(*result)>>(column, *result);
     }
-    
+
     template <class T>
     void get_ref(short column, T const& fallback, T& result) const
     {
@@ -3653,7 +3658,8 @@ public:
     void get_ref(string const& column_name, T& result) const
     {
         short const column = this->column(column_name);
-        if (is_null(column)){
+        if (is_null(column))
+        {
             opt_reset(result);
             return;
         }

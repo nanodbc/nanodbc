@@ -23,10 +23,10 @@
 
 #if __cplusplus > 201402L
 #include <optional>
-#define std_optional    std::optional
+#define std_optional std::optional
 #else
 #include <experimental/optional>
-#define std_optional    std::experimental::optional
+#define std_optional std::experimental::optional
 #endif
 
 struct test_case_fixture : public base_test_fixture
@@ -79,17 +79,19 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(i == batch_size);
         }
     }
-    
+
     void test_batch_insert_integral_optional()
     {
         auto conn = connect();
-        create_table(conn, NANODBC_TEXT("test_batch_insert_integral_optional"), NANODBC_TEXT("(i int)"));
+        create_table(
+            conn, NANODBC_TEXT("test_batch_insert_integral_optional"), NANODBC_TEXT("(i int)"));
 
         std::size_t const batch_size = 9;
         int values[batch_size] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 
         nanodbc::statement stmt(conn);
-        prepare(stmt, NANODBC_TEXT("insert into test_batch_insert_integral_optional(i) values (?)"));
+        prepare(
+            stmt, NANODBC_TEXT("insert into test_batch_insert_integral_optional(i) values (?)"));
         REQUIRE(stmt.parameters() == 1);
 
         stmt.bind(0, values, batch_size);
@@ -97,7 +99,8 @@ struct test_case_fixture : public base_test_fixture
         nanodbc::transact(stmt, batch_size);
         {
             auto result = nanodbc::execute(
-                conn, NANODBC_TEXT("select i from test_batch_insert_integral_optional order by i asc"));
+                conn,
+                NANODBC_TEXT("select i from test_batch_insert_integral_optional order by i asc"));
             std::size_t i = 0;
             while (result.next())
             {
@@ -1150,9 +1153,9 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(!driver_name.empty());
         auto const drivers = nanodbc::list_drivers();
         bool found = std::any_of(
-            drivers.cbegin(),
-            drivers.cend(),
-            [&driver_name](nanodbc::driver const& drv) { return driver_name == drv.name; });
+            drivers.cbegin(), drivers.cend(), [&driver_name](nanodbc::driver const& drv) {
+                return driver_name == drv.name;
+            });
         REQUIRE(found);
     }
 
@@ -1168,20 +1171,17 @@ struct test_case_fixture : public base_test_fixture
     void test_datasources()
     {
         auto const dsns = nanodbc::list_datasources();
-        bool test_dsn_found = std::any_of(
-            dsns.cbegin(),
-            dsns.cend(),
-            [](nanodbc::datasource const& dsn)
-            { return dsn.name == nanodbc::test::convert("testdsn"); });
+        bool test_dsn_found =
+            std::any_of(dsns.cbegin(), dsns.cend(), [](nanodbc::datasource const& dsn) {
+                return dsn.name == nanodbc::test::convert("testdsn");
+            });
         if (test_dsn_found)
         {
             auto const driver_name = connection_string_parameter(NANODBC_TEXT("DRIVER"));
             REQUIRE(!driver_name.empty());
 
             bool found = std::any_of(
-                dsns.cbegin(),
-                dsns.cend(),
-                [&driver_name](nanodbc::datasource const& dsn) {
+                dsns.cbegin(), dsns.cend(), [&driver_name](nanodbc::datasource const& dsn) {
                     return dsn.name == nanodbc::test::convert("testdsn") &&
                            dsn.driver == driver_name;
                 });
@@ -1714,8 +1714,7 @@ struct test_case_fixture : public base_test_fixture
         s.prepare(
             c, NANODBC_TEXT("select a, b from test_statement_usable_when_result_gone order by a;"));
 
-        auto process_data_and_throw = [](int i)
-        {
+        auto process_data_and_throw = [](int i) {
             if (i == 2)
                 throw std::runtime_error("a==2");
         };
@@ -1904,7 +1903,8 @@ struct test_case_fixture : public base_test_fixture
         query.bind(0, name.c_str());
         nanodbc::execute(query);
 
-        nanodbc::result results = execute(connection, NANODBC_TEXT("select s from test_string_optional;"));
+        nanodbc::result results =
+            execute(connection, NANODBC_TEXT("select s from test_string_optional;"));
         REQUIRE(results.next());
         REQUIRE(*results.get<std_optional<nanodbc::string>>(0) == NANODBC_TEXT("Fred"));
 
