@@ -21,7 +21,7 @@
 #pragma warning(disable : 4244) // conversion from 'T1' to 'T2' possible loss of data
 #endif
 
-#if defined __has_include
+#ifdef __has_include
 #if __has_include(<optional>) // if <optional> is suported
 #include <optional>
 #define std_optional std::optional
