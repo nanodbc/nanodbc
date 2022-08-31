@@ -23,10 +23,9 @@
 
 #if defined(__cpp_lib_optional) // if <optional> is suported
 #include <optional>
-#define std_optional std::optional
 #elif defined(__cpp_lib_experimental_optional) // if <experimental/optional> is suported
 #include <experimental/optional>
-#define std_optional std::experimental::optional
+#define std::optional std::experimental::optional
 #else
 #define DONT_USE_OPTIONAL // if not supported, dont use
 #endif
@@ -106,7 +105,7 @@ struct test_case_fixture : public base_test_fixture
             std::size_t i = 0;
             while (result.next())
             {
-                REQUIRE(*result.get<std_optional<int>>(0) == values[i]);
+                REQUIRE(*result.get<std::optional<int>>(0) == values[i]);
                 ++i;
             }
             REQUIRE(i == batch_size);
@@ -1079,7 +1078,7 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(result.column_datatype_name(0) == NANODBC_TEXT("date"));
 
             REQUIRE(result.next());
-            auto d = result.get<std_optional<nanodbc::date>>(0);
+            auto d = result.get<std::optional<nanodbc::date>>(0);
             REQUIRE((*d).year == 2016);
             REQUIRE((*d).month == 7);
             REQUIRE((*d).day == 12);
@@ -1908,9 +1907,9 @@ struct test_case_fixture : public base_test_fixture
         nanodbc::result results =
             execute(connection, NANODBC_TEXT("select s from test_string_optional;"));
         REQUIRE(results.next());
-        REQUIRE(*results.get<std_optional<nanodbc::string>>(0) == NANODBC_TEXT("Fred"));
+        REQUIRE(*results.get<std::optional<nanodbc::string>>(0) == NANODBC_TEXT("Fred"));
 
-        std_optional<nanodbc::string> ref;
+        std::optional<nanodbc::string> ref;
         results.get_ref(0, ref);
         REQUIRE(*ref == name);
     }
@@ -2178,7 +2177,7 @@ struct test_case_fixture : public base_test_fixture
         {
             auto result = execute(connection, NANODBC_TEXT("select t from test_time_optional;"));
             REQUIRE(result.next());
-            auto t = result.get<std_optional<nanodbc::time>>(0);
+            auto t = result.get<std::optional<nanodbc::time>>(0);
             REQUIRE((*t).hour == 11);
             REQUIRE((*t).min == 45);
             REQUIRE((*t).sec == 59);
@@ -2622,7 +2621,7 @@ struct test_case_fixture : public base_test_fixture
         }
     }
 
-    void test_std_optional()
+    void test_std::optional()
     {
 #ifndef DONT_USE_OPTIONAL
         test_batch_insert_integral_optional();

@@ -33,9 +33,8 @@
 
 #if defined(__cpp_lib_optional) // if <optional> is suported
 #include <optional>
-#define std_optional std::optional
 template <class T>
-inline static void opt_reset(std_optional<T>& opt)
+inline static void opt_reset(std::optional<T>& opt)
 {
     opt.reset();
     return;
@@ -46,14 +45,14 @@ struct is_optional : std::false_type
 };
 
 template <typename T>
-struct is_optional<std_optional<T>> : std::true_type
+struct is_optional<std::optional<T>> : std::true_type
 {
 };
 #elif defined(__cpp_lib_experimental_optional) // if <experimental/optional> is suported
 #include <experimental/optional>
-#define std_optional std::experimental::optional
+#define std::optional std::experimental::optional
 template <class T>
-inline static void opt_reset(std_optional<T>& opt)
+inline static void opt_reset(std::optional<T>& opt)
 {
     return;
 }
@@ -63,7 +62,7 @@ struct is_optional : std::false_type
 };
 
 template <typename T>
-struct is_optional<std_optional<T>> : std::true_type
+struct is_optional<std::optional<T>> : std::true_type
 {
 };
 #else
@@ -6903,46 +6902,46 @@ template void result::get_ref(string const&, _variant_t&) const;
 
 #ifndef DONT_USE_OPTIONAL
 // The following are the only supported instantiations of result::get() with optional support.
-template void result::get_ref(short, std_optional<std::string::value_type>&) const;
-template void result::get_ref(short, std_optional<wide_string::value_type>&) const;
-template void result::get_ref(short, std_optional<short>&) const;
-template void result::get_ref(short, std_optional<unsigned short>&) const;
-template void result::get_ref(short, std_optional<int>&) const;
-template void result::get_ref(short, std_optional<unsigned int>&) const;
-template void result::get_ref(short, std_optional<long int>&) const;
-template void result::get_ref(short, std_optional<unsigned long int>&) const;
-template void result::get_ref(short, std_optional<long long int>&) const;
-template void result::get_ref(short, std_optional<unsigned long long int>&) const;
-template void result::get_ref(short, std_optional<float>&) const;
-template void result::get_ref(short, std_optional<double>&) const;
-template void result::get_ref(short, std_optional<string>&) const;
-template void result::get_ref(short, std_optional<date>&) const;
-template void result::get_ref(short, std_optional<time>&) const;
-template void result::get_ref(short, std_optional<timestamp>&) const;
-template void result::get_ref(short, std_optional<std::vector<std::uint8_t>>&) const;
+template void result::get_ref(short, std::optional<std::string::value_type>&) const;
+template void result::get_ref(short, std::optional<wide_string::value_type>&) const;
+template void result::get_ref(short, std::optional<short>&) const;
+template void result::get_ref(short, std::optional<unsigned short>&) const;
+template void result::get_ref(short, std::optional<int>&) const;
+template void result::get_ref(short, std::optional<unsigned int>&) const;
+template void result::get_ref(short, std::optional<long int>&) const;
+template void result::get_ref(short, std::optional<unsigned long int>&) const;
+template void result::get_ref(short, std::optional<long long int>&) const;
+template void result::get_ref(short, std::optional<unsigned long long int>&) const;
+template void result::get_ref(short, std::optional<float>&) const;
+template void result::get_ref(short, std::optional<double>&) const;
+template void result::get_ref(short, std::optional<string>&) const;
+template void result::get_ref(short, std::optional<date>&) const;
+template void result::get_ref(short, std::optional<time>&) const;
+template void result::get_ref(short, std::optional<timestamp>&) const;
+template void result::get_ref(short, std::optional<std::vector<std::uint8_t>>&) const;
 #if defined(_MSC_VER)
-template void result::get_ref(short, std_optional<_variant_t>&) const;
+template void result::get_ref(short, std::optional<_variant_t>&) const;
 #endif
 
-template void result::get_ref(string const&, std_optional<std::string::value_type>&) const;
-template void result::get_ref(string const&, std_optional<wide_string::value_type>&) const;
-template void result::get_ref(string const&, std_optional<short>&) const;
-template void result::get_ref(string const&, std_optional<unsigned short>&) const;
-template void result::get_ref(string const&, std_optional<int>&) const;
-template void result::get_ref(string const&, std_optional<unsigned int>&) const;
-template void result::get_ref(string const&, std_optional<long int>&) const;
-template void result::get_ref(string const&, std_optional<unsigned long int>&) const;
-template void result::get_ref(string const&, std_optional<long long int>&) const;
-template void result::get_ref(string const&, std_optional<unsigned long long int>&) const;
-template void result::get_ref(string const&, std_optional<float>&) const;
-template void result::get_ref(string const&, std_optional<double>&) const;
-template void result::get_ref(string const&, std_optional<string>&) const;
-template void result::get_ref(string const&, std_optional<date>&) const;
-template void result::get_ref(string const&, std_optional<time>&) const;
-template void result::get_ref(string const&, std_optional<timestamp>&) const;
-template void result::get_ref(string const&, std_optional<std::vector<std::uint8_t>>&) const;
+template void result::get_ref(string const&, std::optional<std::string::value_type>&) const;
+template void result::get_ref(string const&, std::optional<wide_string::value_type>&) const;
+template void result::get_ref(string const&, std::optional<short>&) const;
+template void result::get_ref(string const&, std::optional<unsigned short>&) const;
+template void result::get_ref(string const&, std::optional<int>&) const;
+template void result::get_ref(string const&, std::optional<unsigned int>&) const;
+template void result::get_ref(string const&, std::optional<long int>&) const;
+template void result::get_ref(string const&, std::optional<unsigned long int>&) const;
+template void result::get_ref(string const&, std::optional<long long int>&) const;
+template void result::get_ref(string const&, std::optional<unsigned long long int>&) const;
+template void result::get_ref(string const&, std::optional<float>&) const;
+template void result::get_ref(string const&, std::optional<double>&) const;
+template void result::get_ref(string const&, std::optional<string>&) const;
+template void result::get_ref(string const&, std::optional<date>&) const;
+template void result::get_ref(string const&, std::optional<time>&) const;
+template void result::get_ref(string const&, std::optional<timestamp>&) const;
+template void result::get_ref(string const&, std::optional<std::vector<std::uint8_t>>&) const;
 #if defined(_MSC_VER)
-template void result::get_ref(short, std_optional<_variant_t>&) const;
+template void result::get_ref(short, std::optional<_variant_t>&) const;
 #endif
 #endif
 
@@ -7044,48 +7043,48 @@ template _variant_t result::get(string const&) const;
 
 #ifndef DONT_USE_OPTIONAL
 // The following are the only supported instantiations of result::get() with optional support.
-template std_optional<std::string::value_type> result::get(short) const;
-template std_optional<wide_string::value_type> result::get(short) const;
-template std_optional<short> result::get(short) const;
-template std_optional<unsigned short> result::get(short) const;
-template std_optional<int> result::get(short) const;
-template std_optional<unsigned int> result::get(short) const;
-template std_optional<long int> result::get(short) const;
-template std_optional<unsigned long int> result::get(short) const;
-template std_optional<long long int> result::get(short) const;
-template std_optional<unsigned long long int> result::get(short) const;
-template std_optional<float> result::get(short) const;
-template std_optional<double> result::get(short) const;
-template std_optional<std::string> result::get(short) const;
-template std_optional<wide_string> result::get(short) const;
-template std_optional<date> result::get(short) const;
-template std_optional<time> result::get(short) const;
-template std_optional<timestamp> result::get(short) const;
-template std_optional<std::vector<std::uint8_t>> result::get(short) const;
+template std::optional<std::string::value_type> result::get(short) const;
+template std::optional<wide_string::value_type> result::get(short) const;
+template std::optional<short> result::get(short) const;
+template std::optional<unsigned short> result::get(short) const;
+template std::optional<int> result::get(short) const;
+template std::optional<unsigned int> result::get(short) const;
+template std::optional<long int> result::get(short) const;
+template std::optional<unsigned long int> result::get(short) const;
+template std::optional<long long int> result::get(short) const;
+template std::optional<unsigned long long int> result::get(short) const;
+template std::optional<float> result::get(short) const;
+template std::optional<double> result::get(short) const;
+template std::optional<std::string> result::get(short) const;
+template std::optional<wide_string> result::get(short) const;
+template std::optional<date> result::get(short) const;
+template std::optional<time> result::get(short) const;
+template std::optional<timestamp> result::get(short) const;
+template std::optional<std::vector<std::uint8_t>> result::get(short) const;
 #if defined(_MSC_VER)
-template std_optional<_variant_t> result::get(short) const;
+template std::optional<_variant_t> result::get(short) const;
 #endif
 
-template std_optional<std::string::value_type> result::get(string const&) const;
-template std_optional<wide_string::value_type> result::get(string const&) const;
-template std_optional<short> result::get(string const&) const;
-template std_optional<unsigned short> result::get(string const&) const;
-template std_optional<int> result::get(string const&) const;
-template std_optional<unsigned int> result::get(string const&) const;
-template std_optional<long int> result::get(string const&) const;
-template std_optional<unsigned long int> result::get(string const&) const;
-template std_optional<long long int> result::get(string const&) const;
-template std_optional<unsigned long long int> result::get(string const&) const;
-template std_optional<float> result::get(string const&) const;
-template std_optional<double> result::get(string const&) const;
-template std_optional<std::string> result::get(string const&) const;
-template std_optional<wide_string> result::get(string const&) const;
-template std_optional<date> result::get(string const&) const;
-template std_optional<time> result::get(string const&) const;
-template std_optional<timestamp> result::get(string const&) const;
-template std_optional<std::vector<std::uint8_t>> result::get(string const&) const;
+template std::optional<std::string::value_type> result::get(string const&) const;
+template std::optional<wide_string::value_type> result::get(string const&) const;
+template std::optional<short> result::get(string const&) const;
+template std::optional<unsigned short> result::get(string const&) const;
+template std::optional<int> result::get(string const&) const;
+template std::optional<unsigned int> result::get(string const&) const;
+template std::optional<long int> result::get(string const&) const;
+template std::optional<unsigned long int> result::get(string const&) const;
+template std::optional<long long int> result::get(string const&) const;
+template std::optional<unsigned long long int> result::get(string const&) const;
+template std::optional<float> result::get(string const&) const;
+template std::optional<double> result::get(string const&) const;
+template std::optional<std::string> result::get(string const&) const;
+template std::optional<wide_string> result::get(string const&) const;
+template std::optional<date> result::get(string const&) const;
+template std::optional<time> result::get(string const&) const;
+template std::optional<timestamp> result::get(string const&) const;
+template std::optional<std::vector<std::uint8_t>> result::get(string const&) const;
 #if defined(_MSC_VER)
-template std_optional<_variant_t> result::get(string const&) const;
+template std::optional<_variant_t> result::get(string const&) const;
 #endif
 #endif
 
