@@ -21,17 +21,13 @@
 #pragma warning(disable : 4244) // conversion from 'T1' to 'T2' possible loss of data
 #endif
 
-#ifdef __has_include
-#if __has_include(<optional>) // if <optional> is suported
+#if defined(__cpp_lib_optional) // if <optional> is suported
 #include <optional>
 #define std_optional std::optional
-#elif __has_include(<experimental/optional>) // if <experimental/optional> is suported
+#elif defined(__cpp_lib_experimental_optional) // if <experimental/optional> is suported
 #include <experimental/optional>
 #define std_optional std::experimental::optional
 #else
-#define DONT_USE_OPTIONAL // if not supported, dont use
-#endif
-#elif
 #define DONT_USE_OPTIONAL // if not supported, dont use
 #endif
 
