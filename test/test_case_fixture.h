@@ -21,12 +21,18 @@
 #pragma warning(disable : 4244) // conversion from 'T1' to 'T2' possible loss of data
 #endif
 
-#if __cplusplus > 201402L
+#if defined __has_include
+#if __has_include(<optional>) // if <optional> is suported
 #include <optional>
 #define std_optional std::optional
-#else
+#elif __has_include(<experimental/optional>) // if <experimental/optional> is suported
 #include <experimental/optional>
 #define std_optional std::experimental::optional
+#else
+#define DONT_USE_OPTIONAL // if not supported, dont use
+#endif
+#elif
+#define DONT_USE_OPTIONAL // if not supported, dont use
 #endif
 
 struct test_case_fixture : public base_test_fixture
@@ -79,7 +85,7 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(i == batch_size);
         }
     }
-
+#ifndef DONT_USE_OPTIONAL
     void test_batch_insert_integral_optional()
     {
         auto conn = connect();
@@ -110,7 +116,7 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(i == batch_size);
         }
     }
-
+#endif
     void test_batch_insert_mixed()
     {
         std::size_t const batch_size = 9;
@@ -1047,7 +1053,7 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(d.day == 12);
         }
     }
-
+#ifndef DONT_USE_OPTIONAL
     void test_date_optional()
     {
         auto connection = connect();
@@ -1083,7 +1089,7 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE((*d).day == 12);
         }
     }
-
+#endif
     void test_dbms_info()
     {
         // A generic test to exercise the DBMS info API is callable.
@@ -1884,7 +1890,7 @@ struct test_case_fixture : public base_test_fixture
         results.get_ref(0, ref);
         REQUIRE(ref == name);
     }
-
+#ifndef DONT_USE_OPTIONAL
     void test_string_optional()
     {
         nanodbc::connection connection = connect();
@@ -1912,7 +1918,7 @@ struct test_case_fixture : public base_test_fixture
         results.get_ref(0, ref);
         REQUIRE(*ref == name);
     }
-
+#endif
     void test_string_with_varchar_max()
     {
         nanodbc::connection connection = connect();
@@ -2155,7 +2161,7 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(t.sec == 59);
         }
     }
-
+#ifndef DONT_USE_OPTIONAL
     void test_time_optional()
     {
         auto connection = connect();
@@ -2182,7 +2188,7 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE((*t).sec == 59);
         }
     }
-
+#endif
     void test_transaction()
     {
         nanodbc::connection connection = connect();
@@ -2622,10 +2628,12 @@ struct test_case_fixture : public base_test_fixture
 
     void test_std_optional()
     {
+#ifndef DONT_USE_OPTIONAL
         test_batch_insert_integral_optional();
         test_string_optional();
         test_time_optional();
         test_date_optional();
+#endif
     }
 };
 

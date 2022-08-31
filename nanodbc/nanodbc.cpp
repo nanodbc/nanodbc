@@ -31,8 +31,8 @@
 #include <cstdint>
 #endif
 
-// if newer than C++14 use <optional>
-#if __cplusplus > 201402L
+#if defined __has_include
+#if __has_include(<optional>) // if <optional> is suported
 #include <optional>
 #define std_optional std::optional
 template <class T>
@@ -41,17 +41,6 @@ inline static void opt_reset(std_optional<T>& opt)
     opt.reset();
     return;
 }
-// else use <experimental/optional>
-#else
-#include <experimental/optional>
-#define std_optional std::experimental::optional
-template <class T>
-inline static void opt_reset(std_optional<T>& opt)
-{
-    return;
-}
-#endif
-
 template <typename T, typename Enable = void>
 struct is_optional : std::false_type
 {
@@ -61,6 +50,29 @@ template <typename T>
 struct is_optional<std_optional<T>> : std::true_type
 {
 };
+#elif __has_include(<experimental/optional>) // if <experimental/optional> is suported
+#include <experimental/optional>
+#define std_optional std::experimental::optional
+template <class T>
+inline static void opt_reset(std_optional<T>& opt)
+{
+    return;
+}
+template <typename T, typename Enable = void>
+struct is_optional : std::false_type
+{
+};
+
+template <typename T>
+struct is_optional<std_optional<T>> : std::true_type
+{
+};
+#else
+#define DONT_USE_OPTIONAL // if not supported, dont use
+#endif
+#elif
+#define DONT_USE_OPTIONAL // if not supported, dont use
+#endif
 
 // User may redefine NANODBC_ASSERT macro in nanodbc/nanodbc.h
 #ifndef NANODBC_ASSERT
@@ -3603,7 +3615,13 @@ public:
         unbind(column);
     }
 
-    template <class T, std::enable_if_t<!is_optional<T>::value, int> = 0>
+    template <
+        class T
+#ifndef DONT_USE_OPTIONAL
+        ,
+        std::enable_if_t<!is_optional<T>::value, int> = 0
+#endif
+        >
     void get_ref(short column, T& result) const
     {
         throw_if_column_is_out_of_range(column);
@@ -3611,7 +3629,7 @@ public:
             throw null_access_error();
         get_ref_impl<T>(column, result);
     }
-
+#ifndef DONT_USE_OPTIONAL
     template <class T, std::enable_if_t<is_optional<T>::value, int> = 0>
     void get_ref(short column, T& result) const
     {
@@ -3623,7 +3641,7 @@ public:
         }
         get_ref_impl<std::remove_reference_t<decltype(*result)>>(column, *result);
     }
-
+#endif
     template <class T>
     void get_ref(short column, T const& fallback, T& result) const
     {
@@ -3645,7 +3663,13 @@ public:
         }
     }
 
-    template <class T, std::enable_if_t<!is_optional<T>::value, int> = 0>
+    template <
+        class T
+#ifndef DONT_USE_OPTIONAL
+        ,
+        std::enable_if_t<!is_optional<T>::value, int> = 0
+#endif
+        >
     void get_ref(string const& column_name, T& result) const
     {
         short const column = this->column(column_name);
@@ -3653,7 +3677,7 @@ public:
             throw null_access_error();
         get_ref_impl<T>(column, result);
     }
-
+#ifndef DONT_USE_OPTIONAL
     template <class T, std::enable_if_t<is_optional<T>::value, int> = 0>
     void get_ref(string const& column_name, T& result) const
     {
@@ -3665,7 +3689,7 @@ public:
         }
         get_ref_impl<std::remove_reference_t<decltype(*result)>>(column, *result);
     }
-
+#endif
     template <class T>
     void get_ref(string const& column_name, T const& fallback, T& result) const
     {
@@ -6881,6 +6905,7 @@ template void result::get_ref(string const&, std::vector<std::uint8_t>&) const;
 template void result::get_ref(string const&, _variant_t&) const;
 #endif
 
+#ifndef DONT_USE_OPTIONAL
 // The following are the only supported instantiations of result::get() with optional support.
 template void result::get_ref(short, std_optional<std::string::value_type>&) const;
 template void result::get_ref(short, std_optional<wide_string::value_type>&) const;
@@ -6922,6 +6947,7 @@ template void result::get_ref(string const&, std_optional<timestamp>&) const;
 template void result::get_ref(string const&, std_optional<std::vector<std::uint8_t>>&) const;
 #if defined(_MSC_VER)
 template void result::get_ref(short, std_optional<_variant_t>&) const;
+#endif
 #endif
 
 // The following are the only supported instantiations of result::get_ref() with fallback.
@@ -7020,6 +7046,7 @@ template std::vector<std::uint8_t> result::get(string const&) const;
 template _variant_t result::get(string const&) const;
 #endif
 
+#ifndef DONT_USE_OPTIONAL
 // The following are the only supported instantiations of result::get() with optional support.
 template std_optional<std::string::value_type> result::get(short) const;
 template std_optional<wide_string::value_type> result::get(short) const;
@@ -7063,6 +7090,7 @@ template std_optional<timestamp> result::get(string const&) const;
 template std_optional<std::vector<std::uint8_t>> result::get(string const&) const;
 #if defined(_MSC_VER)
 template std_optional<_variant_t> result::get(string const&) const;
+#endif
 #endif
 
 // The following are the only supported instantiations of result::get() with fallback.
@@ -7121,3 +7149,5 @@ template _variant_t result::get(string const&, _variant_t const&) const;
 #undef NANODBC_CALL
 
 #endif // DOXYGEN
+
+
