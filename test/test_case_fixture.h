@@ -2621,7 +2621,7 @@ struct test_case_fixture : public base_test_fixture
         }
     }
 
-    void test_std::optional()
+    void test_std_optional()
     {
 #ifndef DONT_USE_OPTIONAL
         test_batch_insert_integral_optional();
