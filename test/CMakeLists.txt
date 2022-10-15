@@ -15,14 +15,14 @@ set(CATCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(Catch INTERFACE)
 target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
 
-include_directories(${CMAKE_SOURCE_DIR} ${ODBC_INCLUDE_DIR})
+include_directories(${nanodbc_SOURCE_DIR} ${ODBC_INCLUDE_DIR})
 link_directories(${CMAKE_BINARY_DIR}/lib)
 file(GLOB headers *.h *.hpp)
 add_custom_target(tests DEPENDS tests catch)
 
 # Common utilities tests
 add_executable(utility_tests utility_test.cpp)
-target_include_directories(utility_tests PRIVATE ${CMAKE_SOURCE_DIR}/nanodbc)
+target_include_directories(utility_tests PRIVATE ${nanodbc_SOURCE_DIR}/nanodbc)
 if (BUILD_SHARED_LIBS)
   target_link_libraries(utility_tests nanodbc Catch "${ODBC_LINK_FLAGS}")
 else()
