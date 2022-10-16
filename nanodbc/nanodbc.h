@@ -1441,6 +1441,10 @@ public:
     /// \throws database_error
     string driver_name() const;
 
+    /// \brief Returns the version of the ODBC driver.
+    /// \throws database_error
+    string driver_version() const;
+
     /// \brief Returns the name of the currently connected database.
     /// Returns the current SQL_DATABASE_NAME information value associated with the connection.
     string database_name() const;

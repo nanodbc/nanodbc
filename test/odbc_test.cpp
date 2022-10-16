@@ -19,6 +19,11 @@ TEST_CASE_METHOD(odbc_fixture, "test_driver", "[odbc][driver]")
     test_driver();
 }
 
+TEST_CASE_METHOD(odbc_fixture, "test_driver_info", "[odbc][driver][metadata][info]")
+{
+    test_driver_info();
+}
+
 TEST_CASE_METHOD(odbc_fixture, "test_blob", "[odbc][blob]")
 {
     test_blob();

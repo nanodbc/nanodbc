@@ -99,6 +99,11 @@ TEST_CASE_METHOD(mssql_fixture, "test_driver", "[mssql][driver]")
     test_driver();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_driver_info", "[mssql][driver][metadata][info]")
+{
+    test_driver_info();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_datasources", "[mssql][datasources]")
 {
     test_datasources();

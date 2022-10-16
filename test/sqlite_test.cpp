@@ -110,6 +110,11 @@ TEST_CASE_METHOD(sqlite_fixture, "test_driver", "[sqlite][driver]")
     test_driver();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "test_driver_info", "[sqlite][driver][metadata][info]")
+{
+    test_driver_info();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_datasources", "[sqlite][datasources]")
 {
     test_datasources();
