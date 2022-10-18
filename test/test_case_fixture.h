@@ -1060,6 +1060,15 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(found);
     }
 
+    void test_driver_info()
+    {
+      // A generic test to exercise the ODBC driver info API is callable.
+      // Driver-specific tests may perform extended checks.
+      nanodbc::connection connection = connect();
+      REQUIRE(!connection.driver_name().empty());
+      REQUIRE(!connection.driver_version().empty());
+    }
+
     void test_datasources()
     {
         auto const dsns = nanodbc::list_datasources();

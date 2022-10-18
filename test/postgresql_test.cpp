@@ -24,6 +24,11 @@ TEST_CASE_METHOD(postgresql_fixture, "test_driver", "[postgresql][driver]")
     test_driver();
 }
 
+TEST_CASE_METHOD(postgresql_fixture, "test_driver_info", "[postgresql][driver][metadata][info]")
+{
+    test_driver_info();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_datasources", "[postgresql][datasources]")
 {
     test_datasources();

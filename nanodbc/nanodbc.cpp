@@ -1132,6 +1132,8 @@ public:
 
     string driver_name() const;
 
+    string driver_version() const;
+
     string database_name() const;
 
     string catalog_name() const
@@ -1219,6 +1221,11 @@ string connection::connection_impl::dbms_version() const
 string connection::connection_impl::driver_name() const
 {
     return get_info<string>(SQL_DRIVER_NAME);
+}
+
+string connection::connection_impl::driver_version() const
+{
+    return get_info<string>(SQL_DRIVER_VER);
 }
 
 string connection::connection_impl::database_name() const
@@ -4827,6 +4834,11 @@ string connection::dbms_version() const
 string connection::driver_name() const
 {
     return impl_->driver_name();
+}
+
+string connection::driver_version() const
+{
+    return impl_->driver_version();
 }
 
 string connection::database_name() const

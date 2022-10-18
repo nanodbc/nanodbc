@@ -21,6 +21,11 @@ TEST_CASE_METHOD(vertica_fixture, "test_driver", "[vertica][driver]")
     test_driver();
 }
 
+TEST_CASE_METHOD(vertica_fixture, "test_driver_info", "[vertica][driver][metadata][info]")
+{
+    test_driver_info();
+}
+
 TEST_CASE_METHOD(vertica_fixture, "test_datasources", "[vertica][datasources]")
 {
     test_datasources();

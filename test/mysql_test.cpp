@@ -25,6 +25,11 @@ TEST_CASE_METHOD(mysql_fixture, "test_driver", "[mysql][driver]")
     test_driver();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_driver_info", "[mysql][driver][metadata][info]")
+{
+    test_driver_info();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_datasources", "[mysql][datasources]")
 {
     test_datasources();
