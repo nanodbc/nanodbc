@@ -109,7 +109,7 @@ TEST_CASE_METHOD(odbc_fixture, "test_nullptr_nulls", "[odbc][null]")
     test_nullptr_nulls();
 }
 
-TEST_CASE_METHOD(mssql_fixture, "test_null_with_bound_columns_unbound", "[odbc][null][unbound]")
+TEST_CASE_METHOD(odbc_fixture, "test_null_with_bound_columns_unbound", "[odbc][null][unbound]")
 {
     test_null_with_bound_columns_unbound();
 }
