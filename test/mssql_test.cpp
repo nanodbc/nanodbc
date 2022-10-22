@@ -28,6 +28,47 @@ struct mssql_fixture : public test_case_fixture
             connection_string_ = get_env("NANODBC_TEST_CONNSTR_MSSQL");
     }
 
+    using base_test_fixture::connect;
+    nanodbc::connection
+    connect(std::list<nanodbc::connection::attribute> const& attributes, bool const& is_async)
+    {
+        nanodbc::connection connection(connection_string_, attributes);
+        if (!is_async)
+        {
+            REQUIRE(connection.connected());
+            vendor_ = get_vendor(connection.dbms_name());
+        }
+        return connection;
+    }
+
+#if !defined(NANODBC_DISABLE_ASYNC) && defined(WIN32)
+    void test_async_internal(nanodbc::connection& conn, HANDLE& event_handle)
+    {
+        nanodbc::statement stmt(conn);
+        if (stmt.async_prepare(NANODBC_TEXT("select count(*) from sys.tables;"), event_handle))
+            WaitForSingleObject(event_handle, INFINITE);
+        stmt.complete_prepare();
+
+        if (stmt.async_execute(event_handle))
+            WaitForSingleObject(event_handle, INFINITE);
+        nanodbc::result row = stmt.complete_execute();
+
+        if (row.async_next(event_handle))
+            WaitForSingleObject(event_handle, INFINITE);
+        REQUIRE(row.complete_next());
+
+        REQUIRE(row.get<int>(0) >= 0);
+    }
+#endif
+
+    inline bool success(RETCODE rc)
+    {
+#ifdef NANODBC_ODBC_API_DEBUG
+        std::cerr << "<-- rc: " << return_code(rc) << " | " << std::endl;
+#endif
+        return rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO;
+    }
+
     // `name` is a type name
     // `def` is a comma separated column definitions, trailing '(' and ')' are optional.
     void create_table_type(
@@ -1126,20 +1167,7 @@ TEST_CASE_METHOD(mssql_fixture, "test_async", "[mssql][async]")
         WaitForSingleObject(event_handle, INFINITE);
     conn.async_complete();
 
-    nanodbc::statement stmt(conn);
-    if (stmt.async_prepare(NANODBC_TEXT("select count(*) from sys.tables;"), event_handle))
-        WaitForSingleObject(event_handle, INFINITE);
-    stmt.complete_prepare();
-
-    if (stmt.async_execute(event_handle))
-        WaitForSingleObject(event_handle, INFINITE);
-    nanodbc::result row = stmt.complete_execute();
-
-    if (row.async_next(event_handle))
-        WaitForSingleObject(event_handle, INFINITE);
-    REQUIRE(row.complete_next());
-
-    REQUIRE(row.get<int>(0) >= 0);
+    test_async_internal(conn, event_handle);
 }
 #endif
 
@@ -1556,6 +1584,85 @@ TEST_CASE_METHOD(
         REQUIRE(p2_ == results.get<nanodbc::string>(6));
         ++rcnt;
     }
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_conn_attributes", "[mssql][conn_attibutes]")
+{
+    {
+        std::list<nanodbc::connection::attribute> attributes;
+        nanodbc::string CATALOG_IN(NANODBC_TEXT("tempdb"));
+        std::string TRACEFILE_IN("nanodbc_test.log");
+        size_t CATALOG_IN_LENGTH = CATALOG_IN.size() * sizeof(nanodbc::string::value_type);
+        size_t TRACEFILE_IN_LENGTH = TRACEFILE_IN.size();
+        long TIMEOUT_IN = 7;
+
+        attributes.push_back(
+            {SQL_ATTR_LOGIN_TIMEOUT, SQL_IS_UINTEGER, (void*)(std::intptr_t)TIMEOUT_IN});
+        attributes.push_back(
+            {SQL_ATTR_CURRENT_CATALOG, (long)CATALOG_IN_LENGTH, (void*)&CATALOG_IN[0]});
+        attributes.push_back(
+            {SQL_ATTR_TRACE, SQL_IS_UINTEGER, (void*)(std::intptr_t)SQL_OPT_TRACE_ON});
+        attributes.push_back(
+            {SQL_ATTR_TRACEFILE, (long)TRACEFILE_IN_LENGTH, (void*)&TRACEFILE_IN[0]});
+
+        auto conn = connect(attributes, false);
+        // We may have connected async, but the following calls to
+        // SQLGetConnectAttr are OK despite the state possibly being
+        // SQL_STILL_EXECUTING.
+
+        // Test whether catalog was set
+        // REQUIRE(conn.catalog_name() == CATALOG_IN);
+
+        // Test whether timeout was set
+        long timeout_out(0);
+        SQLINTEGER length(0);
+        RETCODE rc = ::SQLGetConnectAttr(
+            conn.native_dbc_handle(),
+            SQL_ATTR_LOGIN_TIMEOUT,
+            &timeout_out,
+            sizeof(timeout_out),
+            &length);
+        REQUIRE(success(rc));
+        REQUIRE(timeout_out == TIMEOUT_IN);
+
+        // Test trace-file.
+        // 1. Call GetConnectAttr to get length
+        // 2. Call GetConnectAttr to get actual
+        //    buffer
+        length = 0;
+        rc = ::SQLGetConnectAttr(conn.native_dbc_handle(), SQL_ATTR_TRACEFILE, nullptr, 0, &length);
+        printf("Tracefile length %d\n", length);
+        REQUIRE(success(rc));
+
+        std::string tracefile_out(TRACEFILE_IN_LENGTH + 5, 0);
+        rc = ::SQLGetConnectAttr(
+            conn.native_dbc_handle(),
+            SQL_ATTR_TRACEFILE,
+            &tracefile_out[0],
+            (SQLINTEGER)(TRACEFILE_IN_LENGTH + 5),
+            &length);
+        printf("Tracefile get rc %d\n", (int)rc);
+        printf("Tracefile length %d\n", length);
+        REQUIRE(success(rc));
+        REQUIRE(tracefile_out.substr(0, TRACEFILE_IN_LENGTH) == TRACEFILE_IN);
+    }
+#if !defined(NANODBC_DISABLE_ASYNC) && defined(WIN32)
+    {
+        std::list<nanodbc::connection::attribute> attributes;
+        attributes.push_back(
+            {SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE,
+             SQL_IS_UINTEGER,
+             (void*)(std::intptr_t)SQL_ASYNC_DBC_ENABLE_ON});
+        HANDLE event_handle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+        attributes.push_back({SQL_ATTR_ASYNC_DBC_EVENT, SQL_IS_POINTER, event_handle});
+
+        auto conn = connect(attributes, true);
+        WaitForSingleObject(event_handle, INFINITE);
+        conn.async_complete();
+        REQUIRE(conn.connected());
+        test_async_internal(conn, event_handle);
+    }
+#endif
 }
 
 #endif
