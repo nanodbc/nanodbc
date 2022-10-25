@@ -1283,6 +1283,13 @@ private:
 class connection
 {
 public:
+    /// \brief A 3-element tuple representing a connection attribute.
+    ///
+    /// The first element is the Attribute argument to the ODBC SQLSetConnectAttr
+    /// function.  The second is the StringLength, and the third is the ValuePtr
+    /// argument.
+    ///
+    /// See https://learn.microsoft.com/en-us/sql/odbc/reference/syntax/sqlsetconnectattr-function
     typedef std::tuple<long, long, void*> attribute;
     /// \brief Create new connection object, initially not connected.
     connection();
