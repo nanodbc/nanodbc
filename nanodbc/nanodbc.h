@@ -87,6 +87,9 @@
 #include <string>
 #include <type_traits>
 #include <utility>
+#if __cpp_lib_variant >= 201606L
+#include <variant>
+#endif
 #include <vector>
 
 #ifndef __clang__
@@ -1282,15 +1285,68 @@ private:
 /// \brief Manages and encapsulates ODBC resources such as the connection and environment handles.
 class connection
 {
+
+private:
+    class connection_impl;
+    friend class nanodbc::transaction::transaction_impl;
+
+#if __cpp_lib_variant >= 201606L
 public:
     /// \brief A 3-element tuple representing a connection attribute.
     ///
     /// The first element is the Attribute argument to the ODBC SQLSetConnectAttr
     /// function.  The second is the StringLength, and the third is the ValuePtr
-    /// argument.
+    /// argument.  This element (third in tuple) is stored in a std::variant,
+    /// a type safe union of std::vector<uint8_t> ( binary buffer payloads ),
+    /// nanodbc::string ( string payloads ), or std::(u)intptr_t, for both
+    /// u/int payloads, as well as pointers to more generic buffers.
     ///
     /// See https://learn.microsoft.com/en-us/sql/odbc/reference/syntax/sqlsetconnectattr-function
-    typedef std::tuple<long, long, void*> attribute;
+    class attribute
+    {
+    public:
+        attribute() = delete;
+        attribute& operator=(attribute const&) = delete;
+        attribute(attribute const& other);
+        attribute(
+            long const& attr,
+            long const& strLen,
+            std::variant<std::vector<uint8_t>, string, std::intptr_t, std::uintptr_t> const& rsrc);
+
+    private:
+        void extractValuePtr();
+
+        long odbcAttribute;
+        long odbcStringLength;
+        std::variant<std::vector<uint8_t>, string, std::intptr_t, std::uintptr_t> resource;
+        void* odbcValuePtr;
+        friend class nanodbc::connection::connection_impl;
+    };
+#else
+private:
+    // Prior to C++17 connection::attribute is not public, rather
+    // defined here as private so that we don't have to ifdef some of
+    // the internals in connection_impl that route timeout/async through
+    // the API endpoints that take connection::attribute as input.
+    class attribute
+    {
+    public:
+        attribute(long const& attr, long const& strLen, long const& val)
+            : odbcAttribute(attr)
+            , odbcStringLength(strLen)
+            , odbcValuePtr((void*)(std::intptr_t)val) {};
+        attribute(long const& attr, long const& strLen, void* val)
+            : odbcAttribute(attr)
+            , odbcStringLength(strLen)
+            , odbcValuePtr(val) {};
+    private:
+        long odbcAttribute;
+        long odbcStringLength;
+        void* odbcValuePtr;
+        friend class nanodbc::connection::connection_impl;
+    };
+#endif
+public:
     /// \brief Create new connection object, initially not connected.
     connection();
 
@@ -1318,6 +1374,18 @@ public:
     /// \see connected(), connect()
     connection(string const& dsn, string const& user, string const& pass, long timeout = 0);
 
+    /// \brief Create new connection object and immediately connect using the given connection
+    /// string.
+    ///
+    /// The function calls ODBC API SQLDriverConnect.
+    ///
+    /// \param connection_string The connection string for establishing a connection.
+    /// \param timeout Seconds before connection timeout. Default is 0 indicating no timeout.
+    /// \throws database_error
+    /// \see connected(), connect()
+    explicit connection(string const& connection_string, long timeout = 0);
+
+#if __cpp_lib_variant >= 201606L
     /// \brief Create new connection object, set the connection attributes passed as
     /// arguments and connect to the given data source.
     ///
@@ -1330,23 +1398,12 @@ public:
     /// \param attributes A list of connection attributes to be set prior to connecting.
     /// \throws database_error
     /// \see connected(), connect(), attribute
+
     connection(
         string const& dsn,
         string const& user,
         string const& pass,
         std::list<attribute> const& attributes);
-
-    /// \brief Create new connection object and immediately connect using the given connection
-    /// string.
-    ///
-    /// The function calls ODBC API SQLDriverConnect.
-    ///
-    /// \param connection_string The connection string for establishing a connection.
-    /// \param timeout Seconds before connection timeout. Default is 0 indicating no timeout.
-    /// \throws database_error
-    /// \see connected(), connect()
-    explicit connection(string const& connection_string, long timeout = 0);
-
     /// \brief Create new connection object, set the connection attributes passed as
     /// arguments and connect to the given connection string.
     ///
@@ -1358,7 +1415,7 @@ public:
     /// \throws database_error
     /// \see connected(), connect(), attribute
     connection(string const& connection_string, std::list<attribute> const& attributes);
-
+#endif
     /// \brief Automatically disconnects from the database and frees all associated resources.
     ///
     /// Will not throw even if disconnecting causes some kind of error and raises an exception.
@@ -1388,6 +1445,14 @@ public:
     /// \see connected()
     void connect(string const& dsn, string const& user, string const& pass, long timeout = 0);
 
+    /// \brief Connect using the given connection string.
+    /// \param connection_string The connection string for establishing a connection.
+    /// \param timeout Seconds before connection timeout. Default is 0 indicating no timeout.
+    /// \throws database_error
+    /// \see connected()
+    void connect(string const& connection_string, long timeout = 0);
+
+#if __cpp_lib_variant >= 201606L
     /// \brief Set the connection attributes passed by the user, and connect to the given
     /// data source.
     /// \param dsn The name of the data source.
@@ -1402,13 +1467,6 @@ public:
         string const& pass,
         std::list<attribute> const& attributes);
 
-    /// \brief Connect using the given connection string.
-    /// \param connection_string The connection string for establishing a connection.
-    /// \param timeout Seconds before connection timeout. Default is 0 indicating no timeout.
-    /// \throws database_error
-    /// \see connected()
-    void connect(string const& connection_string, long timeout = 0);
-
     /// \brief Set the connection attributes passed by the user, and connect to the given
     /// connection string.
     /// \param connection_string The connection string for establishing a connection.
@@ -1416,7 +1474,7 @@ public:
     /// \throws database_error
     /// \see connected(), attribute
     void connect(string const& connection_string, std::list<attribute> const& attributes);
-
+#endif
 #if !defined(NANODBC_DISABLE_ASYNC)
     /// \brief Initiate an asynchronous connection operation to the given data source.
     ///
@@ -1518,10 +1576,6 @@ private:
     std::size_t unref_transaction();
     bool rollback() const;
     void rollback(bool onoff);
-
-private:
-    class connection_impl;
-    friend class nanodbc::transaction::transaction_impl;
 
 private:
     std::shared_ptr<connection_impl> impl_;

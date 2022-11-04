@@ -28,6 +28,7 @@ struct mssql_fixture : public test_case_fixture
             connection_string_ = get_env("NANODBC_TEST_CONNSTR_MSSQL");
     }
 
+#if __cpp_lib_variant >= 201606L
     using base_test_fixture::connect;
     nanodbc::connection
     connect(std::list<nanodbc::connection::attribute> const& attributes, bool const& is_async)
@@ -40,6 +41,7 @@ struct mssql_fixture : public test_case_fixture
         }
         return connection;
     }
+#endif
 
 #if !defined(NANODBC_DISABLE_ASYNC) && defined(WIN32)
     void test_async_internal(nanodbc::connection& conn, HANDLE& event_handle)
@@ -1586,6 +1588,7 @@ TEST_CASE_METHOD(
     }
 }
 
+#if __cpp_lib_variant >= 201606L
 TEST_CASE_METHOD(mssql_fixture, "test_conn_attributes", "[mssql][conn_attibutes]")
 {
     {
@@ -1596,14 +1599,10 @@ TEST_CASE_METHOD(mssql_fixture, "test_conn_attributes", "[mssql][conn_attibutes]
         size_t TRACEFILE_IN_LENGTH = TRACEFILE_IN.size();
         long TIMEOUT_IN = 7;
 
-        attributes.push_back(
-            {SQL_ATTR_LOGIN_TIMEOUT, SQL_IS_UINTEGER, (void*)(std::intptr_t)TIMEOUT_IN});
-        attributes.push_back(
-            {SQL_ATTR_CURRENT_CATALOG, (long)CATALOG_IN_LENGTH, (void*)&CATALOG_IN[0]});
-        attributes.push_back(
-            {SQL_ATTR_TRACE, SQL_IS_UINTEGER, (void*)(std::intptr_t)SQL_OPT_TRACE_ON});
-        attributes.push_back(
-            {SQL_ATTR_TRACEFILE, (long)TRACEFILE_IN_LENGTH, (void*)&TRACEFILE_IN[0]});
+        attributes.push_back({SQL_ATTR_LOGIN_TIMEOUT, SQL_IS_UINTEGER, TIMEOUT_IN});
+        attributes.push_back({SQL_ATTR_CURRENT_CATALOG, (long)CATALOG_IN_LENGTH, CATALOG_IN});
+        attributes.push_back({SQL_ATTR_TRACE, (long)SQL_IS_UINTEGER, SQL_OPT_TRACE_ON});
+        attributes.push_back({SQL_ATTR_TRACEFILE, (long)TRACEFILE_IN_LENGTH, TRACEFILE_IN});
 
         auto conn = connect(attributes, false);
         // We may have connected async, but the following calls to
@@ -1631,7 +1630,6 @@ TEST_CASE_METHOD(mssql_fixture, "test_conn_attributes", "[mssql][conn_attibutes]
         //    buffer
         length = 0;
         rc = ::SQLGetConnectAttr(conn.native_dbc_handle(), SQL_ATTR_TRACEFILE, nullptr, 0, &length);
-        printf("Tracefile length %d\n", length);
         REQUIRE(success(rc));
 
         std::string tracefile_out(TRACEFILE_IN_LENGTH + 5, 0);
@@ -1641,8 +1639,6 @@ TEST_CASE_METHOD(mssql_fixture, "test_conn_attributes", "[mssql][conn_attibutes]
             &tracefile_out[0],
             (SQLINTEGER)(TRACEFILE_IN_LENGTH + 5),
             &length);
-        printf("Tracefile get rc %d\n", (int)rc);
-        printf("Tracefile length %d\n", length);
         REQUIRE(success(rc));
         REQUIRE(tracefile_out.substr(0, TRACEFILE_IN_LENGTH) == TRACEFILE_IN);
     }
@@ -1652,7 +1648,7 @@ TEST_CASE_METHOD(mssql_fixture, "test_conn_attributes", "[mssql][conn_attibutes]
         attributes.push_back(
             {SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE,
              SQL_IS_UINTEGER,
-             (void*)(std::intptr_t)SQL_ASYNC_DBC_ENABLE_ON});
+             SQL_ASYNC_DBC_ENABLE_ON});
         HANDLE event_handle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
         attributes.push_back({SQL_ATTR_ASYNC_DBC_EVENT, SQL_IS_POINTER, event_handle});
 
@@ -1664,5 +1660,5 @@ TEST_CASE_METHOD(mssql_fixture, "test_conn_attributes", "[mssql][conn_attibutes]
     }
 #endif
 }
-
+#endif
 #endif
