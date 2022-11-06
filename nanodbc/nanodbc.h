@@ -1292,14 +1292,15 @@ private:
 
 #if __cpp_lib_variant >= 201606L
 public:
-    /// \brief A 3-element tuple representing a connection attribute.
+    /// \brief A class representing a connection attribute.
     ///
-    /// The first element is the Attribute argument to the ODBC SQLSetConnectAttr
-    /// function.  The second is the StringLength, and the third is the ValuePtr
-    /// argument.  This element (third in tuple) is stored in a std::variant,
-    /// a type safe union of std::vector<uint8_t> ( binary buffer payloads ),
-    /// nanodbc::string ( string payloads ), or std::(u)intptr_t, for both
-    /// u/int payloads, as well as pointers to more generic buffers.
+    /// Callers should create attributes using the 3 argument constructor.
+    /// First argument is the Attribute argument to the ODBC SQLSetConnectAttr
+    /// function.  The second is the StringLength, and the third is used to
+    /// inform the ValuePtr argument to SQLSetConnectAttr.  This argument,
+    /// a std::variant, is a type safe union of std::vector<uint8_t> ( binary
+    /// buffer payloads ), nanodbc::string ( string payloads ), or std::(u)intptr_t,
+    /// for both u/int payloads, as well as pointers to more generic buffers.
     ///
     /// See https://learn.microsoft.com/en-us/sql/odbc/reference/syntax/sqlsetconnectattr-function
     class attribute
@@ -1334,11 +1335,12 @@ private:
         attribute(long const& attr, long const& strLen, long const& val)
             : odbcAttribute(attr)
             , odbcStringLength(strLen)
-            , odbcValuePtr((void*)(std::intptr_t)val) {};
+            , odbcValuePtr((void*)(std::intptr_t)val){};
         attribute(long const& attr, long const& strLen, void* val)
             : odbcAttribute(attr)
             , odbcStringLength(strLen)
-            , odbcValuePtr(val) {};
+            , odbcValuePtr(val){};
+
     private:
         long odbcAttribute;
         long odbcStringLength;
