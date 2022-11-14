@@ -4060,11 +4060,11 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
         st.tm_year = d.year - 1900;
         st.tm_mon = d.month - 1;
         st.tm_mday = d.day;
-        char* old_lc_time = std::setlocale(LC_TIME, nullptr);
+        std::string old_lc_time = std::setlocale(LC_TIME, nullptr);
         std::setlocale(LC_TIME, "");
         char date_str[512];
         std::strftime(date_str, sizeof(date_str), "%Y-%m-%d", &st);
-        std::setlocale(LC_TIME, old_lc_time);
+        std::setlocale(LC_TIME, old_lc_time.c_str());
         convert(date_str, result);
         return;
     }
@@ -4076,11 +4076,11 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
         st.tm_hour = t.hour;
         st.tm_min = t.min;
         st.tm_sec = t.sec;
-        char* old_lc_time = std::setlocale(LC_TIME, nullptr);
+        std::string old_lc_time = std::setlocale(LC_TIME, nullptr);
         std::setlocale(LC_TIME, "");
         char date_str[512];
         std::strftime(date_str, sizeof(date_str), "%H:%M:%S", &st);
-        std::setlocale(LC_TIME, old_lc_time);
+        std::setlocale(LC_TIME, old_lc_time.c_str());
         convert(date_str, result);
         return;
     }
@@ -4095,11 +4095,11 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
         st.tm_hour = stamp.hour;
         st.tm_min = stamp.min;
         st.tm_sec = stamp.sec;
-        char* old_lc_time = std::setlocale(LC_TIME, nullptr);
+        std::string old_lc_time = std::setlocale(LC_TIME, nullptr);
         std::setlocale(LC_TIME, "");
         char date_str[512];
         std::strftime(date_str, sizeof(date_str), "%Y-%m-%d %H:%M:%S %z", &st);
-        std::setlocale(LC_TIME, old_lc_time);
+        std::setlocale(LC_TIME, old_lc_time.c_str());
         convert(date_str, result);
         return;
     }
