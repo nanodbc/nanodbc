@@ -847,6 +847,50 @@ inline void allocate_dbc_handle(SQLHDBC& conn, SQLHENV env)
 
 } // namespace
 
+// connection::attribute
+#if __cpp_lib_variant >= 201606L
+namespace nanodbc
+{
+connection::attribute::attribute(
+    long const& attribute,
+    long const& string_length,
+    std::variant<std::vector<uint8_t>, string, std::intptr_t, std::uintptr_t> const& resource)
+    : attribute_(attribute)
+    , string_length_(string_length)
+    , resource_(resource)
+    , value_ptr_(nullptr)
+{
+    this->extractValuePtr();
+}
+connection::attribute::attribute(attribute const& other)
+    : attribute_(other.attribute_)
+    , string_length_(other.string_length_)
+    , resource_(other.resource_)
+    , value_ptr_(nullptr)
+{
+    this->extractValuePtr();
+}
+void connection::attribute::extractValuePtr()
+{
+    std::visit(
+        [this](auto&& arg)
+        {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, string> || std::is_same_v<T, std::vector<uint8_t>>)
+            {
+                this->value_ptr_ = (void*)&arg[0];
+            }
+            else if constexpr (
+                std::is_same_v<T, std::intptr_t> || std::is_same_v<T, std::uintptr_t>)
+            {
+                this->value_ptr_ = (void*)(arg);
+            }
+        },
+        this->resource_);
+}
+} // namespace nanodbc
+#endif
+
 // clang-format off
 //  .d8888b.                                               888    d8b                             8888888                        888
 // d88P  Y88b                                              888    Y8P                               888                          888
@@ -920,6 +964,51 @@ public:
         }
     }
 
+#if __cpp_lib_variant >= 201606L
+    connection_impl(
+        string const& dsn,
+        string const& user,
+        string const& pass,
+        const std::list<attribute>& attributes)
+        : env_(nullptr)
+        , dbc_(nullptr)
+        , connected_(false)
+        , transactions_(0)
+        , rollback_(false)
+    {
+        allocate();
+
+        try
+        {
+            connect(dsn, user, pass, attributes);
+        }
+        catch (...)
+        {
+            deallocate();
+            throw;
+        }
+    }
+
+    connection_impl(string const& connection_string, std::list<attribute> attributes)
+        : env_(nullptr)
+        , dbc_(nullptr)
+        , connected_(false)
+        , transactions_(0)
+        , rollback_(false)
+    {
+        allocate();
+        try
+        {
+            connect(connection_string, attributes);
+        }
+        catch (...)
+        {
+            deallocate();
+            throw;
+        }
+    }
+#endif
+
     ~connection_impl() noexcept
     {
         try
@@ -951,6 +1040,15 @@ public:
     {
         deallocate_handle(dbc_, SQL_HANDLE_DBC);
         deallocate_handle(env_, SQL_HANDLE_ENV);
+    }
+
+    void set_attribute(long const& attr, long const& size, const void* buffer)
+    {
+        RETCODE rc;
+
+        NANODBC_CALL_RC(SQLSetConnectAttr, rc, dbc_, attr, (SQLPOINTER)(buffer), size);
+        if (!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
     }
 
 #if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_EVENT)
@@ -1005,33 +1103,56 @@ public:
         long timeout,
         void* event_handle = nullptr)
     {
+        std::list<attribute> attributes;
+        // Avoid to set the timeout to 0 (no timeout).
+        // This is a workaround for the Oracle ODBC Driver (11.1), as this
+        // operation is not supported by the Driver.
+        if (timeout != 0)
+        {
+            attributes.push_back({SQL_ATTR_LOGIN_TIMEOUT, SQL_IS_UINTEGER, timeout});
+        }
+#if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_EVENT)
+        if (event_handle != nullptr)
+        {
+            attributes.push_back(
+                {SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE, SQL_IS_UINTEGER, SQL_ASYNC_DBC_ENABLE_ON});
+            attributes.push_back({SQL_ATTR_ASYNC_DBC_EVENT, SQL_IS_POINTER, event_handle});
+        }
+#endif
+        return this->connect(dsn, user, pass, attributes);
+    }
+
+    RETCODE
+    connect(
+        string const& dsn,
+        string const& user,
+        string const& pass,
+        std::list<attribute> const& attributes)
+    {
         allocate_env_handle(env_);
         disconnect();
 
         deallocate_handle(dbc_, SQL_HANDLE_DBC);
         allocate_dbc_handle(dbc_, env_);
 
-        RETCODE rc;
-        if (timeout != 0)
+        bool is_async = false;
+        for (const attribute& attr : attributes)
         {
-            // Avoid to set the timeout to 0 (no timeout).
-            // This is a workaround for the Oracle ODBC Driver (11.1), as this
-            // operation is not supported by the Driver.
-            NANODBC_CALL_RC(
-                SQLSetConnectAttr,
-                rc,
-                dbc_,
-                SQL_LOGIN_TIMEOUT,
-                (SQLPOINTER)(std::intptr_t)timeout,
-                0);
-            if (!success(rc))
-                NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
+            if (attr.value_ptr_ == nullptr)
+            {
+                continue;
+            }
+#if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE)
+            if (attr.attribute_ == SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE &&
+                attr.value_ptr_ == (void*)(std::intptr_t)SQL_ASYNC_DBC_ENABLE_ON)
+            {
+                is_async = true;
+            }
+#endif
+            this->set_attribute(attr.attribute_, attr.string_length_, attr.value_ptr_);
         }
 
-#if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_EVENT)
-        if (event_handle != nullptr)
-            enable_async(event_handle);
-#endif
+        RETCODE rc;
 
         NANODBC_CALL_RC(
             NANODBC_FUNC(SQLConnect),
@@ -1043,7 +1164,7 @@ public:
             SQL_NTS,
             !pass.empty() ? (NANODBC_SQLCHAR*)pass.c_str() : nullptr,
             SQL_NTS);
-        if (!success(rc) && (event_handle == nullptr || rc != SQL_STILL_EXECUTING))
+        if (!success(rc) && (!is_async || rc != SQL_STILL_EXECUTING))
             NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
 
         connected_ = success(rc);
@@ -1054,33 +1175,52 @@ public:
     RETCODE
     connect(string const& connection_string, long timeout, void* event_handle = nullptr)
     {
+        std::list<attribute> attributes;
+        // Avoid to set the timeout to 0 (no timeout).
+        // This is a workaround for the Oracle ODBC Driver (11.1), as this
+        // operation is not supported by the Driver.
+        if (timeout != 0)
+        {
+            attributes.push_back({SQL_ATTR_LOGIN_TIMEOUT, SQL_IS_UINTEGER, timeout});
+        }
+#if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_EVENT)
+        if (event_handle != nullptr)
+        {
+            attributes.push_back(
+                {SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE, SQL_IS_UINTEGER, SQL_ASYNC_DBC_ENABLE_ON});
+            attributes.push_back({SQL_ATTR_ASYNC_DBC_EVENT, SQL_IS_POINTER, event_handle});
+        }
+#endif
+        return this->connect(connection_string, attributes);
+    }
+
+    RETCODE
+    connect(string const& connection_string, std::list<attribute> const& attributes)
+    {
         allocate_env_handle(env_);
         disconnect();
 
         deallocate_handle(dbc_, SQL_HANDLE_DBC);
         allocate_dbc_handle(dbc_, env_);
 
-        RETCODE rc;
-        if (timeout != 0)
+        bool is_async = false;
+        for (const attribute& attr : attributes)
         {
-            // Avoid to set the timeout to 0 (no timeout).
-            // This is a workaround for the Oracle ODBC Driver (11.1), as this
-            // operation is not supported by the Driver.
-            NANODBC_CALL_RC(
-                SQLSetConnectAttr,
-                rc,
-                dbc_,
-                SQL_LOGIN_TIMEOUT,
-                (SQLPOINTER)(std::intptr_t)timeout,
-                0);
-            if (!success(rc))
-                NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
+            if (attr.value_ptr_ == nullptr)
+            {
+                continue;
+            }
+#if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE)
+            if (attr.attribute_ == SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE &&
+                attr.value_ptr_ == (void*)(std::intptr_t)SQL_ASYNC_DBC_ENABLE_ON)
+            {
+                is_async = true;
+            }
+#endif
+            this->set_attribute(attr.attribute_, attr.string_length_, attr.value_ptr_);
         }
 
-#if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_EVENT)
-        if (event_handle != nullptr)
-            enable_async(event_handle);
-#endif
+        RETCODE rc;
 
         NANODBC_CALL_RC(
             NANODBC_FUNC(SQLDriverConnect),
@@ -1093,7 +1233,7 @@ public:
             0,
             nullptr,
             SQL_DRIVER_NOPROMPT);
-        if (!success(rc) && (event_handle == nullptr || rc != SQL_STILL_EXECUTING))
+        if (!success(rc) && (!is_async || rc != SQL_STILL_EXECUTING))
             NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
 
         connected_ = success(rc);
@@ -4764,6 +4904,22 @@ connection::connection(string const& connection_string, long timeout)
 {
 }
 
+#if __cpp_lib_variant >= 201606L
+connection::connection(
+    string const& dsn,
+    string const& user,
+    string const& pass,
+    std::list<attribute> const& attributes)
+    : impl_(new connection_impl(dsn, user, pass, attributes))
+{
+}
+
+connection::connection(string const& connection_string, std::list<attribute> const& attributes)
+    : impl_(new connection_impl(connection_string, attributes))
+{
+}
+#endif
+
 connection::~connection() noexcept {}
 
 void connection::allocate()
@@ -4785,6 +4941,22 @@ void connection::connect(string const& connection_string, long timeout)
 {
     impl_->connect(connection_string, timeout);
 }
+
+#if __cpp_lib_variant >= 201606L
+void connection::connect(
+    string const& dsn,
+    string const& user,
+    string const& pass,
+    std::list<attribute> const& attributes)
+{
+    impl_->connect(dsn, user, pass, attributes);
+}
+
+void connection::connect(string const& connection_string, std::list<attribute> const& attributes)
+{
+    impl_->connect(connection_string, attributes);
+}
+#endif
 
 #if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_EVENT)
 bool connection::async_connect(
@@ -5189,12 +5361,15 @@ unsigned long statement::parameter_size(short param_index) const
     template void statement::bind(                                                                 \
         short, const type*, std::size_t, const bool*, param_direction) /* n-ary, flags */
 
-#define NANODBC_INSTANTIATE_BIND_STRINGS(type)                                                     \
+#define NANODBC_INSTANTIATE_BIND_VECTOR_STRINGS(type)                                              \
     template void statement::bind_strings(short, std::vector<type> const&, param_direction);       \
     template void statement::bind_strings(                                                         \
         short, std::vector<type> const&, type::value_type const*, param_direction);                \
     template void statement::bind_strings(                                                         \
-        short, std::vector<type> const&, bool const*, param_direction);                            \
+        short, std::vector<type> const&, bool const*, param_direction);
+
+#define NANODBC_INSTANTIATE_BIND_STRINGS(type)                                                     \
+    NANODBC_INSTANTIATE_BIND_VECTOR_STRINGS(type)                                                  \
     template void statement::bind_strings(                                                         \
         short, const type::value_type*, std::size_t, std::size_t, param_direction);                \
     template void statement::bind_strings(                                                         \
@@ -5228,8 +5403,8 @@ NANODBC_INSTANTIATE_BIND_STRINGS(std::string);
 NANODBC_INSTANTIATE_BIND_STRINGS(wide_string);
 
 #ifdef NANODBC_SUPPORT_STRING_VIEW
-NANODBC_INSTANTIATE_BIND_STRINGS(std::string_view);
-NANODBC_INSTANTIATE_BIND_STRINGS(wide_string_view);
+NANODBC_INSTANTIATE_BIND_VECTOR_STRINGS(std::string_view);
+NANODBC_INSTANTIATE_BIND_VECTOR_STRINGS(wide_string_view);
 #endif
 
 #undef NANODBC_INSTANTIATE_BINDS
@@ -5438,19 +5613,21 @@ void table_valued_parameter::close()
     template void table_valued_parameter::bind(                                                    \
         short, const type*, std::size_t, const bool*) /* n-ary, flags */
 
-#define NANODBC_INSTANTIATE_TVP_BIND_STRINGS(type)                                                 \
+#define NANODBC_INSTANTIATE_TVP_BIND_VECTOR_STRINGS(type)                                          \
     template void table_valued_parameter::bind_strings(short, std::vector<type> const&);           \
     template void table_valued_parameter::bind_strings(                                            \
         short, std::vector<type> const&, type::value_type const*);                                 \
     template void table_valued_parameter::bind_strings(                                            \
-        short, std::vector<type> const&, bool const*);                                             \
+        short, std::vector<type> const&, bool const*);
+
+#define NANODBC_INSTANTIATE_TVP_BIND_STRINGS(type)                                                 \
+    NANODBC_INSTANTIATE_TVP_BIND_VECTOR_STRINGS(type)                                              \
     template void table_valued_parameter::bind_strings(                                            \
         short, const type::value_type*, std::size_t, std::size_t);                                 \
     template void table_valued_parameter::bind_strings(                                            \
         short, type::value_type const*, std::size_t, std::size_t, type::value_type const*);        \
     template void table_valued_parameter::bind_strings(                                            \
         short, type::value_type const*, std::size_t, std::size_t, bool const*)
-
 // The following are the only supported instantiations of statement::bind().
 NANODBC_INSTANTIATE_TVP_BINDS(std::string::value_type);
 NANODBC_INSTANTIATE_TVP_BINDS(wide_string::value_type);
@@ -5472,8 +5649,8 @@ NANODBC_INSTANTIATE_TVP_BIND_STRINGS(std::string);
 NANODBC_INSTANTIATE_TVP_BIND_STRINGS(wide_string);
 
 #ifdef NANODBC_SUPPORT_STRING_VIEW
-NANODBC_INSTANTIATE_TVP_BIND_STRINGS(std::string_view);
-NANODBC_INSTANTIATE_TVP_BIND_STRINGS(wide_string_view);
+NANODBC_INSTANTIATE_TVP_BIND_VECTOR_STRINGS(std::string_view);
+NANODBC_INSTANTIATE_TVP_BIND_VECTOR_STRINGS(wide_string_view);
 #endif
 
 #undef NANODBC_INSTANTIATE_TVP_BINDS
