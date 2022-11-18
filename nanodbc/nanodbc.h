@@ -1310,17 +1310,18 @@ public:
         attribute& operator=(attribute const&) = delete;
         attribute(attribute const& other);
         attribute(
-            long const& attr,
-            long const& strLen,
-            std::variant<std::vector<uint8_t>, string, std::intptr_t, std::uintptr_t> const& rsrc);
+            long const& attribute,
+            long const& string_length,
+            std::variant<std::vector<uint8_t>, string, std::intptr_t, std::uintptr_t> const&
+                resource);
 
     private:
         void extractValuePtr();
 
-        long odbcAttribute;
-        long odbcStringLength;
-        std::variant<std::vector<uint8_t>, string, std::intptr_t, std::uintptr_t> resource;
-        void* odbcValuePtr;
+        long attribute_;
+        long string_length_;
+        std::variant<std::vector<uint8_t>, string, std::intptr_t, std::uintptr_t> resource_;
+        void* value_ptr_;
         friend class nanodbc::connection::connection_impl;
     };
 #else
@@ -1332,19 +1333,19 @@ private:
     class attribute
     {
     public:
-        attribute(long const& attr, long const& strLen, long const& val)
-            : odbcAttribute(attr)
-            , odbcStringLength(strLen)
-            , odbcValuePtr((void*)(std::intptr_t)val){};
-        attribute(long const& attr, long const& strLen, void* val)
-            : odbcAttribute(attr)
-            , odbcStringLength(strLen)
-            , odbcValuePtr(val){};
+        attribute(long const& attribute, long const& string_length, long const& value)
+            : attribute_(attribute)
+            , string_length_(string_length)
+            , value_ptr_((void*)(std::intptr_t)value){};
+        attribute(long const& attribute, long const& string_length, void* value_ptr)
+            : attribute_(attribute)
+            , string_length_(string_length)
+            , value_ptr_(value_ptr){};
 
     private:
-        long odbcAttribute;
-        long odbcStringLength;
-        void* odbcValuePtr;
+        long attribute_;
+        long string_length_;
+        void* value_ptr_;
         friend class nanodbc::connection::connection_impl;
     };
 #endif

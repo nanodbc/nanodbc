@@ -852,21 +852,21 @@ inline void allocate_dbc_handle(SQLHDBC& conn, SQLHENV env)
 namespace nanodbc
 {
 connection::attribute::attribute(
-    long const& attr,
-    long const& strLen,
-    std::variant<std::vector<uint8_t>, string, std::intptr_t, std::uintptr_t> const& rsrc)
-    : odbcAttribute(attr)
-    , odbcStringLength(strLen)
-    , resource(rsrc)
-    , odbcValuePtr(nullptr)
+    long const& attribute,
+    long const& string_length,
+    std::variant<std::vector<uint8_t>, string, std::intptr_t, std::uintptr_t> const& resource)
+    : attribute_(attribute)
+    , string_length_(string_length)
+    , resource_(resource)
+    , value_ptr_(nullptr)
 {
     this->extractValuePtr();
 }
 connection::attribute::attribute(attribute const& other)
-    : odbcAttribute(other.odbcAttribute)
-    , odbcStringLength(other.odbcStringLength)
-    , resource(other.resource)
-    , odbcValuePtr(nullptr)
+    : attribute_(other.attribute_)
+    , string_length_(other.string_length_)
+    , resource_(other.resource_)
+    , value_ptr_(nullptr)
 {
     this->extractValuePtr();
 }
@@ -878,15 +878,15 @@ void connection::attribute::extractValuePtr()
             using T = std::decay_t<decltype(arg)>;
             if constexpr (std::is_same_v<T, string> || std::is_same_v<T, std::vector<uint8_t>>)
             {
-                this->odbcValuePtr = (void*)&arg[0];
+                this->value_ptr_ = (void*)&arg[0];
             }
             else if constexpr (
                 std::is_same_v<T, std::intptr_t> || std::is_same_v<T, std::uintptr_t>)
             {
-                this->odbcValuePtr = (void*)(arg);
+                this->value_ptr_ = (void*)(arg);
             }
         },
-        this->resource);
+        this->resource_);
 }
 } // namespace nanodbc
 #endif
@@ -1114,8 +1114,8 @@ public:
 #if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_EVENT)
         if (event_handle != nullptr)
         {
-            attributes.push_back({
-                SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE, SQL_IS_UINTEGER, SQL_ASYNC_DBC_ENABLE_ON});
+            attributes.push_back(
+                {SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE, SQL_IS_UINTEGER, SQL_ASYNC_DBC_ENABLE_ON});
             attributes.push_back({SQL_ATTR_ASYNC_DBC_EVENT, SQL_IS_POINTER, event_handle});
         }
 #endif
@@ -1138,18 +1138,18 @@ public:
         bool is_async = false;
         for (const attribute& attr : attributes)
         {
-            if (attr.odbcValuePtr == nullptr)
+            if (attr.value_ptr_ == nullptr)
             {
                 continue;
             }
 #if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE)
-            if (attr.odbcAttribute == SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE &&
-                attr.odbcValuePtr == (void*)(std::intptr_t)SQL_ASYNC_DBC_ENABLE_ON)
+            if (attr.attribute_ == SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE &&
+                attr.value_ptr_ == (void*)(std::intptr_t)SQL_ASYNC_DBC_ENABLE_ON)
             {
                 is_async = true;
             }
 #endif
-            this->set_attribute(attr.odbcAttribute, attr.odbcStringLength, attr.odbcValuePtr);
+            this->set_attribute(attr.attribute_, attr.string_length_, attr.value_ptr_);
         }
 
         RETCODE rc;
@@ -1186,8 +1186,8 @@ public:
 #if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_EVENT)
         if (event_handle != nullptr)
         {
-            attributes.push_back({
-                SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE, SQL_IS_UINTEGER, SQL_ASYNC_DBC_ENABLE_ON});
+            attributes.push_back(
+                {SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE, SQL_IS_UINTEGER, SQL_ASYNC_DBC_ENABLE_ON});
             attributes.push_back({SQL_ATTR_ASYNC_DBC_EVENT, SQL_IS_POINTER, event_handle});
         }
 #endif
@@ -1206,18 +1206,18 @@ public:
         bool is_async = false;
         for (const attribute& attr : attributes)
         {
-            if (attr.odbcValuePtr == nullptr)
+            if (attr.value_ptr_ == nullptr)
             {
                 continue;
             }
 #if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE)
-            if (attr.odbcAttribute == SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE &&
-                attr.odbcValuePtr == (void*)(std::intptr_t)SQL_ASYNC_DBC_ENABLE_ON)
+            if (attr.attribute_ == SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE &&
+                attr.value_ptr_ == (void*)(std::intptr_t)SQL_ASYNC_DBC_ENABLE_ON)
             {
                 is_async = true;
             }
 #endif
-            this->set_attribute(attr.odbcAttribute, attr.odbcStringLength, attr.odbcValuePtr);
+            this->set_attribute(attr.attribute_, attr.string_length_, attr.value_ptr_);
         }
 
         RETCODE rc;
