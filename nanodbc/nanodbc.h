@@ -87,8 +87,12 @@
 #include <string>
 #include <type_traits>
 #include <utility>
-#if __cpp_lib_variant >= 201606L
+#ifdef __has_include         // Check if __has_include is present
+#if __has_include(<variant>) // Check for a standard library
 #include <variant>
+#elif __has_include(<experimental/variant>) // Check for an experimental version
+#include <experimental/variant>
+#endif
 #endif
 #include <vector>
 
@@ -1306,21 +1310,24 @@ public:
     class attribute
     {
     public:
+#ifdef NANODBC_ENABLE_UNICODE
+        typedef std::
+            variant<std::vector<uint8_t>, string, std::string, std::intptr_t, std::uintptr_t>
+                variant;
+#else
+        typedef std::variant<std::vector<uint8_t>, string, std::intptr_t, std::uintptr_t> variant;
+#endif
         attribute() = delete;
         attribute& operator=(attribute const&) = delete;
         attribute(attribute const& other);
-        attribute(
-            long const& attribute,
-            long const& string_length,
-            std::variant<std::vector<uint8_t>, string, std::intptr_t, std::uintptr_t> const&
-                resource);
+        attribute(long const& attribute, long const& string_length, variant const& resource);
 
     private:
         void extractValuePtr();
 
         long attribute_;
         long string_length_;
-        std::variant<std::vector<uint8_t>, string, std::intptr_t, std::uintptr_t> resource_;
+        variant resource_;
         void* value_ptr_;
         friend class nanodbc::connection::connection_impl;
     };
@@ -1333,10 +1340,10 @@ private:
     class attribute
     {
     public:
-        attribute(long const& attribute, long const& string_length, long const& value)
+        attribute(long const& attribute, long const& string_length, std::uintptr_t value)
             : attribute_(attribute)
             , string_length_(string_length)
-            , value_ptr_((void*)(std::intptr_t)value){};
+            , value_ptr_((void*)value){};
         attribute(long const& attribute, long const& string_length, void* value_ptr)
             : attribute_(attribute)
             , string_length_(string_length)
