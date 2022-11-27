@@ -1600,9 +1600,10 @@ TEST_CASE_METHOD(mssql_fixture, "test_conn_attributes", "[mssql][conn_attibutes]
         size_t TRACEFILE_IN_LENGTH = TRACEFILE_IN.size();
         long TIMEOUT_IN = 7;
 
-        attributes.push_back({SQL_ATTR_LOGIN_TIMEOUT, SQL_IS_UINTEGER, TIMEOUT_IN});
+        attributes.push_back({SQL_ATTR_LOGIN_TIMEOUT, SQL_IS_UINTEGER, (std::uintptr_t)TIMEOUT_IN});
         attributes.push_back({SQL_ATTR_CURRENT_CATALOG, (long)CATALOG_IN_LENGTH, CATALOG_IN});
-        attributes.push_back({SQL_ATTR_TRACE, (long)SQL_IS_UINTEGER, SQL_OPT_TRACE_ON});
+        attributes.push_back(
+            {SQL_ATTR_TRACE, (long)SQL_IS_UINTEGER, (std::uintptr_t)SQL_OPT_TRACE_ON});
         attributes.push_back({SQL_ATTR_TRACEFILE, (long)TRACEFILE_IN_LENGTH, TRACEFILE_IN});
 
         auto conn = connect(attributes, false);
@@ -1649,9 +1650,10 @@ TEST_CASE_METHOD(mssql_fixture, "test_conn_attributes", "[mssql][conn_attibutes]
         attributes.push_back(
             {SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE,
              SQL_IS_UINTEGER,
-             SQL_ASYNC_DBC_ENABLE_ON});
+             (std::uintptr_t)SQL_ASYNC_DBC_ENABLE_ON});
         HANDLE event_handle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-        attributes.push_back({SQL_ATTR_ASYNC_DBC_EVENT, SQL_IS_POINTER, event_handle});
+        attributes.push_back(
+            {SQL_ATTR_ASYNC_DBC_EVENT, SQL_IS_POINTER, (std::uintptr_t)event_handle});
 
         auto conn = connect(attributes, true);
         WaitForSingleObject(event_handle, INFINITE);

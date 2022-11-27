@@ -854,7 +854,7 @@ namespace nanodbc
 connection::attribute::attribute(
     long const& attribute,
     long const& string_length,
-    std::variant<std::vector<uint8_t>, string, std::intptr_t, std::uintptr_t> const& resource)
+    attribute::variant const& resource)
     : attribute_(attribute)
     , string_length_(string_length)
     , resource_(resource)
@@ -876,7 +876,9 @@ void connection::attribute::extractValuePtr()
         [this](auto&& arg)
         {
             using T = std::decay_t<decltype(arg)>;
-            if constexpr (std::is_same_v<T, string> || std::is_same_v<T, std::vector<uint8_t>>)
+            if constexpr (
+                std::is_same_v<T, string> || std::is_same_v<T, std::string> ||
+                std::is_same_v<T, std::vector<uint8_t>>)
             {
                 this->value_ptr_ = (void*)&arg[0];
             }
@@ -1109,14 +1111,18 @@ public:
         // operation is not supported by the Driver.
         if (timeout != 0)
         {
-            attributes.push_back({SQL_ATTR_LOGIN_TIMEOUT, SQL_IS_UINTEGER, timeout});
+            attributes.push_back(
+                {SQL_ATTR_LOGIN_TIMEOUT, SQL_IS_UINTEGER, (std::uintptr_t)timeout});
         }
 #if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_EVENT)
         if (event_handle != nullptr)
         {
             attributes.push_back(
-                {SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE, SQL_IS_UINTEGER, SQL_ASYNC_DBC_ENABLE_ON});
-            attributes.push_back({SQL_ATTR_ASYNC_DBC_EVENT, SQL_IS_POINTER, event_handle});
+                {SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE,
+                 SQL_IS_UINTEGER,
+                 (std::uintptr_t)SQL_ASYNC_DBC_ENABLE_ON});
+            attributes.push_back(
+                {SQL_ATTR_ASYNC_DBC_EVENT, SQL_IS_POINTER, (std::uintptr_t)event_handle});
         }
 #endif
         return this->connect(dsn, user, pass, attributes);
@@ -1181,14 +1187,18 @@ public:
         // operation is not supported by the Driver.
         if (timeout != 0)
         {
-            attributes.push_back({SQL_ATTR_LOGIN_TIMEOUT, SQL_IS_UINTEGER, timeout});
+            attributes.push_back(
+                {SQL_ATTR_LOGIN_TIMEOUT, SQL_IS_UINTEGER, (std::uintptr_t)timeout});
         }
 #if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_EVENT)
         if (event_handle != nullptr)
         {
             attributes.push_back(
-                {SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE, SQL_IS_UINTEGER, SQL_ASYNC_DBC_ENABLE_ON});
-            attributes.push_back({SQL_ATTR_ASYNC_DBC_EVENT, SQL_IS_POINTER, event_handle});
+                {SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE,
+                 SQL_IS_UINTEGER,
+                 (std::uintptr_t)SQL_ASYNC_DBC_ENABLE_ON});
+            attributes.push_back(
+                {SQL_ATTR_ASYNC_DBC_EVENT, SQL_IS_POINTER, (std::uintptr_t)event_handle});
         }
 #endif
         return this->connect(connection_string, attributes);
