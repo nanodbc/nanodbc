@@ -4444,15 +4444,18 @@ inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant
         // TODO: Review this for SQL Server (and other databases?) types money, smallmoney as VT_CY
         std::wstring v;
         get_ref_impl(column, v);
-        DECIMAL d;
+        DECIMAL d{0};
+        if (!v.empty())
+        {
 #ifdef __MINGW32__
-        //  See https://sourceforge.net/p/mingw-w64/bugs/940/
-        auto s = const_cast<LPOLESTR>(static_cast<LPCOLESTR>(v.c_str()));
+            //  See https://sourceforge.net/p/mingw-w64/bugs/940/
+            auto s = const_cast<LPOLESTR>(static_cast<LPCOLESTR>(v.c_str()));
 #else
-        auto s = static_cast<LPCOLESTR>(v.c_str());
+            auto s = static_cast<LPCOLESTR>(v.c_str());
 #endif
-        if (FAILED(::VarDecFromStr(s, LOCALE_INVARIANT, 0, &d)))
-            throw type_incompatible_error();
+            if (FAILED(::VarDecFromStr(s, LOCALE_INVARIANT, 0, &d)))
+                throw type_incompatible_error();
+        }
         result = d;
         break;
     }
