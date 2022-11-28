@@ -4459,7 +4459,7 @@ inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant
     case SQL_C_DATE:
     case SQL_C_TYPE_DATE:
     {
-        nanodbc::date v;
+        nanodbc::date v{0};
         get_ref_impl(column, v);
         ::SYSTEMTIME st{
             static_cast<WORD>(v.year),
@@ -4479,7 +4479,7 @@ inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant
     case SQL_C_TIME:
     case SQL_C_TYPE_TIME:
     {
-        nanodbc::time v;
+        nanodbc::time v{0};
         get_ref_impl(column, v);
         ::SYSTEMTIME st{
             0,
@@ -4499,7 +4499,7 @@ inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant
     case SQL_C_TIMESTAMP:
     case SQL_C_TYPE_TIMESTAMP:
     {
-        nanodbc::timestamp v;
+        nanodbc::timestamp v{0};
         get_ref_impl(column, v);
         SYSTEMTIME st{
             static_cast<WORD>(v.year),
@@ -4616,7 +4616,7 @@ std::unique_ptr<T, std::function<void(T*)>> result::result_impl::ensure_pdata(sh
             (T*)(col.pdata_ + rowset_position_ * col.clen_), [](T*) {});
     }
 
-    T* buffer = new T;
+    T* buffer = new T{};
     const std::size_t buffer_size = sizeof(T);
     void* handle = native_statement_handle();
     NANODBC_CALL_RC(
