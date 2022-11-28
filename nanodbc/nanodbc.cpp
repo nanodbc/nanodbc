@@ -4383,6 +4383,11 @@ inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant
             std::memcpy(data, &v[0], v.size());
             ::SafeArrayUnaccessData(result.parray);
         }
+        else
+        {
+            // Work around VariantChangeType limitation for VT_ARRAY (called in case of NULL, see below)
+            result.Clear();
+        }
         break;
     }
     case SQL_C_BIT:
