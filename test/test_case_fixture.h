@@ -2222,6 +2222,85 @@ struct test_case_fixture : public base_test_fixture
     {
         auto cn = connect();
 
+        nanodbc::string const binary_type_name = get_binary_type_name();
+        REQUIRE(!binary_type_name.empty());
+        nanodbc::string const text_type_name = get_text_type_name();
+        REQUIRE(!text_type_name.empty());
+
+        nanodbc::string const table_name(NANODBC_TEXT("test_win32_variant_null"));
+        drop_table(cn, table_name);
+        execute(
+            cn,
+            NANODBC_TEXT("create table ") + table_name + NANODBC_TEXT("(") +
+                NANODBC_TEXT("c0 int NULL,") + NANODBC_TEXT("c1 smallint NULL,") +
+                NANODBC_TEXT("c2 float NULL,") + NANODBC_TEXT("c3 decimal(9, 3) NULL,") +
+                NANODBC_TEXT("c4 date NULL,") + // seems more portable than datetime (SQL Server),
+                                                // timestamp (PostgreSQL, MySQL)
+                NANODBC_TEXT("c5 varchar(60) NULL,") + NANODBC_TEXT("c6 varchar(120) NULL,") +
+                NANODBC_TEXT("c7 ") + text_type_name + NANODBC_TEXT(" NULL,") +
+                NANODBC_TEXT("c8 ") + binary_type_name + NANODBC_TEXT(" NULL);"));
+
+        execute(
+            cn,
+            NANODBC_TEXT("insert into ") + table_name +
+                NANODBC_TEXT(" values (NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);"));
+
+        _variant_t v_null;
+        v_null.ChangeType(VT_NULL);
+
+        // default binding without NULL fallback
+        {
+            auto rs = execute(cn, NANODBC_TEXT("select * from ") + table_name);
+            rs.next();
+            for (short i = 0; i < rs.columns() - 2; i++)
+            {
+                REQUIRE_THROWS_AS(rs.get<_variant_t>(i), nanodbc::null_access_error);
+            }
+            // TODO: Do we want to make get_ref<T> consistent and throw null_access_error as
+            // post-SQLGetData for unbound columns?
+            auto c7 = rs.get<_variant_t>(rs.columns() - 2);
+            auto c8 = rs.get<_variant_t>(rs.columns() - 1);
+        }
+        // default binding with NULL fallback balue
+        {
+            auto rs = execute(cn, NANODBC_TEXT("select * from ") + table_name);
+            rs.next();
+            for (short i = 0; i < rs.columns(); i++)
+            {
+                auto v = rs.get<_variant_t>(i, v_null);
+                REQUIRE(v == v_null);
+            }
+        }
+        // unbound without NULL fallback
+        {
+            auto rs = execute(cn, NANODBC_TEXT("select * from ") + table_name);
+            rs.unbind();
+            rs.next();
+            for (short i = 0; i < rs.columns() - 2; i++)
+            {
+                // TODO: Do we want to make get_ref<T> consistent and throw null_access_error as
+                // post-SQLGetData for unbound columns?
+                auto v = rs.get<_variant_t>(i);
+                REQUIRE(v == v_null);
+            }
+        }
+        // unbound with NULL fallback
+        {
+            auto rs = execute(cn, NANODBC_TEXT("select * from ") + table_name);
+            rs.unbind();
+            rs.next();
+            for (short i = 0; i < rs.columns() - 2; i++)
+            {
+                auto v = rs.get<_variant_t>(i, v_null);
+                REQUIRE(v == v_null);
+            }
+        }
+    }
+
+    void test_win32_variant_null_literal()
+    {
+        auto cn = connect();
+
         // test data
         _variant_t v_null;
         v_null.ChangeType(VT_NULL);

@@ -2637,7 +2637,7 @@ public:
                     rc,
                     stmt_.native_statement_handle(),
                     SQL_SOPT_SS_PARAM_FOCUS,
-                    nullptr,
+                    (SQLPOINTER)nullptr,
                     SQL_IS_INTEGER);
                 if (!success(rc))
                     NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
@@ -2734,7 +2734,7 @@ public:
             NANODBC_THROW_DATABASE_ERROR(hstmt, SQL_HANDLE_STMT);
 
         bound_parameter param;
-        SQLLEN len[3];
+        SQLLEN len[3] = {0};
         param.iotype_ = SQL_PARAM_INPUT;
 
         NANODBC_CALL_RC(SQLBindCol, rc, hstmt, 5, SQL_C_SSHORT, &param.type_, 0, &len[0]);
@@ -4383,6 +4383,11 @@ inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant
             std::memcpy(data, &v[0], v.size());
             ::SafeArrayUnaccessData(result.parray);
         }
+        else
+        {
+            // Work around VariantChangeType limitation for VT_ARRAY (called in case of NULL, see below)
+            result.Clear();
+        }
         break;
     }
     case SQL_C_BIT:
@@ -4444,22 +4449,25 @@ inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant
         // TODO: Review this for SQL Server (and other databases?) types money, smallmoney as VT_CY
         std::wstring v;
         get_ref_impl(column, v);
-        DECIMAL d;
+        DECIMAL d{0};
+        if (!v.empty())
+        {
 #ifdef __MINGW32__
-        //  See https://sourceforge.net/p/mingw-w64/bugs/940/
-        auto s = const_cast<LPOLESTR>(static_cast<LPCOLESTR>(v.c_str()));
+            //  See https://sourceforge.net/p/mingw-w64/bugs/940/
+            auto s = const_cast<LPOLESTR>(static_cast<LPCOLESTR>(v.c_str()));
 #else
-        auto s = static_cast<LPCOLESTR>(v.c_str());
+            auto s = static_cast<LPCOLESTR>(v.c_str());
 #endif
-        if (FAILED(::VarDecFromStr(s, LOCALE_INVARIANT, 0, &d)))
-            throw type_incompatible_error();
+            if (FAILED(::VarDecFromStr(s, LOCALE_INVARIANT, 0, &d)))
+                throw type_incompatible_error();
+        }
         result = d;
         break;
     }
     case SQL_C_DATE:
     case SQL_C_TYPE_DATE:
     {
-        nanodbc::date v;
+        nanodbc::date v{0};
         get_ref_impl(column, v);
         ::SYSTEMTIME st{
             static_cast<WORD>(v.year),
@@ -4479,7 +4487,7 @@ inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant
     case SQL_C_TIME:
     case SQL_C_TYPE_TIME:
     {
-        nanodbc::time v;
+        nanodbc::time v{0};
         get_ref_impl(column, v);
         ::SYSTEMTIME st{
             0,
@@ -4499,7 +4507,7 @@ inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant
     case SQL_C_TIMESTAMP:
     case SQL_C_TYPE_TIMESTAMP:
     {
-        nanodbc::timestamp v;
+        nanodbc::timestamp v{0};
         get_ref_impl(column, v);
         SYSTEMTIME st{
             static_cast<WORD>(v.year),
@@ -4616,7 +4624,7 @@ std::unique_ptr<T, std::function<void(T*)>> result::result_impl::ensure_pdata(sh
             (T*)(col.pdata_ + rowset_position_ * col.clen_), [](T*) {});
     }
 
-    T* buffer = new T;
+    T* buffer = new T{};
     const std::size_t buffer_size = sizeof(T);
     void* handle = native_statement_handle();
     NANODBC_CALL_RC(

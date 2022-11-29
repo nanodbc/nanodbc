@@ -1111,9 +1111,14 @@ TEST_CASE_METHOD(mssql_fixture, "test_win32_variant", "[mssql][variant][windows]
     test_win32_variant();
 }
 
-TEST_CASE_METHOD(mssql_fixture, "test_win32_variant_null", "[mssql][variant][windows]")
+TEST_CASE_METHOD(mssql_fixture, "test_win32_variant_null", "[mssql][variant][windows][null]")
 {
     test_win32_variant_null();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_win32_variant_null_literal", "[mssql][variant][windows][null]")
+{
+    test_win32_variant_null_literal();
 }
 
 TEST_CASE_METHOD(mssql_fixture, "test_win32_variant_bit", "[mssql][variant][windows]")

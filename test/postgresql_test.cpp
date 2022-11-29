@@ -337,9 +337,9 @@ TEST_CASE_METHOD(postgresql_fixture, "test_win32_variant", "[postgresql][variant
     test_win32_variant();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "test_win32_variant_null", "[postgresql][variant][windows]")
+TEST_CASE_METHOD(postgresql_fixture, "test_win32_variant_null_literal", "[postgresql][variant][windows][null]")
 {
-    test_win32_variant_null();
+    test_win32_variant_null_literal();
 }
 #endif // _MSC_VER
 
