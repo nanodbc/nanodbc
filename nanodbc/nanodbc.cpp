@@ -2637,7 +2637,7 @@ public:
                     rc,
                     stmt_.native_statement_handle(),
                     SQL_SOPT_SS_PARAM_FOCUS,
-                    nullptr,
+                    (SQLPOINTER)nullptr,
                     SQL_IS_INTEGER);
                 if (!success(rc))
                     NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
