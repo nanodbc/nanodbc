@@ -2734,7 +2734,7 @@ public:
             NANODBC_THROW_DATABASE_ERROR(hstmt, SQL_HANDLE_STMT);
 
         bound_parameter param;
-        SQLLEN len[3];
+        SQLLEN len[3] = {0};
         param.iotype_ = SQL_PARAM_INPUT;
 
         NANODBC_CALL_RC(SQLBindCol, rc, hstmt, 5, SQL_C_SSHORT, &param.type_, 0, &len[0]);
