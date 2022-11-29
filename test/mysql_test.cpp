@@ -282,9 +282,9 @@ TEST_CASE_METHOD(mysql_fixture, "test_win32_variant", "[mysql][variant][windows]
     test_win32_variant();
 }
 
-TEST_CASE_METHOD(mysql_fixture, "test_win32_variant_null", "[mysql][variant][windows]")
+TEST_CASE_METHOD(mysql_fixture, "test_win32_variant_null_literal", "[mysql][variant][windows][null]")
 {
-    test_win32_variant_null();
+    test_win32_variant_null_literal();
 }
 #endif // _MSC_VER
 
