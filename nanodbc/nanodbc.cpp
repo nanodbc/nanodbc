@@ -4725,9 +4725,13 @@ void result::result_impl::get_ref_impl(short column, T& result) const
     case SQL_C_WCHAR:
         get_ref_from_string_column(column, result);
         return;
+    case SQL_C_TINYINT:
+    case SQL_C_STINYINT:
+    case SQL_C_SHORT:
     case SQL_C_SSHORT:
         result = (T) * (ensure_pdata<short>(column));
         return;
+    case SQL_C_UTINYINT:
     case SQL_C_USHORT:
         result = (T) * (ensure_pdata<unsigned short>(column));
         return;
