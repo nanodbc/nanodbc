@@ -4721,6 +4721,9 @@ void result::result_impl::get_ref_impl(short column, T& result) const
     using namespace std; // if int64_t is in std namespace (in c++11)
     switch (col.ctype_)
     {
+    case SQL_C_BIT:
+        result = (T) * (ensure_pdata<int16_t>(column));
+        return;
     case SQL_C_CHAR:
     case SQL_C_WCHAR:
         get_ref_from_string_column(column, result);
