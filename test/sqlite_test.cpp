@@ -307,7 +307,7 @@ TEST_CASE_METHOD(sqlite_fixture, "test_integral_boundary", "[sqlite][integral]")
     execute(
         connection,
         NANODBC_TEXT(
-            "create table test_integral_boundary(i1 integer,i2 integer,i4 integer,i8 integer);"));
+            "create table test_integral_boundary(i1 tinyint,i2 smallint,i4 integer,i8 bigint);"));
 
     auto const sql =
         NANODBC_TEXT("insert into test_integral_boundary(i1,i2,i4,i8) values (?,?,?,?);");

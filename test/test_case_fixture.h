@@ -924,7 +924,7 @@ struct test_case_fixture : public base_test_fixture
         {
             std::string const type_name = nanodbc::test::convert(result.column_datatype_name(0));
             REQUIRE_THAT(type_name, Catch::Contains("int", Catch::CaseSensitive::No));
-            REQUIRE(result.column_c_datatype(0) == SQL_C_SBIGINT);
+            REQUIRE(result.column_c_datatype(0) == SQL_C_SLONG);
         }
         REQUIRE(result.column_size(0) == 10);
         REQUIRE(result.column_decimal_digits(0) == 0);
