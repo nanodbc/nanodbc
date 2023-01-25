@@ -4457,7 +4457,7 @@ inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant
     }
     case SQL_C_BIT:
     {
-        auto const v = *(ensure_pdata<short>(column));
+        auto const v = *(ensure_pdata<int16_t>(column));
         result = _variant_t(!!v ? VARIANT_TRUE : VARIANT_FALSE, VT_BOOL);
         break;
     }
@@ -4477,17 +4477,17 @@ inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant
     }
     case SQL_C_TINYINT:
     case SQL_C_STINYINT:
-        result = (char)*(ensure_pdata<short>(column));
+        result = (char)*(ensure_pdata<int16_t>(column));
         break;
     case SQL_C_UTINYINT:
-        result = (unsigned char)*(ensure_pdata<unsigned short>(column));
+        result = (unsigned char)*(ensure_pdata<uint16_t>(column));
         break;
     case SQL_C_SHORT:
     case SQL_C_SSHORT:
         result = *(ensure_pdata<short>(column));
         break;
     case SQL_C_USHORT:
-        result = *(ensure_pdata<unsigned short>(column));
+        result = *(ensure_pdata<uint16_t>(column));
         break;
     case SQL_C_LONG:
     case SQL_C_SLONG:
@@ -4732,11 +4732,11 @@ void result::result_impl::get_ref_impl(short column, T& result) const
     case SQL_C_STINYINT:
     case SQL_C_SHORT:
     case SQL_C_SSHORT:
-        result = (T) * (ensure_pdata<short>(column));
+        result = (T) * (ensure_pdata<int16_t>(column));
         return;
     case SQL_C_UTINYINT:
     case SQL_C_USHORT:
-        result = (T) * (ensure_pdata<unsigned short>(column));
+        result = (T) * (ensure_pdata<uint16_t>(column));
         return;
     case SQL_C_LONG:
     case SQL_C_SLONG:
