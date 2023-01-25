@@ -3852,9 +3852,21 @@ private:
             switch (col.sqltype_)
             {
             case SQL_BIT:
+                col.ctype_ = SQL_C_BIT;
+                col.clen_ = sizeof(uint8_t);
+                break;
             case SQL_TINYINT:
+                col.ctype_ = SQL_C_STINYINT;
+                col.clen_ = sizeof(int8_t);
+                break;
             case SQL_SMALLINT:
-            case SQL_INTEGER:
+                col.ctype_ = SQL_C_SSHORT;
+                col.clen_ = sizeof(int16_t);
+                break;
+            case SQL_INTEGER: // TODO: Can be 32 or 64 bit? Then sizeof(SQLINTEGER)
+                col.ctype_ = SQL_C_SLONG;
+                col.clen_ = sizeof(int32_t);
+                break;
             case SQL_BIGINT:
                 col.ctype_ = SQL_C_SBIGINT;
                 col.clen_ = sizeof(int64_t);
@@ -4200,6 +4212,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
     }
 
     case SQL_C_LONG:
+    case SQL_C_SLONG:
     {
         std::string buffer(column_size + 1, 0); // ensure terminating null
         const int32_t data = *ensure_pdata<int32_t>(column);
