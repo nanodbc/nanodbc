@@ -632,6 +632,14 @@ struct sql_ctype
 {
 };
 
+template <typename T>
+struct sql_ctype<
+    T,
+    typename std::enable_if<is_integral8<T>::value && std::is_signed<T>::value>::type>
+{
+    static const SQLSMALLINT value = SQL_C_STINYINT;
+};
+
 template <>
 struct sql_ctype<uint8_t>
 {
@@ -4736,6 +4744,8 @@ void result::result_impl::get_ref_impl(short column, T& result) const
         return;
     case SQL_C_TINYINT:
     case SQL_C_STINYINT:
+        result = (T) * (ensure_pdata<int8_t>(column));
+        return;
     case SQL_C_SHORT:
     case SQL_C_SSHORT:
         result = (T) * (ensure_pdata<int16_t>(column));
