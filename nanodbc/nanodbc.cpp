@@ -4484,15 +4484,21 @@ inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant
         break;
     case SQL_C_SHORT:
     case SQL_C_SSHORT:
-        result = *(ensure_pdata<short>(column));
+    {
+        auto d = *(ensure_pdata<int16_t>(column));
+        result = _variant_t(d, VT_I2);
         break;
+    }
     case SQL_C_USHORT:
         result = *(ensure_pdata<uint16_t>(column));
         break;
     case SQL_C_LONG:
     case SQL_C_SLONG:
-        result = *(ensure_pdata<int32_t>(column));
+    {
+        long d = *(ensure_pdata<int32_t>(column));
+        result = _variant_t(d, VT_I4); // avoid VT_INT
         break;
+    }
     case SQL_C_ULONG:
         result = *(ensure_pdata<uint32_t>(column));
         break;
