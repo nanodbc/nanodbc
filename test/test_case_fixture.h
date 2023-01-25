@@ -918,7 +918,7 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(result.column_datatype(0) == SQL_INTEGER);
         if (vendor_ == database_vendor::sqlserver)
         {
-            REQUIRE(result.column_c_datatype(0) == SQL_C_SBIGINT);
+            REQUIRE(result.column_c_datatype(0) == SQL_C_SLONG);
         }
         else if (vendor_ == database_vendor::sqlite)
         {
@@ -2292,7 +2292,7 @@ struct test_case_fixture : public base_test_fixture
         rs.next();
         {
             auto v = rs.get<_variant_t>(0);
-            REQUIRE(v.vt == VT_I8);
+            REQUIRE(v.vt == VT_I4);
             REQUIRE(static_cast<int>(v) == i);
         }
         {
