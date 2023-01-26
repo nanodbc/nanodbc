@@ -3861,7 +3861,7 @@ private:
             {
             case SQL_BIT:
                 col.ctype_ = SQL_C_BIT;
-                col.clen_ = sizeof(uint8_t);
+                col.clen_ = sizeof(int8_t);
                 break;
             case SQL_TINYINT:
                 col.ctype_ = SQL_C_STINYINT;
@@ -4465,7 +4465,7 @@ inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant
     }
     case SQL_C_BIT:
     {
-        auto const v = *(ensure_pdata<int16_t>(column));
+        auto const v = *(ensure_pdata<int8_t>(column));
         result = _variant_t(!!v ? VARIANT_TRUE : VARIANT_FALSE, VT_BOOL);
         break;
     }
@@ -4736,7 +4736,7 @@ void result::result_impl::get_ref_impl(short column, T& result) const
     switch (col.ctype_)
     {
     case SQL_C_BIT:
-        result = (T) * (ensure_pdata<int16_t>(column));
+        result = (T) * (ensure_pdata<int8_t>(column));
         return;
     case SQL_C_CHAR:
     case SQL_C_WCHAR:
