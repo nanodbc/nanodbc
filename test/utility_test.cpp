@@ -10,7 +10,7 @@
 
 TEST_CASE("convert", "[string]")
 {
-    std::string const u8 = u8"Hello ツ World";
+    std::string const u8 = (char const*)u8"Hello ツ World"; // FIXME: Hack! C++20 adds std::u8string
     std::u16string const u16 = u"Hello ツ World";
     std::u32string const u32 = U"Hello ツ World";
     std::wstring const w = L"Hello ツ World";
