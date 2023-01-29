@@ -1,4 +1,4 @@
-FROM ubuntu:17.04
+FROM ubuntu:22.10
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # NOTE: install apt-utils since it is Priority: important, should really be installed otherwise
@@ -11,13 +11,10 @@ RUN apt-get -qy update \
         software-properties-common \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/* \
- && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys BA9EF27F \
- && add-apt-repository -y ppa:ubuntu-toolchain-r/test \
  && curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
- && add-apt-repository "$(curl -s https://packages.microsoft.com/config/ubuntu/16.04/prod.list)" \
  && apt-get -qy update && apt-get -qy install --no-upgrade --no-install-recommends \
         cmake \
-        g++-5 \
+        g++ \
         git \
         iputils-ping \
         make \
@@ -37,7 +34,7 @@ RUN apt-get -qy update \
         mssql-tools \
  && echo "export PATH=$PATH:/opt/mssql-tools/bin" >> ~/.bash_profile \
  && echo "export PATH=$PATH:/opt/mssql-tools/bin" >> ~/.bashrc \
- &&  echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
+ && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
  && locale-gen \
  && odbcinst -i -d -f /usr/share/sqliteodbc/unixodbc.ini
 
