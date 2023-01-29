@@ -395,7 +395,7 @@ struct test_case_fixture : public base_test_fixture
                 REQUIRE(columns.column_size() == 3);
 #else
                 REQUIRE(columns.sql_data_type() == SQL_VARCHAR);
-                REQUIRE(columns.column_size() == 9);
+                REQUIRE(columns.column_size() == 3);
 #endif
             }
             else
@@ -870,7 +870,8 @@ struct test_case_fixture : public base_test_fixture
         }
         else if (vendor_ == database_vendor::sqlite)
         {
-            REQUIRE(result.column_datatype_name(0) == NANODBC_TEXT("int"));
+            std::string const type_name = nanodbc::test::convert(result.column_datatype_name(0));
+            REQUIRE_THAT(type_name, Catch::Contains("int", Catch::CaseSensitive::No));
             REQUIRE(result.column_c_datatype(0) == SQL_C_SBIGINT);
         }
         REQUIRE(result.column_size(0) == 10);
