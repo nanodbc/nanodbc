@@ -38,16 +38,10 @@ RUN apt-get -qy update \
  && locale-gen \
  && odbcinst -i -d -f /usr/share/sqliteodbc/unixodbc.ini
 
-# NOTE: `libmyodbc`, the package for MySQL ODBC support, is no longer available directly via a
-#       simple `apt-get install libmyodbc` command. Instead, you must install it manually.
-#       The following blog post provides step-by-step instructions, also used below
-#       https://www.datasunrise.com/blog/how-to-install-the-mysql-odbc-driver-on-ubuntu-16-04/
-# NOTE: Ubuntu 16.04 ships buggy unixODBC 2.3.1, so this container uses docker image with Ubuntu 17.04+
-#       See related discussion at https://github.com/nanodbc/nanodbc/issues/149
-RUN curl -SL https://dev.mysql.com/get/Downloads/Connector-ODBC/5.3/mysql-connector-odbc-5.3.9-linux-ubuntu17.04-x86-64bit.tar.gz | tar -zxC /opt \
- && cp /opt/mysql-connector-odbc-5.3.9-linux-ubuntu17.04-x86-64bit/lib/libmyodbc5* /usr/lib/x86_64-linux-gnu/odbc/ \
- && /opt/mysql-connector-odbc-5.3.9-linux-ubuntu17.04-x86-64bit/bin/myodbc-installer -d -a -n "MySQL ODBC 5.3 ANSI Driver" -t "DRIVER=/usr/lib/x86_64-linux-gnu/odbc/libmyodbc5a.so;" \
- && /opt/mysql-connector-odbc-5.3.9-linux-ubuntu17.04-x86-64bit/bin/myodbc-installer -d -a -n "MySQL ODBC 5.3 Unicode Driver" -t "DRIVER=/usr/lib/x86_64-linux-gnu/odbc/libmyodbc5w.so;" \
+RUN curl -SL https://dev.mysql.com/get/Downloads/Connector-ODBC/5.3/mysql-connector-odbc-5.3.13-linux-ubuntu18.04-x86-64bit.tar.gz | tar -zxC /opt \
+ && cp /opt/mysql-connector-odbc-5.3.14-linux-ubuntu17.04-x86-64bit/lib/libmyodbc5* /usr/lib/x86_64-linux-gnu/odbc/ \
+ && /opt/mysql-connector-odbc-5.3.13-linux-ubuntu17.04-x86-64bit/bin/myodbc-installer -d -a -n "MySQL ODBC 5.3 ANSI Driver" -t "DRIVER=/usr/lib/x86_64-linux-gnu/odbc/libmyodbc5a.so;" \
+ && /opt/mysql-connector-odbc-5.3.13-linux-ubuntu17.04-x86-64bit/bin/myodbc-installer -d -a -n "MySQL ODBC 5.3 Unicode Driver" -t "DRIVER=/usr/lib/x86_64-linux-gnu/odbc/libmyodbc5w.so;" \
  && git clone https://github.com/nanodbc/nanodbc.git /opt/nanodbc && mkdir -p /opt/nanodbc/build
 
 ENV CXX g++-5
