@@ -1,7 +1,11 @@
 # GHA workflow to check well-formedness of sources, docs and auxiliary files
 name: "Lint"
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+    - main
+  pull_request:
 
 jobs:
   sources:
