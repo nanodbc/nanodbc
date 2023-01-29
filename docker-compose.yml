@@ -23,7 +23,7 @@ services:
       POSTGRES_PASSWORD:  *default_credential
       POSTGRES_DB:  *default_credential
   mssql:
-    image: microsoft/mssql-server-linux
+    image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: nanomssql
     restart: unless-stopped
     ports:
