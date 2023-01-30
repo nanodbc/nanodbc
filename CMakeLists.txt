@@ -1,4 +1,6 @@
 cmake_minimum_required(VERSION 3.0.0)
+message( STATUS "cmake version: ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" )
+
 project(nanodbc CXX)
 
 # NOTE: All options follow CMake convention:
@@ -28,15 +30,21 @@ string(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]+)" "\\1" NANODBC_VERSION_PATCH "
 message(STATUS "nanodbc version: ${NANODBC_VERSION}")
 
 ########################################
-## require and enable C++0x/11/14
+## nanodbc compilation
 ########################################
-set(CMAKE_CXX_STANDARD 14 CACHE STRING "The C++ standard to use for NANODBC")
+set(CMAKE_CXX_STANDARD 14 CACHE STRING "The C++ standard to use for nanodbc")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 message(STATUS "nanodbc compile: C++${CMAKE_CXX_STANDARD}")
 
+if((CMAKE_MAJOR_VERSION VERSION_GREATER_EQUAL 3) AND (CMAKE_MINOR_VERSION VERSION_GREATER_EQUAL 24))
+  set(CMAKE_COMPILE_WARNING_AS_ERROR ON CACHE BOOL "Treat warnings on nanodbc compile as errors")
+  message(STATUS "nanodbc compile: warning-as-error ${CMAKE_COMPILE_WARNING_AS_ERROR}")
+else()
+  message(STATUS "nanodbc compile: warning-as-error toolset defaults")
+endif()
+
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wnarrowing -Werror")
   include(CheckCXXCompilerFlag)
 
   if (NANODBC_ENABLE_COVERAGE)
