@@ -1938,6 +1938,17 @@ public:
     /// \brief Returns a identifying integer value representing the C type of this column by name.
     int column_c_datatype(string const& column_name) const;
 
+    /// \brief SQL_TRUE if the column is unsigned (or not numeric). SQL_FALSE if the column is signed.
+    ///
+    /// Signedness of some of numeric types like SQL_TINYINT depends on backend or driver.
+    /// For example, if nmot unsigned, the MySQL TINYINT datatype can range from -127 to 127;
+    /// whereas the SQL Server TINYINT type always ranges 0 to 255. So, unless it is an unsigned
+    /// TINYINT, a MySQL TINYINT datatype should be converted to the SQL Server SMALLINT datatype.
+    bool column_unsigned(short column) const;
+
+    /// \brief SQL_TRUE if the column is unsigned (or not numeric). SQL_FALSE if the column is signed.
+    bool column_unsigned(string const& column_name) const;
+
     /// \brief Returns the next result, e.g. when stored procedure returns multiple result sets.
     bool next_result();
 

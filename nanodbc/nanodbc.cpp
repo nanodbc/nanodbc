@@ -3555,6 +3555,35 @@ public:
         return col.ctype_;
     }
 
+    bool column_unsigned(short column) const
+    {
+        throw_if_column_is_out_of_range(column);
+
+        SQLLEN type_unsigned = SQL_FALSE;
+        RETCODE rc;
+        NANODBC_CALL_RC(
+            NANODBC_FUNC(SQLColAttribute),
+            rc,
+            stmt_.native_statement_handle(),
+            static_cast<SQLUSMALLINT>(column + 1),
+            SQL_DESC_UNSIGNED,
+            nullptr,
+            0,
+            nullptr,
+            &type_unsigned);
+        if (!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
+
+        // SQL_TRUE if the column is unsigned (or not numeric).
+        // SQL_FALSE if the column is signed.
+        return type_unsigned == SQL_TRUE;
+    }
+
+    bool column_unsigned(string const& column_name) const
+    {
+        return column_unsigned(this->column(column_name));
+    }
+
     bool next_result()
     {
         RETCODE rc;
@@ -3856,6 +3885,8 @@ private:
             col.scale_ = scale;
             bound_columns_by_name_[col.name_] = &col;
 
+            bool const is_unsigned = column_unsigned(i);
+
             using namespace std; // if int64_t is in std namespace (in c++11)
             switch (col.sqltype_)
             {
@@ -3864,20 +3895,52 @@ private:
                 col.clen_ = sizeof(int8_t);
                 break;
             case SQL_TINYINT:
-                col.ctype_ = SQL_C_STINYINT;
-                col.clen_ = sizeof(int8_t);
+                if (is_unsigned)
+                {
+                    col.ctype_ = SQL_C_UTINYINT;
+                    col.clen_ = sizeof(uint8_t);
+                }
+                else
+                {
+                    col.ctype_ = SQL_C_STINYINT;
+                    col.clen_ = sizeof(int8_t);
+                }
                 break;
             case SQL_SMALLINT:
-                col.ctype_ = SQL_C_SSHORT;
-                col.clen_ = sizeof(int16_t);
+                if (is_unsigned)
+                {
+                    col.ctype_ = SQL_C_USHORT;
+                    col.clen_ = sizeof(uint16_t);
+                }
+                else
+                {
+                    col.ctype_ = SQL_C_SSHORT;
+                    col.clen_ = sizeof(int16_t);
+                }
                 break;
             case SQL_INTEGER: // TODO: Can be 32 or 64 bit? Then sizeof(SQLINTEGER)
-                col.ctype_ = SQL_C_SLONG;
-                col.clen_ = sizeof(int32_t);
+                if (is_unsigned)
+                {
+                    col.ctype_ = SQL_C_ULONG;
+                    col.clen_ = sizeof(uint32_t);
+                }
+                else
+                {
+                    col.ctype_ = SQL_C_SLONG;
+                    col.clen_ = sizeof(int32_t);
+                }
                 break;
             case SQL_BIGINT:
-                col.ctype_ = SQL_C_SBIGINT;
-                col.clen_ = sizeof(int64_t);
+                if (is_unsigned)
+                {
+                    col.ctype_ = SQL_C_UBIGINT;
+                    col.clen_ = sizeof(uint64_t);
+                }
+                else
+                {
+                    col.ctype_ = SQL_C_SBIGINT;
+                    col.clen_ = sizeof(int64_t);
+                }
                 break;
             case SQL_DOUBLE:
             case SQL_FLOAT:
@@ -4746,11 +4809,13 @@ void result::result_impl::get_ref_impl(short column, T& result) const
     case SQL_C_STINYINT:
         result = (T) * (ensure_pdata<int8_t>(column));
         return;
+    case SQL_C_UTINYINT:
+        result = (T) * (ensure_pdata<uint8_t>(column));
+        return;
     case SQL_C_SHORT:
     case SQL_C_SSHORT:
         result = (T) * (ensure_pdata<int16_t>(column));
         return;
-    case SQL_C_UTINYINT:
     case SQL_C_USHORT:
         result = (T) * (ensure_pdata<uint16_t>(column));
         return;
@@ -6802,6 +6867,16 @@ int result::column_c_datatype(short column) const
 int result::column_c_datatype(string const& column_name) const
 {
     return impl_->column_c_datatype(column_name);
+}
+
+bool result::column_unsigned(short column) const
+{
+    return impl_->column_unsigned(column);
+}
+
+bool result::column_unsigned(string const& column_name) const
+{
+    return impl_->column_unsigned(column_name);
 }
 
 bool result::next_result()

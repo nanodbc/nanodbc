@@ -928,6 +928,7 @@ struct test_case_fixture : public base_test_fixture
         }
         REQUIRE(result.column_size(0) == 10);
         REQUIRE(result.column_decimal_digits(0) == 0);
+        REQUIRE(!result.column_unsigned(0));
         // d decimal(7,3)
         REQUIRE(result.column_name(1) == NANODBC_TEXT("d"));
         if (vendor_ == database_vendor::sqlite)
@@ -955,6 +956,7 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(result.column_c_datatype(1) == SQL_C_CHAR);
         }
         REQUIRE(result.column_size(1) == 7);
+        REQUIRE(!result.column_unsigned(1));
         // n numeric(7,3)
         REQUIRE(result.column_name(2) == NANODBC_TEXT("n"));
         REQUIRE(result.column_size(2) == 7);
@@ -974,6 +976,7 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(result.column_decimal_digits(2) == 3);
             REQUIRE(result.column_c_datatype(2) == SQL_C_CHAR);
         }
+        REQUIRE(!result.column_unsigned(2));
     }
 
     void test_connection_environment()
