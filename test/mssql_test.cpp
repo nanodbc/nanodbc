@@ -768,8 +768,8 @@ TEST_CASE_METHOD(mssql_fixture, "test_column_descriptor_unsigned", "[mssql][colu
         REQUIRE(result.next());
         REQUIRE(result.get<std::int16_t>(1) == 0);
         REQUIRE(result.get<std::int16_t>(2) == -32768);
-        REQUIRE(result.get<std::int32_t>(3) == -2147483648LL);
-        REQUIRE(result.get<std::int64_t>(4) == -9223372036854775808LL);
+        REQUIRE(result.get<std::int32_t>(3) == (-2147483647 - 1));
+        REQUIRE(result.get<std::int64_t>(4) == (-9223372036854775807 - 1));
         REQUIRE(result.next());
         REQUIRE(result.get<std::int16_t>(1) == 128);
         REQUIRE(result.get<std::int16_t>(2) == 1);
