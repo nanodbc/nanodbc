@@ -969,6 +969,8 @@ struct test_case_fixture : public base_test_fixture
             // FIXME: SQLite ODBC mis-reports decimal digits?
             REQUIRE(result.column_decimal_digits(2) == 0);
             REQUIRE(result.column_c_datatype(2) == SQL_C_DOUBLE);
+            // FIXME: SQLite ODBC mis-reports unsigned for DECIMAL
+            REQUIRE(result.column_unsigned(2));
         }
         else
         {
@@ -977,8 +979,8 @@ struct test_case_fixture : public base_test_fixture
                  result.column_datatype(2) == SQL_NUMERIC));
             REQUIRE(result.column_decimal_digits(2) == 3);
             REQUIRE(result.column_c_datatype(2) == SQL_C_CHAR);
+            REQUIRE(!result.column_unsigned(2));
         }
-        REQUIRE(!result.column_unsigned(2));
     }
 
     void test_connection_environment()
