@@ -15,7 +15,7 @@ user information, example usage, propaganda, and detailed source level documenta
 
 | Branch | Linux/OSX | Windows | Coverage | Coverity |
 | :---   |:---       |:---     |:---      |:---      |
-|`main`| none      | [![main][appveyor-badge]][appveyor] | [![codecov](https://codecov.io/gh/nanodbc/nanodbc/branch/main/graph/badge.svg)](https://codecov.io/gh/nanodbc/nanodbc) | [![coverity_scan][coverity-badge]][coverity] |
+|`main` | [![main][ci-lin-svg]][ci-lin] | [![main][ci-win-svg]][ci-win] | [![codecov](https://codecov.io/gh/nanodbc/nanodbc/branch/main/graph/badge.svg)](https://codecov.io/gh/nanodbc/nanodbc) | [![coverity_scan][coverity-badge]][coverity] |
 
 > **Note:** The Coverity status uses the [coverity_scan][nanodbc-coverity] branch.
 > When `main` has had a significant amount of work pushed to it,
@@ -310,8 +310,10 @@ Finally, announce the new release to the public.
 [unixodbc]:     http://www.unixodbc.org/
 [vagrant]:      https://www.vagrantup.com/
 
-[appveyor]:         https://ci.appveyor.com/project/nanodbc/nanodbc?branch=main
-[appveyor-badge]:   https://ci.appveyor.com/api/projects/status/pvgwgg3qgdcnylp1/branch/main?svg=true
+[ci-linux]:     https://github.com/nanodbc/nanodbc/actions/workflows/ci-linux.yml
+[ci-lin-svg]:   https://github.com/nanodbc/nanodbc/actions/workflows/ci-linux.yml/badge.svg?branch=main
+[ci-windows]:   https://github.com/nanodbc/nanodbc/actions/workflows/ci-windows.yml
+[ci-win-svg]:   https://github.com/nanodbc/nanodbc/actions/workflows/ci-windows.yml/badge.svg?branch=main
 
 [coverity]:         https://scan.coverity.com/projects/nanodbc-nanodbc
 [coverity-badge]:   https://scan.coverity.com/projects/7437/badge.svg

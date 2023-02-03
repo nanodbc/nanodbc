@@ -63,7 +63,7 @@ is ``ON``, then ``nanodbc::string_type`` will be ``std::u32string``.
 
 In ALL other cases it will be ``std::u16string``.
 
-The nanodbc continuous integration tests run on `AppVeyor CI`_.
+The nanodbc continuous integration tests run with `GitHub Actions`_.
 The build platform does not make available a Unicode-enabled iODBC driver.
 As such there is no guarantee that tests will pass in entirety on a system using iODBC.
 Our recommendation is to use unixODBC.
@@ -301,6 +301,6 @@ Example
       }
   }
 
-
+.. _`GitHub Actions`: https://github.com/nanodbc/nanodbc/actions
 .. _`iODBC`: http://www.iodbc.org
 .. _`unixODBC`: http://www.unixodbc.org
