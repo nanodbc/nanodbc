@@ -9,6 +9,11 @@ on:
     branches:
     - main
     - ml/*
+    paths:
+      - '**.cpp'
+      - '**.h'
+      - '**/CMakeLists.txt'
+      - '.github/workflows/ci-linux.yml'
   pull_request:
 
 jobs:
