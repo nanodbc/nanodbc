@@ -2083,6 +2083,8 @@ public:
 
     auto column_count() const -> short;
 
+    auto column_label(short column) const -> string;
+
     auto column_name(short column) const -> string;
 
     auto column_named(short column) const -> bool;

@@ -5769,6 +5769,13 @@ auto implementation_row_descriptor::column_count() const -> short
     return static_cast<short>(value);
 }
 
+auto implementation_row_descriptor::column_label(short column) const -> string
+{
+    throw_if_column_is_out_of_range(column);
+    constexpr auto fid = NANODBC_DESC_FIELD_IDENTIFIER(SQL_DESC_NAME, SQL_DESC_LABEL);
+    return sql_col_attribute(*this, column, fid);
+}
+
 auto implementation_row_descriptor::column_name(short column) const -> string
 {
     throw_if_column_is_out_of_range(column);
