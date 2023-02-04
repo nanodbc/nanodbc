@@ -1251,10 +1251,7 @@ public:
         return rc;
     }
 
-    bool connected() const
-    {
-        return connected_;
-    }
+    bool connected() const { return connected_; }
 
     void disconnect()
     {
@@ -1268,20 +1265,11 @@ public:
         connected_ = false;
     }
 
-    std::size_t transactions() const
-    {
-        return transactions_;
-    }
+    std::size_t transactions() const { return transactions_; }
 
-    void* native_dbc_handle() const
-    {
-        return dbc_;
-    }
+    void* native_dbc_handle() const { return dbc_; }
 
-    void* native_env_handle() const
-    {
-        return env_;
-    }
+    void* native_env_handle() const { return env_; }
 
     template <class T>
     T get_info(short info_type) const
@@ -1316,10 +1304,7 @@ public:
         return {&name[0], &name[size(name)]};
     }
 
-    std::size_t ref_transaction()
-    {
-        return ++transactions_;
-    }
+    std::size_t ref_transaction() { return ++transactions_; }
 
     std::size_t unref_transaction()
     {
@@ -1328,15 +1313,9 @@ public:
         return transactions_;
     }
 
-    bool rollback() const
-    {
-        return rollback_;
-    }
+    bool rollback() const { return rollback_; }
 
-    void rollback(bool onoff)
-    {
-        rollback_ = onoff;
-    }
+    void rollback(bool onoff) { rollback_ = onoff; }
 
 private:
     template <class T>
@@ -1636,30 +1615,15 @@ public:
         conn_ = conn;
     }
 
-    bool open() const
-    {
-        return open_;
-    }
+    bool open() const { return open_; }
 
-    bool connected() const
-    {
-        return conn_.connected();
-    }
+    bool connected() const { return conn_.connected(); }
 
-    const class connection& connection() const
-    {
-        return conn_;
-    }
+    const class connection& connection() const { return conn_; }
 
-    class connection& connection()
-    {
-        return conn_;
-    }
+    class connection& connection() { return conn_; }
 
-    void* native_statement_handle() const
-    {
-        return stmt_;
-    }
+    void* native_statement_handle() const { return stmt_; }
 
     void close()
     {
@@ -1868,10 +1832,7 @@ public:
         return result(statement, batch_operations);
     }
 
-    void complete_prepare()
-    {
-        call_complete_async();
-    }
+    void complete_prepare() { call_complete_async(); }
 
 #endif
     result execute_direct(
@@ -3284,30 +3245,15 @@ public:
         auto_bind_columns();
     }
 
-    ~result_impl() noexcept
-    {
-        cleanup_bound_columns();
-    }
+    ~result_impl() noexcept { cleanup_bound_columns(); }
 
-    void* native_statement_handle() const
-    {
-        return stmt_.native_statement_handle();
-    }
+    void* native_statement_handle() const { return stmt_.native_statement_handle(); }
 
-    long rowset_size() const
-    {
-        return rowset_size_;
-    }
+    long rowset_size() const { return rowset_size_; }
 
-    long affected_rows() const
-    {
-        return stmt_.affected_rows();
-    }
+    long affected_rows() const { return stmt_.affected_rows(); }
 
-    bool has_affected_rows() const
-    {
-        return stmt_.affected_rows() != -1;
-    }
+    bool has_affected_rows() const { return stmt_.affected_rows() != -1; }
 
     long rows() const noexcept
     {
@@ -3315,10 +3261,7 @@ public:
         return static_cast<long>(row_count_);
     }
 
-    short columns() const
-    {
-        return stmt_.columns();
-    }
+    short columns() const { return stmt_.columns(); }
 
     bool first()
     {
