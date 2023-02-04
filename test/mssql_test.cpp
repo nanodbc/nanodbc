@@ -1168,11 +1168,12 @@ TEST_CASE_METHOD(mssql_fixture, "test_while_next_iteration", "[mssql][looping]")
 #if !defined(NANODBC_DISABLE_ASYNC) && defined(WIN32)
 TEST_CASE_METHOD(mssql_fixture, "test_async", "[mssql][async]")
 {
-    HANDLE event_handle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+    HANDLE event_handle = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
+    REQUIRE(event_handle != nullptr);
 
     nanodbc::connection conn;
-    if (conn.async_connect(connection_string_, event_handle))
-        WaitForSingleObject(event_handle, INFINITE);
+    if (event_handle && conn.async_connect(connection_string_, event_handle))
+        ::WaitForSingleObject(event_handle, INFINITE);
     conn.async_complete();
 
     test_async_internal(conn, event_handle);
@@ -1656,12 +1657,14 @@ TEST_CASE_METHOD(mssql_fixture, "test_conn_attributes", "[mssql][conn_attibutes]
             {SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE,
              SQL_IS_UINTEGER,
              (std::uintptr_t)SQL_ASYNC_DBC_ENABLE_ON});
-        HANDLE event_handle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+        HANDLE event_handle = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
+        REQUIRE(event_handle != nullptr);
         attributes.push_back(
             {SQL_ATTR_ASYNC_DBC_EVENT, SQL_IS_POINTER, (std::uintptr_t)event_handle});
 
         auto conn = connect(attributes, true);
-        WaitForSingleObject(event_handle, INFINITE);
+        if (event_handle) // for static analysis
+            ::WaitForSingleObject(event_handle, INFINITE);
         conn.async_complete();
         REQUIRE(conn.connected());
         test_async_internal(conn, event_handle);
