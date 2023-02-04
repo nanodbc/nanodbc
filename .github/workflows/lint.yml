@@ -10,18 +10,22 @@ on:
 jobs:
   sources:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        path:
+          - 'nanodbc'
+          - 'test'
+          - 'example'
     steps:
-    - uses: actions/checkout@v2
-    - uses: DoozyX/clang-format-lint-action@v0.13
+    - uses: actions/checkout@v3
+    - uses: jidicula/clang-format-action@v4.10.1
       with:
-        source: '.'
-        extensions: 'h,cpp'
-        clangFormatVersion: 12
-        inplace: True
+        clang-format-version: '5.0'
+        check-path: ${{ matrix.path }}
   documentation:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: avto-dev/markdown-lint@v1
       with:
         args: '**/*.md'
@@ -33,13 +37,13 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: hadolint/hadolint-action@v2.0.0
       with:
         dockerfile: Dockerfile
   vagrant:
     runs-on: macos-10.15
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - run: vagrant version
     - run: vagrant validate
