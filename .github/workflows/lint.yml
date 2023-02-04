@@ -26,6 +26,7 @@ jobs:
         clang-format-version: '5'
         check-path: ${{ matrix.path['check'] }}
         exclude-regex: ${{ matrix.path['ignore'] }}
+
   documentation:
     runs-on: ubuntu-latest
     steps:
@@ -38,6 +39,7 @@ jobs:
         args: --short --error-format=github
       env:
         DOCS_DIR: 'doc/'
+
   docker:
     runs-on: ubuntu-latest
     steps:
