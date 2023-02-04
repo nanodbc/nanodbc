@@ -22,7 +22,7 @@ jobs:
             ignore: ''
     steps:
     - uses: actions/checkout@v3
-    - uses: jidicula/clang-format-action@v4.10.1
+    - uses: jidicula/clang-format-action@v4.10.2
       with:
         clang-format-version: '15'
         check-path: ${{ matrix.path['check'] }}
