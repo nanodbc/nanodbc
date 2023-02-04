@@ -23,7 +23,7 @@ jobs:
     - uses: actions/checkout@v3
     - uses: jidicula/clang-format-action@v4.10.1
       with:
-        clang-format-version: '5'
+        clang-format-version: '6'
         check-path: ${{ matrix.path['check'] }}
         exclude-regex: ${{ matrix.path['ignore'] }}
 
