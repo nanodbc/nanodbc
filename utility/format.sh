@@ -19,19 +19,34 @@ elif [[ ${OS} = "Darwin" ]] ; then
     NPROC=$(sysctl -n hw.physicalcpu)
 fi
 
+# Discover desired clang-format version
+for config_file in .clang-format ../.clang-format ../../.clang-format
+do
+    if [ -f "$config_file" ]; then
+        if head -n2 .clang-format | grep -oP "^#.*clang-format\s\K([0-9]+)" > /dev/null 2>&1; then
+            CLANG_FORMAT_VERSION=$(head -n2 .clang-format | grep -oP "^#.*clang-format\s\K([0-9]+)")
+            break
+        fi
+    fi
+done
+if [ -z "$CLANG_FORMAT_VERSION" ]; then
+    echo ".clang-format configuration file or version comment not found"
+    exit 1
+fi
+
 # Discover clang-format
-if type clang-format-15 2> /dev/null ; then
-    CLANG_FORMAT=clang-format-15
+if type "clang-format-${CLANG_FORMAT_VERSION}" 2> /dev/null ; then
+    CLANG_FORMAT=clang-format-${CLANG_FORMAT_VERSION}
 elif type clang-format 2> /dev/null ; then
     # Clang format found, but need to check version
     CLANG_FORMAT=clang-format
     V=$(clang-format --version)
-    if [[ $V != *15* ]] ; then
-        echo "clang-format is not 15 (returned ${V})"
-        #exit 1
+    if [[ $V != "${CLANG_FORMAT_VERSION}" ]] ; then
+        echo "clang-format is not required ${CLANG_FORMAT_VERSION} but ${V}"
+        exit 1
     fi
 else
-    echo "No appropriate clang-format found (expected clang-format-15, or clang-format)"
+    echo "No appropriate clang-format found (expected clang-format-${CLANG_FORMAT_VERSION}, or clang-format)"
     exit 1
 fi
 
