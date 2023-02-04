@@ -1314,7 +1314,7 @@ struct test_case_fixture : public base_test_fixture
 
         // NOTE: Parentheses around REQIURE() expressions are to silence error:
         //       suggest parentheses around comparison in operand of '==' [-Werror=parentheses]
-        T ref;
+        T ref = {};
         p = 0;
         results.get_ref(p, ref);
         REQUIRE((ref == static_cast<T>(i)));
@@ -1332,7 +1332,7 @@ struct test_case_fixture : public base_test_fixture
     {
         static void run()
         {
-            Fixture fixture;
+            Fixture fixture = {};
             using type = typename std::tuple_element<i, TypeList>::type;
             fixture.template test_integral_template<type>();
             fixture.template test_decimal_to_integral_conversion_template<type>();
@@ -1346,7 +1346,7 @@ struct test_case_fixture : public base_test_fixture
     {
         static void run()
         {
-            Fixture fixture;
+            Fixture fixture = {};
             using type = typename std::tuple_element<0, TypeList>::type;
             fixture.template test_integral_template<type>();
             fixture.template test_decimal_to_integral_conversion_template<type>();
