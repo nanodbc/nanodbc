@@ -13,15 +13,19 @@ jobs:
     strategy:
       matrix:
         path:
-          - 'nanodbc'
-          - 'test'
-          - 'example'
+          - check: 'nanodbc'
+            ignore: ''
+          - check: 'test'
+            ignore: 'catch'
+          - check: 'example'
+            ignore: ''
     steps:
     - uses: actions/checkout@v3
     - uses: jidicula/clang-format-action@v4.10.1
       with:
         clang-format-version: '5'
-        check-path: ${{ matrix.path }}
+        check-path: ${{ matrix.path['check'] }}
+        exclude-regex: ${{ matrix.path['ignore'] }}
   documentation:
     runs-on: ubuntu-latest
     steps:
