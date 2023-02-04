@@ -15,6 +15,11 @@ on:
       - '**/CMakeLists.txt'
       - '.github/workflows/ci-linux.yml'
   pull_request:
+    paths:
+      - '**.cpp'
+      - '**.h'
+      - '**/CMakeLists.txt'
+      - '.github/workflows/ci-linux.yml'
 
 jobs:
   build-gcc:
