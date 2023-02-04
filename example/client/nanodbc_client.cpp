@@ -4,8 +4,7 @@
 #include <exception>
 #include <iostream>
 
-int main(int argc, char* argv[])
-try
+int main(int argc, char* argv[]) try
 {
     nanodbc::connection conn;
     try

@@ -1116,7 +1116,10 @@ TEST_CASE_METHOD(mssql_fixture, "test_win32_variant_null", "[mssql][variant][win
     test_win32_variant_null();
 }
 
-TEST_CASE_METHOD(mssql_fixture, "test_win32_variant_null_literal", "[mssql][variant][windows][null]")
+TEST_CASE_METHOD(
+    mssql_fixture,
+    "test_win32_variant_null_literal",
+    "[mssql][variant][windows][null]")
 {
     test_win32_variant_null_literal();
 }
@@ -1656,10 +1659,9 @@ TEST_CASE_METHOD(mssql_fixture, "test_conn_attributes", "[mssql][conn_attibutes]
 #if !defined(NANODBC_DISABLE_ASYNC) && defined(WIN32)
     {
         std::list<nanodbc::connection::attribute> attributes;
-        attributes.push_back(
-            {SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE,
-             SQL_IS_UINTEGER,
-             (std::uintptr_t)SQL_ASYNC_DBC_ENABLE_ON});
+        attributes.push_back({SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE,
+                              SQL_IS_UINTEGER,
+                              (std::uintptr_t)SQL_ASYNC_DBC_ENABLE_ON});
         HANDLE event_handle = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
         REQUIRE(event_handle != nullptr);
         attributes.push_back(

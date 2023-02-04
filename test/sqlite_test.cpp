@@ -481,7 +481,10 @@ TEST_CASE_METHOD(sqlite_fixture, "test_win32_variant", "[sqlite][variant][window
     test_win32_variant();
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "test_win32_variant_null_literal", "[sqlite][variant][windows][null]")
+TEST_CASE_METHOD(
+    sqlite_fixture,
+    "test_win32_variant_null_literal",
+    "[sqlite][variant][windows][null]")
 {
     test_win32_variant_null_literal();
 }
