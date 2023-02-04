@@ -1338,16 +1338,19 @@ struct mssql_table_valued_parameter_fixture : mssql_fixture
         p1_col3_.resize(num_rows_);
         p1_col4_.resize(num_rows_);
 
+        constexpr auto size_16k = static_cast<std::size_t>(16) * 1024;
+        constexpr auto size_32k = static_cast<std::size_t>(32) * 1024;
+
         for (int i = 0; i < num_rows_; ++i)
         {
             p1_col0_[i] = i + 1;
             p1_col1_[i] = std::uniform_int_distribution<int64_t>()(gen);
-            p1_col2_[i] = create_random_string<std::string>(16 * 1024, 32 * 1024);
-            p1_col3_[i] = create_random_string<nanodbc::wide_string>(16 * 1024, 32 * 1024);
-            p1_col4_[i] = create_random_binary(16 * 1024, 32 * 1024);
+            p1_col2_[i] = create_random_string<std::string>(size_16k, size_32k);
+            p1_col3_[i] = create_random_string<nanodbc::wide_string>(size_16k, size_32k);
+            p1_col4_[i] = create_random_binary(size_16k, size_32k);
         };
 
-        p2_ = create_random_string<nanodbc::string>(16 * 1024, 32 * 1024);
+        p2_ = create_random_string<nanodbc::string>(size_16k, size_32k);
     }
 
     int num_rows_;
