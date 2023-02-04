@@ -2162,14 +2162,15 @@ struct test_case_fixture : public base_test_fixture
             }
         }
         {
-            ::SYSTEMTIME st{static_cast<WORD>(dt.year),
-                            static_cast<WORD>(dt.month),
-                            0,
-                            static_cast<WORD>(dt.day),
-                            0,
-                            0,
-                            0,
-                            0};
+            ::SYSTEMTIME st{
+                static_cast<WORD>(dt.year),
+                static_cast<WORD>(dt.month),
+                0,
+                static_cast<WORD>(dt.day),
+                0,
+                0,
+                0,
+                0};
             ::DATE date{0};
             REQUIRE(::SystemTimeToVariantTime(&st, &date));
             _variant_t v_date(date, VT_DATE);
@@ -2179,14 +2180,15 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(v == Approx(v_date));
         }
         {
-            ::SYSTEMTIME st{0,
-                            0,
-                            0,
-                            0,
-                            static_cast<WORD>(t.hour),
-                            static_cast<WORD>(t.min),
-                            static_cast<WORD>(t.sec),
-                            0};
+            ::SYSTEMTIME st{
+                0,
+                0,
+                0,
+                0,
+                static_cast<WORD>(t.hour),
+                static_cast<WORD>(t.min),
+                static_cast<WORD>(t.sec),
+                0};
             ::DATE date{0};
             REQUIRE(::SystemTimeToVariantTime(&st, &date));
             _variant_t v_date(date, VT_DATE);
@@ -2385,15 +2387,16 @@ struct test_case_fixture : public base_test_fixture
         std::size_t const batch_size = 9;
         int integers[batch_size] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
         float floats[batch_size] = {1.123f, 2.345f, 3.1f, 4.5f, 5.678f, 6.f, 7.89f, 8.90f, 9.1234f};
-        nanodbc::string::value_type trunc_float[batch_size][6] = {NANODBC_TEXT("1.100"),
-                                                                  NANODBC_TEXT("2.300"),
-                                                                  NANODBC_TEXT("3.100"),
-                                                                  NANODBC_TEXT("4.500"),
-                                                                  NANODBC_TEXT("5.700"),
-                                                                  NANODBC_TEXT("6.000"),
-                                                                  NANODBC_TEXT("7.900"),
-                                                                  NANODBC_TEXT("8.900"),
-                                                                  NANODBC_TEXT("9.100")};
+        nanodbc::string::value_type trunc_float[batch_size][6] = {
+            NANODBC_TEXT("1.100"),
+            NANODBC_TEXT("2.300"),
+            NANODBC_TEXT("3.100"),
+            NANODBC_TEXT("4.500"),
+            NANODBC_TEXT("5.700"),
+            NANODBC_TEXT("6.000"),
+            NANODBC_TEXT("7.900"),
+            NANODBC_TEXT("8.900"),
+            NANODBC_TEXT("9.100")};
         nanodbc::string::value_type strings[batch_size][60] = {
             NANODBC_TEXT("first string"),
             NANODBC_TEXT("second string"),
