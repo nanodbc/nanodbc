@@ -1,3 +1,4 @@
+---
 # GHA workflow to build documentation and deploy with website in gh-pages branch
 name: "Documentation"
 
