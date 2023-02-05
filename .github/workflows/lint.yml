@@ -10,18 +10,28 @@ on:
 jobs:
   sources:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        path:
+          - check: 'nanodbc'
+            ignore: ''
+          - check: 'test'
+            ignore: 'catch'
+          - check: 'example'
+            ignore: ''
     steps:
-    - uses: actions/checkout@v2
-    - uses: DoozyX/clang-format-lint-action@v0.13
+    - uses: actions/checkout@v3
+    - uses: jidicula/clang-format-action@v4.10.2
       with:
-        source: '.'
-        extensions: 'h,cpp'
-        clangFormatVersion: 12
-        inplace: True
+        clang-format-version: '15'
+        check-path: ${{ matrix.path['check'] }}
+        exclude-regex: ${{ matrix.path['ignore'] }}
+
   documentation:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: avto-dev/markdown-lint@v1
       with:
         args: '**/*.md'
@@ -30,16 +40,17 @@ jobs:
         args: --short --error-format=github
       env:
         DOCS_DIR: 'doc/'
+
   docker:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: hadolint/hadolint-action@v2.0.0
       with:
         dockerfile: Dockerfile
   vagrant:
     runs-on: macos-10.15
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - run: vagrant version
     - run: vagrant validate

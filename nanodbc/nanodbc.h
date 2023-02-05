@@ -483,10 +483,10 @@ public:
     const class connection& connection() const;
 
     /// Returns the connection object.
-    operator class connection&();
+    operator class connection &();
 
     /// Returns the connection object.
-    operator const class connection&() const;
+    operator const class connection &() const;
 
 private:
     class transaction_impl;

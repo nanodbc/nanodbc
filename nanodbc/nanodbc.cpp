@@ -873,7 +873,8 @@ connection::attribute::attribute(attribute const& other)
 void connection::attribute::extractValuePtr()
 {
     std::visit(
-        [this](auto&& arg) {
+        [this](auto&& arg)
+        {
             using T = std::decay_t<decltype(arg)>;
             if constexpr (
                 std::is_same_v<T, string> || std::is_same_v<T, std::string> ||
@@ -1116,9 +1117,10 @@ public:
 #if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_EVENT)
         if (event_handle != nullptr)
         {
-            attributes.push_back({SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE,
-                                  SQL_IS_UINTEGER,
-                                  (std::uintptr_t)SQL_ASYNC_DBC_ENABLE_ON});
+            attributes.push_back(
+                {SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE,
+                 SQL_IS_UINTEGER,
+                 (std::uintptr_t)SQL_ASYNC_DBC_ENABLE_ON});
             attributes.push_back(
                 {SQL_ATTR_ASYNC_DBC_EVENT, SQL_IS_POINTER, (std::uintptr_t)event_handle});
         }
@@ -1191,9 +1193,10 @@ public:
 #if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_EVENT)
         if (event_handle != nullptr)
         {
-            attributes.push_back({SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE,
-                                  SQL_IS_UINTEGER,
-                                  (std::uintptr_t)SQL_ASYNC_DBC_ENABLE_ON});
+            attributes.push_back(
+                {SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE,
+                 SQL_IS_UINTEGER,
+                 (std::uintptr_t)SQL_ASYNC_DBC_ENABLE_ON});
             attributes.push_back(
                 {SQL_ATTR_ASYNC_DBC_EVENT, SQL_IS_POINTER, (std::uintptr_t)event_handle});
         }
@@ -4467,14 +4470,15 @@ inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant
     {
         nanodbc::date v{0};
         get_ref_impl(column, v);
-        ::SYSTEMTIME st{static_cast<WORD>(v.year),
-                        static_cast<WORD>(v.month),
-                        0,
-                        static_cast<WORD>(v.day),
-                        0,
-                        0,
-                        0,
-                        0};
+        ::SYSTEMTIME st{
+            static_cast<WORD>(v.year),
+            static_cast<WORD>(v.month),
+            0,
+            static_cast<WORD>(v.day),
+            0,
+            0,
+            0,
+            0};
         ::DATE date{0};
         if (!::SystemTimeToVariantTime(&st, &date))
             throw type_incompatible_error();
@@ -4486,14 +4490,15 @@ inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant
     {
         nanodbc::time v{0};
         get_ref_impl(column, v);
-        ::SYSTEMTIME st{0,
-                        0,
-                        0,
-                        0,
-                        static_cast<WORD>(v.hour),
-                        static_cast<WORD>(v.min),
-                        static_cast<WORD>(v.sec),
-                        0};
+        ::SYSTEMTIME st{
+            0,
+            0,
+            0,
+            0,
+            static_cast<WORD>(v.hour),
+            static_cast<WORD>(v.min),
+            static_cast<WORD>(v.sec),
+            0};
         ::DATE date{0};
         if (!::SystemTimeToVariantTime(&st, &date))
             throw type_incompatible_error();
@@ -4505,14 +4510,15 @@ inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant
     {
         nanodbc::timestamp v{0};
         get_ref_impl(column, v);
-        SYSTEMTIME st{static_cast<WORD>(v.year),
-                      static_cast<WORD>(v.month),
-                      0,
-                      static_cast<WORD>(v.day),
-                      static_cast<WORD>(v.hour),
-                      static_cast<WORD>(v.min),
-                      static_cast<WORD>(v.sec),
-                      static_cast<unsigned short>(v.fract)};
+        SYSTEMTIME st{
+            static_cast<WORD>(v.year),
+            static_cast<WORD>(v.month),
+            0,
+            static_cast<WORD>(v.day),
+            static_cast<WORD>(v.hour),
+            static_cast<WORD>(v.min),
+            static_cast<WORD>(v.sec),
+            static_cast<unsigned short>(v.fract)};
         DATE date;
         if (!::SystemTimeToVariantTime(&st, &date))
             throw type_incompatible_error();
@@ -5140,12 +5146,12 @@ const class connection& transaction::connection() const
     return impl_->connection();
 }
 
-transaction::operator class connection&()
+transaction::operator class connection &()
 {
     return impl_->connection();
 }
 
-transaction::operator const class connection&() const
+transaction::operator const class connection &() const
 {
     return impl_->connection();
 }

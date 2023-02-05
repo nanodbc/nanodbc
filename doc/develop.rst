@@ -28,14 +28,19 @@ Style
 `clang-format <http://clang.llvm.org/docs/ClangFormat.html>`_
 handles all C++ code formatting for nanodbc.
 
-This utility is `brew-installable <https://brew.sh/>`_ on OS X
-(``brew install clang-format``) and is available on all major platforms.
+See our `.clang-format <https://github.com/nanodbc/nanodbc/blob/main/.clang-format>`_
+configuration file for details on the style and currently required version of
+`clang-format`` specified in the comment at the top of the file
 
-See our `.clang-format <https://github.com/nanodbc/nanodbc/blob/v2.14.0/.clang-format>`_
-configuration file for details on the style.
-
-The script `utility/style.sh <https://github.com/nanodbc/nanodbc/blob/v2.14.0/utility/style.sh>`_
+The script `utility/style.sh <https://github.com/nanodbc/nanodbc/blob/main/utility/style.sh>`_
 formats all code in the repository automatically.
+
+To run `clang-format` against the whole nanodbc codebase:
+
+.. code-block:: console
+
+  ./utility/style.sh
+
 To run ``clang-format`` on a single file use the following.
 
 .. code-block:: console
