@@ -810,7 +810,7 @@ name varchar(60)
         NANODBC_TEXT("SELECT fid, name FROM test_implementation_row_descriptor_auto_unique_value");
     nanodbc::statement s(c, sql);
     nanodbc::implementation_row_descriptor ird(s);
-    REQUIRE(ird.columns() == 2);
+    REQUIRE(ird.count() == 2);
     REQUIRE(ird.auto_unique_value(0));
     REQUIRE(!ird.auto_unique_value(1));
 }
