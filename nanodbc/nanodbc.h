@@ -2073,46 +2073,88 @@ public:
     implementation_row_descriptor(result const& result);
     implementation_row_descriptor(statement const& statement);
 
-    auto auto_unique_value(short column) const -> bool;
+    // Descriptor header fields accessors
 
-    auto base_column_name(short column) const -> string;
+    auto alloc_type() const -> short;
 
-    auto base_table_name(short column) const -> string;
+    auto count() const -> short;
 
-    auto catalog_name(short column) const -> string;
+    // Descriptor record fields (records) accessors
 
-    auto column_count() const -> short;
+    auto auto_unique_value(short record) const -> bool;
 
-    auto column_label(short column) const -> string;
+    auto base_column_name(short record) const -> string;
 
-    auto column_name(short column) const -> string;
+    auto base_table_name(short record) const -> string;
 
-    auto column_named(short column) const -> bool;
+    auto case_sensitive(short record) const -> bool;
 
-    auto columns() const -> short;
+    auto catalog_name(short record) const -> string;
 
-    auto schema_name(short column) const -> string;
+    auto concise_type(short record) const -> short;
 
-    auto table_name(short column) const -> string;
+    auto display_size(short record) const -> std::int64_t;
+
+    auto fixed_prec_scale(short record) const -> short;
+
+    auto label(short record) const -> string;
+
+    auto length(short record) const -> std::uint64_t;
+
+    auto local_type_name(short record) const -> string;
+
+    auto name(short record) const -> string;
+
+    auto nullable(short record) const -> short;
+
+    auto num_prec_radix(short record) const -> short;
+
+    auto octet_length(short record) const -> std::int64_t;
+
+    auto precision(short record) const -> short;
+
+    auto rowver(short record) const -> short;
+
+    auto scale(short record) const -> short;
+
+    auto schema_name(short record) const -> string;
+
+    auto searchable(short record) const -> short;
+
+    auto table_name(short record) const -> string;
+
+    auto type(short record) const -> short;
+
+    auto type_name(short record) const -> string;
+
+    auto unnamed(short record) const -> bool;
+
+    auto unsigned_(short record) const -> bool;
+
+    auto updatable(short record) const -> short;
 
 private:
 
-    struct sql_col_attribute
+    struct sql_get_descr_field
     {
-        sql_col_attribute(implementation_row_descriptor const& ird, short column, std::uint16_t field_identifier);
+        sql_get_descr_field(implementation_row_descriptor const& ird, short record, std::uint16_t field_identifier);
         operator std::int64_t() const;
+        operator std::uint64_t() const;
         operator string() const;
 
         implementation_row_descriptor const& ird_;
-        short column_;
+        short record_;
         std::uint16_t field_identifier_;
     };
-    friend sql_col_attribute;
+    friend sql_get_descr_field;
 
-    void throw_if_column_is_out_of_range(short column) const;
+    void initialize_descriptor();
+    void throw_if_record_is_out_of_range(short record) const;
 
     void* statement_handle_{nullptr};
-    short statement_columns_size_{0};
+    short statement_columns_count_{0};
+    void* descriptor_handle_{nullptr};
+    short descriptor_records_count_{0};
 };
 
 // clang-format off

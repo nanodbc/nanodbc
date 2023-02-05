@@ -1413,9 +1413,9 @@ PRIMARY KEY(t2_fid)
 
             nanodbc::statement s(c, sql);
             nanodbc::implementation_row_descriptor ird(s);
-            REQUIRE(ird.columns() == 3);
-            REQUIRE(ird.columns() == ird.column_count());
-            for (short i = 0; i < ird.columns(); i++)
+            REQUIRE(ird.count() == 3);
+            REQUIRE(ird.count() == ird.count());
+            for (short i = 0; i < ird.count(); i++)
             {
                 if (vendor_ == database_vendor::mysql)
                 {
@@ -1449,7 +1449,7 @@ PRIMARY KEY(t2_fid)
                 REQUIRE(ird.base_column_name(0) == NANODBC_TEXT("name"));
             else
                 REQUIRE(ird.base_column_name(0) == NANODBC_TEXT(""));
-            REQUIRE(ird.column_name(0) == NANODBC_TEXT("name"));
+            REQUIRE(ird.name(0) == NANODBC_TEXT("name"));
             REQUIRE(ird.base_table_name(0) == NANODBC_TEXT(""));
             REQUIRE(ird.table_name(0) == NANODBC_TEXT(""));
             // age
@@ -1458,7 +1458,7 @@ PRIMARY KEY(t2_fid)
                 REQUIRE(ird.base_column_name(1) == NANODBC_TEXT("age"));
             else
                 REQUIRE(ird.base_column_name(1) == NANODBC_TEXT(""));
-            REQUIRE(ird.column_name(1) == NANODBC_TEXT("age"));
+            REQUIRE(ird.name(1) == NANODBC_TEXT("age"));
             REQUIRE(ird.base_table_name(1) == NANODBC_TEXT(""));
             REQUIRE(ird.table_name(1) == NANODBC_TEXT(""));
             // 2 * 3
@@ -1466,26 +1466,26 @@ PRIMARY KEY(t2_fid)
             if (vendor_ == database_vendor::mysql)
             {
                 REQUIRE(ird.base_column_name(2) == NANODBC_TEXT(""));
-                REQUIRE(ird.column_name(2) == NANODBC_TEXT("2 * 3"));
-                REQUIRE(ird.column_named(2));
+                REQUIRE(ird.name(2) == NANODBC_TEXT("2 * 3"));
+                REQUIRE(!ird.unnamed(2));
             }
             else if (vendor_ == database_vendor::postgresql)
             {
                 REQUIRE(ird.base_column_name(2) == NANODBC_TEXT("?column?"));
-                REQUIRE(ird.column_name(2) == NANODBC_TEXT("?column?"));
-                REQUIRE(ird.column_named(2));
+                REQUIRE(ird.name(2) == NANODBC_TEXT("?column?"));
+                REQUIRE(!ird.unnamed(2));
             }
             else if (vendor_ == database_vendor::sqlite)
             {
                 REQUIRE(ird.base_column_name(2) == NANODBC_TEXT("2 * 3"));
-                REQUIRE(ird.column_name(2) == NANODBC_TEXT("2 * 3"));
-                REQUIRE_THROWS_WITH(ird.column_named(2), Catch::Contains("unsupported column attribute"));
+                REQUIRE(ird.name(2) == NANODBC_TEXT("2 * 3"));
+                REQUIRE_THROWS_WITH(!ird.unnamed(2), Catch::Contains("unsupported column attribute"));
             }
             else
             {
                 REQUIRE(ird.base_column_name(2) == NANODBC_TEXT(""));
-                REQUIRE(ird.column_name(2) == NANODBC_TEXT(""));
-                REQUIRE(!ird.column_named(2));
+                REQUIRE(ird.name(2) == NANODBC_TEXT(""));
+                REQUIRE(ird.unnamed(2));
             }
             REQUIRE(ird.base_table_name(2) == NANODBC_TEXT(""));
             REQUIRE(ird.table_name(2) == NANODBC_TEXT(""));
@@ -1502,9 +1502,9 @@ PRIMARY KEY(t2_fid)
 
             nanodbc::statement s(c, sql);
             nanodbc::implementation_row_descriptor ird(s);
-            REQUIRE(ird.columns() == 3);
-            REQUIRE(ird.columns() == ird.column_count());
-            for (short i = 0; i < ird.columns(); i++)
+            REQUIRE(ird.count() == 3);
+            REQUIRE(ird.count() == ird.count());
+            for (short i = 0; i < ird.count(); i++)
             {
                 if (vendor_ == database_vendor::mysql)
                 {
@@ -1541,7 +1541,7 @@ PRIMARY KEY(t2_fid)
                 REQUIRE(ird.base_column_name(0) == NANODBC_TEXT("fid1"));
             else
                 REQUIRE(ird.base_column_name(0) == NANODBC_TEXT("t1_fid1"));
-            REQUIRE(ird.column_name(0) == NANODBC_TEXT("fid1"));
+            REQUIRE(ird.name(0) == NANODBC_TEXT("fid1"));
             REQUIRE(ird.base_table_name(0) == NANODBC_TEXT("t1"));
             if (vendor_ == database_vendor::mysql)
                 REQUIRE(ird.table_name(0) == NANODBC_TEXT("t"));
@@ -1550,7 +1550,7 @@ PRIMARY KEY(t2_fid)
             // t1_fid2
             REQUIRE(!ird.auto_unique_value(1));
             REQUIRE(ird.base_column_name(1) == NANODBC_TEXT("t1_fid2"));
-            REQUIRE(ird.column_name(1) == NANODBC_TEXT("t1_fid2"));
+            REQUIRE(ird.name(1) == NANODBC_TEXT("t1_fid2"));
             REQUIRE(ird.base_table_name(1) == NANODBC_TEXT("t1"));
             if (vendor_ == database_vendor::mysql)
                 REQUIRE(ird.table_name(1) == NANODBC_TEXT("t"));
@@ -1558,7 +1558,7 @@ PRIMARY KEY(t2_fid)
                 REQUIRE(ird.table_name(1) == NANODBC_TEXT("t1"));
             // name
             REQUIRE(ird.base_column_name(2) == NANODBC_TEXT("name"));
-            REQUIRE(ird.column_name(2) == NANODBC_TEXT("name"));
+            REQUIRE(ird.name(2) == NANODBC_TEXT("name"));
             REQUIRE(ird.base_table_name(2) == NANODBC_TEXT("t1"));
             if (vendor_ == database_vendor::mysql)
                 REQUIRE(ird.table_name(2) == NANODBC_TEXT("t"));
@@ -1582,14 +1582,13 @@ PRIMARY KEY(t2_fid)
 
             nanodbc::statement s(c, sql);
             nanodbc::implementation_row_descriptor ird(s);
-            REQUIRE(ird.columns() == 5);
-            REQUIRE(ird.columns() == ird.column_count());
+            REQUIRE(ird.count() == 5);
             // fid1
             if (vendor_ == database_vendor::sqlite)
                 REQUIRE(ird.base_column_name(0) == NANODBC_TEXT("fid1"));
             else
                 REQUIRE(ird.base_column_name(0) == NANODBC_TEXT("t1_fid1"));
-            REQUIRE(ird.column_name(0) == NANODBC_TEXT("fid1"));
+            REQUIRE(ird.name(0) == NANODBC_TEXT("fid1"));
             if (vendor_ == database_vendor::mysql || vendor_ == database_vendor::postgresql)
             {
                 REQUIRE(ird.base_table_name(0) == NANODBC_TEXT("v_t1_t2"));
