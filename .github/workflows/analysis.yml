@@ -1,3 +1,4 @@
+---
 # GHA workflow to run Static Analysis and submit results to GitHub Code Scanning Alerts
 name: "Analysis"
 
