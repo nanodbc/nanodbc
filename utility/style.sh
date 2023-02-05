@@ -24,29 +24,29 @@ for config_file in .clang-format ../.clang-format ../../.clang-format
 do
     if [ -f "$config_file" ]; then
         if head -n2 .clang-format | grep -oP "^#.*clang-format\s\K([0-9]+)" > /dev/null 2>&1; then
-            CLANG_FORMAT_VERSION=$(head -n2 .clang-format | grep -oP "^#.*clang-format\s\K([0-9]+)")
+            REQUIRED_MAJOR_VERSION=$(head -n2 .clang-format | grep -oP "^#.*clang-format\s\K([0-9]+)")
             break
         fi
     fi
 done
-if [ -z "$CLANG_FORMAT_VERSION" ]; then
+if [ -z "$REQUIRED_MAJOR_VERSION" ]; then
     echo ".clang-format configuration file or version comment not found"
     exit 1
 fi
 
 # Discover clang-format
-if type "clang-format-${CLANG_FORMAT_VERSION}" 2> /dev/null ; then
-    CLANG_FORMAT=clang-format-${CLANG_FORMAT_VERSION}
+if type "clang-format-${REQUIRED_MAJOR_VERSION}" 2> /dev/null ; then
+    CLANG_FORMAT=clang-format-${REQUIRED_MAJOR_VERSION}
 elif type clang-format 2> /dev/null ; then
     # Clang format found, but need to check version
     CLANG_FORMAT=clang-format
-    V=$(clang-format --version)
-    if [[ $V != "${CLANG_FORMAT_VERSION}" ]] ; then
-        echo "clang-format is not required ${CLANG_FORMAT_VERSION} but ${V}"
+    MAJOR_VERSION=$(clang-format --version | cut -d' ' -f3 | cut -d'.' -f1)
+    if [[ "$MAJOR_VERSION" != "$REQUIRED_MAJOR_VERSION" ]] ; then
+        echo "clang-format is not required $REQUIRED_MAJOR_VERSION but ${MAJOR_VERSION}"
         exit 1
     fi
 else
-    echo "No appropriate clang-format found (expected clang-format-${CLANG_FORMAT_VERSION}, or clang-format)"
+    echo "No appropriate clang-format found (expected clang-format-${REQUIRED_MAJOR_VERSION}, or clang-format)"
     exit 1
 fi
 
