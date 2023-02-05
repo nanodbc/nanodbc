@@ -3,7 +3,17 @@ name: "Analysis"
 
 on:
   push:
-    branches: [ main ]
+    branches:
+    - main
+    paths:
+      - '**.cpp'
+      - '**.h'
+      - '.github/workflows/analysis.yml'
+  pull_request:
+    paths:
+      - '**.cpp'
+      - '**.h'
+      - '.github/workflows/analysis.yml'
 
 env:
   build: '${{ github.workspace }}/build'
