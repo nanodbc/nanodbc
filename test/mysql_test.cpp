@@ -234,7 +234,8 @@ name varchar(60),
 PRIMARY KEY(fid)
 )"));
 
-    auto const sql = NANODBC_TEXT("SELECT fid, name FROM test_implementation_row_descriptor_auto_unique_value");
+    auto const sql =
+        NANODBC_TEXT("SELECT fid, name FROM test_implementation_row_descriptor_auto_unique_value");
     nanodbc::statement s(c, sql);
     nanodbc::implementation_row_descriptor ird(s);
     REQUIRE(ird.count() == 2);

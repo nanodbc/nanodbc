@@ -2070,7 +2070,6 @@ inline result_iterator end(result& /*r*/)
 class implementation_row_descriptor
 {
 public:
-
     /// Initializes IRD access from statement of executed result set.
     implementation_row_descriptor(result const& result);
 
@@ -2177,15 +2176,18 @@ public:
 
     /// Value of the `SQL_DESC_UPDATABLE` field.
     ///
-    /// \return Possible return values are `SQL_ATTR_READ_ONLY`, `SQL_ATTR_WRITE` or `SQL_ATTR_READWRITE_UNKNOWN`.
+    /// \return Possible return values are `SQL_ATTR_READ_ONLY`, `SQL_ATTR_WRITE` or
+    /// `SQL_ATTR_READWRITE_UNKNOWN`.
     auto updatable(short record) const -> short;
 
 private:
-
     // Convenience wrapper for SQLGetDescrField accesor.
     struct sql_get_descr_field
     {
-        sql_get_descr_field(implementation_row_descriptor const& ird, short record, std::uint16_t field_identifier);
+        sql_get_descr_field(
+            implementation_row_descriptor const& ird,
+            short record,
+            std::uint16_t field_identifier);
         operator std::int64_t() const;
         operator std::uint64_t() const;
         operator string() const;

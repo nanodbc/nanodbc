@@ -155,7 +155,10 @@ TEST_CASE_METHOD(postgresql_fixture, "test_execute_multiple", "[postgresql][exec
     test_execute_multiple();
 }
 
-TEST_CASE_METHOD(postgresql_fixture, "test_implementation_row_descriptor", "[postgresql][descriptor][ird]")
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_implementation_row_descriptor",
+    "[postgresql][descriptor][ird]")
 {
     test_implementation_row_descriptor();
 }

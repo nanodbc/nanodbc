@@ -1479,7 +1479,8 @@ PRIMARY KEY(t2_fid)
             {
                 REQUIRE(ird.base_column_name(2) == NANODBC_TEXT("2 * 3"));
                 REQUIRE(ird.name(2) == NANODBC_TEXT("2 * 3"));
-                REQUIRE_THROWS_WITH(!ird.unnamed(2), Catch::Contains("unsupported column attribute"));
+                REQUIRE_THROWS_WITH(
+                    !ird.unnamed(2), Catch::Contains("unsupported column attribute"));
             }
             else
             {

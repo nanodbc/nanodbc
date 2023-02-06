@@ -5792,7 +5792,7 @@ void implementation_row_descriptor::throw_if_record_is_out_of_range(short record
 
 auto implementation_row_descriptor::alloc_type() const -> short
 {
-    std::int64_t const value = sql_get_descr_field(*this,0, SQL_DESC_ALLOC_TYPE);
+    std::int64_t const value = sql_get_descr_field(*this, 0, SQL_DESC_ALLOC_TYPE);
     return static_cast<short>(value);
 }
 
