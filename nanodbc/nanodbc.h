@@ -2070,71 +2070,119 @@ inline result_iterator end(result& /*r*/)
 class implementation_row_descriptor
 {
 public:
+
+    /// Initializes IRD access from statement of executed result set.
     implementation_row_descriptor(result const& result);
+
+    /// Initializes IRD access from prepared or executed statement.
+    ///
+    /// For performance reasons, an application should ensure the statement
+    /// is executed before accessing any of the IRD fields.
+    /// Accessing (i.e. calls to SQLGetDescRec) the descriptor fields of
+    /// prepared only statement causes a roundtrip to SQL Server.
+    ///
+    /// \note Some fields of the descriptor are available on result set
+    /// retrieved from statements that generate server cursors or
+    /// on executed SQL Server `SELECT` statements containing a `FOR BROWSE`
+    /// clause (database-specific).
     implementation_row_descriptor(statement const& statement);
 
-    // Descriptor header fields accessors
-
+    /// Value of the header field `SQL_DESC_ALLOC_AUTO`.
     auto alloc_type() const -> short;
 
+    /// Value of the header field `SQL_DESC_COUNT`.
     auto count() const -> short;
 
     // Descriptor record fields (records) accessors
 
+    /// Boolean based on value of the `SQL_DESC_AUTO_UNIQUE_VALUE` field.
     auto auto_unique_value(short record) const -> bool;
 
+    /// Value of the `SQL_DESC_BASE_COLUMN_NAME` field.
     auto base_column_name(short record) const -> string;
 
+    /// Value of the `SQL_DESC_BASE_TABLE_NAME` field.
     auto base_table_name(short record) const -> string;
 
+    /// Boolean based on value of the `SQL_DESC_CASE_SENSITIVE` field.
     auto case_sensitive(short record) const -> bool;
 
+    /// Value of the `SQL_DESC_CATALOG_NAME` field.
     auto catalog_name(short record) const -> string;
 
+    /// Value of the `SQL_DESC_CONCISE_TYPE` field.
     auto concise_type(short record) const -> short;
 
+    /// Value of the `SQL_DESC_DISPLAY_SIZE` field.
     auto display_size(short record) const -> std::int64_t;
 
+    /// Value of the `SQL_DESC_FIXED_PREC_SCALE` field.
     auto fixed_prec_scale(short record) const -> short;
 
+    /// Value of the `SQL_DESC_LABEL` field.
     auto label(short record) const -> string;
 
+    /// Value of the `SQL_DESC_LENGTH` field.
     auto length(short record) const -> std::uint64_t;
 
+    /// Value of the `SQL_DESC_LOCAL_TYPE_NAME` field.
     auto local_type_name(short record) const -> string;
 
+    /// Value of the `SQL_DESC_NAME` field.
     auto name(short record) const -> string;
 
+    /// Value of the `SQL_DESC_NULLABLE` field.
+    ///
+    /// \return Possible return values are `SQL_NULLABLE`, `SQL_NO_NULLS` or `SQL_NULLABLE_UNKNOWN`.
     auto nullable(short record) const -> short;
 
+    /// Value of the `SQL_DESC_NUM_PREC_RADIX` field.
     auto num_prec_radix(short record) const -> short;
 
+    /// Value of the `SQL_DESC_OCTET_LENGTH` field.
     auto octet_length(short record) const -> std::int64_t;
 
+    /// Value of the `SQL_DESC_PRECISION` field.
     auto precision(short record) const -> short;
 
+    /// Value of the `SQL_DESC_ROWVER` field.
     auto rowver(short record) const -> short;
 
+    /// Value of the `SQL_DESC_SCALE` field.
     auto scale(short record) const -> short;
 
+    /// Value of the `SQL_DESC_SCHEMA_NAME` field.
     auto schema_name(short record) const -> string;
 
+    /// Value of the `SQL_DESC_SEARCHABLE` field.
+    ///
+    /// \return Possible return values are `SQL_PRED_NONE`, `SQL_PRED_CHAR`, `SQL_PRED_BASIC` or
+    /// `SQL_PRED_SEARCHABLE`.
     auto searchable(short record) const -> short;
 
+    /// Value of the `SQL_DESC_TABLE_NAME` field.
     auto table_name(short record) const -> string;
 
+    /// Value of the `SQL_DESC_TYPE` field.
     auto type(short record) const -> short;
 
+    /// Value of the `SQL_DESC_TYPE_NAME` field.
     auto type_name(short record) const -> string;
 
+    /// Boolean based on value of the `SQL_DESC_UNNAMED` field.
     auto unnamed(short record) const -> bool;
 
+    ///  Boolean based on value of the `SQL_DESC_UNSIGNED` field.
     auto unsigned_(short record) const -> bool;
 
+    /// Value of the `SQL_DESC_UPDATABLE` field.
+    ///
+    /// \return Possible return values are `SQL_ATTR_READ_ONLY`, `SQL_ATTR_WRITE` or `SQL_ATTR_READWRITE_UNKNOWN`.
     auto updatable(short record) const -> short;
 
 private:
 
+    // Convenience wrapper for SQLGetDescrField accesor.
     struct sql_get_descr_field
     {
         sql_get_descr_field(implementation_row_descriptor const& ird, short record, std::uint16_t field_identifier);
