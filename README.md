@@ -124,6 +124,7 @@ environment to use [Boost][boost].
 | `NANODBC_ENABLE_BOOST`             | `OFF` or `ON`        | Use Boost for Unicode string convertions (requires [Boost.Locale][boost-locale]). Workaround to issue [#24](https://github.com/nanodbc/nanodbc/issues/24). |
 | `NANODBC_ENABLE_UNICODE`           | `OFF` or `ON`        | Enable Unicode support. `nanodbc::string` becomes `std::u16string` or `std::u32string`. |
 | `NANODBC_ENABLE_WORKAROUND_NODATA` | `OFF` or `ON`        | Enable `SQL_NO_DATA` workaround to issue [#43](https://github.com/nanodbc/nanodbc/issues/43). |
+| `NANODBC_OVERALLOCATE_CHAR`        | `OFF` or `ON`        | Overallocate auto-bound n/var/char buffers to accomodate retrieving Unicode data in VARCHAR columns [#219](https://github.com/nanodbc/nanodbc/issues/219). |
 | `NANODBC_ODBC_VERSION`             | `SQL_OV_ODBC3[...]`  | Forces ODBC version to use. Default is `SQL_OV_ODBC3_80` if available, otherwise `SQL_OV_ODBC3`. |
 
 ### Note About iODBC

@@ -198,6 +198,16 @@ using nanodbc::wide_string;
 #endif
 #endif
 
+#if defined(NANODBC_OVERALLOCATE_CHAR)
+// If enabled, when auto-binding buffers to N/VAR/CHAR
+// columns, overallocate assuming each code-point
+// takes up MAX_CODE_POINT_SIZE bytes
+#define MAX_CODE_POINT_SIZE 4
+#define NBYTES(nchars, chartype) (nchars + 1) * MAX_CODE_POINT_SIZE
+#else
+#define NBYTES(nchars, chartype) (nchars + 1) * sizeof(chartype)
+#endif
+
 // clang-format off
 //  .d88888b.  8888888b.  888888b.    .d8888b.       888b     d888
 // d88P" "Y88b 888  "Y88b 888  "88b  d88P  Y88b      8888b   d8888
@@ -3772,26 +3782,6 @@ private:
             if (!success(rc))
                 NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
 
-            // Adjust the sqlsize parameter in case of "unlimited" data (varchar(max),
-            // nvarchar(max)).
-            bool is_blob = false;
-
-            if (sqlsize == 0)
-            {
-                switch (sqltype)
-                {
-                case SQL_VARCHAR:
-                case SQL_WVARCHAR:
-                case SQL_SS_XML:
-                    // Divide in half, due to sqlsize being 32-bit in Win32 (and 64-bit in x64)
-                    // sqlsize = std::numeric_limits<int32_t>::max() / 2 - 1;
-                    is_blob = true;
-                    break;
-                default:
-                    is_blob = false;
-                }
-            }
-
             bound_column& col = bound_columns_[i];
             col.name_ = reinterpret_cast<string::value_type*>(column_name);
             col.column_ = i;
@@ -3845,8 +3835,8 @@ private:
             case SQL_CHAR:
             case SQL_VARCHAR:
                 col.ctype_ = sql_ctype<std::string>::value;
-                col.clen_ = (col.sqlsize_ + 1) * sizeof(SQLCHAR);
-                if (is_blob)
+                col.clen_ = NBYTES(col.sqlsize_, SQLCHAR);
+                if (col.sqlsize_ == 0)
                 {
                     col.clen_ = 0;
                     col.blob_ = true;
@@ -3854,15 +3844,18 @@ private:
                 break;
             case SQL_WCHAR:
             case SQL_WVARCHAR:
-            case SQL_SS_TIMESTAMPOFFSET:
             case SQL_SS_XML:
                 col.ctype_ = sql_ctype<wide_string>::value;
-                col.clen_ = (col.sqlsize_ + 1) * sizeof(SQLWCHAR);
-                if (is_blob)
+                col.clen_ = NBYTES(col.sqlsize_, SQLWCHAR);
+                if (col.sqlsize_ == 0)
                 {
                     col.clen_ = 0;
                     col.blob_ = true;
                 }
+                break;
+            case SQL_SS_TIMESTAMPOFFSET:
+                col.ctype_ = sql_ctype<wide_string>::value;
+                col.clen_ = (col.sqlsize_ + 1) * sizeof(SQLWCHAR);
                 break;
             case SQL_LONGVARCHAR:
                 col.ctype_ = sql_ctype<std::string>::value;
