@@ -1,24 +1,19 @@
 # nanodbc tests build configuration
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
-  # Workaround for AppVeyor + Catch: `error: ignoring #pragma gcc diagnostic`
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
-endif()
-
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  # Workaround for AppVeyor + Catch: `suggest parentheses around comparison in operand of '=='`
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=parentheses")
-endif()
-
 # Prepare "Catch" library for other executables
 set(CATCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(Catch INTERFACE)
 target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
-
 include_directories(${nanodbc_SOURCE_DIR} ${ODBC_INCLUDE_DIR})
 link_directories(${CMAKE_BINARY_DIR}/lib)
 file(GLOB headers *.h *.hpp)
 add_custom_target(tests DEPENDS tests catch)
+
+target_compile_definitions(tests PRIVATE INTERFACE
+  $<$<CXX_COMPILER_ID:Clang,AppleClang,GNU>:-Wno-unknown-pragmas>
+  $<$<CXX_COMPILER_ID:GNU>:-Wno-error=parentheses>
+
+)
 
 # Common utilities tests
 add_executable(utility_tests utility_test.cpp)
