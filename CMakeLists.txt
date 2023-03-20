@@ -3,6 +3,7 @@ message( STATUS "cmake version: ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" )
 
 project(nanodbc CXX)
 
+set( CMAKE_VERBOSE_MAKEFILE on )
 # NOTE: All options follow CMake convention:
 #       If no initial value is provided, OFF is used.
 

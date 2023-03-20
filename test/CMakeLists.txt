@@ -1,5 +1,6 @@
 # nanodbc tests build configuration
 
+set( CMAKE_VERBOSE_MAKEFILE on )
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
   # Workaround for AppVeyor + Catch: `error: ignoring #pragma gcc diagnostic`
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
@@ -28,7 +29,11 @@ if (BUILD_SHARED_LIBS)
 else()
   target_link_libraries(utility_tests nanodbc Catch ${ODBC_LIBRARIES})
 endif()
-set_target_properties(utility_tests PROPERTIES VERSION ${NANODBC_VERSION})
+# Must define SIZE_OF_LONG_INT to avoid sqltypes.h requiring presence of
+# unixodbc.h
+set_target_properties(utility_tests PROPERTIES
+  VERSION ${NANODBC_VERSION}
+  COMPILE_FLAGS "-DSIZEOF_LONG_INT=8")
 add_test(NAME utility_tests COMMAND utility_tests)
 if(NOT CMAKE_GENERATOR MATCHES "^Visual Studio")
   add_custom_target(utility_test
@@ -74,7 +79,8 @@ foreach(test_item ${test_list})
       $<$<CXX_COMPILER_ID:MSVC>:_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING>)
   set_target_properties(${test_name}
     PROPERTIES
-    VERSION ${NANODBC_VERSION})
+    VERSION ${NANODBC_VERSION}
+    COMPILE_FLAGS "-DSIZEOF_LONG_INT=8")
   add_test(NAME ${test_name} COMMAND ${test_name})
 
   set_tests_properties(${test_name} PROPERTIES
