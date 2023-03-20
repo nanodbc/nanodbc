@@ -1,312 +1,145 @@
-cmake_minimum_required(VERSION 3.0.0)
-message( STATUS "cmake version: ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" )
+cmake_minimum_required( VERSION 3.21.0 )
+project( nanodbc CXX )
 
-project(nanodbc CXX)
+# Default to honoring the visibility settings for static libraries
+cmake_policy( SET CMP0063 NEW )
 
-# NOTE: All options follow CMake convention:
-#       If no initial value is provided, OFF is used.
+# Default to @rpath on macOS
+cmake_policy( SET CMP0042 NEW )
 
-# CMake standard options
-option(BUILD_SHARED_LIBS "Build shared library" OFF)
+# cmake dependent option supports full syntax
+cmake_policy(SET CMP0127 NEW)
+
+add_library( nanodbc
+  STATIC
+  nanodbc/nanodbc.cpp
+  nanodbc/nanodbc.h )
+
 # nanodbc specific options
-option(NANODBC_DISABLE_ASYNC "Disable async features entirely" OFF)
-option(NANODBC_DISABLE_EXAMPLES "Do not build examples" OFF)
-option(NANODBC_DISABLE_INSTALL "Do not generate install target" OFF)
-option(NANODBC_DISABLE_LIBCXX "Do not use libc++, if available." OFF)
-option(NANODBC_DISABLE_TESTS "Do not build tests" OFF)
-option(NANODBC_DISABLE_MSSQL_TVP "Do not use MSSQL Table-valued parameter" OFF)
-option(NANODBC_ENABLE_COVERAGE "Enable test coverage reporting for GCC/clang" OFF)
-option(NANODBC_ENABLE_BOOST "Use Boost for Unicode string convertions (requires Boost.Locale)" OFF)
-option(NANODBC_ENABLE_UNICODE "Enable Unicode support" OFF)
-option(NANODBC_ENABLE_WORKAROUND_NODATA "Enable SQL_NO_DATA workaround (see Issue #33)" OFF)
+option( NANODBC_DISABLE_ASYNC "Disable async features entirely" OFF )
+option( NANODBC_ENABLE_UNICODE "Enable Unicode support" ON )
+option( NANODBC_ENABLE_WORKAROUND_NODATA "Enable SQL_NO_DATA workaround (see Issue #33)" OFF )
 
-########################################
-## nanodbc version
-########################################
-file(STRINGS VERSION.txt NANODBC_VERSION REGEX "[0-9]+\\.[0-9]+\\.[0-9]+")
-string(REGEX REPLACE "^([0-9]+)\\.[0-9]+\\.[0-9]+" "\\1" NANODBC_VERSION_MAJOR "${NANODBC_VERSION}")
-string(REGEX REPLACE "^[0-9]+\\.([0-9])+\\.[0-9]+" "\\1" NANODBC_VERSION_MINOR "${NANODBC_VERSION}")
-string(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]+)" "\\1" NANODBC_VERSION_PATCH "${NANODBC_VERSION}")
-message(STATUS "nanodbc version: ${NANODBC_VERSION}")
+include(CheckCXXCompilerFlag)
+check_cxx_compiler_flag("-stdlib=libc++" CXX_SUPPORTS_STDLIB)
+check_cxx_compiler_flag("-Werror" CXX_SUPPORTS_WERROR)
 
-########################################
-## nanodbc compilation
-########################################
-set(CMAKE_CXX_STANDARD 14 CACHE STRING "The C++ standard to use for nanodbc")
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-message(STATUS "nanodbc compile: C++${CMAKE_CXX_STANDARD}")
+include( CMakeDependentOption )
+cmake_dependent_option( NANODBC_FORCE_LIBCXX "Force the use of libc++" ON "CXX_SUPPORTS_STDLIB" OFF)
 
-if((CMAKE_MAJOR_VERSION VERSION_GREATER_EQUAL 3) AND (CMAKE_MINOR_VERSION VERSION_GREATER_EQUAL 24))
-  set(CMAKE_COMPILE_WARNING_AS_ERROR ON CACHE BOOL "Treat warnings on nanodbc compile as errors")
-  message(STATUS "nanodbc compile: warning-as-error ${CMAKE_COMPILE_WARNING_AS_ERROR}")
+
+
+cmake_dependent_option( NANODBC_ENABLE_BOOST
+  "Use Boost for Unicode string convertions (requires Boost.Locale)" ON
+  "NANODBC_ENABLE_UNICODE" OFF
+)
+cmake_dependent_option( NANODBC_ENABLE_COVERAGE "Enable code coverage analysis" OFF
+"CMAKE_CXX_COMPILER_ID MATCHES Clang OR CMAKE_COMPILER_IS_GNUCXX" OFF
+)
+
+cmake_dependent_option( NANODBC_WARNINGS_AS_ERROR
+  "Treat warnings on nanodbc compile as errors" ON
+  "(CMAKE_VERSION VERSION_GREATER_EQUAL 3.24.0) AND CXX_SUPPORTS_WERROR" OFF
+)
+
+
+if( NANODBC_FORCE_LIBCXX )
+  target_compile_options(nanodbc PRIVATE -stdlib=libc++)
+  target_link_options(nanodbc PRIVATE -stdlib=libc++)
+endif()
+message(STATUS "nanodbc build: Force linking libc++ - ${NANODBC_FORCE_LIBCXX}")
+
+
+if( NANODBC_WARNINGS_AS_ERROR )
+  target_compile_options(nanodbc PRIVATE -Werror)
+  message( STATUS "nanodbc compile: warning-as-error ${NANODBC_WARNINGS_AS_ERROR}" )
 else()
-  message(STATUS "nanodbc compile: warning-as-error toolset defaults")
+  message( STATUS "nanodbc compile: warning-as-error toolset defaults" )
 endif()
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
-  include(CheckCXXCompilerFlag)
+# #######################################
+# # nanodbc version
+# #######################################
+file( STRINGS VERSION.txt NANODBC_VERSION REGEX "[0-9]+\\.[0-9]+\\.[0-9]+" )
+string( REGEX REPLACE "^([0-9]+)\\.[0-9]+\\.[0-9]+" "\\1" NANODBC_VERSION_MAJOR "${NANODBC_VERSION}" )
+string( REGEX REPLACE "^[0-9]+\\.([0-9])+\\.[0-9]+" "\\1" NANODBC_VERSION_MINOR "${NANODBC_VERSION}" )
+string( REGEX REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]+)" "\\1" NANODBC_VERSION_PATCH "${NANODBC_VERSION}" )
+message( STATUS "nanodbc version: ${NANODBC_VERSION}" )
 
-  if (NANODBC_ENABLE_COVERAGE)
-    add_compile_options(--coverage -O0)
-    link_libraries(gcov)
-    message(STATUS "nanodbc build: Enable test coverage - Yes")
-  endif()
+# #######################################
+# # require and enable C++20
+# #######################################
+message( STATUS "nanodbc compile: C++17" )
+target_compile_features( nanodbc PUBLIC cxx_std_17 )
+set_target_properties( nanodbc PROPERTIES CXX_EXTENSIONS OFF )
 
-  if(NOT NANODBC_DISABLE_LIBCXX)
-    check_cxx_compiler_flag("-stdlib=libc++" CXX_SUPPORTS_STDLIB)
-    if(CXX_SUPPORTS_STDLIB)
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-      set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
-      set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -stdlib=libc++")
-      set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -stdlib=libc++")
-    endif()
-    set(NANODBC_DISABLE_LIBCXX ${NANODBC_DISABLE_LIBCXX} CACHE BOOL "Do not use libc++, if available." FORCE)
-  endif()
-  message(STATUS "nanodbc build: Disable linking libc++ - ${NANODBC_DISABLE_LIBCXX}")
-elseif(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
-    string(REGEX REPLACE "[/-]W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-    if (NOT (CMAKE_VERSION VERSION_LESS 3.6.0)) # Compiler features for Intel in CMake 3.6+
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Qstd=c++17")
-    endif()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /QaxCORE-AVX2")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /fp:precise")
-    set(CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG}   /Od")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O3")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Qipo")
-elseif(MSVC)
-  string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-  if(MSVC_VERSION LESS 1700)
-    message(FATAL_ERROR, "nanodbc requires C++11-compliant compiler")
-  endif()
+
+if( NANODBC_ENABLE_COVERAGE )
+  target_compile_options( nanodbc PRIVATE --coverage -O0 )
+  target_link_libraries( nanodbc PRIVATE gcov )
+  message( STATUS "nanodbc build: Enable test coverage - Yes" )
 endif()
 
-########################################
-## nanodbc features
-########################################
-IF(NOT DEFINED NANODBC_ODBC_VERSION)
-  message(STATUS "nanodbc feature: ODBC Version Override - OFF")
+
+if( CMAKE_CXX_COMPILER_ID MATCHES "Intel" )
+  target_compile_options( nanodbc PRIVATE
+    /QaxCORE-AVX2
+    /fp:precise
+    "$<$<CONFIG:Debug>:/Od>"
+    "$<$<CONFIG:Release>:/O3 /Qipo>"
+  )
+endif()
+
+# AppleClang complains of unused `-I/path/` arguments.
+# These are harmless and can be safely ignored.
+target_compile_options( nanodbc PRIVATE
+  "$<$<CXX_COMPILER_ID:MSVC,Intel>:/W4>"
+  "$<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-unused-command-line-argument>"
+)
+
+# #######################################
+# # nanodbc features
+# #######################################
+IF( DEFINED NANODBC_ODBC_VERSION )
+  message( STATUS "nanodbc feature: ODBC Version Override - ${NANODBC_ODBC_VERSION}" )
+  target_compile_definitions( nanodbc PRIVATE NANODBC_ODBC_VERSION=${NANODBC_ODBC_VERSION} )
 else()
-  message(STATUS "nanodbc feature: ODBC Version Override - ${NANODBC_ODBC_VERSION}")
-  add_definitions(-DNANODBC_ODBC_VERSION=${NANODBC_ODBC_VERSION})
+  message( STATUS "nanodbc feature: ODBC Version Override - OFF" )
 endif()
 
-if(NANODBC_DISABLE_ASYNC)
-  add_definitions(-DNANODBC_DISABLE_ASYNC)
-endif()
-message(STATUS "nanodbc feature: Disable async features - ${NANODBC_DISABLE_ASYNC}")
+message( STATUS "nanodbc feature: Enable Unicode - ${NANODBC_ENABLE_UNICODE}" )
 
-if(NANODBC_DISABLE_MSSQL_TVP)
-  add_definitions(-DNANODBC_DISABLE_MSSQL_TVP)
-endif()
-message(STATUS "nanodbc feature: Disable MSSQL Table-valued parameter - ${NANODBC_DISABLE_MSSQL_TVP}")
+if( NANODBC_ENABLE_UNICODE )
+  target_compile_definitions( nanodbc PRIVATE NANODBC_ENABLE_UNICODE )
 
-if(NANODBC_ENABLE_UNICODE)
-  add_definitions(-DNANODBC_ENABLE_UNICODE)
-  if(MSVC)
+  if( MSVC )
     # Sets "Use Unicode Character Set" property in Visual Studio projects
-    add_definitions(-DUNICODE -D_UNICODE)
-  endif()
-endif()
-message(STATUS "nanodbc feature: Enable Unicode - ${NANODBC_ENABLE_UNICODE}")
-
-if(NANODBC_ENABLE_BOOST)
-  add_definitions(-DNANODBC_ENABLE_BOOST)
-endif()
-message(STATUS "nanodbc feature: Enable Boost - ${NANODBC_ENABLE_BOOST}")
-
-if(NANODBC_ENABLE_WORKAROUND_NODATA)
-  add_definitions(-DNANODBC_ENABLE_WORKAROUND_NODATA)
-endif()
-message(STATUS "nanodbc feature: Enable SQL_NO_DATA bug workaround - ${NANODBC_ENABLE_WORKAROUND_NODATA}")
-
-########################################
-## find unixODBC or iODBC config binary
-########################################
-if(UNIX)
-  # Try to find unixODBC first via odbc_config program.
-  find_program(ODBC_CONFIG odbc_config
-    PATHS $ENV{ODBC_PATH}/bin /usr/bin /usr/local/bin)
-  if(ODBC_CONFIG)
-    message(STATUS "nanodbc build: ODBC on Unix - unixODBC")
-    set(ODBCLIB odbc)
-    execute_process(COMMAND ${ODBC_CONFIG} --include-prefix
-      OUTPUT_VARIABLE ODBC_INCLUDE_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
-    set(ODBC_CFLAGS "-I${ODBC_INCLUDE_DIR}")
-    set(CMAKE_FLAGS "${CMAKE_FLAGS} ${ODBC_CFLAGS}")
-    execute_process(COMMAND ${ODBC_CONFIG} --libs
-      OUTPUT_VARIABLE ODBC_LINK_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+    target_compile_definitions( nanodbc PRIVATE UNICODE _UNICODE )
   endif()
 
-  # Fallback to finding unixODBC via install paths
-  if(NOT ODBC_CONFIG)
-    find_path(UnixODBC_INCLUDE_DIR uodbc_stats.h
-      /usr/include
-      /usr/local/include
-      /usr/include/odbc
-      /usr/local/include/odbc
-      /usr/include/libodbc
-      /usr/local/include/libodbc)
-    if(UnixODBC_INCLUDE_DIR)
-      set(ODBC_CONFIG 1)
-      message(STATUS "nanodbc build: ODBC on Unix - unixODBC")
-      set(ODBCLIB odbc)
-      set(ODBC_CFLAGS "-I${UnixODBC_INCLUDE_DIR} -DHAVE_UNISTD_H -DHAVE_PWD_H -DHAVE_SYS_TYPES_H -DHAVE_LONG_LONG -DSIZEOF_LONG_INT=8")
-    endif()
-  endif()
+  message( STATUS "nanodbc feature: Enable Boost - ${NANODBC_ENABLE_BOOST}" )
 
-  # Fallback to using iODBC
-  if(NOT ODBC_CONFIG)
-    find_program(ODBC_CONFIG iodbc-config
-      PATHS $ENV{ODBC_PATH}/bin /usr/bin /usr/local/bin)
-    if(ODBC_CONFIG)
-      message(STATUS "nanodbc build: ODBC on Unix - iODBC")
-      set(ODBCLIB iodbc)
-      execute_process(COMMAND ${ODBC_CONFIG} --cflags
-        OUTPUT_VARIABLE ODBC_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-      set(CMAKE_FLAGS "${CMAKE_FLAGS} ${ODBC_CFLAGS}")
-      execute_process(COMMAND ${ODBC_CONFIG} --libs
-        OUTPUT_VARIABLE ODBC_LINK_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-      if(NANODBC_ENABLE_UNICODE)
-        add_definitions(-DNANODBC_USE_IODBC_WIDE_STRINGS)
-      endif()
-    endif()
-  endif()
-
-  if(NOT ODBC_CONFIG)
-    message(FATAL_ERROR "can not find a suitable odbc driver manager")
-  endif()
-
-  message(STATUS "ODBC compile flags: ${ODBC_CFLAGS}")
-  message(STATUS "ODBC link flags: ${ODBC_LINK_FLAGS}")
-endif()
-
-########################################
-## find ODBC libraries to link
-########################################
-if(UNIX)
-  set(ODBC_LIBRARIES ${ODBCLIB})
-  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${ODBC_LINK_FLAGS}")
-elseif(MSVC OR CMAKE_CXX_COMPILER_ID MATCHES "Intel")
-  set(ODBC_LIBRARIES odbc32.lib odbccp32.lib Ws2_32.lib)
-elseif(MINGW)
-  set(ODBC_LIBRARIES odbc32 odbccp32)
-endif()
-
-########################################
-## find Boost if necessary
-########################################
-if(NANODBC_ENABLE_BOOST)
-  set(Boost_USE_STATIC_LIBS ON)
-  set(Boost_USE_MULTITHREADED ON)
-  find_package(Boost COMPONENTS locale REQUIRED)
-  if(Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIRS})
-    link_directories(${CMAKE_BINARY_DIR}/lib ${Boost_LIBRARY_DIRS})
-  else()
-    message(FATAL_ERROR "can not find boost")
+  if( NANODBC_ENABLE_BOOST )
+    find_package( Boost REQUIRED COMPONENTS locale )
+    target_link_libraries( nanodbc PUBLIC Boost::locale )
+    target_compile_definitions( nanodbc PRIVATE NANODBC_ENABLE_BOOST )
   endif()
 endif()
 
-########################################
-## Mac OS X specifics for targets
-########################################
-if(APPLE)
-  set(CMAKE_MACOSX_RPATH ON)
-  message(STATUS "Use rpaths on Mac OS X - ${CMAKE_MACOSX_RPATH}")
+target_compile_definitions( nanodbc PRIVATE
+  $<$<BOOL:${NANODBC_ENABLE_WORKAROUND_NODATA}>:NANODBC_ENABLE_WORKAROUND_NODATA>
+  $<$<BOOL:${NANODBC_DISABLE_ASYNC}>:NANODBC_DISABLE_ASYNC>
+)
 
-  # AppleClang complains of unused `-I/path/` arguments.
-  # These are harmless and can be safely ignored.
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-command-line-argument")
-endif()
+message( STATUS "nanodbc feature: Disable async features - ${NANODBC_DISABLE_ASYNC}" )
+message( STATUS "nanodbc feature: Enable SQL_NO_DATA bug workaround - ${NANODBC_ENABLE_WORKAROUND_NODATA}" )
 
-########################################
-## library target
-########################################
-if(BUILD_SHARED_LIBS)
-  message(STATUS "nanodbc build: Enable nanodbc target - SHARED")
-else()
-  message(STATUS "nanodbc build: Enable nanodbc target - STATIC")
-endif()
+find_package( ODBC REQUIRED )
+target_link_libraries( nanodbc PUBLIC ODBC::ODBC )
 
-add_library(nanodbc nanodbc/nanodbc.cpp nanodbc/nanodbc.h)
-
-target_link_libraries(nanodbc ${Boost_LIBRARIES} ${ODBC_LIBRARIES})
-
-target_include_directories(nanodbc PUBLIC
+# #######################################
+# # library target
+# #######################################
+target_include_directories( nanodbc PUBLIC SYSTEM
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-  $<INSTALL_INTERFACE:include/nanodbc>) # <prefix>/include/nanodbc
-
-if(UNIX)
-  set_target_properties(nanodbc PROPERTIES
-    COMPILE_FLAGS "${ODBC_CFLAGS}"
-    LIBRARY_OUTPUT_DIRECTORY "lib")
-endif()
-
-if(BUILD_SHARED_LIBS)
-  set_target_properties(nanodbc PROPERTIES
-    VERSION ${NANODBC_VERSION})
-    # export all symobols from windows DLL
-    set_target_properties(nanodbc PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
-endif()
-
-target_compile_definitions(nanodbc
-  PRIVATE
-    $<$<CXX_COMPILER_ID:MSVC>:_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING>)
-
-########################################
-## install targets
-########################################
-if(NOT NANODBC_DISABLE_INSTALL)
-  set(NANODBC_CONFIG nanodbc-config)
-  # 'make install' to the correct location
-  if(BUILD_SHARED_LIBS)
-    install(TARGETS nanodbc
-      EXPORT ${NANODBC_CONFIG} # associate installed target files with export
-      INCLUDES DESTINATION include
-      LIBRARY DESTINATION lib
-      ARCHIVE DESTINATION lib
-      RUNTIME DESTINATION bin) # for Windows
-  else()
-    install(TARGETS nanodbc
-      EXPORT ${NANODBC_CONFIG} # associate installed target files with export
-      INCLUDES DESTINATION include
-      LIBRARY DESTINATION lib
-      ARCHIVE DESTINATION lib)
-  endif()
-  # Install public include headers
-  install(FILES nanodbc/nanodbc.h DESTINATION include/nanodbc)
-  # Make project importable from the install directory
-  ## Generate and install *-config.cmake exporting targets from install tree.
-  if (WIN32 AND NOT MINGW)
-    install(EXPORT ${NANODBC_CONFIG} DESTINATION "cmake")
-  else()
-    install(EXPORT ${NANODBC_CONFIG} DESTINATION "lib/cmake/nanodbc")
-  endif()
-  # Make project importable from the build directory
-  ## Generate file *-config.cmake exporting targets from build tree.
-  export(TARGETS nanodbc FILE ${NANODBC_CONFIG}.cmake)
-endif()
-message(STATUS "nanodbc build: Disable install target - ${NANODBC_DISABLE_INSTALL}")
-
-########################################
-## tests targets
-########################################
-if(NOT NANODBC_DISABLE_TESTS)
-  enable_testing()
-  add_subdirectory(test)
-  if(NOT CMAKE_GENERATOR MATCHES "^Visual Studio")
-    add_custom_target(check
-      COMMAND ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure
-      DEPENDS tests)
-  endif()
-endif()
-message(STATUS "nanodbc build: Disable tests target - ${NANODBC_DISABLE_TESTS}")
-
-########################################
-## examples targets
-########################################
-if(NOT NANODBC_DISABLE_EXAMPLES)
-  add_subdirectory(example)
-endif()
-message(STATUS "nanodbc build: Disable examples target - ${NANODBC_DISABLE_EXAMPLES}")
+  $<INSTALL_INTERFACE:include/nanodbc> ) # <prefix>/include/nanodbc
