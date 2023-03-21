@@ -1643,11 +1643,11 @@ public:
     /// \brief Reports if number of affected rows is available.
     /// \return true if number of affected rows is known, regardless of the value;
     /// false if the number is not available.
-    /// \throws database_error
-    ///
+    /// \throws database_error {
     /// \code{.cpp}
     /// assert(r.has_affected_rows() == (r.affected_rows() >= 0));
     /// \endcode
+    /// }
     bool has_affected_rows() const;
 
     /// \brief Rows in the current rowset or 0 if the number of rows is not available.
