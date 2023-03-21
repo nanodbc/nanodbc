@@ -18,6 +18,7 @@ option(NANODBC_DISABLE_MSSQL_TVP "Do not use MSSQL Table-valued parameter" OFF)
 option(NANODBC_ENABLE_COVERAGE "Enable test coverage reporting for GCC/clang" OFF)
 option(NANODBC_ENABLE_BOOST "Use Boost for Unicode string convertions (requires Boost.Locale)" OFF)
 option(NANODBC_ENABLE_UNICODE "Enable Unicode support" OFF)
+option(NANODBC_OVERALLOCATE_CHAR "Allocate buffers of sufficient length such that Unicode can be stored in VAR/CHAR columns" OFF)
 option(NANODBC_ENABLE_WORKAROUND_NODATA "Enable SQL_NO_DATA workaround (see Issue #33)" OFF)
 
 ########################################
@@ -120,6 +121,10 @@ if(NANODBC_ENABLE_WORKAROUND_NODATA)
 endif()
 message(STATUS "nanodbc feature: Enable SQL_NO_DATA bug workaround - ${NANODBC_ENABLE_WORKAROUND_NODATA}")
 
+if(NANODBC_OVERALLOCATE_CHAR)
+  add_definitions(-DNANODBC_OVERALLOCATE_CHAR)
+endif()
+message(STATUS "nanodbc feature: Allocate buffers of sufficient length such that Unicode can be stored in VAR/CHAR columns - ${NANODBC_OVERALLOCATE_CHAR}")
 ########################################
 ## find unixODBC or iODBC config binary
 ########################################

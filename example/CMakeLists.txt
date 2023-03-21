@@ -21,7 +21,8 @@ foreach(example ${examples})
 
   set_target_properties(example_${example}
     PROPERTIES
-    VERSION ${NANODBC_VERSION})
+    VERSION ${NANODBC_VERSION}
+    COMPILE_FLAGS "-DSIZEOF_LONG_INT=8")
 endforeach()
 
 set(example_empty ${CMAKE_CURRENT_SOURCE_DIR}/empty.cpp)
@@ -41,4 +42,5 @@ add_dependencies(examples example_empty)
 
 set_target_properties(example_empty
   PROPERTIES
-  VERSION ${NANODBC_VERSION})
+  VERSION ${NANODBC_VERSION}
+  COMPILE_FLAGS "-DSIZEOF_LONG_INT=8")

@@ -1678,4 +1678,33 @@ TEST_CASE_METHOD(mssql_fixture, "test_conn_attributes", "[mssql][conn_attibutes]
 #endif
 }
 #endif
+
+#if defined(NANODBC_ENABLE_UNICODE)
+/* Test that when we have Unicode data stored in a
+ * varchar column, if we have the OVERALLOCATE_CHAR
+ * flag enabled, we are able to retrieve the entire
+ * result.
+ */
+TEST_CASE_METHOD(mssql_fixture, "test_overallocate", "[mssql][overallocate]")
+{
+    auto conn = connect();
+    auto val = nanodbc::string(u"grün");
+    auto sql = NANODBC_TEXT("SELECT '") + val + NANODBC_TEXT("' AS A");
+    nanodbc::result result = execute(conn, sql);
+    REQUIRE(result.next());
+    auto res = result.get<nanodbc::string>(0);
+#if defined(NANODBC_OVERALLOCATE_CHAR)
+    REQUIRE(res == val);
+    REQUIRE(res.size() == 4);
+#else
+    /*
+     * Commented out since testing for "incorrect" behavior is probably
+     * not a good idea.  But here to demonstrate the effect of
+     * enabling the NANODBC_OVERALLOCATE_CHAR flag.
+    REQUIRE( res != val );
+    REQUIRE(res.size() == 3);
+    */
+#endif
+}
+#endif
 #endif
