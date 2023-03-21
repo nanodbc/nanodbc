@@ -1644,6 +1644,7 @@ public:
     /// \return true if number of affected rows is known, regardless of the value;
     /// false if the number is not available.
     /// \throws database_error
+    ///
     /// \code{.cpp}
     /// assert(r.has_affected_rows() == (r.affected_rows() >= 0));
     /// \endcode
