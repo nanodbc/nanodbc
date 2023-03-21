@@ -1,6 +1,5 @@
 # nanodbc tests build configuration
 
-set( CMAKE_VERBOSE_MAKEFILE on )
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
   # Workaround for AppVeyor + Catch: `error: ignoring #pragma gcc diagnostic`
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")

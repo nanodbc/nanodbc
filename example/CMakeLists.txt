@@ -1,6 +1,5 @@
 # nanodbc examples build configuration
 
-set( CMAKE_VERBOSE_MAKEFILE on )
 add_custom_target(examples DEPENDS example)
 set(examples northwind usage rowset_iteration table_schema table_valued_parameter)
 
