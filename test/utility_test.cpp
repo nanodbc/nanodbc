@@ -3,7 +3,7 @@
 
 // clang-format off
 #define NANODBC_DISABLE_NANODBC_NAMESPACE_FOR_INTERNAL_TESTS
-#include "nanodbc.cpp" // access private conversion routines
+#include "nanodbc/nanodbc.cpp" // access private conversion routines
 // clang-format on
 
 #include <string>

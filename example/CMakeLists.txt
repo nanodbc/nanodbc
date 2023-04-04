@@ -1,46 +1,25 @@
-# nanodbc examples build configuration
+# # nanodbc examples build configuration
+find_package(ODBC REQUIRED)
+add_compile_definitions( "$<$<CXX_COMPILER_ID:MSVC>:_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING>" )
 
-add_custom_target(examples DEPENDS example)
-set(examples northwind usage rowset_iteration table_schema table_valued_parameter)
+add_custom_target( examples )
 
-include_directories(${CMAKE_SOURCE_DIR} ${ODBC_INCLUDE_DIR})
-link_directories(${CMAKE_BINARY_DIR}/lib)
+set( example_list empty northwind usage rowset_iteration table_schema table_valued_parameter )
 
-foreach(example ${examples})
-  add_executable(example_${example} ${example}.cpp example_unicode_utils.h)
-  if (BUILD_SHARED_LIBS)
-    target_link_libraries(example_${example} nanodbc "${ODBC_LINK_FLAGS}")
-  else()
-    target_link_libraries(example_${example} nanodbc ${ODBC_LIBRARIES})
-  endif()
-  target_compile_definitions(example_${example}
-    PRIVATE
-      $<$<CXX_COMPILER_ID:MSVC>:_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING>)
+# Generate an empty.cpp from the template, for experimentation
+# empty.cpp is ignored by git
+if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/empty.cpp) # Behavior is well-defined only for full paths.
+  configure_file(empty.cpp.in ${CMAKE_CURRENT_SOURCE_DIR}/empty.cpp COPYONLY)
+endif()
 
-  add_dependencies(examples example_${example})
-
-  set_target_properties(example_${example}
-    PROPERTIES
-    VERSION ${NANODBC_VERSION}
-    COMPILE_FLAGS "-DSIZEOF_LONG_INT=8")
+foreach( example IN LISTS example_list )
+    add_executable( example_${example} ${example}.cpp example_unicode_utils.h )
+    target_link_libraries( example_${example} PRIVATE nanodbc ODBC::ODBC )
+    target_compile_features(example_${example} PRIVATE cxx_std_14)
+    set_target_properties(example_${example}
+      PROPERTIES
+      CXX_EXTENSIONS OFF
+      VERSION ${NANODBC_VERSION}
+    )
+    add_dependencies( examples example_${example})
 endforeach()
-
-set(example_empty ${CMAKE_CURRENT_SOURCE_DIR}/empty.cpp)
-if(NOT EXISTS ${example_empty}) # Behavior is well-defined only for full paths.
-  configure_file(${example_empty}.in ${example_empty} COPYONLY)
-endif()
-add_executable(example_empty ${example_empty} example_unicode_utils.h)
-if (BUILD_SHARED_LIBS)
-  target_link_libraries(example_empty nanodbc "${ODBC_LINK_FLAGS}")
-else()
-  target_link_libraries(example_empty nanodbc ${ODBC_LIBRARIES})
-endif()
-target_compile_definitions(example_empty
-  PRIVATE
-    $<$<CXX_COMPILER_ID:MSVC>:_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING>)
-add_dependencies(examples example_empty)
-
-set_target_properties(example_empty
-  PROPERTIES
-  VERSION ${NANODBC_VERSION}
-  COMPILE_FLAGS "-DSIZEOF_LONG_INT=8")

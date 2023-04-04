@@ -33,6 +33,7 @@ package-lock.json
 *.code-workspace
 
 # Miscelenaous
+.cache
 *.log
 /doc/build/
 /.vagrant
