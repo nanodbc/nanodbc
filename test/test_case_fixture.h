@@ -507,6 +507,16 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(!names.empty());
     }
 
+    void test_catalog_list_table_types()
+    {
+        auto conn = connect();
+        REQUIRE(conn.connected());
+        nanodbc::catalog catalog(conn);
+
+        auto types = catalog.list_table_types();
+        REQUIRE(!types.empty());
+    }
+
     void test_catalog_primary_keys()
     {
         nanodbc::connection connection = connect();

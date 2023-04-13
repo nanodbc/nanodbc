@@ -56,6 +56,14 @@ TEST_CASE_METHOD(vertica_fixture, "test_catalog_list_schemas", "[vertica][catalo
     test_catalog_list_schemas();
 }
 
+TEST_CASE_METHOD(
+    vertica_fixture,
+    "test_catalog_list_table_types",
+    "[vertica][catalog][table_types]")
+{
+    test_catalog_list_table_types();
+}
+
 TEST_CASE_METHOD(vertica_fixture, "test_catalog_columns", "[vertica][catalog][columns]")
 {
     test_catalog_columns();

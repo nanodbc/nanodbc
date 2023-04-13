@@ -39,6 +39,11 @@ TEST_CASE_METHOD(odbc_fixture, "test_catalog_list_schemas", "[odbc][catalog][sch
     test_catalog_list_schemas();
 }
 
+TEST_CASE_METHOD(odbc_fixture, "test_catalog_list_table_types", "[odbc][catalog][table_types]")
+{
+    test_catalog_list_table_types();
+}
+
 TEST_CASE_METHOD(odbc_fixture, "test_catalog_columns", "[odbc][catalog][columns]")
 {
     test_catalog_columns();
