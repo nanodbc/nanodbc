@@ -175,6 +175,12 @@ TEST_CASE_METHOD(sqlite_fixture, "test_catalog_list_schemas", "[sqlite][catalog]
     REQUIRE(names.front().empty());
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "test_catalog_list_table_types", "[sqlite][catalog][table_types]")
+{
+    before_catalog_test();
+    test_catalog_list_table_types();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_catalog_columns", "[sqlite][catalog][columns]")
 {
     before_catalog_test();

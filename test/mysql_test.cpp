@@ -136,6 +136,11 @@ TEST_CASE_METHOD(mysql_fixture, "test_catalog_list_schemas", "[mysql][catalog][s
     test_catalog_list_schemas();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_catalog_list_table_types", "[mysql][catalog][table_types]")
+{
+    test_catalog_list_table_types();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_catalog_columns", "[mysql][catalog][columns]")
 {
     test_catalog_columns();
