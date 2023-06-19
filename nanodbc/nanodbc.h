@@ -96,9 +96,7 @@
 #endif
 #include <vector>
 
-#ifndef __clang__
 #include <cstdint>
-#endif
 
 /// \brief The entirety of nanodbc can be found within this one namespace.
 ///
