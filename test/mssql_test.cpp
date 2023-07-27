@@ -1693,7 +1693,8 @@ TEST_CASE_METHOD(mssql_fixture, "test_conn_attributes", "[mssql][conn_attibutes]
 TEST_CASE_METHOD(mssql_fixture, "test_overallocate", "[mssql][overallocate]")
 {
     auto conn = connect();
-    auto val = nanodbc::string(u"grün");
+    std::u16string u16val = u"grün";
+    auto val = nanodbc::string(u16val.begin(), u16val.end());
     auto sql = NANODBC_TEXT("SELECT '") + val + NANODBC_TEXT("' AS A");
     nanodbc::result result = execute(conn, sql);
     REQUIRE(result.next());
