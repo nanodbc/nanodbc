@@ -28,6 +28,7 @@ package-lock.json
 
 # VS2017 / VSCode
 /.vs*
+/CMakePresets.json
 /CMakeSettings.json
 /launch.vs.json
 *.code-workspace
