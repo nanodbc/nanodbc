@@ -142,7 +142,8 @@ message( STATUS "nanodbc feature: Enable Unicode - ${NANODBC_ENABLE_UNICODE}" )
 if( NANODBC_ENABLE_UNICODE )
   target_compile_definitions( nanodbc PUBLIC
     NANODBC_ENABLE_UNICODE
-    "$<$<CXX_COMPILER_ID:MSVC>:UNICODE _UNICODE>"
+    "$<$<CXX_COMPILER_ID:MSVC>:UNICODE>"
+    "$<$<CXX_COMPILER_ID:MSVC>:_UNICODE>"
   )
 
   target_compile_definitions( nanodbc PRIVATE
