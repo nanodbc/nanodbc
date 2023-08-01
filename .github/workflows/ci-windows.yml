@@ -35,7 +35,7 @@ jobs:
         - { cxxstd: '17', toolset: v141, vs: 2019, architecture: x64, os: windows-2019 }
         - { cxxstd: '14', toolset: v141, vs: 2019, architecture: x64, os: windows-2019 }
         # Visual Studio 2015(TODO: remove as deprecated and to save CI time)
-        #- { cxxstd: '14', toolset: v141, vs: 2019, architecture: x64, os: windows-2019 }
+        - { cxxstd: '14', toolset: v141, vs: 2019, architecture: x64, os: windows-2019 }
     name: build-vs${{ matrix.vs }}-${{ matrix.toolset }}-std-${{ matrix.cxxstd }}
     runs-on: ${{ matrix.os }}
     env:
@@ -135,12 +135,12 @@ jobs:
         mariadb: ['10.10', '10.3']
     steps:
     - uses: actions/checkout@v3
-    - name: Install MariaDB
+    - name: Install MariaDB ${{ matrix.mariadb }}
       uses: ankane/setup-mariadb@v1
       with:
         database: nanodbc
         mariadb-version: ${{ matrix.mariadb }}
-    - name: Install MySQL ODBC Driver 5.3
+    - name: Install MySQL Connector 5.3
       run: |
         choco install mysql-odbc
     - name: Check
@@ -167,14 +167,14 @@ jobs:
         mysql: [8.0, 5.7]
     steps:
     - uses: actions/checkout@v3
-    - name: Install MySQL
+    - name: Install MySQL ${{ matrix.mysql }}
       uses: ankane/setup-mysql@v1
       with:
         database: nanodbc
         mysql-version: ${{ matrix.mysql }}
-    - name: Install MySQL ODBC Driver 5.3
+    - name: Install MySQL Connector 8.1
       run: |
-        choco install mysql-odbc
+        choco install mysql.odbc
     - name: Check
       run: |
         mysql -D nanodbc -e 'SELECT VERSION()'
@@ -187,7 +187,7 @@ jobs:
         cmake --build ${{ github.workspace }}/build --config Release --target mysql_tests
     - name: Test
       run: |
-        $env:NANODBC_TEST_CONNSTR_MYSQL="Driver={MySQL ODBC 5.3 ANSI Driver};Server=127.0.0.1;Database=nanodbc;User=root;Password=;big_packets=1;"
+        $env:NANODBC_TEST_CONNSTR_MYSQL="Driver={MySQL ODBC 8.1 ANSI Driver};Server=127.0.0.1;Database=nanodbc;User=root;Password=;big_packets=1;NO_SCHEMA=false"
         ctest --test-dir ${{ github.workspace }}/build --build-config Release --output-on-failure --no-tests=error -R mysql_tests
 
   test-postgresql:
@@ -229,8 +229,9 @@ jobs:
     - uses: actions/checkout@v3
     - name: Install SQLite ODBC Driver
       run: |
-        (New-Object Net.WebClient).DownloadFile('http://www.ch-werner.de/sqliteodbc/sqliteodbc_w64.exe', 'sqliteodbc_w64.exe')
-          ./sqliteodbc_w64.exe /S
+        (New-Object Net.WebClient).DownloadFile('http://www.ch-werner.de/sqliteodbc/sqliteodbc_w64.exe', "$($env:TEMP)\sqliteodbc_w64.exe")
+        cmd /c start /wait "$($env:TEMP)\sqliteodbc_w64.exe" /S
+      shell: powershell
     - name: Check
       run: |
         Get-OdbcDriver -Platform 64-bit | Select-Object -ExpandProperty Name
