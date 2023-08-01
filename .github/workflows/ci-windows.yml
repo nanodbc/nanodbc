@@ -10,16 +10,16 @@ on:
     - main
     - ml/*
     paths:
-      - '**.cpp'
-      - '**.h'
-      - '**/CMakeLists.txt'
-      - '.github/workflows/ci-linux.yml'
+    - '**.cpp'
+    - '**.h'
+    - '**/CMakeLists.txt'
+    - '.github/workflows/ci-windows.yml'
   pull_request:
     paths:
-      - '**.cpp'
-      - '**.h'
-      - '**/CMakeLists.txt'
-      - '.github/workflows/ci-linux.yml'
+    - '**.cpp'
+    - '**.h'
+    - '**/CMakeLists.txt'
+    - '.github/workflows/ci-windows.yml'
 
 jobs:
   build-msvc:
