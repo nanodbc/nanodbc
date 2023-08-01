@@ -10,16 +10,16 @@ on:
     - main
     - ml/*
     paths:
-      - '**.cpp'
-      - '**.h'
-      - '**/CMakeLists.txt'
-      - '.github/workflows/ci-linux.yml'
+    - '**.cpp'
+    - '**.h'
+    - '**/CMakeLists.txt'
+    - '.github/workflows/ci-linux.yml'
   pull_request:
     paths:
-      - '**.cpp'
-      - '**.h'
-      - '**/CMakeLists.txt'
-      - '.github/workflows/ci-linux.yml'
+    - '**.cpp'
+    - '**.h'
+    - '**/CMakeLists.txt'
+    - '.github/workflows/ci-linux.yml'
 
 jobs:
   build-gcc:
@@ -27,120 +27,144 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # TODO: Compilation with GCC 12 fails with errors related to char8_t conversions
-          #- { cxxstd: '20', cxx: g++-12, cc: gcc-12, os: ubuntu-22.04 }
-          #- { cxxstd: '17', cxx: g++-12, cc: gcc-12, os: ubuntu-22.04 }
-          #- { cxxstd: '14', cxx: g++-12, cc: gcc-12, os: ubuntu-22.04 }
-          - { cxxstd: '17', cxx: g++-11, cc: gcc-11, os: ubuntu-22.04 }
-          - { cxxstd: '14', cxx: g++-11, cc: gcc-11, os: ubuntu-22.04 }
-          - { cxxstd: '17', cxx: g++-10, cc: gcc-10, os: ubuntu-22.04 }
-          - { cxxstd: '14', cxx: g++-10, cc: gcc-10, os: ubuntu-22.04 }
-          - { cxxstd: '17', cxx: g++-9,  cc: gcc-9,  os: ubuntu-20.04 }
-          - { cxxstd: '14', cxx: g++-9,  cc: gcc-9,  os: ubuntu-20.04 }
-          - { cxxstd: '17', cxx: g++-8,  cc: gcc-8,  os: ubuntu-20.04 }
-          - { cxxstd: '14', cxx: g++-8,  cc: gcc-8,  os: ubuntu-20.04 }
-          - { cxxstd: '17', cxx: g++-7,  cc: gcc-7,  os: ubuntu-18.04 }
-          - { cxxstd: '14', cxx: g++-7,  cc: gcc-7,  os: ubuntu-18.04 }
-          - { cxxstd: '14', cxx: g++-6,  cc: gcc-6,  os: ubuntu-18.04 }
-          - { cxxstd: '14', cxx: g++-5,  cc: gcc-5,  os: ubuntu-18.04 }
+        # TODO: Compilation with GCC 12 fails with errors related to char8_t conversions
+        #- { cxxstd: '20', cxx: g++-12, cc: gcc-12, os: ubuntu-22.04 }
+        #- { cxxstd: '17', cxx: g++-12, cc: gcc-12, os: ubuntu-22.04 }
+        #- { cxxstd: '14', cxx: g++-12, cc: gcc-12, os: ubuntu-22.04 }
+        #- { cxxstd: '17', cxx: g++-11, cc: gcc-11, os: ubuntu-22.04 }
+        - { cxxstd: '14', cxx: g++-11, cc: gcc-11, os: ubuntu-22.04 }
+        - { cxxstd: '17', cxx: g++-10, cc: gcc-10, os: ubuntu-22.04 }
+        - { cxxstd: '14', cxx: g++-10, cc: gcc-10, os: ubuntu-22.04 }
+        - { cxxstd: '17', cxx: g++-9,  cc: gcc-9,  os: ubuntu-20.04 }
+        - { cxxstd: '14', cxx: g++-9,  cc: gcc-9,  os: ubuntu-20.04 }
+        - { cxxstd: '17', cxx: g++-8,  cc: gcc-8,  os: ubuntu-20.04 }
+        - { cxxstd: '14', cxx: g++-8,  cc: gcc-8,  os: ubuntu-20.04 }
+        - { cxxstd: '17', cxx: g++-7,  cc: gcc-7,  os: ubuntu-latest, container: "ubuntu:18.04" }
+        - { cxxstd: '14', cxx: g++-7,  cc: gcc-7,  os: ubuntu-latest, container: "ubuntu:18.04" }
+        - { cxxstd: '14', cxx: g++-6,  cc: gcc-6,  os: ubuntu-latest, container: "ubuntu:18.04" }
+        - { cxxstd: '14', cxx: g++-5,  cc: gcc-5,  os: ubuntu-latest, container: "ubuntu:18.04" }
 
     name: build-${{ matrix.cc }}-std-${{ matrix.cxxstd }}
 
     runs-on: ${{ matrix.os }}
+
+    container: ${{matrix.container}}
 
     env:
       CC: ${{ matrix.cc }}
       CXX: ${{ matrix.cxx }}
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Install
-        run: |
-          sudo apt-get install -y cmake ${{ matrix.cxx }}
-      - name: Check
-        run: |
-          echo && type g++ && which g++ && g++ --version
-          echo && type ${CXX} && which ${CXX} && ${CXX} --version
-          echo && type cmake && which cmake && cmake --version
-      - name: Configure
-        run: |
-          cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=${{matrix.cxxstd}}
-      - name: Build
-        run: |
-          cmake --build ${{ github.workspace }}/build
+    - uses: actions/checkout@v3
+    - name: Setup container
+      if: matrix.container
+      run: |
+        apt-get update
+        apt-get install -y g++ git python sudo unixodbc-dev
+    - name: Install
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y curl make ${{ matrix.cxx }}
+    - name: Install CMake
+      run: |
+        curl -OL https://github.com/Kitware/CMake/releases/download/v3.27.1/cmake-3.27.1-linux-x86_64.tar.gz
+        tar -xf cmake-3.27.1-linux-x86_64.tar.gz
+        echo "${PWD}/cmake-3.27.1-linux-x86_64/bin" >> $GITHUB_PATH
+    - name: Check
+      run: |
+        echo && type g++ && which g++ && g++ --version
+        echo CC=${CC} && echo CXX=${CXX} && type ${CXX} && which ${CXX} && ${CXX} --version
+        echo && type cmake && which cmake && cmake --version
+    - name: Configure
+      run: |
+        cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=${{matrix.cxxstd}}
+    - name: Build
+      run: |
+        cmake --build ${GITHUB_WORKSPACE}/build
 
   build-clang:
     strategy:
       fail-fast: false
       matrix:
         include:
-          - { cxxstd: '20', cxx: clang++-14,  cc: clang-14,  os: ubuntu-22.04, pkg: 'libc++-14-dev libc++abi-14-dev' }
-          - { cxxstd: '17', cxx: clang++-14,  cc: clang-14,  os: ubuntu-22.04, pkg: 'libc++-14-dev libc++abi-14-dev' }
-          - { cxxstd: '14', cxx: clang++-14,  cc: clang-14,  os: ubuntu-22.04, pkg: 'libc++-14-dev libc++abi-14-dev' }
-          - { cxxstd: '20', cxx: clang++-13,  cc: clang-13,  os: ubuntu-22.04, pkg: 'libc++-13-dev libc++abi-13-dev' }
-          - { cxxstd: '17', cxx: clang++-13,  cc: clang-13,  os: ubuntu-22.04, pkg: 'libc++-13-dev libc++abi-13-dev' }
-          - { cxxstd: '14', cxx: clang++-13,  cc: clang-13,  os: ubuntu-22.04, pkg: 'libc++-13-dev libc++abi-13-dev' }
-          - { cxxstd: '17', cxx: clang++-12,  cc: clang-12,  os: ubuntu-20.04, pkg: 'libc++-12-dev libc++abi-12-dev' }
-          - { cxxstd: '14', cxx: clang++-12,  cc: clang-12,  os: ubuntu-20.04, pkg: 'libc++-12-dev libc++abi-12-dev' }
-          - { cxxstd: '17', cxx: clang++-11,  cc: clang-11,  os: ubuntu-20.04, pkg: 'libc++-11-dev libc++abi-11-dev' }
-          - { cxxstd: '14', cxx: clang++-11,  cc: clang-11,  os: ubuntu-20.04, pkg: 'libc++-11-dev libc++abi-11-dev' }
-          - { cxxstd: '17', cxx: clang++-10,  cc: clang-10,  os: ubuntu-20.04, pkg: 'libc++-10-dev libc++abi-10-dev' }
-          - { cxxstd: '14', cxx: clang++-10,  cc: clang-10,  os: ubuntu-20.04, pkg: 'libc++-10-dev libc++abi-10-dev' }
-          - { cxxstd: '17', cxx: clang++-9,   cc: clang-9,   os: ubuntu-20.04, pkg: 'libc++-9-dev libc++abi-9-dev' }
-          - { cxxstd: '14', cxx: clang++-9,   cc: clang-9,   os: ubuntu-20.04, pkg: 'libc++-9-dev libc++abi-9-dev' }
-          - { cxxstd: '17', cxx: clang++-8,   cc: clang-8,   os: ubuntu-20.04, pkg: 'libc++-8-dev libc++abi-8-dev' }
-          - { cxxstd: '14', cxx: clang++-8,   cc: clang-8,   os: ubuntu-20.04, pkg: 'libc++-8-dev libc++abi-8-dev' }
-          - { cxxstd: '17', cxx: clang++-7,   cc: clang-7,   os: ubuntu-18.04, pkg: 'libc++-7-dev libc++abi-7-dev' }
-          - { cxxstd: '14', cxx: clang++-7,   cc: clang-7,   os: ubuntu-18.04, pkg: 'libc++-dev libc++abi-dev' }
-          - { cxxstd: '17', cxx: clang++-6.0, cc: clang-6.0, os: ubuntu-18.04, pkg: 'libc++-dev libc++abi-dev' }
-          - { cxxstd: '14', cxx: clang++-6.0, cc: clang-6.0, os: ubuntu-18.04, pkg: 'libc++-dev libc++abi-dev' }
-          - { cxxstd: '14', cxx: clang++-5.0, cc: clang-5.0, os: ubuntu-18.04, pkg: 'libc++-dev libc++abi-dev' }
-          - { cxxstd: '14', cxx: clang++-4.0, cc: clang-4.0, os: ubuntu-18.04, pkg: 'libc++-dev libc++abi-dev' }
-          - { cxxstd: '14', cxx: clang++-3.9, cc: clang-3.9, os: ubuntu-18.04, pkg: 'libc++-dev libc++abi-dev' }
+        - { cxxstd: '20', cxx: clang++-14,  cc: clang-14,  os: ubuntu-22.04, pkg: 'libc++-14-dev libc++abi-14-dev' }
+        - { cxxstd: '17', cxx: clang++-14,  cc: clang-14,  os: ubuntu-22.04, pkg: 'libc++-14-dev libc++abi-14-dev' }
+        - { cxxstd: '14', cxx: clang++-14,  cc: clang-14,  os: ubuntu-22.04, pkg: 'libc++-14-dev libc++abi-14-dev' }
+        - { cxxstd: '20', cxx: clang++-13,  cc: clang-13,  os: ubuntu-22.04, pkg: 'libc++-13-dev libc++abi-13-dev' }
+        - { cxxstd: '17', cxx: clang++-13,  cc: clang-13,  os: ubuntu-22.04, pkg: 'libc++-13-dev libc++abi-13-dev' }
+        - { cxxstd: '14', cxx: clang++-13,  cc: clang-13,  os: ubuntu-22.04, pkg: 'libc++-13-dev libc++abi-13-dev' }
+        - { cxxstd: '17', cxx: clang++-12,  cc: clang-12,  os: ubuntu-20.04, pkg: 'libc++-12-dev libc++abi-12-dev' }
+        - { cxxstd: '14', cxx: clang++-12,  cc: clang-12,  os: ubuntu-20.04, pkg: 'libc++-12-dev libc++abi-12-dev' }
+        - { cxxstd: '17', cxx: clang++-11,  cc: clang-11,  os: ubuntu-20.04, pkg: 'libc++-11-dev libc++abi-11-dev' }
+        - { cxxstd: '14', cxx: clang++-11,  cc: clang-11,  os: ubuntu-20.04, pkg: 'libc++-11-dev libc++abi-11-dev' }
+        - { cxxstd: '17', cxx: clang++-10,  cc: clang-10,  os: ubuntu-20.04, pkg: 'libc++-10-dev libc++abi-10-dev' }
+        - { cxxstd: '14', cxx: clang++-10,  cc: clang-10,  os: ubuntu-20.04, pkg: 'libc++-10-dev libc++abi-10-dev' }
+        - { cxxstd: '17', cxx: clang++-9,   cc: clang-9,   os: ubuntu-20.04, pkg: 'libc++-9-dev libc++abi-9-dev' }
+        - { cxxstd: '14', cxx: clang++-9,   cc: clang-9,   os: ubuntu-20.04, pkg: 'libc++-9-dev libc++abi-9-dev' }
+        - { cxxstd: '17', cxx: clang++-8,   cc: clang-8,   os: ubuntu-20.04, pkg: 'libc++-8-dev libc++abi-8-dev' }
+        - { cxxstd: '14', cxx: clang++-8,   cc: clang-8,   os: ubuntu-20.04, pkg: 'libc++-8-dev libc++abi-8-dev' }
+        - { cxxstd: '17', cxx: clang++-7,   cc: clang-7,   os: ubuntu-20.04, pkg: 'libc++-7-dev libc++abi-7-dev' }
+        - { cxxstd: '14', cxx: clang++-7,   cc: clang-7,   os: ubuntu-20.04, pkg: 'libc++-7-dev libc++abi-7-dev' }
+        - { cxxstd: '17', cxx: clang++-6.0, cc: clang-6.0, os: ubuntu-latest, container: "ubuntu:18.04", pkg: 'libc++-dev libc++abi-dev' }
+        - { cxxstd: '14', cxx: clang++-6.0, cc: clang-6.0, os: ubuntu-latest, container: "ubuntu:18.04", pkg: 'libc++-dev libc++abi-dev' }
+        - { cxxstd: '14', cxx: clang++-5.0, cc: clang-5.0, os: ubuntu-latest, container: "ubuntu:18.04", pkg: 'libc++-dev libc++abi-dev' }
+        - { cxxstd: '14', cxx: clang++-4.0, cc: clang-4.0, os: ubuntu-latest, container: "ubuntu:18.04", pkg: 'libc++-dev libc++abi-dev' }
+        - { cxxstd: '14', cxx: clang++-3.9, cc: clang-3.9, os: ubuntu-latest, container: "ubuntu:18.04", pkg: 'libc++-dev libc++abi-dev' }
 
     name: build-${{ matrix.cc }}-std-${{ matrix.cxxstd }}
 
     runs-on: ${{ matrix.os }}
+
+    container: ${{matrix.container}}
 
     env:
       CC: ${{ matrix.cc }}
       CXX: ${{ matrix.cxx }}
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Install
-        run: |
-          sudo apt-get install -y cmake ${{ matrix.cc }} ${{ matrix.pkg }}
-      - name: Check
-        run: |
-          echo && type clang++ && which clang++ && clang++ --version
-          echo && type ${CXX} && which ${CXX} && ${CXX} --version
-          echo && type cmake && which cmake && cmake --version
-      - name: Configure
-        run: |
-          cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=${{matrix.cxxstd}}
-      - name: Build
-        run: |
-          cmake --build ${{ github.workspace }}/build
+    - uses: actions/checkout@v3
+    - name: Setup container
+      if: matrix.container
+      run: |
+        apt-get update
+        apt-get install -y git python sudo unixodbc-dev
+    - name: Install
+      run: |
+        sudo apt-get update
+        sudo apt-get purge libc++-dev libc++abi-dev
+        sudo apt-get autoremove
+        sudo apt-get install -y curl make ${{ matrix.cc }} ${{ matrix.pkg }}
+    - name: Install CMake
+      run: |
+        curl -OL https://github.com/Kitware/CMake/releases/download/v3.27.1/cmake-3.27.1-linux-x86_64.tar.gz
+        tar -xf cmake-3.27.1-linux-x86_64.tar.gz
+        echo "${PWD}/cmake-3.27.1-linux-x86_64/bin" >> $GITHUB_PATH
+    - name: Check
+      run: |
+        echo && type clang++ && which clang++ && clang++ --version
+        echo CC=${CC} && echo CXX=${CXX} && type ${CXX} && which ${CXX} && ${CXX} --version
+        echo && type cmake && which cmake && cmake --version
+    - name: Configure
+      run: |
+        cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=${{matrix.cxxstd}}
+    - name: Build
+      run: |
+        cmake --build ${GITHUB_WORKSPACE}/build
 
   test-utility:
     needs: [build-gcc, build-clang]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Check
-        run: |
-          echo && type g++ && which g++ && g++ --version
-          echo && type cmake && which cmake && cmake --version
-      - name: Configure
-        run: |
-          cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -DCMAKE_BUILD_TYPE=Release
-      - name: Build
-        run: |
-          cmake --build ${{ github.workspace }}/build --target utility_tests
-      - name: Test
-        run: |
-          ctest --test-dir ${{ github.workspace }}/build --output-on-failure --no-tests=error -R utility_tests
+    - uses: actions/checkout@v3
+    - name: Configure
+      run: |
+        cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release
+    - name: Build
+      run: |
+        cmake --build ${GITHUB_WORKSPACE}/build --target utility_tests
+    - name: Test
+      run: |
+        ctest --test-dir ${GITHUB_WORKSPACE}/build --output-on-failure --no-tests=error -R utility_tests
 
   test-postgresql:
     needs: [test-utility]
@@ -158,22 +182,22 @@ jobs:
           --health-timeout 5s
           --health-retries 5
         ports:
-          - 5432:5432
+        - 5432:5432
     steps:
-      - uses: actions/checkout@v3
-      - name: Install
-        run: |
-          sudo apt-get install -y unixodbc-dev odbc-postgresql
-      - name: Configure
-        run: |
-          cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -DCMAKE_BUILD_TYPE=Release
-      - name: Build
-        run: |
-          cmake --build ${{ github.workspace }}/build --target postgresql_tests
-      - name: Test
-        run: |
-          export NANODBC_TEST_CONNSTR_PGSQL="Driver={PostgreSQL ANSI};Server=localhost;Port=5432;Database=nanodbc;UID=postgres;PWD=postgres"
-          ctest --test-dir ${{ github.workspace }}/build --output-on-failure --no-tests=error -R postgresql_tests
+    - uses: actions/checkout@v3
+    - name: Install
+      run: |
+        sudo apt-get install -y unixodbc-dev odbc-postgresql
+    - name: Configure
+      run: |
+        cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release
+    - name: Build
+      run: |
+        cmake --build ${GITHUB_WORKSPACE}/build --target postgresql_tests
+    - name: Test
+      run: |
+        export NANODBC_TEST_CONNSTR_PGSQL="Driver={PostgreSQL ANSI};Server=localhost;Port=5432;Database=nanodbc;UID=postgres;PWD=postgres"
+        ctest --test-dir ${GITHUB_WORKSPACE}/build --output-on-failure --no-tests=error -R postgresql_tests
 
   test-mssql:
     needs: [test-utility]
@@ -187,50 +211,49 @@ jobs:
           ACCEPT_EULA: Y
           SA_PASSWORD: Password!123
     steps:
-      - uses: actions/checkout@v3
-      - name: Install
-        run: |
-          apt-get update
-          curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
-          curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list > /etc/apt/sources.list.d/mssql-release.list
-          ACCEPT_EULA=Y apt-get install -y unixodbc-dev msodbcsql17
-        shell: sudo bash {0}
-      - name: Configure
-        run: |
-          cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -DCMAKE_BUILD_TYPE=Release
-      - name: Build
-        run: |
-          cmake --build ${{ github.workspace }}/build --target mssql_tests
-      - name: Test
-        run: |
-          export NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 17 for SQL Server};Server=localhost;Database=master;UID=sa;PWD=Password!123;"
-          ctest --test-dir ${{ github.workspace }}/build --output-on-failure --no-tests=error -R mssql_tests
+    - uses: actions/checkout@v3
+    - name: Install
+      run: |
+        apt-get update
+        curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+        curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list > /etc/apt/sources.list.d/mssql-release.list
+        ACCEPT_EULA=Y apt-get install -y unixodbc-dev msodbcsql17
+      shell: sudo bash {0}
+    - name: Configure
+      run: |
+        cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release
+    - name: Build
+      run: |
+        cmake --build ${GITHUB_WORKSPACE}/build --target mssql_tests
+    - name: Test
+      run: |
+        export NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 17 for SQL Server};Server=localhost;Database=master;UID=sa;PWD=Password!123;"
+        ctest --test-dir ${GITHUB_WORKSPACE}/build --output-on-failure --no-tests=error -R mssql_tests
 
   test-sqlite:
     needs: [test-utility]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Install
-        run: |
-          apt-get install -y unixodbc-dev libsqliteodbc
-          cat <<EOF > ${{ github.workspace }}/.odbcinst.ini
-          [SQLite3]
-          Description=SQLite 3 ODBC Driver
-          Driver=/usr/lib/x86_64-linux-gnu/odbc/libsqlite3odbc.so
-          Setup=/usr/lib/x86_64-linux-gnu/odbc/libsqlite3odbc.so
-          UsageCount=1
-          EOF
-          sudo odbcinst -i -d -f ${{ github.workspace }}/.odbcinst.ini
-          cat /etc/odbcinst.ini
-        shell: sudo bash {0}
-      - name: Configure
-        run: |
-          cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -DCMAKE_BUILD_TYPE=Release
-      - name: Build
-        run: |
-          cmake --build ${{ github.workspace }}/build --target sqlite_tests
-      - name: Test
-        run: |
-          ctest --test-dir ${{ github.workspace }}/build --output-on-failure --no-tests=error -R sqlite_tests
- 
+    - uses: actions/checkout@v3
+    - name: Install
+      run: |
+        apt-get install -y unixodbc-dev libsqliteodbc
+        cat <<EOF > ${GITHUB_WORKSPACE}/.odbcinst.ini
+        [SQLite3]
+        Description=SQLite 3 ODBC Driver
+        Driver=/usr/lib/x86_64-linux-gnu/odbc/libsqlite3odbc.so
+        Setup=/usr/lib/x86_64-linux-gnu/odbc/libsqlite3odbc.so
+        UsageCount=1
+        EOF
+        sudo odbcinst -i -d -f ${GITHUB_WORKSPACE}/.odbcinst.ini
+        cat /etc/odbcinst.ini
+      shell: sudo bash {0}
+    - name: Configure
+      run: |
+        cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release
+    - name: Build
+      run: |
+        cmake --build ${GITHUB_WORKSPACE}/build --target sqlite_tests
+    - name: Test
+      run: |
+        ctest --test-dir ${GITHUB_WORKSPACE}/build --output-on-failure --no-tests=error -R sqlite_tests
