@@ -420,9 +420,18 @@ struct test_case_fixture : public base_test_fixture
             else
             {
                 REQUIRE(columns.sql_data_type() == SQL_DATE);
-                REQUIRE(columns.column_size() == 10); // total number of characters required to
-                                                      // display the value when it is converted to
-                                                      // characters
+                if (contains_string(dbms, NANODBC_TEXT("MySQL")))
+                {
+                    // MySQL Connector 8.x will reports for COLUMNS_SIZE field of SQLColumns
+                    // resultset Apparently, MySQL driver can report NULL for COLUMN_SIZE
+                    // https://dev.mysql.com/doc/relnotes/connector-odbc/en/news-8-0-33.html
+                }
+                else
+                {
+                    // total number of characters required to display the value
+                    // when it is converted to characters
+                    REQUIRE(columns.column_size() == 10);
+                }
             }
 
             REQUIRE(columns.next());

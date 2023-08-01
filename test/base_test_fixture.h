@@ -285,7 +285,15 @@ struct base_test_fixture
                 //
                 // - Windows 64-bit + nanodbc 64-bit build + psqlODBC 9.?.? x64 connected to
                 //   PostgreSQL 9.3 on Windows x64 (AppVeyor)
-                REQUIRE(column_size >= 15);
+                if (vendor_ == database_vendor::mysql)
+                {
+                    // MySQL Connector 8.1 reports different value than MySQL Connector 5.3
+                    REQUIRE(column_size >= 12);
+                }
+                else
+                {
+                    REQUIRE(column_size >= 15);
+                }
                 // - Windows x64 + nanodbc 64-bit build + psqlODBC 9.3.5 x64 connected to
                 //   PostgreSQL 9.5 on Ubuntu 15.10 x64 (Vagrant)
                 // - Ubuntu 12.04 x64 + nanodbc 64-bit build + psqlODBC 9.3.5 x64 connected to
