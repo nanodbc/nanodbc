@@ -15,12 +15,12 @@ jobs:
       fail-fast: false
       matrix:
         path:
-          - check: 'nanodbc'
-            ignore: ''
-          - check: 'test'
-            ignore: 'catch'
-          - check: 'example'
-            ignore: ''
+        - check: 'nanodbc'
+          ignore: ''
+        - check: 'test'
+          ignore: 'catch'
+        - check: 'example'
+          ignore: ''
     steps:
     - uses: actions/checkout@v3
     - uses: jidicula/clang-format-action@v4.10.2
@@ -49,8 +49,9 @@ jobs:
     - uses: hadolint/hadolint-action@v2.0.0
       with:
         dockerfile: Dockerfile
+
   vagrant:
-    runs-on: macos-10.15
+    runs-on: macos-latest
     steps:
     - uses: actions/checkout@v3
     - run: vagrant version
