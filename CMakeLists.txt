@@ -42,7 +42,6 @@ check_cxx_compiler_flag( "--coverage -O0" CXX_COMPILER_SUPPORTS_COVERAGE )
 include( CMakeDependentOption )
 cmake_dependent_option( NANODBC_FORCE_LIBCXX "Force the use of libc++ (default on if compiler supports it)" ON "CXX_COMPILER_SUPPORTS_LIBCXX" OFF )
 
-
 cmake_dependent_option( NANODBC_BUILD_EXAMPLES "Build examples (default on)" ON "PROJECT_IS_TOP_LEVEL" OFF)
 cmake_dependent_option( NANODBC_GENERATE_INSTALL "Generate install target (default on)" ON "PROJECT_IS_TOP_LEVEL" OFF)
 cmake_dependent_option( NANODBC_BUILD_TESTS "Build tests (default on)" ON "PROJECT_IS_TOP_LEVEL" OFF)
@@ -66,7 +65,6 @@ cmake_dependent_option( NANODBC_FORCE_WARNINGS_AS_ERROR
   "(CMAKE_VERSION VERSION_GREATER_EQUAL 3.24.0) OR CXX_COMPILER_SUPPORTS_WERROR" OFF
 )
 
-
 message( STATUS "nanodbc version: ${NANODBC_VERSION}" )
 
 ########################################
@@ -81,7 +79,13 @@ endif()
 # ==== CMAKE default vars must be set before target creation! ====
 # BUILD_SHARED_LIBS dictates type
 add_library( nanodbc nanodbc/nanodbc.cpp )
-target_sources( nanodbc PUBLIC FILE_SET HEADERS FILES nanodbc/nanodbc.h )
+target_sources(nanodbc
+  PUBLIC FILE_SET HEADERS FILES
+  nanodbc/nanodbc.h
+  $<$<CXX_COMPILER_ID:MSVC>:nanodbc/variant_row_cached_result.h>)
+target_sources(nanodbc
+  PRIVATE
+  $<$<CXX_COMPILER_ID:MSVC>:nanodbc/variant_row_cached_result.cpp>)
 message( STATUS "nanodbc compile: Global setting: C++${CMAKE_CXX_STANDARD}; nanodbc requires C++14 or greater" )
 
 # nanodbc requires at least C++14, but can use C++17 and beyond

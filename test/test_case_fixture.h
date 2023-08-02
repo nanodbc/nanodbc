@@ -14,6 +14,7 @@
 
 #ifdef _MSC_VER
 #include <comutil.h> // static nanodbc links w/ #pragma comment(lib, "comsuppw.lib")
+#include <nanodbc/variant_row_cached_result.h>
 #endif
 
 #ifdef _MSC_VER
@@ -2494,6 +2495,76 @@ struct test_case_fixture : public base_test_fixture
                 REQUIRE(v == v_null);
             }
         }
+    }
+
+    void test_win32_variant_row_cached_result()
+    {
+        auto cn = connect();
+        create_table(
+            cn,
+            NANODBC_TEXT("test_win32_variant_row_cached_result"),
+            NANODBC_TEXT(
+                "(i0 int, s1 varchar(60), f2 float, s3 varchar(60), d4 decimal(9, 3), b5 ") +
+                get_binary_type_name(256) + NANODBC_TEXT(", dt6 date, s7 varchar(60), t8 time)"));
+
+        for (short v : {0, 1, 2})
+        {
+            // test data
+            int i = v;
+            double f = 3.14159265359 + v;
+            double d = 3.141 + v;
+            nanodbc::date dt{2022, 4 + v, 12 - v};
+            nanodbc::time t{19, 5 + v, 30 - v};
+            nanodbc::string s1 =
+                NANODBC_TEXT("this is s1 #") + nanodbc::test::convert(std::to_string(1 + v));
+            nanodbc::string s3 =
+                NANODBC_TEXT("this is s3 #") + nanodbc::test::convert(std::to_string(3 + v));
+            nanodbc::string s7 =
+                NANODBC_TEXT("this is s7 #") + nanodbc::test::convert(std::to_string(7 + v));
+            std::vector<std::vector<std::uint8_t>> b5 = {
+                from_hex("11f830737ff4bc41a4ffe792d073f41f")};
+
+            nanodbc::statement st(cn);
+            prepare(
+                st,
+                NANODBC_TEXT("insert into test_win32_variant_row_cached_result "
+                             "(i0,s1,f2,s3,d4,b5,dt6,s7,t8) values "
+                             "(?,?,?,?,?,?,?,?,?);"));
+            st.bind(0, &i);
+            st.bind_strings(1, s1.c_str(), s1.size(), 1);
+            st.bind(2, &f);
+            st.bind_strings(3, s3.c_str(), s3.size(), 1);
+            st.bind(4, &d);
+            st.bind(5, b5);
+            st.bind(6, &dt);
+            st.bind_strings(7, s7.c_str(), s7.size(), 1);
+            st.bind(8, &t);
+            execute(st);
+        }
+
+        nanodbc::variant_row_cached_result rs = execute(
+            cn,
+            NANODBC_TEXT(
+                "select i0,s1,f2,s3,d4,b5,dt6,s7,t8 from test_win32_variant_row_cached_result;"));
+        rs.unbind(); // allow interleaved bound and unbound columns access
+        short row_count = 0;
+        while (rs.next())
+        {
+            for (short column = 0; column < rs.columns(); column++)
+            {
+                REQUIRE(!rs.is_null(column));
+
+                auto v = rs.get(column);
+                REQUIRE(v.vt != VT_NULL);
+                REQUIRE(v.vt != VT_EMPTY);
+
+                _bstr_t s(v);
+                if (v.vt != (VT_ARRAY | VT_UI1))
+                    REQUIRE(s.length() != 0);
+            }
+            row_count++;
+        }
+        REQUIRE(row_count == 3);
     }
 
 #endif // _MSC_VER

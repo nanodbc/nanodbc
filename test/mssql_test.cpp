@@ -1166,6 +1166,12 @@ TEST_CASE_METHOD(mssql_fixture, "test_win32_variant_timestamp", "[mssql][variant
     REQUIRE(t0.wSecond <= 60);
     REQUIRE(t0.wMilliseconds <= 100);
 }
+
+TEST_CASE_METHOD(mssql_fixture, "test_win32_variant_row_cached_result", "[mssql][variant][windows]")
+{
+    test_win32_variant_row_cached_result();
+}
+
 #endif // _MSC_VER
 
 TEST_CASE_METHOD(mssql_fixture, "test_while_not_end_iteration", "[mssql][looping]")
