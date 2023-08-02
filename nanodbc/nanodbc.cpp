@@ -31,8 +31,7 @@
 #include <cstdint>
 #endif
 
-#if defined(__cpp_lib_optional) // if <optional> is suported
-#include <optional>
+#ifdef NANODBC_HAS_STD_OPTIONAL
 template <class T>
 inline static void opt_reset(std::optional<T>& opt)
 {
@@ -48,8 +47,6 @@ template <typename T>
 struct is_optional<std::optional<T>> : std::true_type
 {
 };
-#else
-#define DONT_USE_OPTIONAL // if not supported, dont use
 #endif
 
 // User may redefine NANODBC_ASSERT macro in nanodbc/nanodbc.h
@@ -3595,7 +3592,7 @@ public:
 
     template <
         class T
-#ifndef DONT_USE_OPTIONAL
+#ifdef NANODBC_HAS_STD_OPTIONAL
         ,
         std::enable_if_t<!is_optional<T>::value, int> = 0
 #endif
@@ -3607,7 +3604,8 @@ public:
             throw null_access_error();
         get_ref_impl<T>(column, result);
     }
-#ifndef DONT_USE_OPTIONAL
+
+#ifdef NANODBC_HAS_STD_OPTIONAL
     template <class T, std::enable_if_t<is_optional<T>::value, int> = 0>
     void get_ref(short column, T& result) const
     {
@@ -3620,6 +3618,7 @@ public:
         get_ref_impl<std::remove_reference_t<decltype(*result)>>(column, *result);
     }
 #endif
+
     template <class T>
     void get_ref(short column, T const& fallback, T& result) const
     {
@@ -3643,7 +3642,7 @@ public:
 
     template <
         class T
-#ifndef DONT_USE_OPTIONAL
+#ifdef NANODBC_HAS_STD_OPTIONAL
         ,
         std::enable_if_t<!is_optional<T>::value, int> = 0
 #endif
@@ -3655,7 +3654,8 @@ public:
             throw null_access_error();
         get_ref_impl<T>(column, result);
     }
-#ifndef DONT_USE_OPTIONAL
+
+#ifdef NANODBC_HAS_STD_OPTIONAL
     template <class T, std::enable_if_t<is_optional<T>::value, int> = 0>
     void get_ref(string const& column_name, T& result) const
     {
@@ -3668,6 +3668,7 @@ public:
         get_ref_impl<std::remove_reference_t<decltype(*result)>>(column, *result);
     }
 #endif
+
     template <class T>
     void get_ref(string const& column_name, T const& fallback, T& result) const
     {
@@ -6883,7 +6884,7 @@ template void result::get_ref(string const&, std::vector<std::uint8_t>&) const;
 template void result::get_ref(string const&, _variant_t&) const;
 #endif
 
-#ifndef DONT_USE_OPTIONAL
+#ifdef NANODBC_HAS_STD_OPTIONAL
 // The following are the only supported instantiations of result::get() with optional support.
 template void result::get_ref(short, std::optional<std::string::value_type>&) const;
 template void result::get_ref(short, std::optional<wide_string::value_type>&) const;
@@ -7024,7 +7025,7 @@ template std::vector<std::uint8_t> result::get(string const&) const;
 template _variant_t result::get(string const&) const;
 #endif
 
-#ifndef DONT_USE_OPTIONAL
+#ifdef NANODBC_HAS_STD_OPTIONAL
 // The following are the only supported instantiations of result::get() with optional support.
 template std::optional<std::string::value_type> result::get(short) const;
 template std::optional<wide_string::value_type> result::get(short) const;

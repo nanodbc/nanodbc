@@ -21,15 +21,6 @@
 #pragma warning(disable : 4244) // conversion from 'T1' to 'T2' possible loss of data
 #endif
 
-#if defined(__cpp_lib_optional) // if <optional> is suported
-#include <optional>
-#elif defined(__cpp_lib_experimental_optional) // if <experimental/optional> is suported
-#include <experimental/optional>
-#define std ::optional std::experimental::optional
-#else
-#define DONT_USE_OPTIONAL // if not supported, dont use
-#endif
-
 struct test_case_fixture : public base_test_fixture
 {
     // To invoke a unit test over all integral types, use:
@@ -80,7 +71,7 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(i == batch_size);
         }
     }
-#ifndef DONT_USE_OPTIONAL
+#ifdef NANODBC_HAS_STD_OPTIONAL
     void test_batch_insert_integral_optional()
     {
         auto conn = connect();
@@ -1048,7 +1039,8 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(d.day == 12);
         }
     }
-#ifndef DONT_USE_OPTIONAL
+
+#ifdef NANODBC_HAS_STD_OPTIONAL
     void test_date_optional()
     {
         auto connection = connect();
@@ -1889,7 +1881,8 @@ struct test_case_fixture : public base_test_fixture
         results.get_ref(0, ref);
         REQUIRE(ref == name);
     }
-#ifndef DONT_USE_OPTIONAL
+
+#ifdef NANODBC_HAS_STD_OPTIONAL
     void test_string_optional()
     {
         nanodbc::connection connection = connect();
@@ -2160,7 +2153,8 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(t.sec == 59);
         }
     }
-#ifndef DONT_USE_OPTIONAL
+
+#ifdef NANODBC_HAS_STD_OPTIONAL
     void test_time_optional()
     {
         auto connection = connect();
@@ -2627,7 +2621,7 @@ struct test_case_fixture : public base_test_fixture
 
     void test_std_optional()
     {
-#ifndef DONT_USE_OPTIONAL
+#ifdef NANODBC_HAS_STD_OPTIONAL
         test_batch_insert_integral_optional();
         test_string_optional();
         test_time_optional();

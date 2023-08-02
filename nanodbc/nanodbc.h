@@ -91,9 +91,11 @@
 #include <vector>
 
 #if __cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L)
+#define NANODBC_HAS_STD_STRING_VIEW
+#include <optional>
+#define NANODBC_HAS_STD_OPTIONAL
 #include <variant>
 #define NANODBC_HAS_STD_VARIANT
-#define NANODBC_HAS_STD_STRING_VIEW
 #endif
 
 /// \brief The entirety of nanodbc can be found within this one namespace.
