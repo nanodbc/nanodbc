@@ -49,6 +49,11 @@ TEST_CASE_METHOD(postgresql_fixture, "test_batch_insert_mixed", "[postgresql][ba
     test_batch_insert_mixed();
 }
 
+TEST_CASE_METHOD(postgresql_fixture, "test_std_optional", "[postgresql][optional]")
+{
+    test_std_optional();
+}
+
 TEST_CASE_METHOD(
     postgresql_fixture,
     "test_catalog_list_catalogs",

@@ -140,6 +140,11 @@ TEST_CASE_METHOD(sqlite_fixture, "test_batch_insert_string", "[sqlite][batch][st
     test_batch_insert_string();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "test_std_optional", "[sqlite][optional]")
+{
+    test_std_optional();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_blob", "[sqlite][blob]")
 {
     test_blob();

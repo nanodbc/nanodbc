@@ -71,7 +71,38 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(i == batch_size);
         }
     }
+#ifdef NANODBC_HAS_STD_OPTIONAL
+    void test_batch_insert_integral_optional()
+    {
+        auto conn = connect();
+        create_table(
+            conn, NANODBC_TEXT("test_batch_insert_integral_optional"), NANODBC_TEXT("(i int)"));
 
+        std::size_t const batch_size = 9;
+        int values[batch_size] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+        nanodbc::statement stmt(conn);
+        prepare(
+            stmt, NANODBC_TEXT("insert into test_batch_insert_integral_optional(i) values (?)"));
+        REQUIRE(stmt.parameters() == 1);
+
+        stmt.bind(0, values, batch_size);
+
+        nanodbc::transact(stmt, batch_size);
+        {
+            auto result = nanodbc::execute(
+                conn,
+                NANODBC_TEXT("select i from test_batch_insert_integral_optional order by i asc"));
+            std::size_t i = 0;
+            while (result.next())
+            {
+                REQUIRE(*result.get<std::optional<int>>(0) == values[i]);
+                ++i;
+            }
+            REQUIRE(i == batch_size);
+        }
+    }
+#endif
     void test_batch_insert_mixed()
     {
         std::size_t const batch_size = 9;
@@ -1009,6 +1040,43 @@ struct test_case_fixture : public base_test_fixture
         }
     }
 
+#ifdef NANODBC_HAS_STD_OPTIONAL
+    void test_date_optional()
+    {
+        auto connection = connect();
+        create_table(connection, NANODBC_TEXT("test_date_optional"), NANODBC_TEXT("d date"));
+
+        // insert
+        {
+            nanodbc::statement statement(connection);
+            prepare(statement, NANODBC_TEXT("insert into test_date_optional(d) values (?);"));
+            REQUIRE(statement.parameters() == 1);
+
+            nanodbc::date d{2016, 7, 12};
+            statement.bind(0, &d);
+            execute(statement);
+        }
+
+        // select
+        {
+            auto result = execute(connection, NANODBC_TEXT("select d from test_date_optional;"));
+
+            REQUIRE(result.column_name(0) == NANODBC_TEXT("d"));
+#if (ODBCVER > SQL_OV_ODBC2)
+            REQUIRE(result.column_datatype(0) == SQL_TYPE_DATE);
+#else
+            REQUIRE(result.column_datatype(0) == SQL_DATE);
+#endif
+            REQUIRE(result.column_datatype_name(0) == NANODBC_TEXT("date"));
+
+            REQUIRE(result.next());
+            auto d = result.get<std::optional<nanodbc::date>>(0);
+            REQUIRE((*d).year == 2016);
+            REQUIRE((*d).month == 7);
+            REQUIRE((*d).day == 12);
+        }
+    }
+#endif
     void test_dbms_info()
     {
         // A generic test to exercise the DBMS info API is callable.
@@ -1814,6 +1882,35 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(ref == name);
     }
 
+#ifdef NANODBC_HAS_STD_OPTIONAL
+    void test_string_optional()
+    {
+        nanodbc::connection connection = connect();
+        REQUIRE(connection.native_dbc_handle() != nullptr);
+        REQUIRE(connection.native_env_handle() != nullptr);
+        REQUIRE(connection.transactions() == std::size_t(0));
+
+        const nanodbc::string name = NANODBC_TEXT("Fred");
+
+        drop_table(connection, NANODBC_TEXT("test_string_optional"));
+        execute(connection, NANODBC_TEXT("create table test_string_optional (s varchar(10));"));
+
+        nanodbc::statement query(connection);
+        prepare(query, NANODBC_TEXT("insert into test_string_optional(s) values(?)"));
+        REQUIRE(query.parameters() == 1);
+        query.bind(0, name.c_str());
+        nanodbc::execute(query);
+
+        nanodbc::result results =
+            execute(connection, NANODBC_TEXT("select s from test_string_optional;"));
+        REQUIRE(results.next());
+        REQUIRE(*results.get<std::optional<nanodbc::string>>(0) == NANODBC_TEXT("Fred"));
+
+        std::optional<nanodbc::string> ref;
+        results.get_ref(0, ref);
+        REQUIRE(*ref == name);
+    }
+#endif
     void test_string_with_varchar_max()
     {
         nanodbc::connection connection = connect();
@@ -2057,6 +2154,34 @@ struct test_case_fixture : public base_test_fixture
         }
     }
 
+#ifdef NANODBC_HAS_STD_OPTIONAL
+    void test_time_optional()
+    {
+        auto connection = connect();
+        create_table(connection, NANODBC_TEXT("test_time_optional"), NANODBC_TEXT("t time"));
+
+        // insert
+        {
+            nanodbc::statement statement(connection);
+            prepare(statement, NANODBC_TEXT("insert into test_time_optional(t) values (?);"));
+            REQUIRE(statement.parameters() == 1);
+
+            nanodbc::time t{11, 45, 59};
+            statement.bind(0, &t);
+            execute(statement);
+        }
+
+        // select
+        {
+            auto result = execute(connection, NANODBC_TEXT("select t from test_time_optional;"));
+            REQUIRE(result.next());
+            auto t = result.get<std::optional<nanodbc::time>>(0);
+            REQUIRE((*t).hour == 11);
+            REQUIRE((*t).min == 45);
+            REQUIRE((*t).sec == 59);
+        }
+    }
+#endif
     void test_transaction()
     {
         nanodbc::connection connection = connect();
@@ -2492,6 +2617,16 @@ struct test_case_fixture : public base_test_fixture
             nanodbc::result results = stmt.execute();
             REQUIRE(results.affected_rows() == 1);
         }
+    }
+
+    void test_std_optional()
+    {
+#ifdef NANODBC_HAS_STD_OPTIONAL
+        test_batch_insert_integral_optional();
+        test_string_optional();
+        test_time_optional();
+        test_date_optional();
+#endif
     }
 };
 
