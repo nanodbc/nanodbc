@@ -388,7 +388,9 @@ struct test_case_fixture : public base_test_fixture
             if (vendor_ == database_vendor::sqlite)
             {
 #if defined _WIN32
-                REQUIRE(columns.sql_data_type() == -9); // FIXME: If not SQL_WVARCHAR(-9), what is this type?
+                REQUIRE(
+                    columns.sql_data_type() ==
+                    -9); // FIXME: If not SQL_WVARCHAR(-9), what is this type?
                 REQUIRE(columns.column_size() == 3);
 #elif defined __APPLE__
                 REQUIRE(columns.sql_data_type() == SQL_VARCHAR);
@@ -901,7 +903,9 @@ struct test_case_fixture : public base_test_fixture
         {
 #ifdef _WIN32
             REQUIRE(result.column_datatype_name(1) == NANODBC_TEXT("decimal"));
-            REQUIRE(result.column_datatype(1) == -9);   // FIXME: If not SQL_WVARCHAR(-9), what is this type?
+            REQUIRE(
+                result.column_datatype(1) ==
+                -9); // FIXME: If not SQL_WVARCHAR(-9), what is this type?
             REQUIRE(result.column_c_datatype(1) == -8); // FIXME: What is this type?
             REQUIRE(result.column_size(1) == 7); // FIXME: SQLite ODBC mis-reports decimal digits?
 #else
