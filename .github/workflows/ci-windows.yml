@@ -193,17 +193,17 @@ jobs:
   test-postgresql:
     needs: [test-utility]
     runs-on: windows-2022
-    # strategy:
-    #   fail-fast: false
-    #   matrix:
-    #     postgres: [14] # Only version currently available on Windows via ankane/setup-postgres
+    strategy:
+      fail-fast: false
+      matrix:
+        postgres: [14] # Only version currently available on Windows via ankane/setup-postgres
     steps:
     - uses: actions/checkout@v3
     - name: Install PostgreSQL
       uses: ankane/setup-postgres@v1
       with:
         database: nanodbc
-        postgres-version: 14 # ${{ matrix.postgres }}
+        postgres-version: ${{ matrix.postgres }}
     - name: Install PostgreSQL ODBC Driver
       run: |
         choco install psqlodbc
