@@ -748,18 +748,33 @@ TEST_CASE_METHOD(mssql_fixture, "test_column_descriptor", "[mssql][columns]")
 TEST_CASE_METHOD(mssql_fixture, "test_column_descriptor_unsigned", "[mssql][columns]")
 {
     auto c = connect();
-    create_table(c, NANODBC_TEXT("test_column_descriptor_unsigned"), NANODBC_TEXT("(name text, ti tinyint, si smallint, i int, bi bigint"));
+    create_table(
+        c,
+        NANODBC_TEXT("test_column_descriptor_unsigned"),
+        NANODBC_TEXT("(name text, ti tinyint, si smallint, i int, bi bigint"));
 
     // insert
     {
-        execute(c, NANODBC_TEXT("insert into test_column_descriptor_unsigned (name,ti,si,i,bi) values ('min', 0, -32768, -2147483648, -9223372036854775808);"));
-        execute(c, NANODBC_TEXT("insert into test_column_descriptor_unsigned (name,ti,si,i,bi) values ('mid', 128, 1, 2, 3);"));
-        execute(c, NANODBC_TEXT("insert into test_column_descriptor_unsigned (name,ti,si,i,bi) values ('max', 255, 32767, 2147483647, 9223372036854775807);"));
+        execute(
+            c,
+            NANODBC_TEXT("insert into test_column_descriptor_unsigned (name,ti,si,i,bi) values "
+                         "('min', 0, -32768, -2147483648, -9223372036854775808);"));
+        execute(
+            c,
+            NANODBC_TEXT("insert into test_column_descriptor_unsigned (name,ti,si,i,bi) values "
+                         "('mid', 128, 1, 2, 3);"));
+        execute(
+            c,
+            NANODBC_TEXT("insert into test_column_descriptor_unsigned (name,ti,si,i,bi) values "
+                         "('max', 255, 32767, 2147483647, 9223372036854775807);"));
     }
 
     // select
     {
-        auto result = execute(c, NANODBC_TEXT("select name,ti,si,i,bi from test_column_descriptor_unsigned order by ti asc;"));
+        auto result = execute(
+            c,
+            NANODBC_TEXT(
+                "select name,ti,si,i,bi from test_column_descriptor_unsigned order by ti asc;"));
         REQUIRE(result.column_unsigned(0)); // SQL_TRUE for non-numeric by default
         REQUIRE(result.column_unsigned(1)); // SQL_TRUE for TINYINT as always unsigned in SQL Server
         REQUIRE(!result.column_unsigned(2)); // SMALLINT
@@ -1186,7 +1201,8 @@ TEST_CASE_METHOD(mssql_fixture, "test_win32_variant_bit", "[mssql][variant][wind
 TEST_CASE_METHOD(mssql_fixture, "test_win32_variant_tinyint", "[mssql][variant][windows]")
 {
     auto cn = connect();
-    auto rs = execute(cn, NANODBC_TEXT("select CAST(0 AS TINYINT), CAST(128 AS TINYINT), CAST(255 AS TINYINT);"));
+    auto rs = execute(
+        cn, NANODBC_TEXT("select CAST(0 AS TINYINT), CAST(128 AS TINYINT), CAST(255 AS TINYINT);"));
     rs.next();
 
     auto v0 = rs.get<_variant_t>(0);
