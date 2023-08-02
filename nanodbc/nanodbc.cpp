@@ -50,7 +50,7 @@ struct is_optional<std::optional<T>> : std::true_type
 };
 #elif defined(__cpp_lib_experimental_optional) // if <experimental/optional> is suported
 #include <experimental/optional>
-#define std::optional std::experimental::optional
+#define std::optional std::experimental::optional // FIXME: Find alternative for the preprocessor hack
 template <class T>
 inline static void opt_reset(std::optional<T>& opt)
 {
@@ -7144,5 +7144,3 @@ template _variant_t result::get(string const&, _variant_t const&) const;
 #undef NANODBC_CALL
 
 #endif // DOXYGEN
-
-
