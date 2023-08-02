@@ -88,16 +88,11 @@
 #include <string>
 #include <type_traits>
 #include <utility>
-#ifdef __has_include         // Check if __has_include is present
-#if __has_include(<variant>) // Check for a standard library
-#include <variant>
-#elif __has_include(<experimental/variant>) // Check for an experimental version
-#include <experimental/variant>
-#endif
-#endif
 #include <vector>
 
 #if __cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L)
+#include <variant>
+#define NANODBC_HAS_STD_VARIANT
 #define NANODBC_HAS_STD_STRING_VIEW
 #endif
 
@@ -1289,7 +1284,7 @@ private:
     class connection_impl;
     friend class nanodbc::transaction::transaction_impl;
 
-#if __cpp_lib_variant >= 201606L
+#ifdef NANODBC_HAS_STD_VARIANT
 public:
     /// \brief A class representing a connection attribute.
     ///
@@ -1390,7 +1385,7 @@ public:
     /// \see connected(), connect()
     explicit connection(string const& connection_string, long timeout = 0);
 
-#if __cpp_lib_variant >= 201606L
+#ifdef NANODBC_HAS_STD_VARIANT
     /// \brief Create new connection object, set the connection attributes passed as
     /// arguments and connect to the given data source.
     ///
@@ -1457,7 +1452,7 @@ public:
     /// \see connected()
     void connect(string const& connection_string, long timeout = 0);
 
-#if __cpp_lib_variant >= 201606L
+#ifdef NANODBC_HAS_STD_VARIANT
     /// \brief Set the connection attributes passed by the user, and connect to the given
     /// data source.
     /// \param dsn The name of the data source.

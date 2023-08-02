@@ -858,7 +858,7 @@ inline void allocate_dbc_handle(SQLHDBC& conn, SQLHENV env)
 } // namespace
 
 // connection::attribute
-#if __cpp_lib_variant >= 201606L
+#ifdef NANODBC_HAS_STD_VARIANT
 namespace nanodbc
 {
 connection::attribute::attribute(
@@ -976,7 +976,7 @@ public:
         }
     }
 
-#if __cpp_lib_variant >= 201606L
+#ifdef NANODBC_HAS_STD_VARIANT
     connection_impl(
         string const& dsn,
         string const& user,
@@ -4916,7 +4916,7 @@ connection::connection(string const& connection_string, long timeout)
 {
 }
 
-#if __cpp_lib_variant >= 201606L
+#ifdef NANODBC_HAS_STD_VARIANT
 connection::connection(
     string const& dsn,
     string const& user,
@@ -4954,7 +4954,7 @@ void connection::connect(string const& connection_string, long timeout)
     impl_->connect(connection_string, timeout);
 }
 
-#if __cpp_lib_variant >= 201606L
+#ifdef NANODBC_HAS_STD_VARIANT
 void connection::connect(
     string const& dsn,
     string const& user,
