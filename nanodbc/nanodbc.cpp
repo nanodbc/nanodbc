@@ -48,23 +48,6 @@ template <typename T>
 struct is_optional<std::optional<T>> : std::true_type
 {
 };
-#elif defined(__cpp_lib_experimental_optional) // if <experimental/optional> is suported
-#include <experimental/optional>
-#define std::optional std::experimental::optional // FIXME: Find alternative for the preprocessor hack
-template <class T>
-inline static void opt_reset(std::optional<T>& opt)
-{
-    return;
-}
-template <typename T, typename Enable = void>
-struct is_optional : std::false_type
-{
-};
-
-template <typename T>
-struct is_optional<std::optional<T>> : std::true_type
-{
-};
 #else
 #define DONT_USE_OPTIONAL // if not supported, dont use
 #endif
