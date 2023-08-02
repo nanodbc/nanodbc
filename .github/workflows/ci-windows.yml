@@ -34,8 +34,6 @@ jobs:
         # Visual Studio 2017
         - { cxxstd: '17', toolset: v141, vs: 2019, architecture: x64, os: windows-2019 }
         - { cxxstd: '14', toolset: v141, vs: 2019, architecture: x64, os: windows-2019 }
-        # Visual Studio 2015(TODO: remove as deprecated and to save CI time)
-        - { cxxstd: '14', toolset: v141, vs: 2019, architecture: x64, os: windows-2019 }
     name: build-vs${{ matrix.vs }}-${{ matrix.toolset }}-std-${{ matrix.cxxstd }}
     runs-on: ${{ matrix.os }}
     env:
