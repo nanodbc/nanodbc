@@ -1434,7 +1434,7 @@ TEST_CASE_METHOD(
     }
 }
 
-#ifdef NANODBC_SUPPORT_STRING_VIEW
+#ifdef NANODBC_HAS_STD_STRING_VIEW
 TEST_CASE_METHOD(
     mssql_table_valued_parameter_fixture,
     "test_table_valued_parameter_with_records_string_view",

@@ -78,6 +78,7 @@
 #define NANODBC_NANODBC_H
 
 #include <cstddef>
+#include <cstdint>
 #include <exception>
 #include <functional>
 #include <iterator>
@@ -87,16 +88,13 @@
 #include <string>
 #include <type_traits>
 #include <utility>
-#ifdef __has_include         // Check if __has_include is present
-#if __has_include(<variant>) // Check for a standard library
-#include <variant>
-#elif __has_include(<experimental/variant>) // Check for an experimental version
-#include <experimental/variant>
-#endif
-#endif
 #include <vector>
 
-#include <cstdint>
+#if __cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L)
+#include <variant>
+#define NANODBC_HAS_STD_VARIANT
+#define NANODBC_HAS_STD_STRING_VIEW
+#endif
 
 /// \brief The entirety of nanodbc can be found within this one namespace.
 ///
@@ -154,31 +152,25 @@ namespace nanodbc
 #endif
 /// @}
 
-#if __cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L)
-#ifndef NANODBC_SUPPORT_STRING_VIEW
-#define NANODBC_SUPPORT_STRING_VIEW
-#endif
-#endif
-
 // You must explicitly request Unicode support by defining NANODBC_ENABLE_UNICODE at compile time.
 #ifndef DOXYGEN
 #ifdef NANODBC_ENABLE_UNICODE
 #ifdef NANODBC_USE_IODBC_WIDE_STRINGS
 #define NANODBC_TEXT(s) U##s
 typedef std::u32string string;
-#ifdef NANODBC_SUPPORT_STRING_VIEW
+#ifdef NANODBC_HAS_STD_STRING_VIEW
 typedef std::u32string_view string_view;
 #endif
 #else
 #ifdef _MSC_VER
 typedef std::wstring string;
-#ifdef NANODBC_SUPPORT_STRING_VIEW
+#ifdef NANODBC_HAS_STD_STRING_VIEW
 typedef std::wstring_view string_view;
 #endif
 #define NANODBC_TEXT(s) L##s
 #else
 typedef std::u16string string;
-#ifdef NANODBC_SUPPORT_STRING_VIEW
+#ifdef NANODBC_HAS_STD_STRING_VIEW
 typedef std::u16string_view string_view;
 #endif
 #define NANODBC_TEXT(s) u##s
@@ -186,7 +178,7 @@ typedef std::u16string_view string_view;
 #endif
 #else
 typedef std::string string;
-#ifdef NANODBC_SUPPORT_STRING_VIEW
+#ifdef NANODBC_HAS_STD_STRING_VIEW
 typedef std::string_view string_view;
 #endif
 #define NANODBC_TEXT(s) s
@@ -194,18 +186,18 @@ typedef std::string_view string_view;
 
 #ifdef NANODBC_USE_IODBC_WIDE_STRINGS
 typedef std::u32string wide_string;
-#ifdef NANODBC_SUPPORT_STRING_VIEW
+#ifdef NANODBC_HAS_STD_STRING_VIEW
 typedef std::u32string_view wide_string_view;
 #endif
 #else
 #ifdef _MSC_VER
 typedef std::wstring wide_string;
-#ifdef NANODBC_SUPPORT_STRING_VIEW
+#ifdef NANODBC_HAS_STD_STRING_VIEW
 typedef std::wstring_view wide_string_view;
 #endif
 #else
 typedef std::u16string wide_string;
-#ifdef NANODBC_SUPPORT_STRING_VIEW
+#ifdef NANODBC_HAS_STD_STRING_VIEW
 typedef std::u16string_view wide_string_view;
 #endif
 #endif
@@ -402,7 +394,7 @@ using is_string = std::integral_constant<
     bool,
     std::is_same<typename std::decay<T>::type, std::string>::value ||
         std::is_same<typename std::decay<T>::type, wide_string>::value
-#ifdef NANODBC_SUPPORT_STRING_VIEW
+#ifdef NANODBC_HAS_STD_STRING_VIEW
         || std::is_same<typename std::decay<T>::type, std::string_view>::value ||
         std::is_same<typename std::decay<T>::type, wide_string_view>::value
 #endif
@@ -1292,7 +1284,7 @@ private:
     class connection_impl;
     friend class nanodbc::transaction::transaction_impl;
 
-#if __cpp_lib_variant >= 201606L
+#ifdef NANODBC_HAS_STD_VARIANT
 public:
     /// \brief A class representing a connection attribute.
     ///
@@ -1393,7 +1385,7 @@ public:
     /// \see connected(), connect()
     explicit connection(string const& connection_string, long timeout = 0);
 
-#if __cpp_lib_variant >= 201606L
+#ifdef NANODBC_HAS_STD_VARIANT
     /// \brief Create new connection object, set the connection attributes passed as
     /// arguments and connect to the given data source.
     ///
@@ -1460,7 +1452,7 @@ public:
     /// \see connected()
     void connect(string const& connection_string, long timeout = 0);
 
-#if __cpp_lib_variant >= 201606L
+#ifdef NANODBC_HAS_STD_VARIANT
     /// \brief Set the connection attributes passed by the user, and connect to the given
     /// data source.
     /// \param dsn The name of the data source.
