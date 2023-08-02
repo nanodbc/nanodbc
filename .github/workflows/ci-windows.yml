@@ -21,7 +21,28 @@ on:
     - '.github/workflows/ci-windows.yml'
 
 jobs:
+  check-format:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        path:
+        - check: 'nanodbc'
+          ignore: ''
+        - check: 'test'
+          ignore: 'catch'
+        - check: 'example'
+          ignore: ''
+    steps:
+    - uses: actions/checkout@v3
+    - uses: jidicula/clang-format-action@v4.11.0
+      with:
+        clang-format-version: '15'
+        check-path: ${{ matrix.path['check'] }}
+        exclude-regex: ${{ matrix.path['ignore'] }}
+
   build-msvc:
+    needs: [check-format]
     strategy:
       fail-fast: false
       matrix:
@@ -52,12 +73,13 @@ jobs:
         cmake --build ${{ github.workspace }}/build
 
   build-mingw:
-    runs-on: windows-latest
+    needs: [check-format]
     strategy:
       fail-fast: false
       matrix:
         include:
         - { cxxstd: '14', configuration: Release, warnings-as-errors: 'OFF' }
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
     - name: Install MinGW

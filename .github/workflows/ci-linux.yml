@@ -22,7 +22,28 @@ on:
     - '.github/workflows/ci-linux.yml'
 
 jobs:
+  check-format:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        path:
+        - check: 'nanodbc'
+          ignore: ''
+        - check: 'test'
+          ignore: 'catch'
+        - check: 'example'
+          ignore: ''
+    steps:
+    - uses: actions/checkout@v3
+    - uses: jidicula/clang-format-action@v4.11.0
+      with:
+        clang-format-version: '15'
+        check-path: ${{ matrix.path['check'] }}
+        exclude-regex: ${{ matrix.path['ignore'] }}
+
   build-gcc:
+    needs: [check-format]
     strategy:
       fail-fast: false
       matrix:
@@ -83,6 +104,7 @@ jobs:
         cmake --build ${GITHUB_WORKSPACE}/build
 
   build-clang:
+    needs: [check-format]
     strategy:
       fail-fast: false
       matrix:
