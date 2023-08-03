@@ -1,0 +1,50 @@
+﻿{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/_build/${presetName}",
+      "installDir": "${sourceDir}/_install/${presetName}"
+    },
+    {
+      "name": "x64",
+      "displayName": "x64",
+      "hidden": true,
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      }
+    },
+    {
+      "name": "x86",
+      "displayName": "x86",
+      "hidden": true,
+      "architecture": {
+        "value": "x86",
+        "strategy": "external"
+      }
+    },
+    {
+      "name": "debug",
+      "displayName": "Debug",
+      "hidden": true,
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+    },
+    {
+      "name": "release",
+      "displayName": "Release",
+      "hidden": true,
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "RelWithDebInfo" }
+    },
+    {
+      "name": "x64-debug",
+      "inherits": [ "base", "x64", "debug" ]
+    },
+    {
+      "name": "x64-release",
+      "inherits": [ "base", "x64", "release" ]
+    }
+  ]
+}
