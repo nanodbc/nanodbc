@@ -1403,95 +1403,6 @@ PRIMARY KEY(t2_fid)
         execute(c, NANODBC_TEXT("INSERT INTO t2(t2_fid,age) VALUES (2,41)"));
         execute(c, NANODBC_TEXT("INSERT INTO t2(t2_fid,age) VALUES (3,60)"));
 
-        // expression
-        {
-            nanodbc::string sql = NANODBC_TEXT("SELECT 'test' AS name, 2 + 3 AS age, 2 * 3");
-            if (vendor_ == database_vendor::sqlserver)
-                sql +=
-                    NANODBC_TEXT(" FOR BROWSE"); // attributes like table name available only for
-                                                 // SELECT statements containing FOR BROWSE clause
-
-            nanodbc::statement s(c, sql);
-            nanodbc::implementation_row_descriptor ird(s);
-            REQUIRE(ird.count() == 3);
-            REQUIRE(ird.count() == ird.count());
-            for (short i = 0; i < ird.count(); i++)
-            {
-                if (vendor_ == database_vendor::mysql)
-                {
-                    REQUIRE(ird.catalog_name(i) != NANODBC_TEXT(""));
-                    REQUIRE(ird.schema_name(i) == NANODBC_TEXT(""));
-                }
-                else if (vendor_ == database_vendor::postgresql)
-                {
-                    REQUIRE(ird.catalog_name(i) == NANODBC_TEXT(""));
-                    REQUIRE(ird.schema_name(i) == NANODBC_TEXT(""));
-                }
-                else if (vendor_ == database_vendor::sqlite)
-                {
-                    REQUIRE(ird.catalog_name(i) == NANODBC_TEXT(""));
-                    REQUIRE(ird.schema_name(i) == NANODBC_TEXT(""));
-                }
-                else if (vendor_ == database_vendor::sqlserver)
-                {
-                    REQUIRE(ird.catalog_name(i) == NANODBC_TEXT(""));
-                    REQUIRE(ird.schema_name(i) == NANODBC_TEXT(""));
-                }
-                else
-                {
-                    REQUIRE(ird.schema_name(i) != NANODBC_TEXT(""));
-                    REQUIRE(ird.schema_name(i) != NANODBC_TEXT(""));
-                }
-            }
-            // name
-            REQUIRE(!ird.auto_unique_value(0));
-            if (vendor_ == database_vendor::sqlite || vendor_ == database_vendor::postgresql)
-                REQUIRE(ird.base_column_name(0) == NANODBC_TEXT("name"));
-            else
-                REQUIRE(ird.base_column_name(0) == NANODBC_TEXT(""));
-            REQUIRE(ird.name(0) == NANODBC_TEXT("name"));
-            REQUIRE(ird.base_table_name(0) == NANODBC_TEXT(""));
-            REQUIRE(ird.table_name(0) == NANODBC_TEXT(""));
-            // age
-            REQUIRE(!ird.auto_unique_value(1));
-            if (vendor_ == database_vendor::sqlite || vendor_ == database_vendor::postgresql)
-                REQUIRE(ird.base_column_name(1) == NANODBC_TEXT("age"));
-            else
-                REQUIRE(ird.base_column_name(1) == NANODBC_TEXT(""));
-            REQUIRE(ird.name(1) == NANODBC_TEXT("age"));
-            REQUIRE(ird.base_table_name(1) == NANODBC_TEXT(""));
-            REQUIRE(ird.table_name(1) == NANODBC_TEXT(""));
-            // 2 * 3
-            REQUIRE(!ird.auto_unique_value(2));
-            if (vendor_ == database_vendor::mysql)
-            {
-                REQUIRE(ird.base_column_name(2) == NANODBC_TEXT(""));
-                REQUIRE(ird.name(2) == NANODBC_TEXT("2 * 3"));
-                REQUIRE(!ird.unnamed(2));
-            }
-            else if (vendor_ == database_vendor::postgresql)
-            {
-                REQUIRE(ird.base_column_name(2) == NANODBC_TEXT("?column?"));
-                REQUIRE(ird.name(2) == NANODBC_TEXT("?column?"));
-                REQUIRE(!ird.unnamed(2));
-            }
-            else if (vendor_ == database_vendor::sqlite)
-            {
-                REQUIRE(ird.base_column_name(2) == NANODBC_TEXT("2 * 3"));
-                REQUIRE(ird.name(2) == NANODBC_TEXT("2 * 3"));
-                REQUIRE_THROWS_WITH(
-                    !ird.unnamed(2), Catch::Contains("unsupported column attribute"));
-            }
-            else
-            {
-                REQUIRE(ird.base_column_name(2) == NANODBC_TEXT(""));
-                REQUIRE(ird.name(2) == NANODBC_TEXT(""));
-                REQUIRE(ird.unnamed(2));
-            }
-            REQUIRE(ird.base_table_name(2) == NANODBC_TEXT(""));
-            REQUIRE(ird.table_name(2) == NANODBC_TEXT(""));
-        }
-
         // table
         {
             nanodbc::string sql =
@@ -1601,6 +1512,94 @@ PRIMARY KEY(t2_fid)
                 REQUIRE(ird.table_name(0) == NANODBC_TEXT("t1"));
             }
         }
+    }
+
+    void test_implementation_row_descriptor_with_expressions()
+    {
+        auto c = connect();
+        nanodbc::string sql = NANODBC_TEXT("SELECT 'test' AS name, 2 + 3 AS age, 2 * 3");
+        if (vendor_ == database_vendor::sqlserver)
+            sql += NANODBC_TEXT(" FOR BROWSE"); // attributes like table name available only for
+                                                // SELECT statements containing FOR BROWSE clause
+
+        nanodbc::statement s(c, sql);
+        nanodbc::implementation_row_descriptor ird(s);
+        REQUIRE(ird.count() == 3);
+        REQUIRE(ird.count() == ird.count());
+        for (short i = 0; i < ird.count(); i++)
+        {
+            if (vendor_ == database_vendor::mysql)
+            {
+                REQUIRE(ird.catalog_name(i) != NANODBC_TEXT(""));
+                REQUIRE(ird.schema_name(i) == NANODBC_TEXT(""));
+            }
+            else if (vendor_ == database_vendor::postgresql)
+            {
+                REQUIRE(ird.catalog_name(i) == NANODBC_TEXT(""));
+                REQUIRE(ird.schema_name(i) == NANODBC_TEXT(""));
+            }
+            else if (vendor_ == database_vendor::sqlite)
+            {
+                REQUIRE(ird.catalog_name(i) == NANODBC_TEXT(""));
+                REQUIRE(ird.schema_name(i) == NANODBC_TEXT(""));
+            }
+            else if (vendor_ == database_vendor::sqlserver)
+            {
+                REQUIRE(ird.catalog_name(i) == NANODBC_TEXT(""));
+                REQUIRE(ird.schema_name(i) == NANODBC_TEXT(""));
+            }
+            else
+            {
+                REQUIRE(ird.schema_name(i) != NANODBC_TEXT(""));
+                REQUIRE(ird.schema_name(i) != NANODBC_TEXT(""));
+            }
+        }
+        // name
+        REQUIRE(!ird.auto_unique_value(0));
+        if (vendor_ == database_vendor::sqlite || vendor_ == database_vendor::postgresql)
+            REQUIRE(ird.base_column_name(0) == NANODBC_TEXT("name"));
+        else
+            REQUIRE(ird.base_column_name(0) == NANODBC_TEXT(""));
+        REQUIRE(ird.name(0) == NANODBC_TEXT("name"));
+        REQUIRE(ird.base_table_name(0) == NANODBC_TEXT(""));
+        REQUIRE(ird.table_name(0) == NANODBC_TEXT(""));
+        // age
+        REQUIRE(!ird.auto_unique_value(1));
+        if (vendor_ == database_vendor::sqlite || vendor_ == database_vendor::postgresql)
+            REQUIRE(ird.base_column_name(1) == NANODBC_TEXT("age"));
+        else
+            REQUIRE(ird.base_column_name(1) == NANODBC_TEXT(""));
+        REQUIRE(ird.name(1) == NANODBC_TEXT("age"));
+        REQUIRE(ird.base_table_name(1) == NANODBC_TEXT(""));
+        REQUIRE(ird.table_name(1) == NANODBC_TEXT(""));
+        // 2 * 3
+        REQUIRE(!ird.auto_unique_value(2));
+        if (vendor_ == database_vendor::mysql)
+        {
+            REQUIRE(ird.base_column_name(2) == NANODBC_TEXT(""));
+            REQUIRE(ird.name(2) == NANODBC_TEXT("2 * 3"));
+            REQUIRE(!ird.unnamed(2));
+        }
+        else if (vendor_ == database_vendor::postgresql)
+        {
+            REQUIRE(ird.base_column_name(2) == NANODBC_TEXT("?column?"));
+            REQUIRE(ird.name(2) == NANODBC_TEXT("?column?"));
+            REQUIRE(!ird.unnamed(2));
+        }
+        else if (vendor_ == database_vendor::sqlite)
+        {
+            REQUIRE(ird.base_column_name(2) == NANODBC_TEXT("2 * 3"));
+            REQUIRE(ird.name(2) == NANODBC_TEXT("2 * 3"));
+            REQUIRE_THROWS_WITH(!ird.unnamed(2), Catch::Contains("unsupported column attribute"));
+        }
+        else
+        {
+            REQUIRE(ird.base_column_name(2) == NANODBC_TEXT(""));
+            REQUIRE(ird.name(2) == NANODBC_TEXT(""));
+            REQUIRE(ird.unnamed(2));
+        }
+        REQUIRE(ird.base_table_name(2) == NANODBC_TEXT(""));
+        REQUIRE(ird.table_name(2) == NANODBC_TEXT(""));
     }
 
     template <class T>
