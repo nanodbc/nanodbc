@@ -39,12 +39,60 @@
       "cacheVariables": { "CMAKE_BUILD_TYPE": "RelWithDebInfo" }
     },
     {
-      "name": "x64-debug",
-      "inherits": [ "base", "x64", "debug" ]
+      "name": "cxx-14",
+      "displayName": "C++ 14",
+      "hidden": true,
+      "cacheVariables": { "CMAKE_CXX_STANDARD": "14" }
     },
     {
-      "name": "x64-release",
-      "inherits": [ "base", "x64", "release" ]
+      "name": "cxx-17",
+      "displayName": "C++ 17",
+      "hidden": true,
+      "cacheVariables": { "CMAKE_CXX_STANDARD": "17" }
+    },
+    {
+      "name": "cxx-20",
+      "displayName": "C++ 20",
+      "hidden": true,
+      "cacheVariables": { "CMAKE_CXX_STANDARD": "20" }
+    },
+    {
+      "name": "unicode",
+      "displayName": "Unicode",
+      "hidden": true,
+      "cacheVariables": { "NANODBC_ENABLE_UNICODE": "ON" }
+    },
+    {
+      "name": "cxx14-x64-debug",
+      "inherits": [ "base", "cxx-14", "x64", "debug" ]
+    },
+    {
+      "name": "cxx14-x64-debug-unicode",
+      "inherits": [ "base", "cxx-14", "x64", "debug", "unicode" ]
+    },
+    {
+      "name": "cxx14-x64-release",
+      "inherits": [ "base", "cxx-14", "x64", "release" ]
+    },
+    {
+      "name": "cxx14-x64-release-unicode",
+      "inherits": [ "base", "cxx-14", "x64", "release", "unicode" ]
+    },
+    {
+      "name": "cxx17-x64-debug",
+      "inherits": [ "base", "cxx-17", "x64", "debug" ]
+    },
+    {
+      "name": "cxx17-x64-release",
+      "inherits": [ "base", "cxx-17", "x64", "release" ]
+    },
+    {
+      "name": "cxx20-x64-debug",
+      "inherits": [ "base", "cxx-20", "x64", "debug" ]
+    },
+    {
+      "name": "cxx20-x64-release",
+      "inherits": [ "base", "cxx-20", "x64", "release" ]
     }
   ]
 }
