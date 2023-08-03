@@ -165,6 +165,14 @@ TEST_CASE_METHOD(
 
 TEST_CASE_METHOD(
     postgresql_fixture,
+    "test_implementation_row_descriptor_with_expressions",
+    "[postgresql][descriptor][ird]")
+{
+    test_implementation_row_descriptor_with_expressions();
+}
+
+TEST_CASE_METHOD(
+    postgresql_fixture,
     "test_implementation_row_descriptor_auto_unique_value",
     "[postgresql][descriptor][ird]")
 {

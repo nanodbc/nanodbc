@@ -795,6 +795,14 @@ TEST_CASE_METHOD(mssql_fixture, "test_implementation_row_descriptor", "[mssql][d
 
 TEST_CASE_METHOD(
     mssql_fixture,
+    "test_implementation_row_descriptor_with_expressions",
+    "[mssql][descriptor][ird]")
+{
+    test_implementation_row_descriptor_with_expressions();
+}
+
+TEST_CASE_METHOD(
+    mssql_fixture,
     "test_implementation_row_descriptor_auto_unique_value",
     "[mssql][descriptor][ird]")
 {

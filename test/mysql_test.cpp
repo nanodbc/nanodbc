@@ -222,6 +222,14 @@ TEST_CASE_METHOD(mysql_fixture, "test_implementation_row_descriptor", "[mysql][d
 
 TEST_CASE_METHOD(
     mysql_fixture,
+    "test_implementation_row_descriptor_with_expressions",
+    "[mysql][descriptor][ird]")
+{
+    test_implementation_row_descriptor_with_expressions();
+}
+
+TEST_CASE_METHOD(
+    mysql_fixture,
     "test_implementation_row_descriptor_auto_unique_value",
     "[mysql][descriptor][ird]")
 {
