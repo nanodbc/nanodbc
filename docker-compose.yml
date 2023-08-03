@@ -14,7 +14,7 @@ services:
       MYSQL_USER: *default_credential
       MYSQL_PASSWORD: *default_credential
   pgsql:
-    image: postgres:9-alpine
+    image: postgres:15-alpine
     container_name: nanopgsql
     restart: unless-stopped
     ports:
