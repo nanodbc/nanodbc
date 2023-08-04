@@ -1483,6 +1483,7 @@ PRIMARY KEY(t2_fid)
             NANODBC_TEXT("v_t1_t2"),
             NANODBC_TEXT("SELECT t1.*, t2.* FROM t1 INNER JOIN t2 ON t1.t1_fid1 = t2.t2_fid"),
             true);
+
         // view
         {
             nanodbc::string sql = NANODBC_TEXT("SELECT t1_fid1 AS fid1, t1_fid2 AS fid2, t2_fid AS "
@@ -2615,8 +2616,8 @@ PRIMARY KEY(t2_fid)
             NANODBC_TEXT("create table ") + table_name + NANODBC_TEXT("(") +
                 NANODBC_TEXT("c0 int NULL,") + NANODBC_TEXT("c1 smallint NULL,") +
                 NANODBC_TEXT("c2 float NULL,") + NANODBC_TEXT("c3 decimal(9, 3) NULL,") +
-                NANODBC_TEXT("c4 date NULL,") + // seems more portable than datetime (SQL Server),
-                                                // timestamp (PostgreSQL, MySQL)
+                NANODBC_TEXT("c4 date NULL,") + // seems more portable than datetime (SQL
+                                                // Server), timestamp (PostgreSQL, MySQL)
                 NANODBC_TEXT("c5 varchar(60) NULL,") + NANODBC_TEXT("c6 varchar(120) NULL,") +
                 NANODBC_TEXT("c7 ") + text_type_name + NANODBC_TEXT(" NULL,") +
                 NANODBC_TEXT("c8 ") + binary_type_name + NANODBC_TEXT(" NULL);"));
@@ -2772,8 +2773,8 @@ PRIMARY KEY(t2_fid)
 
         nanodbc::variant_row_cached_result rs = execute(
             cn,
-            NANODBC_TEXT(
-                "select i0,s1,f2,s3,d4,b5,dt6,s7,t8 from test_win32_variant_row_cached_result;"));
+            NANODBC_TEXT("select i0,s1,f2,s3,d4,b5,dt6,s7,t8 from "
+                         "test_win32_variant_row_cached_result;"));
         rs.unbind(); // allow interleaved bound and unbound columns access
         short row_count = 0;
         while (rs.next())
