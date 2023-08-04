@@ -215,6 +215,7 @@ TEST_CASE_METHOD(mysql_fixture, "test_execute_multiple", "[mysql][execute]")
     test_execute_multiple();
 }
 
+#if 0 // FIXME: MySQL driver always reports Zero for SQL_DESC_COUNT
 TEST_CASE_METHOD(mysql_fixture, "test_implementation_row_descriptor", "[mysql][descriptor][ird]")
 {
     test_implementation_row_descriptor();
@@ -250,6 +251,7 @@ PRIMARY KEY(fid)
     REQUIRE(ird.auto_unique_value(0));
     REQUIRE(!ird.auto_unique_value(1));
 }
+#endif
 
 TEST_CASE_METHOD(mysql_fixture, "test_integral", "[mysql][integral]")
 {
