@@ -828,6 +828,38 @@ TEST_CASE_METHOD(
     "test_implementation_row_descriptor_with_query",
     "[mssql][descriptor][ird]")
 {
+    auto c = connect();
+    drop_table(c, NANODBC_TEXT("v_t1_t2"), true);
+    drop_table(c, NANODBC_TEXT("t1"));
+    drop_table(c, NANODBC_TEXT("t2"));
+
+    create_table(c, NANODBC_TEXT("t1"), NANODBC_TEXT(R"(
+t1_fid1 int NOT NULL,
+t1_fid2 int NOT NULL,
+name varchar(60) NOT NULL,
+PRIMARY KEY(t1_fid1, t1_fid2)
+)"));
+
+    execute(
+        c, NANODBC_TEXT("INSERT INTO t1(t1_fid1,t1_fid2,name) VALUES (1,10,'John Malkovich');"));
+    execute(c, NANODBC_TEXT("INSERT INTO t1(t1_fid1,t1_fid2,name) VALUES (2,20,'Gina Bellman');"));
+    execute(c, NANODBC_TEXT("INSERT INTO t1(t1_fid1,t1_fid2,name) VALUES (3,30,'Bruce Willis');"));
+
+    create_table(c, NANODBC_TEXT("t2"), NANODBC_TEXT(R"(
+t2_fid int NOT NULL,
+age int NOT NULL,
+PRIMARY KEY(t2_fid)
+)"));
+
+    execute(c, NANODBC_TEXT("INSERT INTO t2(t2_fid,age) VALUES (1,53)"));
+    execute(c, NANODBC_TEXT("INSERT INTO t2(t2_fid,age) VALUES (2,41)"));
+    execute(c, NANODBC_TEXT("INSERT INTO t2(t2_fid,age) VALUES (3,60)"));
+
+    create_table(
+        c,
+        NANODBC_TEXT("v_t1_t2"),
+        NANODBC_TEXT("SELECT t1.*, t2.* FROM t1 INNER JOIN t2 ON t1.t1_fid1 = t2.t2_fid"),
+        true);
 
     nanodbc::string sql = NANODBC_TEXT(
         "SELECT t1.t1_fid1 AS fid1, t2.t2_fid AS fid2, v1.t1_fid1 AS fid3, t1.name AS n, "
@@ -837,7 +869,6 @@ TEST_CASE_METHOD(
     // attributes like table name available only for
     // SELECT statements containing FOR BROWSE clause
 
-    auto c = connect();
     nanodbc::statement s(c, sql);
     nanodbc::implementation_row_descriptor ird(s);
     REQUIRE(ird.count() == 7);
