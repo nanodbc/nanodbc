@@ -795,14 +795,6 @@ TEST_CASE_METHOD(mssql_fixture, "test_implementation_row_descriptor", "[mssql][d
 
 TEST_CASE_METHOD(
     mssql_fixture,
-    "test_implementation_row_descriptor_with_expressions",
-    "[mssql][descriptor][ird]")
-{
-    test_implementation_row_descriptor_with_expressions();
-}
-
-TEST_CASE_METHOD(
-    mssql_fixture,
     "test_implementation_row_descriptor_auto_unique_value",
     "[mssql][descriptor][ird]")
 {
@@ -821,6 +813,103 @@ name varchar(60)
     REQUIRE(ird.count() == 2);
     REQUIRE(ird.auto_unique_value(0));
     REQUIRE(!ird.auto_unique_value(1));
+}
+
+TEST_CASE_METHOD(
+    mssql_fixture,
+    "test_implementation_row_descriptor_with_expressions",
+    "[mssql][descriptor][ird]")
+{
+    test_implementation_row_descriptor_with_expressions();
+}
+
+TEST_CASE_METHOD(
+    mssql_fixture,
+    "test_implementation_row_descriptor_with_query",
+    "[mssql][descriptor][ird]")
+{
+
+    nanodbc::string sql = NANODBC_TEXT(
+        "SELECT t1.t1_fid1 AS fid1, t2.t2_fid AS fid2, v1.t1_fid1 AS fid3, t1.name AS n, "
+        "t2.age AS a, v1.name AS vn, v1.age AS va FROM t1 INNER JOIN t2 ON t1.t1_fid1 = "
+        "t2.t2_fid INNER JOIN v_t1_t2 AS v1 ON t1.t1_fid1 = v1.t1_fid1 AND v1.t1_fid2 = "
+        "v1.t1_fid2 AND t2.t2_fid = v1.t2_fid FOR BROWSE");
+    // attributes like table name available only for
+    // SELECT statements containing FOR BROWSE clause
+
+    auto c = connect();
+    nanodbc::statement s(c, sql);
+    nanodbc::implementation_row_descriptor ird(s);
+    REQUIRE(ird.count() == 7);
+
+    for (short i = 0; i < ird.count(); ++i)
+    {
+        REQUIRE(ird.catalog_name(i) != NANODBC_TEXT(""));
+        REQUIRE(ird.schema_name(i) == NANODBC_TEXT(""));
+        REQUIRE(ird.base_table_name(i) != NANODBC_TEXT(""));
+        REQUIRE(ird.table_name(i) != NANODBC_TEXT(""));
+        REQUIRE(ird.base_column_name(i) != NANODBC_TEXT(""));
+        REQUIRE(ird.name(i) != NANODBC_TEXT(""));
+        REQUIRE(ird.type_name(i) != NANODBC_TEXT(""));
+        REQUIRE(ird.local_type_name(i) != NANODBC_TEXT(""));
+    }
+
+    // t1.t1_fid1
+    short i = 0;
+    REQUIRE(ird.base_table_name(i) == NANODBC_TEXT("t1"));
+    REQUIRE(ird.table_name(i) == NANODBC_TEXT("t1"));
+    REQUIRE(ird.base_column_name(i) == NANODBC_TEXT("t1_fid1"));
+    REQUIRE(ird.name(i) == NANODBC_TEXT("fid1"));
+    REQUIRE(ird.type_name(i) == NANODBC_TEXT("int"));
+    REQUIRE(ird.local_type_name(i) == NANODBC_TEXT("int"));
+    // t2.t2_fid2
+    i++;
+    REQUIRE(ird.base_table_name(i) == NANODBC_TEXT("t2"));
+    REQUIRE(ird.table_name(i) == NANODBC_TEXT("t2"));
+    REQUIRE(ird.base_column_name(i) == NANODBC_TEXT("t2_fid"));
+    REQUIRE(ird.name(i) == NANODBC_TEXT("fid2"));
+    REQUIRE(ird.type_name(i) == NANODBC_TEXT("int"));
+    REQUIRE(ird.local_type_name(i) == NANODBC_TEXT("int"));
+    // v_t1_t2.t1.t1_fid1
+    i++;
+    REQUIRE(ird.base_table_name(i) == NANODBC_TEXT("t1"));
+    REQUIRE(ird.table_name(i) == NANODBC_TEXT("t1"));
+    REQUIRE(ird.base_column_name(i) == NANODBC_TEXT("t1_fid1"));
+    REQUIRE(ird.name(i) == NANODBC_TEXT("fid3"));
+    REQUIRE(ird.type_name(i) == NANODBC_TEXT("int"));
+    REQUIRE(ird.local_type_name(i) == NANODBC_TEXT("int"));
+    // t1.name
+    i++;
+    REQUIRE(ird.base_table_name(i) == NANODBC_TEXT("t1"));
+    REQUIRE(ird.table_name(i) == NANODBC_TEXT("t1"));
+    REQUIRE(ird.base_column_name(i) == NANODBC_TEXT("name"));
+    REQUIRE(ird.name(i) == NANODBC_TEXT("n"));
+    REQUIRE(ird.type_name(i) == NANODBC_TEXT("varchar"));
+    REQUIRE(ird.local_type_name(i) == NANODBC_TEXT("varchar"));
+    // t2.age
+    i++;
+    REQUIRE(ird.base_table_name(i) == NANODBC_TEXT("t2"));
+    REQUIRE(ird.table_name(i) == NANODBC_TEXT("t2"));
+    REQUIRE(ird.base_column_name(i) == NANODBC_TEXT("age"));
+    REQUIRE(ird.name(i) == NANODBC_TEXT("a"));
+    REQUIRE(ird.type_name(i) == NANODBC_TEXT("int"));
+    REQUIRE(ird.local_type_name(i) == NANODBC_TEXT("int"));
+    // v_t1_t2.name
+    i++;
+    REQUIRE(ird.base_table_name(i) == NANODBC_TEXT("t1"));
+    REQUIRE(ird.table_name(i) == NANODBC_TEXT("t1"));
+    REQUIRE(ird.base_column_name(i) == NANODBC_TEXT("name"));
+    REQUIRE(ird.name(i) == NANODBC_TEXT("vn"));
+    REQUIRE(ird.type_name(i) == NANODBC_TEXT("varchar"));
+    REQUIRE(ird.local_type_name(i) == NANODBC_TEXT("varchar"));
+    // v_t1_t2.age
+    i++;
+    REQUIRE(ird.base_table_name(i) == NANODBC_TEXT("t2"));
+    REQUIRE(ird.table_name(i) == NANODBC_TEXT("t2"));
+    REQUIRE(ird.base_column_name(i) == NANODBC_TEXT("age"));
+    REQUIRE(ird.name(i) == NANODBC_TEXT("va"));
+    REQUIRE(ird.type_name(i) == NANODBC_TEXT("int"));
+    REQUIRE(ird.local_type_name(i) == NANODBC_TEXT("int"));
 }
 
 TEST_CASE_METHOD(mssql_fixture, "test_integral", "[mssql][integral]")
