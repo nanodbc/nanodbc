@@ -458,7 +458,7 @@ public:
     /// Member swap.
     void swap(transaction& rhs) noexcept;
 
-    /// \brief If this transaction has not been committed, will will rollback any modifying ops.
+    /// \brief If this transaction has not been committed, it will rollback any modifying ops.
     ~transaction() noexcept;
 
     /// \brief Commits transaction immediately.
