@@ -1655,6 +1655,10 @@ public:
 
     void close()
     {
+#ifndef NANODBC_DISABLE_MSSQL_TVP
+        tvp_data_.clear();
+#endif
+
         if (open() && connected())
         {
             RETCODE rc;
@@ -2602,7 +2606,7 @@ public:
 
         // initialize variables
         open_ = true;
-        stmt_ = stmt;
+        stmt_ = stmt.impl_;
         row_count_ = row_count;
         param_index_ = param_index;
 
@@ -2657,31 +2661,38 @@ public:
 
         if (open_)
         {
-            if (0 < row_count_)
+            // if TVP is still open during statement destructor, stmt_ is not valid
+            auto stmt_impl = stmt_.lock();
+
+            if (0 < row_count_ && stmt_impl)
             {
                 // reset param focus
                 NANODBC_CALL_RC(
                     NANODBC_FUNC(SQLSetStmtAttr),
                     rc,
-                    stmt_.native_statement_handle(),
+                    stmt_impl->native_statement_handle(),
                     SQL_SOPT_SS_PARAM_FOCUS,
                     (SQLPOINTER) nullptr,
                     SQL_IS_INTEGER);
                 if (!success(rc))
-                    NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
+                    NANODBC_THROW_DATABASE_ERROR(stmt_impl->native_statement_handle(), SQL_HANDLE_STMT);
             }
 
             row_count_ = 0;
             tvp_name_.clear();
             param_index_ = 0;
             open_ = false;
-            stmt_.impl_->close_tvp();
+            if (stmt_impl)
+                stmt_impl->close_tvp();
         }
     }
 
     void prepare_tvp_name()
     {
-        SQLHANDLE hstmt = stmt_.native_statement_handle();
+        auto stmt_impl = stmt_.lock();
+        NANODBC_ASSERT(stmt_impl != nullptr);
+
+        SQLHANDLE hstmt = stmt_impl->native_statement_handle();
         SQLRETURN rc;
         SQLHANDLE hipd;
         SQLINTEGER buf_len, str_len;
@@ -2731,7 +2742,10 @@ public:
 
     void prepare_tvp_param_all()
     {
-        auto stmt = nanodbc::statement(stmt_.connection());
+        auto stmt_impl = stmt_.lock();
+        NANODBC_ASSERT(stmt_impl != nullptr);
+
+        auto stmt = nanodbc::statement(stmt_impl->connection());
         auto hstmt = stmt.native_statement_handle();
 
         SQLRETURN rc;
@@ -2846,15 +2860,18 @@ public:
             param_size = SQL_SS_LENGTH_UNLIMITED;
         }
 
+        auto stmt_impl = stmt_.lock();
+        NANODBC_ASSERT(stmt_impl != nullptr);
+
         RETCODE rc;
         NANODBC_CALL_RC(
             SQLBindParameter,
             rc,
-            stmt_.native_statement_handle(), // handle
-            param.index_ + 1,                // parameter number
-            param.iotype_,                   // input or output type
-            sql_ctype<T>::value,             // value type
-            param.type_,                     // parameter type
+            stmt_impl->native_statement_handle(), // handle
+            param.index_ + 1,                     // parameter number
+            param.iotype_,                        // input or output type
+            sql_ctype<T>::value,                  // value type
+            param.type_,                          // parameter type
             param_size,   // column size ignored for many types, but needed for strings
             param.scale_, // decimal digits
             (SQLPOINTER)buffer.values_, // parameter value
@@ -2862,7 +2879,7 @@ public:
             bind_len_or_null_[param.index_].data());
 
         if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
+            NANODBC_THROW_DATABASE_ERROR(stmt_impl->native_statement_handle(), SQL_HANDLE_STMT);
     }
 
     // Supports code like: query.bind(0, std_string.c_str())
@@ -2872,15 +2889,18 @@ public:
     {
         auto const buffer_size = buffer.value_size_ > 0 ? buffer.value_size_ : param.size_;
 
+        auto stmt_impl = stmt_.lock();
+        NANODBC_ASSERT(stmt_impl != nullptr);
+
         RETCODE rc;
         NANODBC_CALL_RC(
             SQLBindParameter,
             rc,
-            stmt_.native_statement_handle(), // handle
-            param.index_ + 1,                // parameter number
-            param.iotype_,                   // input or output type
-            sql_ctype<T>::value,             // value type
-            param.type_,                     // parameter type
+            stmt_impl->native_statement_handle(), // handle
+            param.index_ + 1,                     // parameter number
+            param.iotype_,                        // input or output type
+            sql_ctype<T>::value,                  // value type
+            param.type_,                          // parameter type
             param.size_,  // column size ignored for many types, but needed for strings
             param.scale_, // decimal digits
             (SQLPOINTER)buffer.values_, // parameter value
@@ -2888,7 +2908,7 @@ public:
             (buffer.size_ <= 1 ? nullptr : bind_len_or_null_[param.index_].data()));
 
         if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
+            NANODBC_THROW_DATABASE_ERROR(stmt_impl->native_statement_handle(), SQL_HANDLE_STMT);
     }
 
     template <class T>
@@ -2974,11 +2994,14 @@ public:
         bound_parameter param;
         prepare_bind(param_index, row_count_, param);
 
+        auto stmt_impl = stmt_.lock();
+        NANODBC_ASSERT(stmt_impl != nullptr);
+
         RETCODE rc;
         NANODBC_CALL_RC(
             SQLBindParameter,
             rc,
-            stmt_.native_statement_handle(),
+            stmt_impl->native_statement_handle(),
             param.index_ + 1, // parameter number
             param.iotype_,    // input or output typ,
             SQL_C_CHAR,
@@ -2989,7 +3012,7 @@ public:
             0,           // buffer length
             bind_len_or_null_[param.index_].data());
         if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
+            NANODBC_THROW_DATABASE_ERROR(stmt_impl->native_statement_handle(), SQL_HANDLE_STMT);
     }
 
     void describe_parameters(
@@ -3022,7 +3045,7 @@ public:
     std::vector<T>& get_bound_string_data(short param_index);
 
 private:
-    class statement stmt_;
+    std::weak_ptr<nanodbc::statement::statement_impl> stmt_;
     std::size_t row_count_;
     nanodbc::string tvp_name_;
     short param_index_;
