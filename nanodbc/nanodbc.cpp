@@ -2675,7 +2675,8 @@ public:
                     (SQLPOINTER) nullptr,
                     SQL_IS_INTEGER);
                 if (!success(rc))
-                    NANODBC_THROW_DATABASE_ERROR(stmt_impl->native_statement_handle(), SQL_HANDLE_STMT);
+                    NANODBC_THROW_DATABASE_ERROR(
+                        stmt_impl->native_statement_handle(), SQL_HANDLE_STMT);
             }
 
             row_count_ = 0;
