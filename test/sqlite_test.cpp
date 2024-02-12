@@ -293,6 +293,22 @@ TEST_CASE_METHOD(sqlite_fixture, "test_execute_multiple", "[sqlite][execute]")
     test_execute_multiple();
 }
 
+// SQLite ODBC driver does not support SQL_ATTR_IMP_ROW_DESC
+// and SQLGetStmtAttr invocation returns dummy handle,
+// see
+// https://github.com/softace/sqliteodbc/blob/9049782382ae15f753e8321de34c1568eafadbf7/sqlite3odbc.c#L9195
+#if 0
+TEST_CASE_METHOD(sqlite_fixture, "test_implementation_row_descriptor", "[sqlite][descriptor][ird]")
+{
+    test_implementation_row_descriptor();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_implementation_row_descriptor_with_expressions", "[sqlite][descriptor][ird]")
+{
+    test_implementation_row_descriptor_with_expressions();
+}
+#endif
+
 TEST_CASE_METHOD(sqlite_fixture, "test_integral", "[sqlite][integral]")
 {
     test_integral<sqlite_fixture>();
