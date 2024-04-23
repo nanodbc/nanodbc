@@ -5668,7 +5668,7 @@ namespace nanodbc
 implementation_row_descriptor::sql_get_descr_field::sql_get_descr_field(
     implementation_row_descriptor const& ird,
     short record,
-    std::uint16_t field_identifier)
+    std::uint16_t field_identifier) noexcept
     : ird_(ird)
     , record_(record)
     , field_identifier_(field_identifier)
@@ -5796,7 +5796,7 @@ auto implementation_row_descriptor::alloc_type() const -> short
     return static_cast<short>(value);
 }
 
-short implementation_row_descriptor::count() const
+short implementation_row_descriptor::count() const noexcept
 {
     return descriptor_records_count_;
 }

@@ -2090,7 +2090,7 @@ public:
     auto alloc_type() const -> short;
 
     /// Value of the header field `SQL_DESC_COUNT`.
-    auto count() const -> short;
+    auto count() const noexcept -> short;
 
     // Descriptor record fields (records) accessors
 
@@ -2187,7 +2187,7 @@ private:
         sql_get_descr_field(
             implementation_row_descriptor const& ird,
             short record,
-            std::uint16_t field_identifier);
+            std::uint16_t field_identifier) noexcept;
         operator std::int64_t() const;
         operator std::uint64_t() const;
         operator string() const;
