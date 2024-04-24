@@ -82,12 +82,9 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Install MinGW
-      uses: egor-tensin/setup-mingw@v2
     - name: Check
       run: |
         cmake --version
-        cc --version
     - name: Configure
       run: |
         cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "MinGW Makefiles" -D CMAKE_BUILD_TYPE=${{ matrix.configuration }} -DCMAKE_COMPILE_WARNING_AS_ERROR=${{ matrix.warnings-as-errors }}
