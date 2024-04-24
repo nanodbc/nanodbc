@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
                 "NANODBC_TEST_CONNSTR or NANODBC_TEST_CONNSTR_<DB>") |
             Catch::clara::Arg(cfg.test_, "test")("test name|pattern|tags to run");
         auto parse_result = cli.parse(Catch::clara::Args(argc, argv));
-        (void)parse_result; // ignore results as it will be invalid due to Catch options not being recognized
+        (void)parse_result; // ignore as invalid due to Catch options not being recognized
         // Disable custom options to avoid Catch warnings or failures
         for (int i = 1; i < argc; ++i)
         {
