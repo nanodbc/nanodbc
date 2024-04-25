@@ -788,10 +788,20 @@ TEST_CASE_METHOD(mssql_fixture, "test_execute_multiple", "[mssql][execute]")
     test_execute_multiple();
 }
 
+// FIXME(mloskot): Strange behaviour of SQLGetDescField on Linux with SQL Server, see
+// https://github.com/nanodbc/nanodbc/pull/342#issuecomment-2077942587
+#if defined(NANODBC_TEST_CI) && defined(CATCH_PLATFORM_LINUX)
+#define NANODBC_TESTS_SKIP_IRD 1
+#else
+#define NANODBC_TEST_SKIP_IRD_DUE_STRANGE_FAILURES_ON_LINUX 0
+#endif
+
+#if defined(NANODBC_TEST_SKIP_IRD_DUE_STRANGE_FAILURES_ON_LINUX)
 TEST_CASE_METHOD(mssql_fixture, "test_implementation_row_descriptor", "[mssql][descriptor][ird]")
 {
     test_implementation_row_descriptor();
 }
+#endif // defined(NANODBC_TEST_SKIP_IRD_DUE_STRANGE_FAILURES_ON_LINUX)
 
 TEST_CASE_METHOD(
     mssql_fixture,
@@ -815,6 +825,7 @@ name varchar(60)
     REQUIRE(!ird.auto_unique_value(1));
 }
 
+#if defined(NANODBC_TEST_SKIP_IRD_DUE_STRANGE_FAILURES_ON_LINUX)
 TEST_CASE_METHOD(
     mssql_fixture,
     "test_implementation_row_descriptor_with_expressions",
@@ -942,6 +953,7 @@ PRIMARY KEY(t2_fid)
     REQUIRE(ird.type_name(i) == NANODBC_TEXT("int"));
     REQUIRE(ird.local_type_name(i) == NANODBC_TEXT("int"));
 }
+#endif // defined(NANODBC_TEST_SKIP_IRD_DUE_STRANGE_FAILURES_ON_LINUX)
 
 TEST_CASE_METHOD(mssql_fixture, "test_integral", "[mssql][integral]")
 {
