@@ -34,7 +34,7 @@ jobs:
         - check: 'example'
           ignore: ''
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
     - uses: jidicula/clang-format-action@v4.11.0
       with:
         clang-format-version: '15'
@@ -61,7 +61,7 @@ jobs:
       CC: ${{ matrix.cc }}
       CXX: ${{ matrix.cxx }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
     - name: Check
       run: |
         cmake --version
@@ -81,7 +81,7 @@ jobs:
         - { cxxstd: '14', configuration: Release, warnings-as-errors: 'OFF' }
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
     - name: Check
       run: |
         cmake --version
@@ -97,7 +97,7 @@ jobs:
     needs: [build-msvc, build-mingw]
     runs-on: windows-2022
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
     - name: Check
       run: |
         cmake --version
@@ -119,7 +119,7 @@ jobs:
       matrix:
         mssql: [2017, 2019]
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
     - name: Install SQL Server
       # Alternative https://github.com/ankane/setup-sqlserver
       # seems more flexible but it takes twice as long or longer
@@ -151,7 +151,7 @@ jobs:
       matrix:
         mariadb: ['10.11', '10.5']
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
     - name: Install MariaDB ${{ matrix.mariadb }}
       uses: ankane/setup-mariadb@v1
       with:
@@ -183,7 +183,7 @@ jobs:
       matrix:
         mysql: [8.0, 5.7]
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
     - name: Install MySQL ${{ matrix.mysql }}
       uses: ankane/setup-mysql@v1
       with:
@@ -215,7 +215,7 @@ jobs:
       matrix:
         postgres: [14] # Only version currently available on Windows via ankane/setup-postgres
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
     - name: Install PostgreSQL
       uses: ankane/setup-postgres@v1
       with:
@@ -243,7 +243,7 @@ jobs:
     needs: [test-utility]
     runs-on: windows-2022
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
     - name: Install SQLite ODBC Driver
       run: |
         (New-Object Net.WebClient).DownloadFile('http://www.ch-werner.de/sqliteodbc/sqliteodbc_w64.exe', "$($env:TEMP)\sqliteodbc_w64.exe")

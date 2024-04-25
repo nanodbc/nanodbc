@@ -35,7 +35,7 @@ jobs:
         - check: 'example'
           ignore: ''
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
     - uses: jidicula/clang-format-action@v4.11.0
       with:
         clang-format-version: '15'
@@ -76,7 +76,7 @@ jobs:
       CXX: ${{ matrix.cxx }}
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
     - name: Setup container
       if: matrix.container
       run: |
@@ -144,7 +144,7 @@ jobs:
       CXX: ${{ matrix.cxx }}
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
     - name: Setup container
       if: matrix.container
       run: |
@@ -177,7 +177,7 @@ jobs:
     needs: [build-gcc, build-clang]
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
     - name: Configure
       run: |
         cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release
@@ -206,7 +206,7 @@ jobs:
         ports:
         - 5432:5432
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
     - name: Install
       run: |
         sudo apt-get install -y unixodbc-dev odbc-postgresql
@@ -233,7 +233,7 @@ jobs:
           ACCEPT_EULA: Y
           SA_PASSWORD: Password!123
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
     - name: Install
       run: |
         apt-get update
@@ -256,7 +256,7 @@ jobs:
     needs: [test-utility]
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
     - name: Install
       run: |
         apt-get install -y unixodbc-dev libsqliteodbc
