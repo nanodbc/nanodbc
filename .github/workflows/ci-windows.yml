@@ -149,7 +149,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        mariadb: ['10.10', '10.3']
+        mariadb: ['10.11', '10.5']
     steps:
     - uses: actions/checkout@v3
     - name: Install MariaDB ${{ matrix.mariadb }}
