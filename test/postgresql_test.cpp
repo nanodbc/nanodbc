@@ -155,6 +155,44 @@ TEST_CASE_METHOD(postgresql_fixture, "test_execute_multiple", "[postgresql][exec
     test_execute_multiple();
 }
 
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_implementation_row_descriptor",
+    "[postgresql][descriptor][ird]")
+{
+    test_implementation_row_descriptor();
+}
+
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_implementation_row_descriptor_with_expressions",
+    "[postgresql][descriptor][ird]")
+{
+    test_implementation_row_descriptor_with_expressions();
+}
+
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_implementation_row_descriptor_auto_unique_value",
+    "[postgresql][descriptor][ird]")
+{
+    auto c = connect();
+
+    create_table(
+        c, NANODBC_TEXT("test_implementation_row_descriptor_auto_unique_value"), NANODBC_TEXT(R"(
+fid serial PRIMARY KEY,
+name varchar(60)
+)"));
+
+    auto const sql =
+        NANODBC_TEXT("SELECT fid, name FROM test_implementation_row_descriptor_auto_unique_value");
+    nanodbc::statement s(c, sql);
+    nanodbc::implementation_row_descriptor ird(s);
+    REQUIRE(ird.count() == 2);
+    REQUIRE(ird.auto_unique_value(0));
+    REQUIRE(!ird.auto_unique_value(1));
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_integral", "[postgresql][integral]")
 {
     test_integral<postgresql_fixture>();

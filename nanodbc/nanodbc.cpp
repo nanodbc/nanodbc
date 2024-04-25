@@ -3600,7 +3600,6 @@ public:
     void unbind(short column)
     {
         throw_if_column_is_out_of_range(column);
-
         if (is_bound(column))
         {
             bound_column& col = bound_columns_[column];
@@ -5645,6 +5644,350 @@ void statement::describe_parameters(
     const std::vector<short>& scale)
 {
     impl_->describe_parameters(idx, type, size, scale);
+}
+
+} // namespace nanodbc
+
+// clang-format off
+// 8888888b.                                     d8b          888
+// 888  "Y88b                                    Y8P          888
+// 888    888                                                 888
+// 888    888  .d88b.  .d8888b   .d8888b 888d888 888 88888b.  888888 .d88b.  888d888 .d8888b
+// 888    888 d8P  Y8b 88K      d88P"    888P"   888 888 "88b 888   d88""88b 888P"   88K
+// 888    888 88888888 "Y8888b. 888      888     888 888  888 888   888  888 888     "Y8888b.
+// 888  .d88P Y8b.          X88 Y88b.    888     888 888 d88P Y88b. Y88..88P 888          X88
+// 8888888P"   "Y8888   88888P'  "Y8888P 888     888 88888P"   "Y888 "Y88P"  888      88888P'
+//                                                   888
+//                                                   888
+//                                                   888
+// MARK: Descriptors -
+// clang-format on
+namespace nanodbc
+{
+
+implementation_row_descriptor::sql_get_descr_field::sql_get_descr_field(
+    implementation_row_descriptor const& ird,
+    short record,
+    std::uint16_t field_identifier) noexcept
+    : ird_(ird)
+    , record_(record)
+    , field_identifier_(field_identifier)
+{
+}
+
+implementation_row_descriptor::sql_get_descr_field::operator std::int64_t() const
+{
+    // If ValuePtr is integer type, applications should use a buffer of SQLULEN and initialize the
+    // value to 0 before calling this function as some drivers may only write the lower 32-bit or
+    // 16-bit of a buffer and leave the higher-order bit unchanged.
+    SQLULEN value = 0;
+    RETCODE rc;
+    NANODBC_CALL_RC(
+        NANODBC_FUNC(SQLGetDescField),
+        rc,
+        ird_.descriptor_handle_,
+        static_cast<SQLUSMALLINT>(record_ + 1),
+        field_identifier_,
+        &value,
+        0,
+        nullptr);
+    if (!success(rc))
+        NANODBC_THROW_DATABASE_ERROR(ird_.statement_handle_, SQL_HANDLE_STMT);
+
+    return value;
+}
+
+implementation_row_descriptor::sql_get_descr_field::operator std::uint64_t() const
+{
+    // If ValuePtr is integer type, applications should use a buffer of SQLULEN and initialize the
+    // value to 0 before calling this function as some drivers may only write the lower 32-bit or
+    // 16-bit of a buffer and leave the higher-order bit unchanged.
+    SQLULEN value = 0;
+    RETCODE rc;
+    NANODBC_CALL_RC(
+        NANODBC_FUNC(SQLGetDescField),
+        rc,
+        ird_.descriptor_handle_,
+        static_cast<SQLUSMALLINT>(record_ + 1),
+        field_identifier_,
+        &value,
+        0,
+        nullptr);
+    if (!success(rc))
+        NANODBC_THROW_DATABASE_ERROR(ird_.statement_handle_, SQL_HANDLE_STMT);
+
+    return value;
+}
+
+implementation_row_descriptor::sql_get_descr_field::operator string() const
+{
+    NANODBC_SQLCHAR value[512] = {0};
+    SQLINTEGER len = 0; // total number of bytes
+    RETCODE rc;
+    NANODBC_CALL_RC(
+        NANODBC_FUNC(SQLGetDescField),
+        rc,
+        ird_.descriptor_handle_,
+        static_cast<SQLUSMALLINT>(record_ + 1),
+        field_identifier_,
+        value,
+        sizeof(value) / sizeof(NANODBC_SQLCHAR),
+        &len);
+    if (!success(rc))
+        NANODBC_THROW_DATABASE_ERROR(ird_.statement_handle_, SQL_HANDLE_STMT);
+
+    NANODBC_ASSERT(len % sizeof(NANODBC_SQLCHAR) == 0);
+    len = len / sizeof(NANODBC_SQLCHAR);
+
+    NANODBC_ASSERT(len <= std::char_traits<NANODBC_SQLCHAR>::length(value));
+    return {&value[0], &value[len]};
+}
+
+implementation_row_descriptor::implementation_row_descriptor(result const& result)
+    : statement_handle_(result.native_statement_handle())
+    , statement_columns_count_(result.columns())
+{
+    initialize_descriptor();
+}
+
+implementation_row_descriptor::implementation_row_descriptor(statement const& statement)
+    : statement_handle_(statement.native_statement_handle())
+    , statement_columns_count_(statement.columns())
+{
+    initialize_descriptor();
+}
+
+void implementation_row_descriptor::initialize_descriptor()
+{
+    RETCODE rc;
+    NANODBC_CALL_RC(
+        NANODBC_FUNC(SQLGetStmtAttr),
+        rc,
+        statement_handle_,
+        SQL_ATTR_IMP_ROW_DESC,
+        &descriptor_handle_,
+        0,
+        nullptr);
+    if (!success(rc))
+        NANODBC_THROW_DATABASE_ERROR(statement_handle_, SQL_HANDLE_STMT);
+
+    NANODBC_CALL_RC(
+        NANODBC_FUNC(SQLGetDescField),
+        rc,
+        descriptor_handle_,
+        0,
+        SQL_DESC_COUNT,
+        &descriptor_records_count_,
+        0,
+        nullptr);
+    if (!success(rc))
+        NANODBC_THROW_DATABASE_ERROR(statement_handle_, SQL_HANDLE_STMT);
+}
+
+void implementation_row_descriptor::throw_if_record_is_out_of_range(short record) const
+{
+    if ((record < 0) || (record >= descriptor_records_count_))
+        throw index_range_error();
+}
+
+// Descriptor header fields accessors
+
+auto implementation_row_descriptor::alloc_type() const -> short
+{
+    std::int64_t const value = sql_get_descr_field(*this, 0, SQL_DESC_ALLOC_TYPE);
+    return static_cast<short>(value);
+}
+
+short implementation_row_descriptor::count() const noexcept
+{
+    return descriptor_records_count_;
+}
+
+// Descriptor record fields (records) accessors
+
+auto implementation_row_descriptor::auto_unique_value(short record) const -> bool
+{
+    throw_if_record_is_out_of_range(record);
+    std::int64_t const value = sql_get_descr_field(*this, record, SQL_DESC_AUTO_UNIQUE_VALUE);
+    return value == SQL_TRUE;
+}
+
+auto implementation_row_descriptor::base_column_name(short record) const -> string
+{
+    throw_if_record_is_out_of_range(record);
+    return sql_get_descr_field(*this, record, SQL_DESC_BASE_COLUMN_NAME);
+}
+
+auto implementation_row_descriptor::base_table_name(short record) const -> string
+{
+    throw_if_record_is_out_of_range(record);
+    return sql_get_descr_field(*this, record, SQL_DESC_BASE_TABLE_NAME);
+}
+
+auto implementation_row_descriptor::case_sensitive(short record) const -> bool
+{
+    throw_if_record_is_out_of_range(record);
+    std::int64_t const value = sql_get_descr_field(*this, record, SQL_DESC_CASE_SENSITIVE);
+    if (value == SQL_TRUE)
+        return true;
+    else if (value == SQL_FALSE)
+        return false;
+    else
+        throw std::out_of_range("SQL_DESC_UNNAMED value unknown");
+}
+
+auto implementation_row_descriptor::catalog_name(short record) const -> string
+{
+    throw_if_record_is_out_of_range(record);
+    return sql_get_descr_field(*this, record, SQL_DESC_CATALOG_NAME);
+}
+
+auto implementation_row_descriptor::concise_type(short record) const -> short
+{
+    throw_if_record_is_out_of_range(record);
+    std::int64_t const value = sql_get_descr_field(*this, record, SQL_DESC_CONCISE_TYPE);
+    return static_cast<short>(value);
+}
+
+auto implementation_row_descriptor::display_size(short record) const -> std::int64_t
+{
+    throw_if_record_is_out_of_range(record);
+    return sql_get_descr_field(*this, record, SQL_DESC_DISPLAY_SIZE);
+}
+
+auto implementation_row_descriptor::fixed_prec_scale(short record) const -> short
+{
+    throw_if_record_is_out_of_range(record);
+    std::int64_t const value = sql_get_descr_field(*this, record, SQL_DESC_FIXED_PREC_SCALE);
+    return static_cast<short>(value);
+}
+
+auto implementation_row_descriptor::label(short record) const -> string
+{
+    throw_if_record_is_out_of_range(record);
+    return sql_get_descr_field(*this, record, SQL_DESC_LABEL);
+}
+
+auto implementation_row_descriptor::length(short record) const -> std::uint64_t
+{
+    throw_if_record_is_out_of_range(record);
+    return sql_get_descr_field(*this, record, SQL_DESC_LENGTH);
+}
+
+auto implementation_row_descriptor::local_type_name(short record) const -> string
+{
+    throw_if_record_is_out_of_range(record);
+    return sql_get_descr_field(*this, record, SQL_DESC_LOCAL_TYPE_NAME);
+}
+
+auto implementation_row_descriptor::name(short record) const -> string
+{
+    throw_if_record_is_out_of_range(record);
+    return sql_get_descr_field(*this, record, SQL_DESC_NAME);
+}
+
+auto implementation_row_descriptor::nullable(short record) const -> short
+{
+    throw_if_record_is_out_of_range(record);
+    std::int64_t const value = sql_get_descr_field(*this, record, SQL_DESC_NULLABLE);
+    return static_cast<short>(value);
+}
+
+auto implementation_row_descriptor::num_prec_radix(short record) const -> short
+{
+    throw_if_record_is_out_of_range(record);
+    std::int64_t const value = sql_get_descr_field(*this, record, SQL_DESC_NUM_PREC_RADIX);
+    return static_cast<short>(value);
+}
+
+auto implementation_row_descriptor::octet_length(short record) const -> std::int64_t
+{
+    throw_if_record_is_out_of_range(record);
+    return sql_get_descr_field(*this, record, SQL_DESC_OCTET_LENGTH);
+}
+
+auto implementation_row_descriptor::precision(short record) const -> short
+{
+    throw_if_record_is_out_of_range(record);
+    std::int64_t const value = sql_get_descr_field(*this, record, SQL_DESC_PRECISION);
+    return static_cast<short>(value);
+}
+
+auto implementation_row_descriptor::rowver(short record) const -> short
+{
+    throw_if_record_is_out_of_range(record);
+    std::int64_t const value = sql_get_descr_field(*this, record, SQL_DESC_ROWVER);
+    return static_cast<short>(value);
+}
+
+auto implementation_row_descriptor::scale(short record) const -> short
+{
+    throw_if_record_is_out_of_range(record);
+    std::int64_t const value = sql_get_descr_field(*this, record, SQL_DESC_SCALE);
+    return static_cast<short>(value);
+}
+
+auto implementation_row_descriptor::schema_name(short record) const -> string
+{
+    throw_if_record_is_out_of_range(record);
+    return sql_get_descr_field(*this, record, SQL_DESC_SCHEMA_NAME);
+}
+
+auto implementation_row_descriptor::searchable(short record) const -> short
+{
+    throw_if_record_is_out_of_range(record);
+    std::int64_t const value = sql_get_descr_field(*this, record, SQL_DESC_SEARCHABLE);
+    return static_cast<short>(value);
+}
+
+auto implementation_row_descriptor::table_name(short record) const -> string
+{
+    throw_if_record_is_out_of_range(record);
+    return sql_get_descr_field(*this, record, SQL_DESC_TABLE_NAME);
+}
+
+auto implementation_row_descriptor::type(short record) const -> short
+{
+    throw_if_record_is_out_of_range(record);
+    std::int64_t const value = sql_get_descr_field(*this, record, SQL_DESC_TYPE);
+    return static_cast<short>(value);
+}
+
+auto implementation_row_descriptor::type_name(short record) const -> string
+{
+    throw_if_record_is_out_of_range(record);
+    return sql_get_descr_field(*this, record, SQL_DESC_TYPE_NAME);
+}
+
+auto implementation_row_descriptor::unnamed(short record) const -> bool
+{
+    throw_if_record_is_out_of_range(record);
+    std::int64_t const value = sql_get_descr_field(*this, record, SQL_DESC_UNNAMED);
+    if (value == SQL_NAMED)
+        return false;
+    else if (value == SQL_UNNAMED)
+        return true;
+    else
+        throw std::out_of_range("SQL_DESC_UNNAMED value unknown");
+}
+
+auto implementation_row_descriptor::unsigned_(short record) const -> bool
+{
+    throw_if_record_is_out_of_range(record);
+    std::int64_t const value = sql_get_descr_field(*this, record, SQL_DESC_UNSIGNED);
+    if (value == SQL_TRUE)
+        return true;
+    else if (value == SQL_FALSE)
+        return false;
+    else
+        throw std::out_of_range("SQL_DESC_UNNAMED value unknown");
+}
+
+auto implementation_row_descriptor::updatable(short record) const -> short
+{
+    throw_if_record_is_out_of_range(record);
+    std::int64_t const value = sql_get_descr_field(*this, record, SQL_DESC_UPDATABLE);
+    return static_cast<short>(value);
 }
 
 } // namespace nanodbc

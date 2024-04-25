@@ -215,6 +215,44 @@ TEST_CASE_METHOD(mysql_fixture, "test_execute_multiple", "[mysql][execute]")
     test_execute_multiple();
 }
 
+#if 0 // FIXME: MySQL driver always reports Zero for SQL_DESC_COUNT
+TEST_CASE_METHOD(mysql_fixture, "test_implementation_row_descriptor", "[mysql][descriptor][ird]")
+{
+    test_implementation_row_descriptor();
+}
+
+TEST_CASE_METHOD(
+    mysql_fixture,
+    "test_implementation_row_descriptor_with_expressions",
+    "[mysql][descriptor][ird]")
+{
+    test_implementation_row_descriptor_with_expressions();
+}
+
+TEST_CASE_METHOD(
+    mysql_fixture,
+    "test_implementation_row_descriptor_auto_unique_value",
+    "[mysql][descriptor][ird]")
+{
+    auto c = connect();
+
+    create_table(
+        c, NANODBC_TEXT("test_implementation_row_descriptor_auto_unique_value"), NANODBC_TEXT(R"(
+fid int NOT NULL AUTO_INCREMENT,
+name varchar(60),
+PRIMARY KEY(fid)
+)"));
+
+    auto const sql =
+        NANODBC_TEXT("SELECT fid, name FROM test_implementation_row_descriptor_auto_unique_value");
+    nanodbc::statement s(c, sql);
+    nanodbc::implementation_row_descriptor ird(s);
+    REQUIRE(ird.count() == 2);
+    REQUIRE(ird.auto_unique_value(0));
+    REQUIRE(!ird.auto_unique_value(1));
+}
+#endif
+
 TEST_CASE_METHOD(mysql_fixture, "test_integral", "[mysql][integral]")
 {
     test_integral<mysql_fixture>();
