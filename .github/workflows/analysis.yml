@@ -56,6 +56,7 @@ jobs:
         with:
           name: sarif-file
           path: ${{ steps.run-core-analysis.outputs.sarif }}
+          overwrite: true
 
   native:
     name: NativeRecommendedRules
@@ -92,6 +93,7 @@ jobs:
         with:
           name: sarif-file
           path: ${{ steps.run-native-analysis.outputs.sarif }}
+          overwrite: true
 
   flawfinder:
     name: Flawfinder
