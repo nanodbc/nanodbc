@@ -5731,14 +5731,16 @@ implementation_row_descriptor::sql_get_descr_field::operator string() const
         static_cast<SQLUSMALLINT>(record_ + 1),
         field_identifier_,
         value,
-        sizeof(value),
+        sizeof(value) / sizeof(NANODBC_SQLCHAR),
         &len);
     if (!success(rc))
         NANODBC_THROW_DATABASE_ERROR(ird_.statement_handle_, SQL_HANDLE_STMT);
 
     NANODBC_ASSERT(len % sizeof(NANODBC_SQLCHAR) == 0);
     len = len / sizeof(NANODBC_SQLCHAR);
-    return {value, value + len};
+
+    NANODBC_ASSERT(len <= std::char_traits<NANODBC_SQLCHAR>::length(value));
+    return {&value[0], &value[len]};
 }
 
 implementation_row_descriptor::implementation_row_descriptor(result const& result)
