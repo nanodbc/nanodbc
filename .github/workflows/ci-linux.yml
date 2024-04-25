@@ -226,7 +226,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       sqlserver:
-        image: mcr.microsoft.com/mssql/server:2022-latest-ubuntu
+        image: mcr.microsoft.com/mssql/server:2022-latest
         ports:
         - 1433:1433
         env:
