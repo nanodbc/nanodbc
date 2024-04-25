@@ -14,7 +14,7 @@ jobs:
   documentation:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: avto-dev/markdown-lint@v1
       with:
         args: '**/*.md'
@@ -27,7 +27,7 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: hadolint/hadolint-action@v2.0.0
       with:
         dockerfile: Dockerfile
@@ -35,6 +35,6 @@ jobs:
   vagrant:
     runs-on: macos-12
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - run: vagrant version
     - run: vagrant validate
