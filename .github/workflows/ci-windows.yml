@@ -204,7 +204,7 @@ jobs:
         cmake --build ${{ github.workspace }}/build --config Release --target mysql_tests
     - name: Test
       run: |
-        $env:NANODBC_TEST_CONNSTR_MYSQL="Driver={MySQL ODBC 8.1 ANSI Driver};Server=127.0.0.1;Database=nanodbc;User=root;Password=;big_packets=1;NO_SCHEMA=false"
+        $env:NANODBC_TEST_CONNSTR_MYSQL="Driver={MySQL ODBC 8.3 ANSI Driver};Server=127.0.0.1;Database=nanodbc;User=root;Password=;big_packets=1;NO_SCHEMA=false"
         ctest --test-dir ${{ github.workspace }}/build --build-config Release --output-on-failure --no-tests=error -R mysql_tests
 
   test-postgresql:
