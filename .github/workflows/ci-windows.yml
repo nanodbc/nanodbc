@@ -130,7 +130,7 @@ jobs:
         version: ${{ matrix.mssql }}
     - name: Check
       run: |
-        sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "SELECT @@VERSION;"
+        sqlcmd -S "(localdb)\MSSQLLocalDB" -U sa -P "Password!123" -Q "SELECT @@VERSION;"
         Get-OdbcDriver -Platform 64-bit | Select-Object -ExpandProperty Name
     - name: Configure
       run: |
