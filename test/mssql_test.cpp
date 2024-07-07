@@ -1273,7 +1273,53 @@ TEST_CASE_METHOD(mssql_fixture, "test_datetimeoffset", "[mssql][datetime]")
         REQUIRE(*it++ == '8');
         REQUIRE(*it++ == '0');
         REQUIRE(*it++ == '-');
-        ;
+    }
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_rowversion", "[mssql][rowversion][timestamp]")
+{
+    // The rowversion data type is not a date or time data type, but
+    // it is a unique binary number with storage size of 8 bytes
+    // The timestamp is a deprecated synonym for rowversion.
+    auto connection = connect();
+    create_table(
+        connection, NANODBC_TEXT("test_rowversion"), NANODBC_TEXT("(v int, r rowversion)"));
+    execute(connection, NANODBC_TEXT("insert into test_rowversion (v) values (123)"));
+
+    // select
+    {
+        auto result = execute(connection, NANODBC_TEXT("select r from test_rowversion;"));
+
+        REQUIRE(result.column_name(0) == NANODBC_TEXT("r"));
+        REQUIRE(result.column_datatype(0) == SQL_BINARY);
+        REQUIRE(result.column_datatype_name(0) == NANODBC_TEXT("timestamp")); // not rowversion!
+
+        REQUIRE(result.next());
+        auto t = result.get<std::vector<std::uint8_t>>(0);
+        REQUIRE(t.size() == 8);
+    }
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_timestamp", "[mssql][rowversion][timestamp]")
+{
+    // The rowversion data type is not a date or time data type, but
+    // it is a unique binary number with storage size of 8 bytes
+    // The timestamp is a deprecated synonym for rowversion.
+    auto connection = connect();
+    create_table(connection, NANODBC_TEXT("test_timestamp"), NANODBC_TEXT("(v int, t timestamp)"));
+    execute(connection, NANODBC_TEXT("insert into test_timestamp (v) values (123)"));
+
+    // select
+    {
+        auto result = execute(connection, NANODBC_TEXT("select t from test_timestamp;"));
+
+        REQUIRE(result.column_name(0) == NANODBC_TEXT("t"));
+        REQUIRE(result.column_datatype(0) == SQL_BINARY);
+        REQUIRE(result.column_datatype_name(0) == NANODBC_TEXT("timestamp"));
+
+        REQUIRE(result.next());
+        auto t = result.get<std::vector<std::uint8_t>>(0);
+        REQUIRE(t.size() == 8);
     }
 }
 
