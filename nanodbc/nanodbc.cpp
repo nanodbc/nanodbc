@@ -76,6 +76,15 @@ struct is_optional<std::optional<T>> : std::true_type
 #include <windows.h>
 #endif
 
+#if defined(_MSC_VER)
+#ifndef NANODBC_ENABLE_UNICODE
+// Disable unicode in sqlucode.h on Windows when NANODBC_ENABLE_UNICODE
+// is not defined. This is required because unicode is enabled by
+// default on many Windows systems.
+#define SQL_NOUNICODEMAP
+#endif
+#endif
+
 #include <sql.h>
 #include <sqlext.h>
 
@@ -204,15 +213,6 @@ using nanodbc::wide_string;
 #define NANODBC_CODECVT_TYPE std::codecvt_utf8_utf16
 #else
 #define NANODBC_CODECVT_TYPE std::codecvt_utf8_utf16
-#endif
-#endif
-
-#if defined(_MSC_VER)
-#ifndef NANODBC_ENABLE_UNICODE
-// Disable unicode in sqlucode.h on Windows when NANODBC_ENABLE_UNICODE
-// is not defined. This is required because unicode is enabled by
-// default on many Windows systems.
-#define SQL_NOUNICODEMAP
 #endif
 #endif
 
