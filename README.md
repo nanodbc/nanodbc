@@ -5,11 +5,8 @@
 A small C++ wrapper for the native C ODBC API. Please see the [online documentation][nanodbc] for
 user information, example usage, propaganda, and detailed source level documentation.
 
-[![GitHub release](https://img.shields.io/github/tag/nanodbc/nanodbc.svg)](https://github.com/nanodbc/nanodbc/releases)
-[![GitHub commits](https://img.shields.io/github/commits-since/nanodbc/nanodbc/v2.14.0.svg?style=flat-square)](https://github.com/nanodbc/nanodbc/releases/tag/v2.14.0)
-[![License](https://img.shields.io/github/license/nanodbc/nanodbc.svg?style=flat-square)](https://github.com/nanodbc/nanodbc/blob/main/LICENSE)
-
-[![Gitter](https://img.shields.io/gitter/room/nanodbc/nanodbc.svg?style=flat-square)](https://gitter.im/nanodbc-help/Lobby)
+[![GitHub release](https://img.shields.io/github/tag/nanodbc/nanodbc.svg)](https://github.com/nanodbc/nanodbc/releases) [![GitHub commits](https://img.shields.io/github/commits-since/nanodbc/nanodbc/v2.14.0.svg?style=flat-square)](https://github.com/nanodbc/nanodbc/releases/tag/v2.14.0)
+[![License](https://img.shields.io/github/license/nanodbc/nanodbc.svg?style=flat-square)](https://github.com/nanodbc/nanodbc/blob/main/LICENSE) [![Gitter](https://img.shields.io/gitter/room/nanodbc/nanodbc.svg?style=flat-square)](https://gitter.im/nanodbc-help/Lobby)
 
 ## Build Status
 
@@ -43,7 +40,7 @@ as possible, but I can't guarantee you'll never have to write supporting ODBC co
 have never had to do so.
 
 Major features beyond what's already supported by ODBC are not within the scope of nanodbc. This is
-where the *nano* part of nanodbc becomes relevant: This library is _as minimal as possible_. That
+where the _nano_ part of nanodbc becomes relevant: This library is _as minimal as possible_. That
 means no dependencies beyond standard C++ and typical ODBC headers and libraries to link against.
 No features unsupported by existing ODBC API calls.
 
@@ -91,13 +88,13 @@ cd path/to/nanodbc/repository
 mkdir build
 cd build
 cmake [Build Options] ..
-make # creates shared library
-make nanodbc # creates shared library
-make tests # builds the tests
-make test # runs the tests
-make check # builds and then runs tests
-make examples # builds all the example programs
-make install # installs nanodbc.h and shared library
+make           # creates shared library
+make nanodbc   # creates shared library
+make tests     # builds the tests
+make test      # runs the tests
+make check     # builds and then runs tests
+make examples  # builds all the example programs
+make install   # installs nanodbc.h and shared library
 ```
 
 ### Build Options
@@ -178,19 +175,20 @@ To get up and running with nanodbc as fast as possible consider using the provid
 For example, to spin up a [docker][docker] container suitable for testing and development of nanodbc:
 
 ```shell
-cd /path/to/nanodbc
-docker build -t nanodbc .
+$ cd /path/to/nanodbc
+$ docker build -t nanodbc .
 
-# Use container local nanodbc repository
-docker run -it nanodbc /bin/bash
-root@hash:/# mkdir -p /opt/nanodbc/build && cd /opt/nanodbc-host/build
+# To build using the nanodbc already source within the container
+$ docker run -it nanodbc /bin/bash
 
-# Alternatively, bind host repository as container volume
-docker run -v "$(pwd)":"/opt/$(basename $(pwd))-host" -it nanodbc /bin/bash
-root@hash:/# mkdir -p /opt/nanodbc-host/build && cd /opt/nanodbc-host/build
+# Alternatively, mount the nanodbc repository into the container as a volume
+$ docker run -v "$(pwd)":"/opt/$(basename $(pwd))" -it nanodbc /bin/bash
 
-root@hash:/opt/nanodbc-host/build# cmake ..
-root@hash:/opt/nanodbc-host/build# make nanodbc
+# Then, enter the source directory and build nanodbc:
+root@hash:/# mkdir -p /opt/nanodbc/build
+root@hash:/# cd /opt/nanodbc/build
+root@hash:/opt/nanodbc/build# cmake ..
+root@hash:/opt/nanodbc/build# make nanodbc
 ```
 
 Or, spin up the complete multi-container environment with database services:
@@ -278,7 +276,7 @@ Finally, announce the new release to the public.
 - Clean up `bind_*` family of functions, reduce any duplication.
 - Improve documentation: The main website and API docs should be more responsive.
 - Provide more examples in documentation, more details, and point out any gotchas.
-- Versioned generated source level API documentation for `matesr` and previous releases.
+- Versioned generated source level API documentation for `master` and previous releases.
 - Add "HOWTO Build" documentation for Windows, OS X, and Linux.
 
 ---
@@ -292,9 +290,7 @@ Finally, announce the new release to the public.
 [nanodbc]:              http://nanodbc.io
 [nanodbc-banner]:       https://cloud.githubusercontent.com/assets/1903876/11858632/cc0e21e6-a428-11e5-9a84-39fa27984914.png
 [nanodbc-coverity]:     https://github.com/nanodbc/nanodbc/tree/coverity_scan
-[nanodbc-makefile]:     https://github.com/nanodbc/nanodbc/blob/gh-pages/Makefile
 [nanodbc-new-issue]:    https://github.com/nanodbc/nanodbc/issues/new
-[nanodbc-releases]:     https://github.com/nanodbc/nanodbc/releases
 
 [boost]:        http://www.boost.org/
 [boost-locale]: http://www.boost.org/doc/libs/release/libs/locale/
@@ -307,19 +303,14 @@ Finally, announce the new release to the public.
 [cpp-core]:     https://github.com/isocpp/CppCoreGuidelines
 [cpp-std]:      https://isocpp.org/std/status
 [docker]:       https://www.docker.com/
-[doxygen]:      http://www.doxygen.org
 [gh-pages]:     https://help.github.com/articles/what-are-github-pages/
 [iodbc]:        http://www.iodbc.org/
-[jekyll]:       https://jekyllrb.com/
 [pimpl]:        http://c2.com/cgi/wiki?PimplIdiom
 [semver]:       http://semver.org/
 [sqlite]:       https://www.sqlite.org/
 [sqliteodbc]:   http://www.ch-werner.de/sqliteodbc/
 [unixodbc]:     http://www.unixodbc.org/
 [vagrant]:      https://www.vagrantup.com/
-
-[ci-windows]:   https://github.com/nanodbc/nanodbc/actions/workflows/ci-windows.yml
-[ci-win-svg]:   https://github.com/nanodbc/nanodbc/actions/workflows/ci-windows.yml/badge.svg?branch=main
 
 [coverity]:         https://scan.coverity.com/projects/nanodbc-nanodbc
 [coverity-badge]:   https://scan.coverity.com/projects/7437/badge.svg

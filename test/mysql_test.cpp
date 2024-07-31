@@ -70,7 +70,7 @@ TEST_CASE_METHOD(mysql_fixture, "test_affected_rows", "[mysql][affected_rows]")
         auto result = execute(conn, NANODBC_TEXT("DELETE FROM nanodbc_test_temp_table"));
         REQUIRE(result.affected_rows() == 2);
     }
-    // Inseting/retrieving long strings
+    // Inserting/retrieving long strings
     {
         nanodbc::string long_string(1024, '\0');
         for (unsigned i = 0; i < 1024; i++)
