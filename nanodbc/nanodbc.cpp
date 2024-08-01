@@ -875,7 +875,7 @@ inline void allocate_dbc_handle(SQLHDBC& conn, SQLHENV env)
 
 } // namespace
 
-// connection::attribute
+// nanodbc::attribute
 #ifdef NANODBC_HAS_STD_VARIANT
 namespace nanodbc
 {
