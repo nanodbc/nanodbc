@@ -28,7 +28,7 @@ struct mssql_fixture : public test_case_fixture
             connection_string_ = get_env("NANODBC_TEST_CONNSTR_MSSQL");
     }
 
-#if __cpp_lib_variant >= 201606L
+#ifdef NANODBC_HAS_STD_VARIANT
     using base_test_fixture::connect;
     nanodbc::connection
     connect(std::list<nanodbc::connection::attribute> const& attributes, bool const& is_async)

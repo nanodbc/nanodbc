@@ -404,7 +404,7 @@ struct timestamp
     std::int32_t fract; ///< Fractional seconds.
 };
 
-#if __cpp_lib_variant >= 201606L
+#ifdef NANODBC_HAS_STD_VARIANT
 /// \brief A class representing a connection or a statement attribute.
 ///
 /// Callers should create attributes using the 3 argument constructor.
@@ -784,7 +784,7 @@ class statement
 private:
     class statement_impl;
 
-#if __cpp_lib_variant >= 201606L
+#ifdef NANODBC_HAS_STD_VARIANT
 public:
     class attribute : public nanodbc::attribute
     {
