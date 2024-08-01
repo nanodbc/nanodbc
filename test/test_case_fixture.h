@@ -14,6 +14,7 @@
 
 #ifdef _MSC_VER
 #include <comutil.h> // static nanodbc links w/ #pragma comment(lib, "comsuppw.lib")
+#include <nanodbc/variant_row_cached_result.h>
 #endif
 
 #ifdef _MSC_VER
@@ -71,7 +72,38 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(i == batch_size);
         }
     }
+#ifdef NANODBC_HAS_STD_OPTIONAL
+    void test_batch_insert_integral_optional()
+    {
+        auto conn = connect();
+        create_table(
+            conn, NANODBC_TEXT("test_batch_insert_integral_optional"), NANODBC_TEXT("(i int)"));
 
+        std::size_t const batch_size = 9;
+        int values[batch_size] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+        nanodbc::statement stmt(conn);
+        prepare(
+            stmt, NANODBC_TEXT("insert into test_batch_insert_integral_optional(i) values (?)"));
+        REQUIRE(stmt.parameters() == 1);
+
+        stmt.bind(0, values, batch_size);
+
+        nanodbc::transact(stmt, batch_size);
+        {
+            auto result = nanodbc::execute(
+                conn,
+                NANODBC_TEXT("select i from test_batch_insert_integral_optional order by i asc"));
+            std::size_t i = 0;
+            while (result.next())
+            {
+                REQUIRE(*result.get<std::optional<int>>(0) == values[i]);
+                ++i;
+            }
+            REQUIRE(i == batch_size);
+        }
+    }
+#endif
     void test_batch_insert_mixed()
     {
         std::size_t const batch_size = 9;
@@ -388,7 +420,9 @@ struct test_case_fixture : public base_test_fixture
             if (vendor_ == database_vendor::sqlite)
             {
 #if defined _WIN32
-                REQUIRE(columns.sql_data_type() == -9); // FIXME: What is this type?
+                REQUIRE(
+                    columns.sql_data_type() ==
+                    -9); // FIXME: If not SQL_WVARCHAR(-9), what is this type?
                 REQUIRE(columns.column_size() == 3);
 #elif defined __APPLE__
                 REQUIRE(columns.sql_data_type() == SQL_VARCHAR);
@@ -420,9 +454,18 @@ struct test_case_fixture : public base_test_fixture
             else
             {
                 REQUIRE(columns.sql_data_type() == SQL_DATE);
-                REQUIRE(columns.column_size() == 10); // total number of characters required to
-                                                      // display the value when it is converted to
-                                                      // characters
+                if (contains_string(dbms, NANODBC_TEXT("MySQL")))
+                {
+                    // MySQL Connector 8.x will reports for COLUMNS_SIZE field of SQLColumns
+                    // resultset Apparently, MySQL driver can report NULL for COLUMN_SIZE
+                    // https://dev.mysql.com/doc/relnotes/connector-odbc/en/news-8-0-33.html
+                }
+                else
+                {
+                    // total number of characters required to display the value
+                    // when it is converted to characters
+                    REQUIRE(columns.column_size() == 10);
+                }
             }
 
             REQUIRE(columns.next());
@@ -505,6 +548,16 @@ struct test_case_fixture : public base_test_fixture
 
         auto names = catalog.list_schemas();
         REQUIRE(!names.empty());
+    }
+
+    void test_catalog_list_table_types()
+    {
+        auto conn = connect();
+        REQUIRE(conn.connected());
+        nanodbc::catalog catalog(conn);
+
+        auto types = catalog.list_table_types();
+        REQUIRE(!types.empty());
     }
 
     void test_catalog_primary_keys()
@@ -882,8 +935,10 @@ struct test_case_fixture : public base_test_fixture
         {
 #ifdef _WIN32
             REQUIRE(result.column_datatype_name(1) == NANODBC_TEXT("decimal"));
-            REQUIRE(result.column_datatype(1) == -9);   // FIXME: What is this type?
-            REQUIRE(result.column_c_datatype(1) == -8); // FIXME: What is this type
+            REQUIRE(
+                result.column_datatype(1) ==
+                -9); // FIXME: If not SQL_WVARCHAR(-9), what is this type?
+            REQUIRE(result.column_c_datatype(1) == -8); // FIXME: What is this type?
             REQUIRE(result.column_size(1) == 7); // FIXME: SQLite ODBC mis-reports decimal digits?
 #else
             REQUIRE(result.column_datatype(1) == SQL_VARCHAR);
@@ -986,6 +1041,43 @@ struct test_case_fixture : public base_test_fixture
         }
     }
 
+#ifdef NANODBC_HAS_STD_OPTIONAL
+    void test_date_optional()
+    {
+        auto connection = connect();
+        create_table(connection, NANODBC_TEXT("test_date_optional"), NANODBC_TEXT("d date"));
+
+        // insert
+        {
+            nanodbc::statement statement(connection);
+            prepare(statement, NANODBC_TEXT("insert into test_date_optional(d) values (?);"));
+            REQUIRE(statement.parameters() == 1);
+
+            nanodbc::date d{2016, 7, 12};
+            statement.bind(0, &d);
+            execute(statement);
+        }
+
+        // select
+        {
+            auto result = execute(connection, NANODBC_TEXT("select d from test_date_optional;"));
+
+            REQUIRE(result.column_name(0) == NANODBC_TEXT("d"));
+#if (ODBCVER > SQL_OV_ODBC2)
+            REQUIRE(result.column_datatype(0) == SQL_TYPE_DATE);
+#else
+            REQUIRE(result.column_datatype(0) == SQL_DATE);
+#endif
+            REQUIRE(result.column_datatype_name(0) == NANODBC_TEXT("date"));
+
+            REQUIRE(result.next());
+            auto d = result.get<std::optional<nanodbc::date>>(0);
+            REQUIRE((*d).year == 2016);
+            REQUIRE((*d).month == 7);
+            REQUIRE((*d).day == 12);
+        }
+    }
+#endif
     void test_dbms_info()
     {
         // A generic test to exercise the DBMS info API is callable.
@@ -1280,6 +1372,235 @@ struct test_case_fixture : public base_test_fixture
 
         // Test SQLULEN results
         REQUIRE(connection.get_info<uint64_t>(SQL_DRIVER_HDBC) > 0);
+    }
+
+    void test_implementation_row_descriptor()
+    {
+        auto c = connect();
+        drop_table(c, NANODBC_TEXT("v_t1_t2"), true);
+        drop_table(c, NANODBC_TEXT("t1"));
+        drop_table(c, NANODBC_TEXT("t2"));
+
+        create_table(c, NANODBC_TEXT("t1"), NANODBC_TEXT(R"(
+t1_fid1 int NOT NULL,
+t1_fid2 int NOT NULL,
+name varchar(60) NOT NULL,
+PRIMARY KEY(t1_fid1, t1_fid2)
+)"));
+        execute(
+            c,
+            NANODBC_TEXT("INSERT INTO t1(t1_fid1,t1_fid2,name) VALUES (1,10,'John Malkovich');"));
+        execute(
+            c, NANODBC_TEXT("INSERT INTO t1(t1_fid1,t1_fid2,name) VALUES (2,20,'Gina Bellman');"));
+        execute(
+            c, NANODBC_TEXT("INSERT INTO t1(t1_fid1,t1_fid2,name) VALUES (3,30,'Bruce Willis');"));
+        create_table(c, NANODBC_TEXT("t2"), NANODBC_TEXT(R"(
+t2_fid int NOT NULL,
+age int NOT NULL,
+PRIMARY KEY(t2_fid)
+)"));
+        execute(c, NANODBC_TEXT("INSERT INTO t2(t2_fid,age) VALUES (1,53)"));
+        execute(c, NANODBC_TEXT("INSERT INTO t2(t2_fid,age) VALUES (2,41)"));
+        execute(c, NANODBC_TEXT("INSERT INTO t2(t2_fid,age) VALUES (3,60)"));
+
+        // table
+        {
+            nanodbc::string sql =
+                NANODBC_TEXT("SELECT t1_fid1 AS fid1, t1_fid2, name FROM t1 AS t");
+            if (vendor_ == database_vendor::sqlserver)
+                sql +=
+                    NANODBC_TEXT(" FOR BROWSE"); // attributes like table name available only for
+                                                 // SELECT statements containing FOR BROWSE clause
+
+            nanodbc::statement s(c, sql);
+            nanodbc::implementation_row_descriptor ird(s);
+            REQUIRE(ird.count() == 3);
+            REQUIRE(ird.count() == ird.count());
+            for (short i = 0; i < ird.count(); i++)
+            {
+                if (vendor_ == database_vendor::mysql)
+                {
+                    REQUIRE(ird.catalog_name(i) != NANODBC_TEXT(""));
+                    REQUIRE(ird.schema_name(i) == NANODBC_TEXT(""));
+                }
+                else if (vendor_ == database_vendor::postgresql)
+                {
+                    if (i == 0) // NOTICE: fid1 alias has no catalog!(?)
+                        REQUIRE(ird.catalog_name(i) == NANODBC_TEXT(""));
+                    else
+                        REQUIRE(ird.catalog_name(i) != NANODBC_TEXT(""));
+                    REQUIRE(ird.schema_name(i) == NANODBC_TEXT("public"));
+                }
+                else if (vendor_ == database_vendor::sqlite)
+                {
+                    REQUIRE(ird.catalog_name(i) == NANODBC_TEXT("main"));
+                    REQUIRE(ird.schema_name(i) == NANODBC_TEXT(""));
+                }
+                else if (vendor_ == database_vendor::sqlserver)
+                {
+                    REQUIRE(ird.catalog_name(i) != NANODBC_TEXT(""));
+                    REQUIRE(ird.schema_name(i) == NANODBC_TEXT(""));
+                }
+                else
+                {
+                    REQUIRE(ird.schema_name(i) != NANODBC_TEXT(""));
+                    REQUIRE(ird.schema_name(i) != NANODBC_TEXT(""));
+                }
+            }
+            // t1_fid1
+            REQUIRE(!ird.auto_unique_value(0));
+            if (vendor_ == database_vendor::sqlite)
+                REQUIRE(ird.base_column_name(0) == NANODBC_TEXT("fid1"));
+            else
+                REQUIRE(ird.base_column_name(0) == NANODBC_TEXT("t1_fid1"));
+            REQUIRE(ird.name(0) == NANODBC_TEXT("fid1"));
+            REQUIRE(ird.base_table_name(0) == NANODBC_TEXT("t1"));
+            if (vendor_ == database_vendor::mysql)
+                REQUIRE(ird.table_name(0) == NANODBC_TEXT("t"));
+            else
+                REQUIRE(ird.table_name(0) == NANODBC_TEXT("t1"));
+            // t1_fid2
+            REQUIRE(!ird.auto_unique_value(1));
+            REQUIRE(ird.base_column_name(1) == NANODBC_TEXT("t1_fid2"));
+            REQUIRE(ird.name(1) == NANODBC_TEXT("t1_fid2"));
+            REQUIRE(ird.base_table_name(1) == NANODBC_TEXT("t1"));
+            if (vendor_ == database_vendor::mysql)
+                REQUIRE(ird.table_name(1) == NANODBC_TEXT("t"));
+            else
+                REQUIRE(ird.table_name(1) == NANODBC_TEXT("t1"));
+            // name
+            REQUIRE(ird.base_column_name(2) == NANODBC_TEXT("name"));
+            REQUIRE(ird.name(2) == NANODBC_TEXT("name"));
+            REQUIRE(ird.base_table_name(2) == NANODBC_TEXT("t1"));
+            if (vendor_ == database_vendor::mysql)
+                REQUIRE(ird.table_name(2) == NANODBC_TEXT("t"));
+            else
+                REQUIRE(ird.table_name(2) == NANODBC_TEXT("t1"));
+        }
+
+        create_table(
+            c,
+            NANODBC_TEXT("v_t1_t2"),
+            NANODBC_TEXT("SELECT t1.*, t2.* FROM t1 INNER JOIN t2 ON t1.t1_fid1 = t2.t2_fid"),
+            true);
+
+        // view
+        {
+            nanodbc::string sql = NANODBC_TEXT("SELECT t1_fid1 AS fid1, t1_fid2 AS fid2, t2_fid AS "
+                                               "fid3, name AS n, age AS a FROM v_t1_t2");
+            if (vendor_ == database_vendor::sqlserver)
+                sql +=
+                    NANODBC_TEXT(" FOR BROWSE"); // attributes like table name available only for
+                                                 // SELECT statements containing FOR BROWSE clause
+
+            nanodbc::statement s(c, sql);
+            nanodbc::implementation_row_descriptor ird(s);
+            REQUIRE(ird.count() == 5);
+            // fid1
+            if (vendor_ == database_vendor::sqlite)
+                REQUIRE(ird.base_column_name(0) == NANODBC_TEXT("fid1"));
+            else
+                REQUIRE(ird.base_column_name(0) == NANODBC_TEXT("t1_fid1"));
+            REQUIRE(ird.name(0) == NANODBC_TEXT("fid1"));
+            if (vendor_ == database_vendor::mysql || vendor_ == database_vendor::postgresql)
+            {
+                REQUIRE(ird.base_table_name(0) == NANODBC_TEXT("v_t1_t2"));
+                REQUIRE(ird.table_name(0) == NANODBC_TEXT("v_t1_t2"));
+            }
+            else
+            {
+                REQUIRE(ird.base_table_name(0) == NANODBC_TEXT("t1"));
+                REQUIRE(ird.table_name(0) == NANODBC_TEXT("t1"));
+            }
+        }
+    }
+
+    void test_implementation_row_descriptor_with_expressions()
+    {
+        auto c = connect();
+        nanodbc::string sql = NANODBC_TEXT("SELECT 'test' AS name, 2 + 3 AS age, 2 * 3");
+        if (vendor_ == database_vendor::sqlserver)
+            sql += NANODBC_TEXT(" FOR BROWSE"); // attributes like table name available only for
+                                                // SELECT statements containing FOR BROWSE clause
+
+        nanodbc::statement s(c, sql);
+        nanodbc::implementation_row_descriptor ird(s);
+        REQUIRE(ird.count() == 3);
+        REQUIRE(ird.count() == ird.count());
+        for (short i = 0; i < ird.count(); i++)
+        {
+            if (vendor_ == database_vendor::mysql)
+            {
+                REQUIRE(ird.catalog_name(i) != NANODBC_TEXT(""));
+                REQUIRE(ird.schema_name(i) == NANODBC_TEXT(""));
+            }
+            else if (vendor_ == database_vendor::postgresql)
+            {
+                REQUIRE(ird.catalog_name(i) == NANODBC_TEXT(""));
+                REQUIRE(ird.schema_name(i) == NANODBC_TEXT(""));
+            }
+            else if (vendor_ == database_vendor::sqlite)
+            {
+                REQUIRE(ird.catalog_name(i) == NANODBC_TEXT(""));
+                REQUIRE(ird.schema_name(i) == NANODBC_TEXT(""));
+            }
+            else if (vendor_ == database_vendor::sqlserver)
+            {
+                REQUIRE(ird.catalog_name(i) == NANODBC_TEXT(""));
+                REQUIRE(ird.schema_name(i) == NANODBC_TEXT(""));
+            }
+            else
+            {
+                REQUIRE(ird.schema_name(i) != NANODBC_TEXT(""));
+                REQUIRE(ird.schema_name(i) != NANODBC_TEXT(""));
+            }
+        }
+        // name
+        REQUIRE(!ird.auto_unique_value(0));
+        if (vendor_ == database_vendor::sqlite || vendor_ == database_vendor::postgresql)
+            REQUIRE(ird.base_column_name(0) == NANODBC_TEXT("name"));
+        else
+            REQUIRE(ird.base_column_name(0) == NANODBC_TEXT(""));
+        REQUIRE(ird.name(0) == NANODBC_TEXT("name"));
+        REQUIRE(ird.base_table_name(0) == NANODBC_TEXT(""));
+        REQUIRE(ird.table_name(0) == NANODBC_TEXT(""));
+        // age
+        REQUIRE(!ird.auto_unique_value(1));
+        if (vendor_ == database_vendor::sqlite || vendor_ == database_vendor::postgresql)
+            REQUIRE(ird.base_column_name(1) == NANODBC_TEXT("age"));
+        else
+            REQUIRE(ird.base_column_name(1) == NANODBC_TEXT(""));
+        REQUIRE(ird.name(1) == NANODBC_TEXT("age"));
+        REQUIRE(ird.base_table_name(1) == NANODBC_TEXT(""));
+        REQUIRE(ird.table_name(1) == NANODBC_TEXT(""));
+        // 2 * 3
+        REQUIRE(!ird.auto_unique_value(2));
+        if (vendor_ == database_vendor::mysql)
+        {
+            REQUIRE(ird.base_column_name(2) == NANODBC_TEXT(""));
+            REQUIRE(ird.name(2) == NANODBC_TEXT("2 * 3"));
+            REQUIRE(!ird.unnamed(2));
+        }
+        else if (vendor_ == database_vendor::postgresql)
+        {
+            REQUIRE(ird.base_column_name(2) == NANODBC_TEXT("?column?"));
+            REQUIRE(ird.name(2) == NANODBC_TEXT("?column?"));
+            REQUIRE(!ird.unnamed(2));
+        }
+        else if (vendor_ == database_vendor::sqlite)
+        {
+            REQUIRE(ird.base_column_name(2) == NANODBC_TEXT("2 * 3"));
+            REQUIRE(ird.name(2) == NANODBC_TEXT("2 * 3"));
+            REQUIRE_THROWS_WITH(!ird.unnamed(2), Catch::Contains("unsupported column attribute"));
+        }
+        else
+        {
+            REQUIRE(ird.base_column_name(2) == NANODBC_TEXT(""));
+            REQUIRE(ird.name(2) == NANODBC_TEXT(""));
+            REQUIRE(ird.unnamed(2));
+        }
+        REQUIRE(ird.base_table_name(2) == NANODBC_TEXT(""));
+        REQUIRE(ird.table_name(2) == NANODBC_TEXT(""));
     }
 
     template <class T>
@@ -1791,6 +2112,35 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(ref == name);
     }
 
+#ifdef NANODBC_HAS_STD_OPTIONAL
+    void test_string_optional()
+    {
+        nanodbc::connection connection = connect();
+        REQUIRE(connection.native_dbc_handle() != nullptr);
+        REQUIRE(connection.native_env_handle() != nullptr);
+        REQUIRE(connection.transactions() == std::size_t(0));
+
+        const nanodbc::string name = NANODBC_TEXT("Fred");
+
+        drop_table(connection, NANODBC_TEXT("test_string_optional"));
+        execute(connection, NANODBC_TEXT("create table test_string_optional (s varchar(10));"));
+
+        nanodbc::statement query(connection);
+        prepare(query, NANODBC_TEXT("insert into test_string_optional(s) values(?)"));
+        REQUIRE(query.parameters() == 1);
+        query.bind(0, name.c_str());
+        nanodbc::execute(query);
+
+        nanodbc::result results =
+            execute(connection, NANODBC_TEXT("select s from test_string_optional;"));
+        REQUIRE(results.next());
+        REQUIRE(*results.get<std::optional<nanodbc::string>>(0) == NANODBC_TEXT("Fred"));
+
+        std::optional<nanodbc::string> ref;
+        results.get_ref(0, ref);
+        REQUIRE(*ref == name);
+    }
+#endif
     void test_string_with_varchar_max()
     {
         nanodbc::connection connection = connect();
@@ -2034,6 +2384,34 @@ struct test_case_fixture : public base_test_fixture
         }
     }
 
+#ifdef NANODBC_HAS_STD_OPTIONAL
+    void test_time_optional()
+    {
+        auto connection = connect();
+        create_table(connection, NANODBC_TEXT("test_time_optional"), NANODBC_TEXT("t time"));
+
+        // insert
+        {
+            nanodbc::statement statement(connection);
+            prepare(statement, NANODBC_TEXT("insert into test_time_optional(t) values (?);"));
+            REQUIRE(statement.parameters() == 1);
+
+            nanodbc::time t{11, 45, 59};
+            statement.bind(0, &t);
+            execute(statement);
+        }
+
+        // select
+        {
+            auto result = execute(connection, NANODBC_TEXT("select t from test_time_optional;"));
+            REQUIRE(result.next());
+            auto t = result.get<std::optional<nanodbc::time>>(0);
+            REQUIRE((*t).hour == 11);
+            REQUIRE((*t).min == 45);
+            REQUIRE((*t).sec == 59);
+        }
+    }
+#endif
     void test_transaction()
     {
         nanodbc::connection connection = connect();
@@ -2238,8 +2616,8 @@ struct test_case_fixture : public base_test_fixture
             NANODBC_TEXT("create table ") + table_name + NANODBC_TEXT("(") +
                 NANODBC_TEXT("c0 int NULL,") + NANODBC_TEXT("c1 smallint NULL,") +
                 NANODBC_TEXT("c2 float NULL,") + NANODBC_TEXT("c3 decimal(9, 3) NULL,") +
-                NANODBC_TEXT("c4 date NULL,") + // seems more portable than datetime (SQL Server),
-                                                // timestamp (PostgreSQL, MySQL)
+                NANODBC_TEXT("c4 date NULL,") + // seems more portable than datetime (SQL
+                                                // Server), timestamp (PostgreSQL, MySQL)
                 NANODBC_TEXT("c5 varchar(60) NULL,") + NANODBC_TEXT("c6 varchar(120) NULL,") +
                 NANODBC_TEXT("c7 ") + text_type_name + NANODBC_TEXT(" NULL,") +
                 NANODBC_TEXT("c8 ") + binary_type_name + NANODBC_TEXT(" NULL);"));
@@ -2346,6 +2724,76 @@ struct test_case_fixture : public base_test_fixture
                 REQUIRE(v == v_null);
             }
         }
+    }
+
+    void test_win32_variant_row_cached_result()
+    {
+        auto cn = connect();
+        create_table(
+            cn,
+            NANODBC_TEXT("test_win32_variant_row_cached_result"),
+            NANODBC_TEXT(
+                "(i0 int, s1 varchar(60), f2 float, s3 varchar(60), d4 decimal(9, 3), b5 ") +
+                get_binary_type_name(256) + NANODBC_TEXT(", dt6 date, s7 varchar(60), t8 time)"));
+
+        for (short v : {0, 1, 2})
+        {
+            // test data
+            int i = v;
+            double f = 3.14159265359 + v;
+            double d = 3.141 + v;
+            nanodbc::date dt{2022, 4 + v, 12 - v};
+            nanodbc::time t{19, 5 + v, 30 - v};
+            nanodbc::string s1 =
+                NANODBC_TEXT("this is s1 #") + nanodbc::test::convert(std::to_string(1 + v));
+            nanodbc::string s3 =
+                NANODBC_TEXT("this is s3 #") + nanodbc::test::convert(std::to_string(3 + v));
+            nanodbc::string s7 =
+                NANODBC_TEXT("this is s7 #") + nanodbc::test::convert(std::to_string(7 + v));
+            std::vector<std::vector<std::uint8_t>> b5 = {
+                from_hex("11f830737ff4bc41a4ffe792d073f41f")};
+
+            nanodbc::statement st(cn);
+            prepare(
+                st,
+                NANODBC_TEXT("insert into test_win32_variant_row_cached_result "
+                             "(i0,s1,f2,s3,d4,b5,dt6,s7,t8) values "
+                             "(?,?,?,?,?,?,?,?,?);"));
+            st.bind(0, &i);
+            st.bind_strings(1, s1.c_str(), s1.size(), 1);
+            st.bind(2, &f);
+            st.bind_strings(3, s3.c_str(), s3.size(), 1);
+            st.bind(4, &d);
+            st.bind(5, b5);
+            st.bind(6, &dt);
+            st.bind_strings(7, s7.c_str(), s7.size(), 1);
+            st.bind(8, &t);
+            execute(st);
+        }
+
+        nanodbc::variant_row_cached_result rs = execute(
+            cn,
+            NANODBC_TEXT("select i0,s1,f2,s3,d4,b5,dt6,s7,t8 from "
+                         "test_win32_variant_row_cached_result;"));
+        rs.unbind(); // allow interleaved bound and unbound columns access
+        short row_count = 0;
+        while (rs.next())
+        {
+            for (short column = 0; column < rs.columns(); column++)
+            {
+                REQUIRE(!rs.is_null(column));
+
+                auto v = rs.get(column);
+                REQUIRE(v.vt != VT_NULL);
+                REQUIRE(v.vt != VT_EMPTY);
+
+                _bstr_t s(v);
+                if (v.vt != (VT_ARRAY | VT_UI1))
+                    REQUIRE(s.length() != 0);
+            }
+            row_count++;
+        }
+        REQUIRE(row_count == 3);
     }
 
 #endif // _MSC_VER
@@ -2469,6 +2917,16 @@ struct test_case_fixture : public base_test_fixture
             nanodbc::result results = stmt.execute();
             REQUIRE(results.affected_rows() == 1);
         }
+    }
+
+    void test_std_optional()
+    {
+#ifdef NANODBC_HAS_STD_OPTIONAL
+        test_batch_insert_integral_optional();
+        test_string_optional();
+        test_time_optional();
+        test_date_optional();
+#endif
     }
 };
 

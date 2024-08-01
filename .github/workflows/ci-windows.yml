@@ -8,92 +8,108 @@ on:
   push:
     branches:
     - main
-    - ml/*
     paths:
-      - '**.cpp'
-      - '**.h'
-      - '**/CMakeLists.txt'
-      - '.github/workflows/ci-linux.yml'
+    - '**.cpp'
+    - '**.h'
+    - '**/CMakeLists.txt'
+    - '.github/workflows/ci-windows.yml'
   pull_request:
     paths:
-      - '**.cpp'
-      - '**.h'
-      - '**/CMakeLists.txt'
-      - '.github/workflows/ci-linux.yml'
+    - '**.cpp'
+    - '**.h'
+    - '**/CMakeLists.txt'
+    - '.github/workflows/ci-windows.yml'
 
 jobs:
+  check-format:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        path:
+        - check: 'nanodbc'
+          ignore: ''
+        - check: 'test'
+          ignore: 'catch'
+        - check: 'example'
+          ignore: ''
+    steps:
+    - uses: actions/checkout@v3
+    - uses: jidicula/clang-format-action@v4.11.0
+      with:
+        clang-format-version: '15'
+        check-path: ${{ matrix.path['check'] }}
+        exclude-regex: ${{ matrix.path['ignore'] }}
+
   build-msvc:
+    needs: [check-format]
     strategy:
       fail-fast: false
       matrix:
         include:
-          - { cxxstd: '20', toolset: v143, vs: 2022, architecture: x64, os: windows-2022 }
-          - { cxxstd: '17', toolset: v143, vs: 2022, architecture: x64, os: windows-2022 }
-          - { cxxstd: '14', toolset: v143, vs: 2022, architecture: x64, os: windows-2022 }
-          - { cxxstd: '17', toolset: v142, vs: 2019, architecture: x64, os: windows-2019 }
-          - { cxxstd: '14', toolset: v142, vs: 2019, architecture: x64, os: windows-2019 }
-          # Visual Studio 2017
-          - { cxxstd: '17', toolset: v141, vs: 2019, architecture: x64, os: windows-2019 }
-          - { cxxstd: '14', toolset: v141, vs: 2019, architecture: x64, os: windows-2019 }
-          # Visual Studio 2015(TODO: remove as deprecated and to save CI time)
-          #- { cxxstd: '14', toolset: v141, vs: 2019, architecture: x64, os: windows-2019 }
+        - { cxxstd: '20', toolset: v143, vs: 2022, architecture: x64, os: windows-2022 }
+        - { cxxstd: '17', toolset: v143, vs: 2022, architecture: x64, os: windows-2022 }
+        - { cxxstd: '14', toolset: v143, vs: 2022, architecture: x64, os: windows-2022 }
+        - { cxxstd: '17', toolset: v142, vs: 2019, architecture: x64, os: windows-2019 }
+        - { cxxstd: '14', toolset: v142, vs: 2019, architecture: x64, os: windows-2019 }
+        # Visual Studio 2017
+        - { cxxstd: '17', toolset: v141, vs: 2019, architecture: x64, os: windows-2019 }
+        - { cxxstd: '14', toolset: v141, vs: 2019, architecture: x64, os: windows-2019 }
     name: build-vs${{ matrix.vs }}-${{ matrix.toolset }}-std-${{ matrix.cxxstd }}
     runs-on: ${{ matrix.os }}
     env:
       CC: ${{ matrix.cc }}
       CXX: ${{ matrix.cxx }}
     steps:
-      - uses: actions/checkout@v3
-      - name: Check
-        run: |
-          cmake --version
-      - name: Configure
-        run: |
-          cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "Visual Studio ${{ matrix.vs == '2022' && '17' || '16' }} ${{matrix.vs }}" -A ${{ matrix.architecture }} -T ${{ matrix.toolset }} -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=${{matrix.cxxstd}}
-      - name: Build
-        run: |
-          cmake --build ${{ github.workspace }}/build
+    - uses: actions/checkout@v3
+    - name: Check
+      run: |
+        cmake --version
+    - name: Configure
+      run: |
+        cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "Visual Studio ${{ matrix.vs == '2022' && '17' || '16' }} ${{matrix.vs }}" -A ${{ matrix.architecture }} -T ${{ matrix.toolset }} -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=${{matrix.cxxstd}}
+    - name: Build
+      run: |
+        cmake --build ${{ github.workspace }}/build
 
   build-mingw:
-    runs-on: windows-latest
+    needs: [check-format]
     strategy:
       fail-fast: false
       matrix:
         include:
-          - { cxxstd: '14', configuration: Release, warnings-as-errors: 'OFF' }
+        - { cxxstd: '14', configuration: Release, warnings-as-errors: 'OFF' }
+    runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Install MinGW
-        uses: egor-tensin/setup-mingw@v2
-      - name: Check
-        run: |
-          cmake --version
-          cc --version
-      - name: Configure
-        run: |
-          cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "MinGW Makefiles" -D CMAKE_BUILD_TYPE=${{ matrix.configuration }} -DCMAKE_COMPILE_WARNING_AS_ERROR=${{ matrix.warnings-as-errors }}
-      # FIXME: undefined references to async methods
-      # - name: Build
-      #   run: |
-      #     cmake --build ${{ github.workspace }}/build --verbose
-  
+    - uses: actions/checkout@v3
+    - name: Check
+      run: |
+        cmake --version
+    - name: Configure
+      run: |
+        cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "MinGW Makefiles" -D CMAKE_BUILD_TYPE=${{ matrix.configuration }} -DCMAKE_COMPILE_WARNING_AS_ERROR=${{ matrix.warnings-as-errors }}
+    # FIXME: undefined references to async methods
+    # - name: Build
+    #   run: |
+    #     cmake --build ${{ github.workspace }}/build --verbose
+
   test-utility:
     needs: [build-msvc, build-mingw]
     runs-on: windows-2022
     steps:
-      - uses: actions/checkout@v3
-      - name: Check
-        run: |
-          cmake --version
-      - name: Configure
-        run: |
-          cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
-      - name: Build
-        run: |
-          cmake --build ${{ github.workspace }}/build --config Release --target utility_tests 
-      - name: Test
-        run: |
-          ctest --test-dir ${{ github.workspace }}/build --build-config Release --output-on-failure --no-tests=error -R utility_tests
+    - uses: actions/checkout@v3
+    - name: Check
+      run: |
+        cmake --version
+    - name: Configure
+      run: |
+        cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
+    - name: Build
+      run: |
+        cmake --build ${{ github.workspace }}/build --config Release --target utility_tests 
+    - name: Test
+      run: |
+        ctest --test-dir ${{ github.workspace }}/build --build-config Release --output-on-failure --no-tests=error -R utility_tests
 
   test-mssql:
     needs: [test-utility]
@@ -103,29 +119,29 @@ jobs:
       matrix:
         mssql: [2017, 2019]
     steps:
-      - uses: actions/checkout@v3
-      - name: Install SQL Server
-        # Alternative https://github.com/ankane/setup-sqlserver
-        # seems more flexible but it takes twice as long or longer
-        uses: potatoqualitee/mssqlsuite@v1.7
-        with:
-          install: localdb
-          sa-password: Password!123
-          version: ${{ matrix.mssql }}
-      - name: Check
-        run: |
-          sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "SELECT @@VERSION;"
-          Get-OdbcDriver -Platform 64-bit | Select-Object -ExpandProperty Name
-      - name: Configure
-        run: |
-          cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
-      - name: Build
-        run: |
-          cmake --build ${{ github.workspace }}/build --config Release --target mssql_tests 
-      - name: Test
-        run: |
-          $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 17 for SQL Server};Server=(localdb)\MSSQLLocalDB;Database=tempdb;UID=sa;PWD=Password!123;"
-          ctest --test-dir ${{ github.workspace }}/build --build-config Release --output-on-failure --no-tests=error -R mssql_tests
+    - uses: actions/checkout@v3
+    - name: Install SQL Server
+      # Alternative https://github.com/ankane/setup-sqlserver
+      # seems more flexible but it takes twice as long or longer
+      uses: potatoqualitee/mssqlsuite@v1.7
+      with:
+        install: localdb
+        sa-password: Password!123
+        version: ${{ matrix.mssql }}
+    - name: Check
+      run: |
+        sqlcmd -S "(localdb)\MSSQLLocalDB" -U sa -P "Password!123" -Q "SELECT @@VERSION;"
+        Get-OdbcDriver -Platform 64-bit | Select-Object -ExpandProperty Name
+    - name: Configure
+      run: |
+        cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
+    - name: Build
+      run: |
+        cmake --build ${{ github.workspace }}/build --config Release --target mssql_tests 
+    - name: Test
+      run: |
+        $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 17 for SQL Server};Server=(localdb)\MSSQLLocalDB;Database=tempdb;UID=sa;PWD=Password!123;"
+        ctest --test-dir ${{ github.workspace }}/build --build-config Release --output-on-failure --no-tests=error -R mssql_tests
 
   test-mariadb:
     needs: [test-utility]
@@ -133,31 +149,31 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        mariadb: ['10.10', '10.3']
+        mariadb: ['10.11', '10.5']
     steps:
-      - uses: actions/checkout@v3
-      - name: Install MariaDB
-        uses: ankane/setup-mariadb@v1
-        with:
-          database: nanodbc
-          mariadb-version: ${{ matrix.mariadb }}
-      - name: Install MySQL ODBC Driver 5.3
-        run: |
-          choco install mysql-odbc
-      - name: Check
-        run: |
-          mysql -D nanodbc -e 'SELECT VERSION()'
-          Get-OdbcDriver -Platform 64-bit | Select-Object -ExpandProperty Name
-      - name: Configure
-        run: |
-          cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
-      - name: Build
-        run: |
-          cmake --build ${{ github.workspace }}/build --config Release --target mysql_tests
-      - name: Test
-        run: |
-          $env:NANODBC_TEST_CONNSTR_MYSQL="Driver={MySQL ODBC 5.3 ANSI Driver};Server=127.0.0.1;Database=nanodbc;User=root;Password=;big_packets=1;"
-          ctest --test-dir ${{ github.workspace }}/build --build-config Release --output-on-failure --no-tests=error -R mysql_tests
+    - uses: actions/checkout@v3
+    - name: Install MariaDB ${{ matrix.mariadb }}
+      uses: ankane/setup-mariadb@v1
+      with:
+        database: nanodbc
+        mariadb-version: ${{ matrix.mariadb }}
+    - name: Install MySQL Connector 5.3
+      run: |
+        choco install mysql-odbc
+    - name: Check
+      run: |
+        mysql -D nanodbc -e 'SELECT VERSION()'
+        Get-OdbcDriver -Platform 64-bit | Select-Object -ExpandProperty Name
+    - name: Configure
+      run: |
+        cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
+    - name: Build
+      run: |
+        cmake --build ${{ github.workspace }}/build --config Release --target mysql_tests
+    - name: Test
+      run: |
+        $env:NANODBC_TEST_CONNSTR_MYSQL="Driver={MySQL ODBC 5.3 ANSI Driver};Server=127.0.0.1;Database=nanodbc;User=root;Password=;big_packets=1;"
+        ctest --test-dir ${{ github.workspace }}/build --build-config Release --output-on-failure --no-tests=error -R mysql_tests
 
   test-mysql:
     needs: [test-utility]
@@ -167,80 +183,81 @@ jobs:
       matrix:
         mysql: [8.0, 5.7]
     steps:
-      - uses: actions/checkout@v3
-      - name: Install MySQL
-        uses: ankane/setup-mysql@v1
-        with:
-          database: nanodbc
-          mysql-version: ${{ matrix.mysql }}
-      - name: Install MySQL ODBC Driver 5.3
-        run: |
-          choco install mysql-odbc
-      - name: Check
-        run: |
-          mysql -D nanodbc -e 'SELECT VERSION()'
-          Get-OdbcDriver -Platform 64-bit | Select-Object -ExpandProperty Name
-      - name: Configure
-        run: |
-          cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
-      - name: Build
-        run: |
-          cmake --build ${{ github.workspace }}/build --config Release --target mysql_tests
-      - name: Test
-        run: |
-          $env:NANODBC_TEST_CONNSTR_MYSQL="Driver={MySQL ODBC 5.3 ANSI Driver};Server=127.0.0.1;Database=nanodbc;User=root;Password=;big_packets=1;"
-          ctest --test-dir ${{ github.workspace }}/build --build-config Release --output-on-failure --no-tests=error -R mysql_tests
+    - uses: actions/checkout@v3
+    - name: Install MySQL ${{ matrix.mysql }}
+      uses: ankane/setup-mysql@v1
+      with:
+        database: nanodbc
+        mysql-version: ${{ matrix.mysql }}
+    - name: Install MySQL Connector 8.1
+      run: |
+        choco install mysql.odbc
+    - name: Check
+      run: |
+        mysql -D nanodbc -e 'SELECT VERSION()'
+        Get-OdbcDriver -Platform 64-bit | Select-Object -ExpandProperty Name
+    - name: Configure
+      run: |
+        cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
+    - name: Build
+      run: |
+        cmake --build ${{ github.workspace }}/build --config Release --target mysql_tests
+    - name: Test
+      run: |
+        $env:NANODBC_TEST_CONNSTR_MYSQL="Driver={MySQL ODBC 8.3 ANSI Driver};Server=127.0.0.1;Database=nanodbc;User=root;Password=;big_packets=1;NO_SCHEMA=false"
+        ctest --test-dir ${{ github.workspace }}/build --build-config Release --output-on-failure --no-tests=error -R mysql_tests
 
   test-postgresql:
     needs: [test-utility]
     runs-on: windows-2022
-    # strategy:
-    #   fail-fast: false
-    #   matrix:
-    #     postgres: [14] # Only version currently available on Windows via ankane/setup-postgres
+    strategy:
+      fail-fast: false
+      matrix:
+        postgres: [14] # Only version currently available on Windows via ankane/setup-postgres
     steps:
-      - uses: actions/checkout@v3
-      - name: Install PostgreSQL
-        uses: ankane/setup-postgres@v1
-        with:
-          database: nanodbc
-          postgres-version: 14 # ${{ matrix.postgres }}
-      - name: Install PostgreSQL ODBC Driver
-        run: |
-          choco install psqlodbc
-      - name: Check
-        run: |
-          psql -d nanodbc -c 'SHOW server_version'
-          Get-OdbcDriver -Platform 64-bit | Select-Object -ExpandProperty Name
-      - name: Configure
-        run: |
-          cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
-      - name: Build
-        run: |
-          cmake --build ${{ github.workspace }}/build --config Release --target postgresql_tests 
-      - name: Test
-        run: |
-          $env:NANODBC_TEST_CONNSTR_PGSQL="Driver={PostgreSQL ANSI(x64)};Server=localhost;Port=5432;Database=nanodbc;UID=postgres;PWD="
-          ctest --test-dir ${{ github.workspace }}/build --build-config Release --output-on-failure --no-tests=error -R postgresql_tests
+    - uses: actions/checkout@v3
+    - name: Install PostgreSQL
+      uses: ankane/setup-postgres@v1
+      with:
+        database: nanodbc
+        postgres-version: ${{ matrix.postgres }}
+    - name: Install PostgreSQL ODBC Driver
+      run: |
+        choco install psqlodbc
+    - name: Check
+      run: |
+        psql -d nanodbc -c 'SHOW server_version'
+        Get-OdbcDriver -Platform 64-bit | Select-Object -ExpandProperty Name
+    - name: Configure
+      run: |
+        cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
+    - name: Build
+      run: |
+        cmake --build ${{ github.workspace }}/build --config Release --target postgresql_tests 
+    - name: Test
+      run: |
+        $env:NANODBC_TEST_CONNSTR_PGSQL="Driver={PostgreSQL ANSI(x64)};Server=localhost;Port=5432;Database=nanodbc;UID=postgres;PWD="
+        ctest --test-dir ${{ github.workspace }}/build --build-config Release --output-on-failure --no-tests=error -R postgresql_tests
 
   test-sqlite:
     needs: [test-utility]
     runs-on: windows-2022
     steps:
-      - uses: actions/checkout@v3
-      - name: Install SQLite ODBC Driver
-        run: |
-          (New-Object Net.WebClient).DownloadFile('http://www.ch-werner.de/sqliteodbc/sqliteodbc_w64.exe', 'sqliteodbc_w64.exe')
-           ./sqliteodbc_w64.exe /S
-      - name: Check
-        run: |
-          Get-OdbcDriver -Platform 64-bit | Select-Object -ExpandProperty Name
-      - name: Configure
-        run: |
-          cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
-      - name: Build
-        run: |
-          cmake --build ${{ github.workspace }}/build --config Release --target sqlite_tests 
-      - name: Test
-        run: |
-          ctest --test-dir ${{ github.workspace }}/build --build-config Release --output-on-failure --no-tests=error -R sqlite_tests
+    - uses: actions/checkout@v3
+    - name: Install SQLite ODBC Driver
+      run: |
+        (New-Object Net.WebClient).DownloadFile('http://www.ch-werner.de/sqliteodbc/sqliteodbc_w64.exe', "$($env:TEMP)\sqliteodbc_w64.exe")
+        cmd /c start /wait "$($env:TEMP)\sqliteodbc_w64.exe" /S
+      shell: powershell
+    - name: Check
+      run: |
+        Get-OdbcDriver -Platform 64-bit | Select-Object -ExpandProperty Name
+    - name: Configure
+      run: |
+        cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
+    - name: Build
+      run: |
+        cmake --build ${{ github.workspace }}/build --config Release --target sqlite_tests 
+    - name: Test
+      run: |
+        ctest --test-dir ${{ github.workspace }}/build --build-config Release --output-on-failure --no-tests=error -R sqlite_tests

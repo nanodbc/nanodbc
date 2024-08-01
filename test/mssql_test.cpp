@@ -231,6 +231,11 @@ TEST_CASE_METHOD(mssql_fixture, "test_batch_insert_mixed", "[mssql][batch]")
     test_batch_insert_mixed();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_std_optional", "[mssql][optional]")
+{
+    test_std_optional();
+}
+
 TEST_CASE_METHOD(
     mssql_fixture,
     "test_batch_insert_describe_param",
@@ -737,6 +742,11 @@ TEST_CASE_METHOD(mssql_fixture, "test_catalog_list_schemas", "[mssql][catalog][s
     test_catalog_list_schemas();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_catalog_list_table_types", "[mssql][catalog][table_types]")
+{
+    test_catalog_list_table_types();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_catalog_columns", "[mssql][catalog][columns]")
 {
     test_catalog_columns();
@@ -812,6 +822,173 @@ TEST_CASE_METHOD(mssql_fixture, "test_execute_multiple", "[mssql][execute]")
 {
     test_execute_multiple();
 }
+
+// FIXME(mloskot): Strange behaviour of SQLGetDescField on Linux with SQL Server, see
+// https://github.com/nanodbc/nanodbc/pull/342#issuecomment-2077942587
+#if defined(NANODBC_TEST_CI) && defined(CATCH_PLATFORM_LINUX)
+#define NANODBC_TESTS_SKIP_IRD 1
+#else
+#define NANODBC_TEST_SKIP_IRD_DUE_STRANGE_FAILURES_ON_LINUX 0
+#endif
+
+#if defined(NANODBC_TEST_SKIP_IRD_DUE_STRANGE_FAILURES_ON_LINUX)
+TEST_CASE_METHOD(mssql_fixture, "test_implementation_row_descriptor", "[mssql][descriptor][ird]")
+{
+    test_implementation_row_descriptor();
+}
+#endif // defined(NANODBC_TEST_SKIP_IRD_DUE_STRANGE_FAILURES_ON_LINUX)
+
+TEST_CASE_METHOD(
+    mssql_fixture,
+    "test_implementation_row_descriptor_auto_unique_value",
+    "[mssql][descriptor][ird]")
+{
+    auto c = connect();
+
+    create_table(
+        c, NANODBC_TEXT("test_implementation_row_descriptor_auto_unique_value"), NANODBC_TEXT(R"(
+fid int IDENTITY(1,1) PRIMARY KEY,
+name varchar(60)
+)"));
+
+    auto const sql =
+        NANODBC_TEXT("SELECT fid, name FROM test_implementation_row_descriptor_auto_unique_value");
+    nanodbc::statement s(c, sql);
+    nanodbc::implementation_row_descriptor ird(s);
+    REQUIRE(ird.count() == 2);
+    REQUIRE(ird.auto_unique_value(0));
+    REQUIRE(!ird.auto_unique_value(1));
+}
+
+#if defined(NANODBC_TEST_SKIP_IRD_DUE_STRANGE_FAILURES_ON_LINUX)
+TEST_CASE_METHOD(
+    mssql_fixture,
+    "test_implementation_row_descriptor_with_expressions",
+    "[mssql][descriptor][ird]")
+{
+    test_implementation_row_descriptor_with_expressions();
+}
+
+TEST_CASE_METHOD(
+    mssql_fixture,
+    "test_implementation_row_descriptor_with_query",
+    "[mssql][descriptor][ird]")
+{
+    auto c = connect();
+    drop_table(c, NANODBC_TEXT("v_t1_t2"), true);
+    drop_table(c, NANODBC_TEXT("t1"));
+    drop_table(c, NANODBC_TEXT("t2"));
+
+    create_table(c, NANODBC_TEXT("t1"), NANODBC_TEXT(R"(
+t1_fid1 int NOT NULL,
+t1_fid2 int NOT NULL,
+name varchar(60) NOT NULL,
+PRIMARY KEY(t1_fid1, t1_fid2)
+)"));
+
+    execute(
+        c, NANODBC_TEXT("INSERT INTO t1(t1_fid1,t1_fid2,name) VALUES (1,10,'John Malkovich');"));
+    execute(c, NANODBC_TEXT("INSERT INTO t1(t1_fid1,t1_fid2,name) VALUES (2,20,'Gina Bellman');"));
+    execute(c, NANODBC_TEXT("INSERT INTO t1(t1_fid1,t1_fid2,name) VALUES (3,30,'Bruce Willis');"));
+
+    create_table(c, NANODBC_TEXT("t2"), NANODBC_TEXT(R"(
+t2_fid int NOT NULL,
+age int NOT NULL,
+PRIMARY KEY(t2_fid)
+)"));
+
+    execute(c, NANODBC_TEXT("INSERT INTO t2(t2_fid,age) VALUES (1,53)"));
+    execute(c, NANODBC_TEXT("INSERT INTO t2(t2_fid,age) VALUES (2,41)"));
+    execute(c, NANODBC_TEXT("INSERT INTO t2(t2_fid,age) VALUES (3,60)"));
+
+    create_table(
+        c,
+        NANODBC_TEXT("v_t1_t2"),
+        NANODBC_TEXT("SELECT t1.*, t2.* FROM t1 INNER JOIN t2 ON t1.t1_fid1 = t2.t2_fid"),
+        true);
+
+    nanodbc::string sql = NANODBC_TEXT(
+        "SELECT t1.t1_fid1 AS fid1, t2.t2_fid AS fid2, v1.t1_fid1 AS fid3, t1.name AS n, "
+        "t2.age AS a, v1.name AS vn, v1.age AS va FROM t1 INNER JOIN t2 ON t1.t1_fid1 = "
+        "t2.t2_fid INNER JOIN v_t1_t2 AS v1 ON t1.t1_fid1 = v1.t1_fid1 AND v1.t1_fid2 = "
+        "v1.t1_fid2 AND t2.t2_fid = v1.t2_fid FOR BROWSE");
+    // attributes like table name available only for
+    // SELECT statements containing FOR BROWSE clause
+
+    nanodbc::statement s(c, sql);
+    nanodbc::implementation_row_descriptor ird(s);
+    REQUIRE(ird.count() == 7);
+
+    for (short i = 0; i < ird.count(); ++i)
+    {
+        REQUIRE(ird.catalog_name(i) != NANODBC_TEXT(""));
+        REQUIRE(ird.schema_name(i) == NANODBC_TEXT(""));
+        REQUIRE(ird.base_table_name(i) != NANODBC_TEXT(""));
+        REQUIRE(ird.table_name(i) != NANODBC_TEXT(""));
+        REQUIRE(ird.base_column_name(i) != NANODBC_TEXT(""));
+        REQUIRE(ird.name(i) != NANODBC_TEXT(""));
+        REQUIRE(ird.type_name(i) != NANODBC_TEXT(""));
+        REQUIRE(ird.local_type_name(i) != NANODBC_TEXT(""));
+    }
+
+    // t1.t1_fid1
+    short i = 0;
+    REQUIRE(ird.base_table_name(i) == NANODBC_TEXT("t1"));
+    REQUIRE(ird.table_name(i) == NANODBC_TEXT("t1"));
+    REQUIRE(ird.base_column_name(i) == NANODBC_TEXT("t1_fid1"));
+    REQUIRE(ird.name(i) == NANODBC_TEXT("fid1"));
+    REQUIRE(ird.type_name(i) == NANODBC_TEXT("int"));
+    REQUIRE(ird.local_type_name(i) == NANODBC_TEXT("int"));
+    // t2.t2_fid2
+    i++;
+    REQUIRE(ird.base_table_name(i) == NANODBC_TEXT("t2"));
+    REQUIRE(ird.table_name(i) == NANODBC_TEXT("t2"));
+    REQUIRE(ird.base_column_name(i) == NANODBC_TEXT("t2_fid"));
+    REQUIRE(ird.name(i) == NANODBC_TEXT("fid2"));
+    REQUIRE(ird.type_name(i) == NANODBC_TEXT("int"));
+    REQUIRE(ird.local_type_name(i) == NANODBC_TEXT("int"));
+    // v_t1_t2.t1.t1_fid1
+    i++;
+    REQUIRE(ird.base_table_name(i) == NANODBC_TEXT("t1"));
+    REQUIRE(ird.table_name(i) == NANODBC_TEXT("t1"));
+    REQUIRE(ird.base_column_name(i) == NANODBC_TEXT("t1_fid1"));
+    REQUIRE(ird.name(i) == NANODBC_TEXT("fid3"));
+    REQUIRE(ird.type_name(i) == NANODBC_TEXT("int"));
+    REQUIRE(ird.local_type_name(i) == NANODBC_TEXT("int"));
+    // t1.name
+    i++;
+    REQUIRE(ird.base_table_name(i) == NANODBC_TEXT("t1"));
+    REQUIRE(ird.table_name(i) == NANODBC_TEXT("t1"));
+    REQUIRE(ird.base_column_name(i) == NANODBC_TEXT("name"));
+    REQUIRE(ird.name(i) == NANODBC_TEXT("n"));
+    REQUIRE(ird.type_name(i) == NANODBC_TEXT("varchar"));
+    REQUIRE(ird.local_type_name(i) == NANODBC_TEXT("varchar"));
+    // t2.age
+    i++;
+    REQUIRE(ird.base_table_name(i) == NANODBC_TEXT("t2"));
+    REQUIRE(ird.table_name(i) == NANODBC_TEXT("t2"));
+    REQUIRE(ird.base_column_name(i) == NANODBC_TEXT("age"));
+    REQUIRE(ird.name(i) == NANODBC_TEXT("a"));
+    REQUIRE(ird.type_name(i) == NANODBC_TEXT("int"));
+    REQUIRE(ird.local_type_name(i) == NANODBC_TEXT("int"));
+    // v_t1_t2.name
+    i++;
+    REQUIRE(ird.base_table_name(i) == NANODBC_TEXT("t1"));
+    REQUIRE(ird.table_name(i) == NANODBC_TEXT("t1"));
+    REQUIRE(ird.base_column_name(i) == NANODBC_TEXT("name"));
+    REQUIRE(ird.name(i) == NANODBC_TEXT("vn"));
+    REQUIRE(ird.type_name(i) == NANODBC_TEXT("varchar"));
+    REQUIRE(ird.local_type_name(i) == NANODBC_TEXT("varchar"));
+    // v_t1_t2.age
+    i++;
+    REQUIRE(ird.base_table_name(i) == NANODBC_TEXT("t2"));
+    REQUIRE(ird.table_name(i) == NANODBC_TEXT("t2"));
+    REQUIRE(ird.base_column_name(i) == NANODBC_TEXT("age"));
+    REQUIRE(ird.name(i) == NANODBC_TEXT("va"));
+    REQUIRE(ird.type_name(i) == NANODBC_TEXT("int"));
+    REQUIRE(ird.local_type_name(i) == NANODBC_TEXT("int"));
+}
+#endif // defined(NANODBC_TEST_SKIP_IRD_DUE_STRANGE_FAILURES_ON_LINUX)
 
 TEST_CASE_METHOD(mssql_fixture, "test_integral", "[mssql][integral]")
 {
@@ -1131,7 +1308,53 @@ TEST_CASE_METHOD(mssql_fixture, "test_datetimeoffset", "[mssql][datetime]")
         REQUIRE(*it++ == '8');
         REQUIRE(*it++ == '0');
         REQUIRE(*it++ == '-');
-        ;
+    }
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_rowversion", "[mssql][rowversion][timestamp]")
+{
+    // The rowversion data type is not a date or time data type, but
+    // it is a unique binary number with storage size of 8 bytes
+    // The timestamp is a deprecated synonym for rowversion.
+    auto connection = connect();
+    create_table(
+        connection, NANODBC_TEXT("test_rowversion"), NANODBC_TEXT("(v int, r rowversion)"));
+    execute(connection, NANODBC_TEXT("insert into test_rowversion (v) values (123)"));
+
+    // select
+    {
+        auto result = execute(connection, NANODBC_TEXT("select r from test_rowversion;"));
+
+        REQUIRE(result.column_name(0) == NANODBC_TEXT("r"));
+        REQUIRE(result.column_datatype(0) == SQL_BINARY);
+        REQUIRE(result.column_datatype_name(0) == NANODBC_TEXT("timestamp")); // not rowversion!
+
+        REQUIRE(result.next());
+        auto t = result.get<std::vector<std::uint8_t>>(0);
+        REQUIRE(t.size() == 8);
+    }
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_timestamp", "[mssql][rowversion][timestamp]")
+{
+    // The rowversion data type is not a date or time data type, but
+    // it is a unique binary number with storage size of 8 bytes
+    // The timestamp is a deprecated synonym for rowversion.
+    auto connection = connect();
+    create_table(connection, NANODBC_TEXT("test_timestamp"), NANODBC_TEXT("(v int, t timestamp)"));
+    execute(connection, NANODBC_TEXT("insert into test_timestamp (v) values (123)"));
+
+    // select
+    {
+        auto result = execute(connection, NANODBC_TEXT("select t from test_timestamp;"));
+
+        REQUIRE(result.column_name(0) == NANODBC_TEXT("t"));
+        REQUIRE(result.column_datatype(0) == SQL_BINARY);
+        REQUIRE(result.column_datatype_name(0) == NANODBC_TEXT("timestamp"));
+
+        REQUIRE(result.next());
+        auto t = result.get<std::vector<std::uint8_t>>(0);
+        REQUIRE(t.size() == 8);
     }
 }
 
@@ -1191,6 +1414,12 @@ TEST_CASE_METHOD(mssql_fixture, "test_win32_variant_timestamp", "[mssql][variant
     REQUIRE(t0.wSecond <= 60);
     REQUIRE(t0.wMilliseconds <= 100);
 }
+
+TEST_CASE_METHOD(mssql_fixture, "test_win32_variant_row_cached_result", "[mssql][variant][windows]")
+{
+    test_win32_variant_row_cached_result();
+}
+
 #endif // _MSC_VER
 
 TEST_CASE_METHOD(mssql_fixture, "test_while_not_end_iteration", "[mssql][looping]")
@@ -1464,7 +1693,7 @@ TEST_CASE_METHOD(
     }
 }
 
-#ifdef NANODBC_SUPPORT_STRING_VIEW
+#ifdef NANODBC_HAS_STD_STRING_VIEW
 TEST_CASE_METHOD(
     mssql_table_valued_parameter_fixture,
     "test_table_valued_parameter_with_records_string_view",
@@ -1722,9 +1951,12 @@ TEST_CASE_METHOD(mssql_fixture, "test_conn_attributes", "[mssql][conn_attibutes]
  */
 TEST_CASE_METHOD(mssql_fixture, "test_overallocate", "[mssql][overallocate]")
 {
-    auto conn = connect();
-    auto val = nanodbc::string(u"grün");
+    std::u16string u16val = u"grün";
+    std::wstring wval(u16val.begin(), u16val.end());
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> convert_utf8;
+    nanodbc::string val = nanodbc::test::convert(convert_utf8.to_bytes(wval));
     auto sql = NANODBC_TEXT("SELECT '") + val + NANODBC_TEXT("' AS A");
+    auto conn = connect();
     nanodbc::result result = execute(conn, sql);
     REQUIRE(result.next());
     auto res = result.get<nanodbc::string>(0);

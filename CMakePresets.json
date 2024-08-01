@@ -1,0 +1,98 @@
+﻿{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/_build/${presetName}",
+      "installDir": "${sourceDir}/_install/${presetName}"
+    },
+    {
+      "name": "x64",
+      "displayName": "x64",
+      "hidden": true,
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      }
+    },
+    {
+      "name": "x86",
+      "displayName": "x86",
+      "hidden": true,
+      "architecture": {
+        "value": "x86",
+        "strategy": "external"
+      }
+    },
+    {
+      "name": "debug",
+      "displayName": "Debug",
+      "hidden": true,
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+    },
+    {
+      "name": "release",
+      "displayName": "Release",
+      "hidden": true,
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "RelWithDebInfo" }
+    },
+    {
+      "name": "cxx-14",
+      "displayName": "C++ 14",
+      "hidden": true,
+      "cacheVariables": { "CMAKE_CXX_STANDARD": "14" }
+    },
+    {
+      "name": "cxx-17",
+      "displayName": "C++ 17",
+      "hidden": true,
+      "cacheVariables": { "CMAKE_CXX_STANDARD": "17" }
+    },
+    {
+      "name": "cxx-20",
+      "displayName": "C++ 20",
+      "hidden": true,
+      "cacheVariables": { "CMAKE_CXX_STANDARD": "20" }
+    },
+    {
+      "name": "unicode",
+      "displayName": "Unicode",
+      "hidden": true,
+      "cacheVariables": { "NANODBC_ENABLE_UNICODE": "ON" }
+    },
+    {
+      "name": "cxx14-x64-debug",
+      "inherits": [ "base", "cxx-14", "x64", "debug" ]
+    },
+    {
+      "name": "cxx14-x64-debug-unicode",
+      "inherits": [ "base", "cxx-14", "x64", "debug", "unicode" ]
+    },
+    {
+      "name": "cxx14-x64-release",
+      "inherits": [ "base", "cxx-14", "x64", "release" ]
+    },
+    {
+      "name": "cxx14-x64-release-unicode",
+      "inherits": [ "base", "cxx-14", "x64", "release", "unicode" ]
+    },
+    {
+      "name": "cxx17-x64-debug",
+      "inherits": [ "base", "cxx-17", "x64", "debug" ]
+    },
+    {
+      "name": "cxx17-x64-release",
+      "inherits": [ "base", "cxx-17", "x64", "release" ]
+    },
+    {
+      "name": "cxx20-x64-debug",
+      "inherits": [ "base", "cxx-20", "x64", "debug" ]
+    },
+    {
+      "name": "cxx20-x64-release",
+      "inherits": [ "base", "cxx-20", "x64", "release" ]
+    }
+  ]
+}

@@ -140,6 +140,11 @@ TEST_CASE_METHOD(sqlite_fixture, "test_batch_insert_string", "[sqlite][batch][st
     test_batch_insert_string();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "test_std_optional", "[sqlite][optional]")
+{
+    test_std_optional();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_blob", "[sqlite][blob]")
 {
     test_blob();
@@ -173,6 +178,12 @@ TEST_CASE_METHOD(sqlite_fixture, "test_catalog_list_schemas", "[sqlite][catalog]
     //       and no documentation to confirm it has been found.
     REQUIRE(names.size() == 1);
     REQUIRE(names.front().empty());
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_catalog_list_table_types", "[sqlite][catalog][table_types]")
+{
+    before_catalog_test();
+    test_catalog_list_table_types();
 }
 
 TEST_CASE_METHOD(sqlite_fixture, "test_catalog_columns", "[sqlite][catalog][columns]")
@@ -281,6 +292,22 @@ TEST_CASE_METHOD(sqlite_fixture, "test_execute_multiple", "[sqlite][execute]")
 {
     test_execute_multiple();
 }
+
+// SQLite ODBC driver does not support SQL_ATTR_IMP_ROW_DESC
+// and SQLGetStmtAttr invocation returns dummy handle,
+// see
+// https://github.com/softace/sqliteodbc/blob/9049782382ae15f753e8321de34c1568eafadbf7/sqlite3odbc.c#L9195
+#if 0
+TEST_CASE_METHOD(sqlite_fixture, "test_implementation_row_descriptor", "[sqlite][descriptor][ird]")
+{
+    test_implementation_row_descriptor();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_implementation_row_descriptor_with_expressions", "[sqlite][descriptor][ird]")
+{
+    test_implementation_row_descriptor_with_expressions();
+}
+#endif
 
 TEST_CASE_METHOD(sqlite_fixture, "test_integral", "[sqlite][integral]")
 {
@@ -487,6 +514,14 @@ TEST_CASE_METHOD(
     "[sqlite][variant][windows][null]")
 {
     test_win32_variant_null_literal();
+}
+
+TEST_CASE_METHOD(
+    sqlite_fixture,
+    "test_win32_variant_row_cached_result",
+    "[sqlite][variant][windows]")
+{
+    test_win32_variant_row_cached_result();
 }
 #endif // _MSC_VER
 

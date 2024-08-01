@@ -1,5 +1,8 @@
 # nanodbc tests build configuration
 find_package(ODBC REQUIRED)
+if(DEFINED ENV{CI})
+  add_compile_definitions(NANODBC_TEST_CI=1)
+endif()
 add_compile_definitions( "$<$<CXX_COMPILER_ID:MSVC>:_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING>" )
 
 # Prepare "Catch" library for other executables

@@ -78,6 +78,7 @@
 #define NANODBC_NANODBC_H
 
 #include <cstddef>
+#include <cstdint>
 #include <exception>
 #include <functional>
 #include <iterator>
@@ -87,17 +88,14 @@
 #include <string>
 #include <type_traits>
 #include <utility>
-#ifdef __has_include         // Check if __has_include is present
-#if __has_include(<variant>) // Check for a standard library
-#include <variant>
-#elif __has_include(<experimental/variant>) // Check for an experimental version
-#include <experimental/variant>
-#endif
-#endif
 #include <vector>
 
-#ifndef __clang__
-#include <cstdint>
+#if __cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L)
+#define NANODBC_HAS_STD_STRING_VIEW
+#include <optional>
+#define NANODBC_HAS_STD_OPTIONAL
+#include <variant>
+#define NANODBC_HAS_STD_VARIANT
 #endif
 
 /// \brief The entirety of nanodbc can be found within this one namespace.
@@ -156,31 +154,25 @@ namespace nanodbc
 #endif
 /// @}
 
-#if __cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L)
-#ifndef NANODBC_SUPPORT_STRING_VIEW
-#define NANODBC_SUPPORT_STRING_VIEW
-#endif
-#endif
-
 // You must explicitly request Unicode support by defining NANODBC_ENABLE_UNICODE at compile time.
 #ifndef DOXYGEN
 #ifdef NANODBC_ENABLE_UNICODE
 #ifdef NANODBC_USE_IODBC_WIDE_STRINGS
 #define NANODBC_TEXT(s) U##s
 typedef std::u32string string;
-#ifdef NANODBC_SUPPORT_STRING_VIEW
+#ifdef NANODBC_HAS_STD_STRING_VIEW
 typedef std::u32string_view string_view;
 #endif
 #else
 #ifdef _MSC_VER
 typedef std::wstring string;
-#ifdef NANODBC_SUPPORT_STRING_VIEW
+#ifdef NANODBC_HAS_STD_STRING_VIEW
 typedef std::wstring_view string_view;
 #endif
 #define NANODBC_TEXT(s) L##s
 #else
 typedef std::u16string string;
-#ifdef NANODBC_SUPPORT_STRING_VIEW
+#ifdef NANODBC_HAS_STD_STRING_VIEW
 typedef std::u16string_view string_view;
 #endif
 #define NANODBC_TEXT(s) u##s
@@ -188,7 +180,7 @@ typedef std::u16string_view string_view;
 #endif
 #else
 typedef std::string string;
-#ifdef NANODBC_SUPPORT_STRING_VIEW
+#ifdef NANODBC_HAS_STD_STRING_VIEW
 typedef std::string_view string_view;
 #endif
 #define NANODBC_TEXT(s) s
@@ -196,18 +188,18 @@ typedef std::string_view string_view;
 
 #ifdef NANODBC_USE_IODBC_WIDE_STRINGS
 typedef std::u32string wide_string;
-#ifdef NANODBC_SUPPORT_STRING_VIEW
+#ifdef NANODBC_HAS_STD_STRING_VIEW
 typedef std::u32string_view wide_string_view;
 #endif
 #else
 #ifdef _MSC_VER
 typedef std::wstring wide_string;
-#ifdef NANODBC_SUPPORT_STRING_VIEW
+#ifdef NANODBC_HAS_STD_STRING_VIEW
 typedef std::wstring_view wide_string_view;
 #endif
 #else
 typedef std::u16string wide_string;
-#ifdef NANODBC_SUPPORT_STRING_VIEW
+#ifdef NANODBC_HAS_STD_STRING_VIEW
 typedef std::u16string_view wide_string_view;
 #endif
 #endif
@@ -473,7 +465,7 @@ using is_string = std::integral_constant<
     bool,
     std::is_same<typename std::decay<T>::type, std::string>::value ||
         std::is_same<typename std::decay<T>::type, wide_string>::value
-#ifdef NANODBC_SUPPORT_STRING_VIEW
+#ifdef NANODBC_HAS_STD_STRING_VIEW
         || std::is_same<typename std::decay<T>::type, std::string_view>::value ||
         std::is_same<typename std::decay<T>::type, wide_string_view>::value
 #endif
@@ -535,7 +527,7 @@ public:
     /// Member swap.
     void swap(transaction& rhs) noexcept;
 
-    /// \brief If this transaction has not been committed, will will rollback any modifying ops.
+    /// \brief If this transaction has not been committed, it will rollback any modifying ops.
     ~transaction() noexcept;
 
     /// \brief Commits transaction immediately.
@@ -1410,7 +1402,7 @@ private:
     class connection_impl;
     friend class nanodbc::transaction::transaction_impl;
 
-#if __cpp_lib_variant >= 201606L
+#ifdef NANODBC_HAS_STD_VARIANT
 public:
     class attribute : public nanodbc::attribute
     {
@@ -1476,7 +1468,7 @@ public:
     /// \see connected(), connect()
     explicit connection(string const& connection_string, long timeout = 0);
 
-#if __cpp_lib_variant >= 201606L
+#ifdef NANODBC_HAS_STD_VARIANT
     /// \brief Create new connection object, set the connection attributes passed as
     /// arguments and connect to the given data source.
     ///
@@ -1543,7 +1535,7 @@ public:
     /// \see connected()
     void connect(string const& connection_string, long timeout = 0);
 
-#if __cpp_lib_variant >= 201606L
+#ifdef NANODBC_HAS_STD_VARIANT
     /// \brief Set the connection attributes passed by the user, and connect to the given
     /// data source.
     /// \param dsn The name of the data source.
@@ -1685,6 +1677,7 @@ private:
 // clang-format on
 
 class catalog;
+class variant_row_cached_result;
 
 /// \brief A resource for managing result sets from statement execution.
 ///
@@ -2040,6 +2033,9 @@ private:
     class result_impl;
     friend class nanodbc::statement::statement_impl;
     friend class nanodbc::catalog;
+#ifdef _MSC_VER
+    friend class nanodbc::variant_row_cached_result;
+#endif
 
 private:
     std::shared_ptr<result_impl> impl_;
@@ -2131,6 +2127,166 @@ inline result_iterator end(result& /*r*/)
 {
     return {};
 }
+
+// clang-format off
+// 8888888b.                                     d8b          888
+// 888  "Y88b                                    Y8P          888
+// 888    888                                                 888
+// 888    888  .d88b.  .d8888b   .d8888b 888d888 888 88888b.  888888 .d88b.  888d888 .d8888b
+// 888    888 d8P  Y8b 88K      d88P"    888P"   888 888 "88b 888   d88""88b 888P"   88K
+// 888    888 88888888 "Y8888b. 888      888     888 888  888 888   888  888 888     "Y8888b.
+// 888  .d88P Y8b.          X88 Y88b.    888     888 888 d88P Y88b. Y88..88P 888          X88
+// 8888888P"   "Y8888   88888P'  "Y8888P 888     888 88888P"   "Y888 "Y88P"  888      88888P'
+//                                                   888
+//                                                   888
+//                                                   888
+// MARK: Descriptors -
+// clang-format on
+
+/// Provides access to metadata in the Implementation Row Descriptor (IRD)
+/// implicitly allocated for a prepared or executed statement.
+///
+/// The IRD contains information about the columns in a result set,
+/// such as their SQL data types, lengths, and nullability.
+class implementation_row_descriptor
+{
+public:
+    /// Initializes IRD access from statement of executed result set.
+    implementation_row_descriptor(result const& result);
+
+    /// Initializes IRD access from prepared or executed statement.
+    ///
+    /// For performance reasons, an application should ensure the statement
+    /// is executed before accessing any of the IRD fields.
+    /// Accessing (i.e. calls to SQLGetDescRec) the descriptor fields of
+    /// prepared only statement causes a roundtrip to SQL Server.
+    ///
+    /// \note Some fields of the descriptor are available on result set
+    /// retrieved from statements that generate server cursors or
+    /// on executed SQL Server `SELECT` statements containing a `FOR BROWSE`
+    /// clause (database-specific).
+    implementation_row_descriptor(statement const& statement);
+
+    /// Value of the header field `SQL_DESC_ALLOC_AUTO`.
+    auto alloc_type() const -> short;
+
+    /// Value of the header field `SQL_DESC_COUNT`.
+    auto count() const noexcept -> short;
+
+    // Descriptor record fields (records) accessors
+
+    /// Boolean based on value of the `SQL_DESC_AUTO_UNIQUE_VALUE` field.
+    auto auto_unique_value(short record) const -> bool;
+
+    /// Value of the `SQL_DESC_BASE_COLUMN_NAME` field.
+    auto base_column_name(short record) const -> string;
+
+    /// Value of the `SQL_DESC_BASE_TABLE_NAME` field.
+    auto base_table_name(short record) const -> string;
+
+    /// Boolean based on value of the `SQL_DESC_CASE_SENSITIVE` field.
+    auto case_sensitive(short record) const -> bool;
+
+    /// Value of the `SQL_DESC_CATALOG_NAME` field.
+    auto catalog_name(short record) const -> string;
+
+    /// Value of the `SQL_DESC_CONCISE_TYPE` field.
+    auto concise_type(short record) const -> short;
+
+    /// Value of the `SQL_DESC_DISPLAY_SIZE` field.
+    auto display_size(short record) const -> std::int64_t;
+
+    /// Value of the `SQL_DESC_FIXED_PREC_SCALE` field.
+    auto fixed_prec_scale(short record) const -> short;
+
+    /// Value of the `SQL_DESC_LABEL` field.
+    auto label(short record) const -> string;
+
+    /// Value of the `SQL_DESC_LENGTH` field.
+    auto length(short record) const -> std::uint64_t;
+
+    /// Value of the `SQL_DESC_LOCAL_TYPE_NAME` field.
+    auto local_type_name(short record) const -> string;
+
+    /// Value of the `SQL_DESC_NAME` field.
+    auto name(short record) const -> string;
+
+    /// Value of the `SQL_DESC_NULLABLE` field.
+    ///
+    /// \return Possible return values are `SQL_NULLABLE`, `SQL_NO_NULLS` or `SQL_NULLABLE_UNKNOWN`.
+    auto nullable(short record) const -> short;
+
+    /// Value of the `SQL_DESC_NUM_PREC_RADIX` field.
+    auto num_prec_radix(short record) const -> short;
+
+    /// Value of the `SQL_DESC_OCTET_LENGTH` field.
+    auto octet_length(short record) const -> std::int64_t;
+
+    /// Value of the `SQL_DESC_PRECISION` field.
+    auto precision(short record) const -> short;
+
+    /// Value of the `SQL_DESC_ROWVER` field.
+    auto rowver(short record) const -> short;
+
+    /// Value of the `SQL_DESC_SCALE` field.
+    auto scale(short record) const -> short;
+
+    /// Value of the `SQL_DESC_SCHEMA_NAME` field.
+    auto schema_name(short record) const -> string;
+
+    /// Value of the `SQL_DESC_SEARCHABLE` field.
+    ///
+    /// \return Possible return values are `SQL_PRED_NONE`, `SQL_PRED_CHAR`, `SQL_PRED_BASIC` or
+    /// `SQL_PRED_SEARCHABLE`.
+    auto searchable(short record) const -> short;
+
+    /// Value of the `SQL_DESC_TABLE_NAME` field.
+    auto table_name(short record) const -> string;
+
+    /// Value of the `SQL_DESC_TYPE` field.
+    auto type(short record) const -> short;
+
+    /// Value of the `SQL_DESC_TYPE_NAME` field.
+    auto type_name(short record) const -> string;
+
+    /// Boolean based on value of the `SQL_DESC_UNNAMED` field.
+    auto unnamed(short record) const -> bool;
+
+    ///  Boolean based on value of the `SQL_DESC_UNSIGNED` field.
+    auto unsigned_(short record) const -> bool;
+
+    /// Value of the `SQL_DESC_UPDATABLE` field.
+    ///
+    /// \return Possible return values are `SQL_ATTR_READ_ONLY`, `SQL_ATTR_WRITE` or
+    /// `SQL_ATTR_READWRITE_UNKNOWN`.
+    auto updatable(short record) const -> short;
+
+private:
+    // Convenience wrapper for SQLGetDescrField accesor.
+    struct sql_get_descr_field
+    {
+        sql_get_descr_field(
+            implementation_row_descriptor const& ird,
+            short record,
+            std::uint16_t field_identifier) noexcept;
+        operator std::int64_t() const;
+        operator std::uint64_t() const;
+        operator string() const;
+
+        implementation_row_descriptor const& ird_;
+        short record_;
+        std::uint16_t field_identifier_;
+    };
+    friend sql_get_descr_field;
+
+    void initialize_descriptor();
+    void throw_if_record_is_out_of_range(short record) const;
+
+    void* statement_handle_{nullptr};
+    short statement_columns_count_{0};
+    void* descriptor_handle_{nullptr};
+    short descriptor_records_count_{0};
+};
 
 // clang-format off
 //
@@ -2413,13 +2569,19 @@ public:
 
     /// \brief Returns names of all catalogs (or databases) available in connected data source.
     ///
-    /// Executes `SQLTable` function with `SQL_ALL_CATALOG` as catalog search pattern.
+    /// Executes `SQLTables` function with `SQL_ALL_CATALOG` as catalog search pattern.
     std::list<string> list_catalogs();
 
     /// \brief Returns names of all schemas available in connected data source.
     ///
-    /// Executes `SQLTable` function with `SQL_ALL_SCHEMAS` as schema search pattern.
+    /// Executes `SQLTables` function with `SQL_ALL_SCHEMAS` as schema search pattern.
     std::list<string> list_schemas();
+
+    /// \brief Returns all available table types in the connected data source.
+    ///
+    /// Executes `SQLTables` function with `SQL_ALL_TABLE_TYPES` as the
+    /// table type search pattern.
+    std::list<string> list_table_types();
 
 private:
     connection conn_;
