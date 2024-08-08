@@ -60,16 +60,10 @@ jobs:
         - { cxxstd: '14', cxx: g++-9,  cc: gcc-9,  os: ubuntu-20.04 }
         - { cxxstd: '17', cxx: g++-8,  cc: gcc-8,  os: ubuntu-20.04 }
         - { cxxstd: '14', cxx: g++-8,  cc: gcc-8,  os: ubuntu-20.04 }
-        - { cxxstd: '17', cxx: g++-7,  cc: gcc-7,  os: ubuntu-latest, container: "ubuntu:18.04" }
-        - { cxxstd: '14', cxx: g++-7,  cc: gcc-7,  os: ubuntu-latest, container: "ubuntu:18.04" }
-        - { cxxstd: '14', cxx: g++-6,  cc: gcc-6,  os: ubuntu-latest, container: "ubuntu:18.04" }
-        - { cxxstd: '14', cxx: g++-5,  cc: gcc-5,  os: ubuntu-latest, container: "ubuntu:18.04" }
 
     name: build-${{ matrix.cc }}-std-${{ matrix.cxxstd }}
 
     runs-on: ${{ matrix.os }}
-
-    container: ${{matrix.container}}
 
     env:
       CC: ${{ matrix.cc }}
@@ -77,11 +71,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Setup container
-      if: matrix.container
-      run: |
-        apt-get update
-        apt-get install -y g++ git python sudo unixodbc-dev
     - name: Install
       run: |
         sudo apt-get update
@@ -127,11 +116,6 @@ jobs:
         - { cxxstd: '14', cxx: clang++-8,   cc: clang-8,   os: ubuntu-20.04, pkg: 'libc++-8-dev libc++abi-8-dev' }
         - { cxxstd: '17', cxx: clang++-7,   cc: clang-7,   os: ubuntu-20.04, pkg: 'libc++-7-dev libc++abi-7-dev' }
         - { cxxstd: '14', cxx: clang++-7,   cc: clang-7,   os: ubuntu-20.04, pkg: 'libc++-7-dev libc++abi-7-dev' }
-        - { cxxstd: '17', cxx: clang++-6.0, cc: clang-6.0, os: ubuntu-latest, container: "ubuntu:18.04", pkg: 'libc++-dev libc++abi-dev' }
-        - { cxxstd: '14', cxx: clang++-6.0, cc: clang-6.0, os: ubuntu-latest, container: "ubuntu:18.04", pkg: 'libc++-dev libc++abi-dev' }
-        - { cxxstd: '14', cxx: clang++-5.0, cc: clang-5.0, os: ubuntu-latest, container: "ubuntu:18.04", pkg: 'libc++-dev libc++abi-dev' }
-        - { cxxstd: '14', cxx: clang++-4.0, cc: clang-4.0, os: ubuntu-latest, container: "ubuntu:18.04", pkg: 'libc++-dev libc++abi-dev' }
-        - { cxxstd: '14', cxx: clang++-3.9, cc: clang-3.9, os: ubuntu-latest, container: "ubuntu:18.04", pkg: 'libc++-dev libc++abi-dev' }
 
     name: build-${{ matrix.cc }}-std-${{ matrix.cxxstd }}
 
@@ -174,7 +158,6 @@ jobs:
         cmake --build ${GITHUB_WORKSPACE}/build
 
   test-utility:
-    needs: [build-gcc, build-clang]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -189,7 +172,6 @@ jobs:
         ctest --test-dir ${GITHUB_WORKSPACE}/build --output-on-failure --no-tests=error -R utility_tests
 
   test-postgresql:
-    needs: [test-utility]
     runs-on: ubuntu-latest
     services:
       postgresql:
@@ -222,7 +204,6 @@ jobs:
         ctest --test-dir ${GITHUB_WORKSPACE}/build --output-on-failure --no-tests=error -R postgresql_tests
 
   test-mssql:
-    needs: [test-utility]
     runs-on: ubuntu-latest
     services:
       sqlserver:
@@ -253,7 +234,6 @@ jobs:
         ctest --test-dir ${GITHUB_WORKSPACE}/build --output-on-failure --no-tests=error -R mssql_tests
 
   test-sqlite:
-    needs: [test-utility]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3

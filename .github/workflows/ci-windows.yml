@@ -94,7 +94,6 @@ jobs:
     #     cmake --build ${{ github.workspace }}/build --verbose
 
   test-utility:
-    needs: [build-msvc, build-mingw]
     runs-on: windows-2022
     steps:
     - uses: actions/checkout@v3
@@ -106,13 +105,12 @@ jobs:
         cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
     - name: Build
       run: |
-        cmake --build ${{ github.workspace }}/build --config Release --target utility_tests 
+        cmake --build ${{ github.workspace }}/build --config Release --target utility_tests
     - name: Test
       run: |
         ctest --test-dir ${{ github.workspace }}/build --build-config Release --output-on-failure --no-tests=error -R utility_tests
 
   test-mssql:
-    needs: [test-utility]
     runs-on: windows-2022
     strategy:
       fail-fast: false
@@ -137,14 +135,13 @@ jobs:
         cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
     - name: Build
       run: |
-        cmake --build ${{ github.workspace }}/build --config Release --target mssql_tests 
+        cmake --build ${{ github.workspace }}/build --config Release --target mssql_tests
     - name: Test
       run: |
         $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 17 for SQL Server};Server=(localdb)\MSSQLLocalDB;Database=tempdb;UID=sa;PWD=Password!123;"
         ctest --test-dir ${{ github.workspace }}/build --build-config Release --output-on-failure --no-tests=error -R mssql_tests
 
   test-mariadb:
-    needs: [test-utility]
     runs-on: windows-2022
     strategy:
       fail-fast: false
@@ -176,12 +173,11 @@ jobs:
         ctest --test-dir ${{ github.workspace }}/build --build-config Release --output-on-failure --no-tests=error -R mysql_tests
 
   test-mysql:
-    needs: [test-utility]
     runs-on: windows-2022
     strategy:
       fail-fast: false
       matrix:
-        mysql: [8.0, 5.7]
+        mysql: [8.0]
     steps:
     - uses: actions/checkout@v3
     - name: Install MySQL ${{ matrix.mysql }}
@@ -189,7 +185,7 @@ jobs:
       with:
         database: nanodbc
         mysql-version: ${{ matrix.mysql }}
-    - name: Install MySQL Connector 8.1
+    - name: Install MySQL Connector
       run: |
         choco install mysql.odbc
     - name: Check
@@ -204,11 +200,10 @@ jobs:
         cmake --build ${{ github.workspace }}/build --config Release --target mysql_tests
     - name: Test
       run: |
-        $env:NANODBC_TEST_CONNSTR_MYSQL="Driver={MySQL ODBC 8.3 ANSI Driver};Server=127.0.0.1;Database=nanodbc;User=root;Password=;big_packets=1;NO_SCHEMA=false"
+        $env:NANODBC_TEST_CONNSTR_MYSQL="Driver={MySQL ODBC 9.0 ANSI Driver};Server=127.0.0.1;Database=nanodbc;User=root;Password=;big_packets=1;NO_SCHEMA=false"
         ctest --test-dir ${{ github.workspace }}/build --build-config Release --output-on-failure --no-tests=error -R mysql_tests
 
   test-postgresql:
-    needs: [test-utility]
     runs-on: windows-2022
     strategy:
       fail-fast: false
@@ -233,14 +228,13 @@ jobs:
         cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
     - name: Build
       run: |
-        cmake --build ${{ github.workspace }}/build --config Release --target postgresql_tests 
+        cmake --build ${{ github.workspace }}/build --config Release --target postgresql_tests
     - name: Test
       run: |
         $env:NANODBC_TEST_CONNSTR_PGSQL="Driver={PostgreSQL ANSI(x64)};Server=localhost;Port=5432;Database=nanodbc;UID=postgres;PWD="
         ctest --test-dir ${{ github.workspace }}/build --build-config Release --output-on-failure --no-tests=error -R postgresql_tests
 
   test-sqlite:
-    needs: [test-utility]
     runs-on: windows-2022
     steps:
     - uses: actions/checkout@v3
@@ -257,7 +251,7 @@ jobs:
         cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
     - name: Build
       run: |
-        cmake --build ${{ github.workspace }}/build --config Release --target sqlite_tests 
+        cmake --build ${{ github.workspace }}/build --config Release --target sqlite_tests
     - name: Test
       run: |
         ctest --test-dir ${{ github.workspace }}/build --build-config Release --output-on-failure --no-tests=error -R sqlite_tests

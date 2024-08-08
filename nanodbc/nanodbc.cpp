@@ -4700,7 +4700,7 @@ std::unique_ptr<T, std::function<void(T*)>> result::result_impl::ensure_pdata(sh
             (T*)(col.pdata_ + rowset_position_ * col.clen_), [](T*) {});
     }
 
-    T* buffer = new T{};
+    std::unique_ptr<T> buffer = std::make_unique<T>();
     const std::size_t buffer_size = sizeof(T);
     void* handle = native_statement_handle();
     NANODBC_CALL_RC(
@@ -4709,7 +4709,7 @@ std::unique_ptr<T, std::function<void(T*)>> result::result_impl::ensure_pdata(sh
         handle,                                // StatementHandle
         static_cast<SQLUSMALLINT>(column + 1), // Col_or_Param_Num
         sql_ctype<T>::value,                   // TargetType
-        buffer,                                // TargetValuePtr
+        buffer.get(),                          // TargetValuePtr
         buffer_size,                           // BufferLength
         &ValueLenOrInd);                       // StrLen_or_IndPtr
 
@@ -4719,10 +4719,7 @@ std::unique_ptr<T, std::function<void(T*)>> result::result_impl::ensure_pdata(sh
     if (!success(rc))
         NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
 
-    // Return a traditional unique_ptr since we just allocated this buffer, and
-    // we most certainly want this memory returned to the heap when the result
-    // goes out of scope.
-    return std::unique_ptr<T>(buffer);
+    return buffer;
 }
 
 template <class T, typename std::enable_if<!is_string<T>::value, int>::type>
