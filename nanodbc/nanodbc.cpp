@@ -882,7 +882,7 @@ namespace nanodbc
 attribute::attribute(
     long const& attribute,
     long const& string_length,
-    attribute::variant const& resource)
+    attribute::variant const& resource) noexcept
     : attribute_(attribute)
     , string_length_(string_length)
     , resource_(resource)
@@ -890,7 +890,7 @@ attribute::attribute(
 {
     this->extractValuePtr();
 }
-attribute::attribute(attribute const& other)
+attribute::attribute(attribute const& other) noexcept
     : attribute_(other.attribute_)
     , string_length_(other.string_length_)
     , resource_(other.resource_)
@@ -1922,7 +1922,7 @@ public:
         long timeout,
         statement& statement)
     {
-        batch_ops array_ops(batch_operations);
+        const batch_ops array_ops(batch_operations);
         return execute_direct(conn, query, array_ops, timeout, statement);
     }
 
@@ -4111,7 +4111,7 @@ private:
                 SQLSetPos,
                 rc,
                 stmt_.native_statement_handle(),
-                rowset_position_ + 1,
+                static_cast<SQLSETPOSIROW>(rowset_position_) + 1,
                 SQL_POSITION,
                 SQL_LOCK_NO_CHANGE);
             if (!success(rc))

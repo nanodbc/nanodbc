@@ -368,10 +368,10 @@ struct batch_ops
     long parameter_array_length;
     long rowset_size;
 
-    batch_ops()
+    batch_ops() noexcept
         : parameter_array_length(-1L)
         , rowset_size(-1L){};
-    batch_ops(const long all_length)
+    batch_ops(const long all_length) noexcept
         : parameter_array_length(all_length)
         , rowset_size(all_length){};
 };
@@ -427,8 +427,8 @@ public:
 #endif
     attribute() = delete;
     attribute& operator=(attribute const&) = delete;
-    attribute(attribute const& other);
-    attribute(long const& attribute, long const& string_length, variant const& resource);
+    attribute(attribute const& other) noexcept;
+    attribute(long const& attribute, long const& string_length, variant const& resource) noexcept;
 
 protected:
     void extractValuePtr();
@@ -442,11 +442,7 @@ protected:
 class attribute
 {
 public:
-    attribute(long const& attribute, long const& string_length, std::uintptr_t value)
-        : attribute_(attribute)
-        , string_length_(string_length)
-        , value_ptr_((void*)value){};
-    attribute(long const& attribute, long const& string_length, void* value_ptr)
+    attribute(long const& attribute, long const& string_length, void* value_ptr) noexcept
         : attribute_(attribute)
         , string_length_(string_length)
         , value_ptr_(value_ptr){};
@@ -789,9 +785,12 @@ public:
     class attribute : public nanodbc::attribute
     {
     public:
-        attribute(attribute const& other)
+        attribute(attribute const& other) noexcept
             : nanodbc::attribute(other){};
-        attribute(long const& attribute, long const& string_length, variant const& resource)
+        attribute(
+            long const& attribute,
+            long const& string_length,
+            variant const& resource) noexcept
             : nanodbc::attribute(attribute, string_length, resource){};
 
     private:
@@ -802,9 +801,7 @@ private:
     class attribute : public nanodbc::attribute
     {
     public:
-        attribute(long const& attribute, long const& string_length, std::uintptr_t value)
-            : nanodbc::attribute(attribute, string_length, value){};
-        attribute(long const& attribute, long const& string_length, void* value_ptr)
+        attribute(long const& attribute, long const& string_length, void* value_ptr) noexcept
             : nanodbc::attribute(attribute, string_length, value_ptr){};
 
     private:

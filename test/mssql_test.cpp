@@ -483,10 +483,10 @@ TEST_CASE_METHOD(
 
 #ifdef NANODBC_HAS_STD_VARIANT
     // Block Cursors: https://technet.microsoft.com/en-us/library/aa172590.aspx
-    std::size_t const rowset_size = 2;
+    constexpr std::size_t const rowset_size = 2;
 #else
     // Not testing block cursors
-    std::size_t const rowset_size = 1;
+    constexpr std::size_t const rowset_size = 1;
 #endif
 
     create_table(
