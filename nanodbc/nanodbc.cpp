@@ -875,14 +875,14 @@ inline void allocate_dbc_handle(SQLHDBC& conn, SQLHENV env)
 
 } // namespace
 
-// connection::attribute
+// nanodbc::attribute
 #ifdef NANODBC_HAS_STD_VARIANT
 namespace nanodbc
 {
-connection::attribute::attribute(
+attribute::attribute(
     long const& attribute,
     long const& string_length,
-    attribute::variant const& resource)
+    attribute::variant const& resource) noexcept
     : attribute_(attribute)
     , string_length_(string_length)
     , resource_(resource)
@@ -890,7 +890,7 @@ connection::attribute::attribute(
 {
     this->extractValuePtr();
 }
-connection::attribute::attribute(attribute const& other)
+attribute::attribute(attribute const& other) noexcept
     : attribute_(other.attribute_)
     , string_length_(other.string_length_)
     , resource_(other.resource_)
@@ -898,7 +898,7 @@ connection::attribute::attribute(attribute const& other)
 {
     this->extractValuePtr();
 }
-void connection::attribute::extractValuePtr()
+void attribute::extractValuePtr()
 {
     std::visit(
         [this](auto&& arg)
@@ -1589,6 +1589,27 @@ public:
         open(conn);
     }
 
+    explicit statement_impl(class connection& conn, const std::list<attribute>& attributes)
+        : stmt_(nullptr)
+        , open_(false)
+        , conn_()
+        , bind_len_or_null_()
+        , wide_string_data_()
+        , string_data_()
+        , binary_data_()
+#if defined(NANODBC_DO_ASYNC_IMPL)
+        , async_(false)
+        , async_enabled_(false)
+        , async_event_(nullptr)
+#endif
+#ifndef NANODBC_DISABLE_MSSQL_TVP
+        , tvp_data_()
+        , open_tvp_(false)
+#endif
+    {
+        open(conn, attributes);
+    }
+
     statement_impl(class connection& conn, string const& query, long timeout)
         : stmt_(nullptr)
         , open_(false)
@@ -1629,6 +1650,10 @@ public:
 
     void open(class connection& conn)
     {
+        if (open() && connected() && conn_.native_dbc_handle() == conn.native_dbc_handle())
+        {
+            return;
+        }
         close();
         RETCODE rc;
         NANODBC_CALL_RC(SQLAllocHandle, rc, SQL_HANDLE_STMT, conn.native_dbc_handle(), &stmt_);
@@ -1641,6 +1666,19 @@ public:
                 NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
         }
         conn_ = conn;
+    }
+
+    void open(class connection& conn, std::list<attribute> const& attributes)
+    {
+        open(conn);
+        for (const attribute& attr : attributes)
+        {
+            if (attr.value_ptr_ == nullptr)
+            {
+                continue;
+            }
+            this->set_attribute(attr.attribute_, attr.string_length_, attr.value_ptr_);
+        }
     }
 
     bool open() const { return open_; }
@@ -1744,18 +1782,28 @@ public:
 
     void timeout(long timeout)
     {
-        RETCODE rc;
-        NANODBC_CALL_RC(
-            SQLSetStmtAttr,
-            rc,
-            stmt_,
-            SQL_ATTR_QUERY_TIMEOUT,
-            (SQLPOINTER)(std::intptr_t)timeout,
-            0);
-
         // some drivers don't support timeout for statements,
         // so only raise the error if a non-default timeout was requested.
-        if (!success(rc) && (timeout != 0))
+        try
+        {
+            this->set_attribute(SQL_ATTR_QUERY_TIMEOUT, 0, &timeout);
+        }
+        catch (...)
+        {
+            if (timeout != 0)
+            {
+                throw;
+            }
+        }
+        return;
+    }
+
+    void set_attribute(long const& attr, long const& size, const void* buffer)
+    {
+        RETCODE rc;
+
+        NANODBC_CALL_RC(SQLSetStmtAttr, rc, stmt_, attr, (SQLPOINTER)(buffer), size);
+        if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     }
 
@@ -1874,20 +1922,31 @@ public:
         long timeout,
         statement& statement)
     {
+        const batch_ops array_ops(batch_operations);
+        return execute_direct(conn, query, array_ops, timeout, statement);
+    }
+
+    result execute_direct(
+        class connection& conn,
+        string const& query,
+        batch_ops const& array_sizes,
+        long timeout,
+        statement& statement)
+    {
 #ifdef NANODBC_ENABLE_WORKAROUND_NODATA
-        const RETCODE rc = just_execute_direct(conn, query, batch_operations, timeout, statement);
+        const RETCODE rc = just_execute_direct(conn, query, array_sizes, timeout, statement);
         if (rc == SQL_NO_DATA)
             return result();
 #else
-        just_execute_direct(conn, query, batch_operations, timeout, statement);
+        just_execute_direct(conn, query, array_sizes, timeout, statement);
 #endif
-        return {statement, batch_operations};
+        return {statement, array_sizes.rowset_size};
     }
 
     RETCODE just_execute_direct(
         class connection& conn,
         string const& query,
-        long batch_operations,
+        batch_ops const& array_sizes,
         long timeout,
         statement&, // statement
         void* event_handle = nullptr)
@@ -1902,15 +1961,18 @@ public:
 #endif
 
         RETCODE rc;
-        NANODBC_CALL_RC(
-            SQLSetStmtAttr,
-            rc,
-            stmt_,
-            SQL_ATTR_PARAMSET_SIZE,
-            (SQLPOINTER)(std::intptr_t)batch_operations,
-            0);
-        if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        if (array_sizes.parameter_array_length > 0)
+        {
+            NANODBC_CALL_RC(
+                SQLSetStmtAttr,
+                rc,
+                stmt_,
+                SQL_ATTR_PARAMSET_SIZE,
+                (SQLPOINTER)(std::intptr_t)array_sizes.parameter_array_length,
+                0);
+            if (!success(rc))
+                NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        }
 
         this->timeout(timeout);
 
@@ -3273,6 +3335,14 @@ public:
 #if defined(NANODBC_DO_ASYNC_IMPL)
         , async_(false)
 #endif
+        /*
+         * It is set to true if `unbind` is ever
+         * called either by the caller or during the
+         * auto_bind process ( blob ).
+         * This variable is only used to optimize
+         * away unnecessary SQLSetPos calls.
+         */
+        , has_unbound_(false)
     {
         RETCODE rc;
         NANODBC_CALL_RC(
@@ -3331,7 +3401,13 @@ public:
     bool next(void* event_handle = nullptr)
     {
         if (rows() && ++rowset_position_ < rowset_size_)
+        {
+            if (has_unbound_)
+            {
+                set_current_position();
+            }
             return rowset_position_ < rows();
+        }
         rowset_position_ = 0;
         return fetch(0, SQL_FETCH_NEXT, event_handle);
     }
@@ -3366,7 +3442,10 @@ public:
     bool prior()
     {
         if (rows() && --rowset_position_ >= 0)
+        {
+            set_current_position();
             return true;
+        }
         rowset_position_ = 0;
         return fetch(0, SQL_FETCH_PRIOR);
     }
@@ -3601,6 +3680,7 @@ public:
     void unbind(short column)
     {
         throw_if_column_is_out_of_range(column);
+        has_unbound_ = true;
         if (is_bound(column))
         {
             bound_column& col = bound_columns_[column];
@@ -4003,6 +4083,7 @@ private:
     void unbind_column(bound_column& column)
     {
         NANODBC_ASSERT(column.cbdata_);
+        has_unbound_ = true;
 
         RETCODE rc;
         NANODBC_CALL_RC(
@@ -4021,6 +4102,23 @@ private:
         column.bound_ = false;
     }
 
+    void set_current_position()
+    {
+        if (rowset_position_ < rowset_size_ && rowset_position_ < rows())
+        {
+            RETCODE rc;
+            NANODBC_CALL_RC(
+                SQLSetPos,
+                rc,
+                stmt_.native_statement_handle(),
+                static_cast<SQLSETPOSIROW>(rowset_position_) + 1,
+                SQL_POSITION,
+                SQL_LOCK_NO_CHANGE);
+            if (!success(rc))
+                NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
+        }
+    }
+
 private:
     statement stmt_;
     const long rowset_size_;
@@ -4033,6 +4131,7 @@ private:
 #if defined(NANODBC_DO_ASYNC_IMPL)
     bool async_; // true if statement is currently in SQL_STILL_EXECUTING mode
 #endif
+    bool has_unbound_;
 };
 
 template <>
@@ -4902,7 +5001,9 @@ std::list<driver> list_drivers()
 result execute(connection& conn, string const& query, long batch_operations, long timeout)
 {
     class statement statement;
-    return statement.execute_direct(conn, query, batch_operations, timeout);
+    batch_ops array_sizes;
+    array_sizes.rowset_size = batch_operations;
+    return statement.execute_direct(conn, query, array_sizes, timeout);
 }
 
 void just_execute(connection& conn, string const& query, long batch_operations, long timeout)
@@ -5255,6 +5356,11 @@ statement::statement(class connection& conn)
 {
 }
 
+statement::statement(class connection& conn, std::list<attribute> const& attributes)
+    : impl_(new statement_impl(conn, attributes))
+{
+}
+
 statement::statement(statement&& rhs) noexcept
     : impl_(std::move(rhs.impl_))
 {
@@ -5346,6 +5452,15 @@ result statement::execute_direct(
     long timeout)
 {
     return impl_->execute_direct(conn, query, batch_operations, timeout, *this);
+}
+
+result statement::execute_direct(
+    class connection& conn,
+    string const& query,
+    batch_ops const& array_sizes,
+    long timeout)
+{
+    return impl_->execute_direct(conn, query, array_sizes, timeout, *this);
 }
 
 #if defined(NANODBC_DO_ASYNC_IMPL)
