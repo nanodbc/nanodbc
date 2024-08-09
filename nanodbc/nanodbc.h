@@ -445,7 +445,7 @@ public:
     attribute(long const& attribute, long const& string_length, std::uintptr_t value_ptr) noexcept
         : attribute_(attribute)
         , string_length_(string_length)
-        , value_ptr_(reinterpret_cast<void*>(value_ptr)){};
+        , value_ptr_((void*)value_ptr){};
 
 protected:
     long attribute_;
@@ -1407,9 +1407,12 @@ public:
     class attribute : public nanodbc::attribute
     {
     public:
-        attribute(attribute const& other)
+        attribute(attribute const& other) noexcept
             : nanodbc::attribute(other){};
-        attribute(long const& attribute, long const& string_length, variant const& resource)
+        attribute(
+            long const& attribute,
+            long const& string_length,
+            variant const& resource) noexcept
             : nanodbc::attribute(attribute, string_length, resource){};
 
     private:
@@ -1420,7 +1423,10 @@ private:
     class attribute : public nanodbc::attribute
     {
     public:
-        attribute(long const& attribute, long const& string_length, std::uintptr_t value_ptr)
+        attribute(
+            long const& attribute,
+            long const& string_length,
+            std::uintptr_t value_ptr) noexcept
             : nanodbc::attribute(attribute, string_length, value_ptr){};
 
     private:
