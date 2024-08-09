@@ -801,7 +801,10 @@ private:
     class attribute : public nanodbc::attribute
     {
     public:
-        attribute(long const& attribute, long const& string_length, std::uintptr_t value_ptr) noexcept
+        attribute(
+            long const& attribute,
+            long const& string_length,
+            std::uintptr_t value_ptr) noexcept
             : nanodbc::attribute(attribute, string_length, value_ptr){};
 
     private:
