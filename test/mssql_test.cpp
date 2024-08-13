@@ -28,7 +28,7 @@ struct mssql_fixture : public test_case_fixture
             connection_string_ = get_env("NANODBC_TEST_CONNSTR_MSSQL");
     }
 
-#if __cpp_lib_variant >= 201606L
+#ifdef NANODBC_HAS_STD_VARIANT
     using base_test_fixture::connect;
     nanodbc::connection
     connect(std::list<nanodbc::connection::attribute> const& attributes, bool const& is_async)
@@ -481,28 +481,67 @@ TEST_CASE_METHOD(
 {
     nanodbc::connection conn = connect();
 
-    // BLock Cursors: https://technet.microsoft.com/en-us/library/aa172590.aspx
-    std::size_t const rowset_size = 2;
+#ifdef NANODBC_HAS_STD_VARIANT
+    // Block Cursors: https://technet.microsoft.com/en-us/library/aa172590.aspx
+    constexpr std::size_t const rowset_size = 2;
+#else
+    // Not testing block cursors
+    constexpr std::size_t const rowset_size = 1;
+#endif
 
     create_table(
-        conn, NANODBC_TEXT("test_variable_string"), NANODBC_TEXT("(i int, s nvarchar(256))"));
+        conn,
+        NANODBC_TEXT("test_variable_string"),
+        NANODBC_TEXT("(i int, s1_bound nvarchar(256), s2_unbound varchar(max))"));
     execute(
         conn,
-        NANODBC_TEXT(
-            "insert into test_variable_string (i, s) values (1, 'this is a shorter text');"));
+        NANODBC_TEXT("insert into test_variable_string (i, s1_bound, s2_unbound) values (1, 'this "
+                     "is a shorter text in bound col', 'this is a shorter text in unbound col');"));
     execute(
         conn,
-        NANODBC_TEXT(
-            "insert into test_variable_string (i, s) values (2, 'this is a longer text of the two "
-            "texts in the table');"));
-    nanodbc::result results = nanodbc::execute(
-        conn, NANODBC_TEXT("select i, s from test_variable_string order by i;"), rowset_size);
+        NANODBC_TEXT("insert into test_variable_string (i, s1_bound, s2_unbound) values (2, 'this "
+                     "is a longer text of the three "
+                     "in the table in bound col', 'this is a longer text of the three texts in the "
+                     "table in unbound col');"));
+    execute(
+        conn,
+        NANODBC_TEXT("insert into test_variable_string (i, s1_bound, s2_unbound) values (2, 'this "
+                     "is the longest text of the three "
+                     "in the table in bound col', 'this is the longest text of the three texts in "
+                     "the table in unbound col');"));
+
+#ifdef NANODBC_HAS_STD_VARIANT
+    std::list<nanodbc::statement::attribute> attributes;
+    attributes.push_back({SQL_ATTR_CURSOR_TYPE, 0, (std::uintptr_t)SQL_CURSOR_STATIC});
+    nanodbc::statement stmt(conn, attributes);
+#else
+    nanodbc::statement stmt(conn);
+#endif
+    nanodbc::batch_ops array_sizes;
+    array_sizes.rowset_size = rowset_size;
+    nanodbc::result results = stmt.execute_direct(
+        conn,
+        NANODBC_TEXT("select i, s1_bound, s2_unbound from test_variable_string order by i;"),
+        array_sizes);
+
     REQUIRE(results.next());
-    REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("this is a shorter text"));
+    REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("this is a shorter text in bound col"));
+    REQUIRE(
+        results.get<nanodbc::string>(2) == NANODBC_TEXT("this is a shorter text in unbound col"));
     REQUIRE(results.next());
     REQUIRE(
         results.get<nanodbc::string>(1) ==
-        NANODBC_TEXT("this is a longer text of the two texts in the table"));
+        NANODBC_TEXT("this is a longer text of the three in the table in bound col"));
+    REQUIRE(
+        results.get<nanodbc::string>(2) ==
+        NANODBC_TEXT("this is a longer text of the three texts in the table in unbound col"));
+    REQUIRE(results.next());
+    REQUIRE(
+        results.get<nanodbc::string>(1) ==
+        NANODBC_TEXT("this is the longest text of the three in the table in bound col"));
+    REQUIRE(
+        results.get<nanodbc::string>(2) ==
+        NANODBC_TEXT("this is the longest text of the three texts in the table in unbound col"));
     REQUIRE(!results.next());
 }
 
@@ -511,6 +550,11 @@ TEST_CASE_METHOD(
     "test_block_cursor_with_nvarchar_and_first_row_null",
     "[mssql][nvarchar][block][rowset]")
 {
+    /* In this test there are no long / unbound columns.
+     * It is fine to execute without changing the cursor type
+     * to one that is scrollable
+     * ( as SQLSetPos/SQLGetData is never called ).
+     */
     nanodbc::connection conn = connect();
     std::size_t const rowset_size = 2;
 
@@ -1830,7 +1874,7 @@ TEST_CASE_METHOD(
     }
 }
 
-#if __cpp_lib_variant >= 201606L
+#ifdef NANODBC_HAS_STD_VARIANT
 TEST_CASE_METHOD(mssql_fixture, "test_conn_attributes", "[mssql][conn_attibutes]")
 {
     {

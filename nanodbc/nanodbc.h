@@ -361,6 +361,21 @@ private:
 ///
 /// \{
 
+/// \brief A type capturing parameter array length as well as
+/// number of rows in a rowset of a result.
+struct batch_ops
+{
+    long parameter_array_length;
+    long rowset_size;
+
+    batch_ops() noexcept
+        : parameter_array_length(-1L)
+        , rowset_size(-1L){};
+    batch_ops(const long all_length) noexcept
+        : parameter_array_length(all_length)
+        , rowset_size(all_length){};
+};
+
 /// \brief A type for representing date data.
 struct date
 {
@@ -388,6 +403,56 @@ struct timestamp
     std::int16_t sec;   ///< Seconds after the minute.
     std::int32_t fract; ///< Fractional seconds.
 };
+
+#ifdef NANODBC_HAS_STD_VARIANT
+/// \brief A class representing a connection or a statement attribute.
+///
+/// Callers should create attributes using the 3 argument constructor.
+/// First argument is the Attribute argument to the ODBC API call -
+//  `SQLSetConnectAttr`, or `SQLSetStmtAttr`.  The second is the StringLength,
+//  and the third is used to inform the ValuePtr argument.  This argument,
+/// a std::variant, is a type safe union of std::vector<uint8_t> ( binary
+/// buffer payloads ), nanodbc::string ( string payloads ), or std::(u)intptr_t,
+/// for both u/int payloads, as well as pointers to more generic buffers.
+///
+/// See https://learn.microsoft.com/en-us/sql/odbc/reference/syntax/sqlsetconnectattr-function
+class attribute
+{
+public:
+#ifdef NANODBC_ENABLE_UNICODE
+    typedef std::variant<std::vector<uint8_t>, string, std::string, std::intptr_t, std::uintptr_t>
+        variant;
+#else
+    typedef std::variant<std::vector<uint8_t>, string, std::intptr_t, std::uintptr_t> variant;
+#endif
+    attribute() = delete;
+    attribute& operator=(attribute const&) = delete;
+    attribute(attribute const& other) noexcept;
+    attribute(long const& attribute, long const& string_length, variant const& resource) noexcept;
+
+protected:
+    void extractValuePtr();
+
+    long attribute_;
+    long string_length_;
+    variant resource_;
+    void* value_ptr_;
+};
+#else
+class attribute
+{
+public:
+    attribute(long const& attribute, long const& string_length, std::uintptr_t value_ptr) noexcept
+        : attribute_(attribute)
+        , string_length_(string_length)
+        , value_ptr_((void*)value_ptr){};
+
+protected:
+    long attribute_;
+    long string_length_;
+    void* value_ptr_;
+};
+#endif
 
 /// \brief A type trait for testing if a type is a std::basic_string compatible with the current
 /// nanodbc configuration
@@ -711,6 +776,42 @@ private:
 /// \brief Represents a statement on the database.
 class statement
 {
+
+private:
+    class statement_impl;
+
+#ifdef NANODBC_HAS_STD_VARIANT
+public:
+    class attribute : public nanodbc::attribute
+    {
+    public:
+        attribute(attribute const& other) noexcept
+            : nanodbc::attribute(other){};
+        attribute(
+            long const& attribute,
+            long const& string_length,
+            variant const& resource) noexcept
+            : nanodbc::attribute(attribute, string_length, resource){};
+
+    private:
+        friend class nanodbc::statement::statement_impl;
+    };
+#else
+private:
+    class attribute : public nanodbc::attribute
+    {
+    public:
+        attribute(
+            long const& attribute,
+            long const& string_length,
+            std::uintptr_t value_ptr) noexcept
+            : nanodbc::attribute(attribute, string_length, value_ptr){};
+
+    private:
+        friend class nanodbc::statement::statement_impl;
+    };
+#endif
+
 public:
     /// \brief Provides support for retrieving output/return parameters.
     /// \see binding
@@ -731,6 +832,8 @@ public:
     /// \param conn The connection to use.
     /// \see open(), prepare()
     explicit statement(class connection& conn);
+
+    explicit statement(class connection& conn, std::list<attribute> const& attributes);
 
     /// \brief Constructs and prepares a statement using the given connection and query.
     /// \param conn The connection to use.
@@ -817,6 +920,22 @@ public:
         class connection& conn,
         string const& query,
         long batch_operations = 1,
+        long timeout = 0);
+
+    /// \brief Opens, prepares, and executes the given query directly on the given connection.
+    /// \param conn The connection where the statement will be executed.
+    /// \param query The SQL query that will be executed.
+    /// \param array_sizes More granular control of rows to fetch per rowset, and the number of
+    ///                    batch parameters to process.
+    /// \param timeout The number in seconds before query timeout. Default 0 meaning no timeout.
+    /// \return A result set object.
+    /// \attention You will want to use transactions if you are doing batch operations because it
+    ///            will prevent auto commits occurring after each individual operation is executed.
+    /// \see open(), prepare(), execute(), result, transaction
+    class result execute_direct(
+        class connection& conn,
+        string const& query,
+        batch_ops const& array_sizes,
         long timeout = 0);
 
 #if !defined(NANODBC_DISABLE_ASYNC)
@@ -1254,9 +1373,6 @@ public:
     /// @}
 private:
     typedef std::function<bool(std::size_t)> null_predicate_type;
-
-private:
-    class statement_impl;
     friend class nanodbc::result;
 #ifndef NANODBC_DISABLE_MSSQL_TVP
     friend class nanodbc::table_valued_parameter::table_valued_parameter_impl;
@@ -1288,63 +1404,32 @@ private:
 
 #ifdef NANODBC_HAS_STD_VARIANT
 public:
-    /// \brief A class representing a connection attribute.
-    ///
-    /// Callers should create attributes using the 3 argument constructor.
-    /// First argument is the Attribute argument to the ODBC SQLSetConnectAttr
-    /// function.  The second is the StringLength, and the third is used to
-    /// inform the ValuePtr argument to SQLSetConnectAttr.  This argument,
-    /// a std::variant, is a type safe union of std::vector<uint8_t> ( binary
-    /// buffer payloads ), nanodbc::string ( string payloads ), or std::(u)intptr_t,
-    /// for both u/int payloads, as well as pointers to more generic buffers.
-    ///
-    /// See https://learn.microsoft.com/en-us/sql/odbc/reference/syntax/sqlsetconnectattr-function
-    class attribute
+    class attribute : public nanodbc::attribute
     {
     public:
-#ifdef NANODBC_ENABLE_UNICODE
-        typedef std::
-            variant<std::vector<uint8_t>, string, std::string, std::intptr_t, std::uintptr_t>
-                variant;
-#else
-        typedef std::variant<std::vector<uint8_t>, string, std::intptr_t, std::uintptr_t> variant;
-#endif
-        attribute() = delete;
-        attribute& operator=(attribute const&) = delete;
-        attribute(attribute const& other);
-        attribute(long const& attribute, long const& string_length, variant const& resource);
+        attribute(attribute const& other) noexcept
+            : nanodbc::attribute(other){};
+        attribute(
+            long const& attribute,
+            long const& string_length,
+            variant const& resource) noexcept
+            : nanodbc::attribute(attribute, string_length, resource){};
 
     private:
-        void extractValuePtr();
-
-        long attribute_;
-        long string_length_;
-        variant resource_;
-        void* value_ptr_;
         friend class nanodbc::connection::connection_impl;
     };
 #else
 private:
-    // Prior to C++17 connection::attribute is not public, rather
-    // defined here as private so that we don't have to ifdef some of
-    // the internals in connection_impl that route timeout/async through
-    // the API endpoints that take connection::attribute as input.
-    class attribute
+    class attribute : public nanodbc::attribute
     {
     public:
-        attribute(long const& attribute, long const& string_length, std::uintptr_t value)
-            : attribute_(attribute)
-            , string_length_(string_length)
-            , value_ptr_((void*)value){};
-        attribute(long const& attribute, long const& string_length, void* value_ptr)
-            : attribute_(attribute)
-            , string_length_(string_length)
-            , value_ptr_(value_ptr){};
+        attribute(
+            long const& attribute,
+            long const& string_length,
+            std::uintptr_t value_ptr) noexcept
+            : nanodbc::attribute(attribute, string_length, value_ptr){};
 
     private:
-        long attribute_;
-        long string_length_;
-        void* value_ptr_;
         friend class nanodbc::connection::connection_impl;
     };
 #endif
@@ -2555,8 +2640,7 @@ std::list<datasource> list_datasources();
 /// connection.
 /// \param conn The connection where the statement will be executed.
 /// \param query The SQL query that will be executed.
-/// \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters
-/// to process.
+/// \param batch_operations Numbers of rows to fetch per rowset.
 /// \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
 /// \return A result set object.
 /// \attention You will want to use transactions if you are doing batch operations because it will
