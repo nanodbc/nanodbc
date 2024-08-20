@@ -1359,7 +1359,7 @@ private:
     bool rollback_; // if true, this connection is marked for eventual transaction rollback
 };
 
-template <class T, typename std::enable_if<!is_string<T>::value, int>::type = 0>
+template <class T, typename std::enable_if<!is_string<T>::value, int>::type>
 T connection::connection_impl::get_info_impl(short info_type) const
 {
     T value = 0;
@@ -1370,7 +1370,7 @@ T connection::connection_impl::get_info_impl(short info_type) const
     return value;
 }
 
-template <class T, typename std::enable_if<is_string<T>::value, int>::type = 0>
+template <class T, typename std::enable_if<is_string<T>::value, int>::type>
 T connection::connection_impl::get_info_impl(short info_type) const
 {
     NANODBC_SQLCHAR value[1024] = {0};
