@@ -1367,6 +1367,12 @@ struct test_case_fixture : public base_test_fixture
         // Test SQUINTEGER results
         REQUIRE(connection.get_info<uint32_t>(SQL_ODBC_INTERFACE_CONFORMANCE) > 0);
 
+        // get_info is robust to a SQUINTEGER InfoType being retrieved
+        // as uint64_t
+        REQUIRE(
+            connection.get_info<uint64_t>(SQL_ODBC_INTERFACE_CONFORMANCE) ==
+            connection.get_info<uint32_t>(SQL_ODBC_INTERFACE_CONFORMANCE));
+
         // Test SQUINTEGER bitmask results
         REQUIRE((connection.get_info<uint32_t>(SQL_CREATE_TABLE) & SQL_CT_CREATE_TABLE));
 
