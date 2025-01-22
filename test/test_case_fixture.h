@@ -2915,17 +2915,17 @@ PRIMARY KEY(t2_fid)
             conn,
             NANODBC_TEXT("test_param_size_scale_type"),
             NANODBC_TEXT("(i int, s varchar(60), f float, d decimal(9, 3))"));
-        nanodbc::string insert(NANODBC_TEXT(
-            "insert into test_param_size_scale_type (i, s, f, d) values(?, ?, ?, ?)"));
+        nanodbc::string insert(
+            NANODBC_TEXT("insert into test_param_size_scale_type (i, s, f, d) values(?, ?, ?, ?)"));
         nanodbc::statement stmt(conn);
         prepare(stmt, insert);
 
-        //size: For numeirc maximum number of digits
+        // size: For numeirc maximum number of digits
         REQUIRE(stmt.parameter_size(0) == 10);
         REQUIRE(stmt.parameter_type(0) == SQL_INTEGER);
         REQUIRE(stmt.parameter_scale(0) == 0);
 
-        //size: number of characters
+        // size: number of characters
         REQUIRE(stmt.parameter_size(1) == 60);
         REQUIRE(stmt.parameter_type(1) == SQL_VARCHAR);
         REQUIRE(stmt.parameter_scale(1) == 0);

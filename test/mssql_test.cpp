@@ -244,10 +244,7 @@ TEST_CASE_METHOD(
     test_batch_insert_describe_param();
 }
 
-TEST_CASE_METHOD(
-    mssql_fixture,
-    "test_param_size_scale_type",
-    "[mssql][param][methods]")
+TEST_CASE_METHOD(mssql_fixture, "test_param_size_scale_type", "[mssql][param][methods]")
 {
     test_param_size_scale_type();
 }
