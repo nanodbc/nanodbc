@@ -2908,6 +2908,37 @@ PRIMARY KEY(t2_fid)
         }
     }
 
+    void test_param_size_scale_type()
+    {
+        auto conn = connect();
+        create_table(
+            conn,
+            NANODBC_TEXT("test_param_size_scale_type"),
+            NANODBC_TEXT("(i int, s varchar(60), f float, d decimal(9, 3))"));
+        nanodbc::string insert(NANODBC_TEXT(
+            "insert into test_param_size_scale_type (i, s, f, d) values(?, ?, ?, ?)"));
+        nanodbc::statement stmt(conn);
+        prepare(stmt, insert);
+
+        //size: For numeirc maximum number of digits
+        REQUIRE(stmt.parameter_size(0) == 10);
+        REQUIRE(stmt.parameter_type(0) == SQL_INTEGER);
+        REQUIRE(stmt.parameter_scale(0) == 0);
+
+        //size: number of characters
+        REQUIRE(stmt.parameter_size(1) == 60);
+        REQUIRE(stmt.parameter_type(1) == SQL_VARCHAR);
+        REQUIRE(stmt.parameter_scale(1) == 0);
+
+        REQUIRE(stmt.parameter_size(2) == 53);
+        REQUIRE(stmt.parameter_type(2) == SQL_FLOAT);
+        REQUIRE(stmt.parameter_scale(2) == 0);
+
+        REQUIRE(stmt.parameter_size(3) == 9);
+        REQUIRE(stmt.parameter_type(3) == SQL_DECIMAL);
+        REQUIRE(stmt.parameter_scale(3) == 3);
+    }
+
     void test_statement_prepare_reuse()
     {
         nanodbc::connection connection = connect();
