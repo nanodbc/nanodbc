@@ -2171,7 +2171,7 @@ public:
         describe_parameters(param_index);
         const SQLSMALLINT& param_type = param_descr_data_.at(param_index).type_;
         NANODBC_ASSERT(param_type < static_cast<SQLULEN>(std::numeric_limits<short>::max()));
-        return static_cast<unsigned long>(param_type);
+        return static_cast<short>(param_type);
     }
 
     static SQLSMALLINT param_type_from_direction(param_direction direction)
@@ -3115,6 +3115,48 @@ public:
             param_descr_data_[idx[i]].index_ = static_cast<SQLUSMALLINT>(i);
             param_descr_data_[idx[i]].iotype_ = SQL_PARAM_INPUT;
         }
+    }
+
+    short parameters() const { return param_descr_data_.size(); }
+
+    unsigned long parameter_size(short param_index)
+    {
+        if (param_descr_data_.count(param_index))
+        {
+            return static_cast<unsigned long>(param_descr_data_.at(param_index).size_);
+        }
+
+        prepare_tvp_param_all();
+        const SQLULEN& param_size = param_descr_data_.at(param_index).size_;
+        NANODBC_ASSERT(
+            param_size < static_cast<SQLULEN>(std::numeric_limits<unsigned long>::max()));
+        return static_cast<unsigned long>(param_size);
+    }
+
+    short parameter_scale(short param_index)
+    {
+        if (param_descr_data_.count(param_index))
+        {
+            return static_cast<short>(param_descr_data_.at(param_index).scale_);
+        }
+
+        prepare_tvp_param_all();
+        const SQLSMALLINT& param_scale = param_descr_data_.at(param_index).scale_;
+        NANODBC_ASSERT(param_scale < static_cast<SQLULEN>(std::numeric_limits<short>::max()));
+        return static_cast<short>(param_scale);
+    }
+
+    short parameter_type(short param_index)
+    {
+        if (param_descr_data_.count(param_index))
+        {
+            return static_cast<short>(param_descr_data_.at(param_index).type_);
+        }
+
+        prepare_tvp_param_all();
+        const SQLSMALLINT& param_type = param_descr_data_.at(param_index).type_;
+        NANODBC_ASSERT(param_type < static_cast<SQLULEN>(std::numeric_limits<short>::max()));
+        return static_cast<short>(param_type);
     }
 
     // comparator for null sentry values
@@ -6351,6 +6393,26 @@ void table_valued_parameter::describe_parameters(
     const std::vector<short>& scale)
 {
     impl_->describe_parameters(idx, type, size, scale);
+}
+
+short table_valued_parameter::parameters() const
+{
+    return impl_->parameters();
+}
+
+unsigned long table_valued_parameter::parameter_size(short param_index) const
+{
+    return impl_->parameter_size(param_index);
+}
+
+short table_valued_parameter::parameter_scale(short param_index) const
+{
+    return impl_->parameter_scale(param_index);
+}
+
+short table_valued_parameter::parameter_type(short param_index) const
+{
+    return impl_->parameter_type(param_index);
 }
 } // namespace nanodbc
 #endif // NANODBC_DISABLE_MSSQL_TVP
