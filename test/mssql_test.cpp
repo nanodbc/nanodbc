@@ -1331,7 +1331,10 @@ TEST_CASE_METHOD(mssql_fixture, "test_datetimeoffset2", "[mssql][datetimeoffset]
 #define SQL_SS_TIMESTAMPOFFSET (-155)
 #endif
     auto connection = connect();
-    auto result = execute(connection, NANODBC_TEXT("SELECT CONVERT(datetimeoffset, '2006-12-30T13:45:12.345-08:30', 127) AS offsettimestamp;"));
+    auto result = execute(
+        connection,
+        NANODBC_TEXT("SELECT CONVERT(datetimeoffset, '2006-12-30T13:45:12.345-08:30', 127) AS "
+                     "offsettimestamp;"));
     REQUIRE(result.column_name(0) == NANODBC_TEXT("offsettimestamp"));
     REQUIRE(result.column_datatype(0) == SQL_SS_TIMESTAMPOFFSET);
     REQUIRE(result.column_datatype_name(0) == NANODBC_TEXT("datetimeoffset"));

@@ -4225,11 +4225,12 @@ inline void result::result_impl::get_ref_impl<date>(short column, date& result) 
     }
     case SQL_C_BINARY:
     {
-      if (col.sqltype_ == SQL_SS_TIMESTAMPOFFSET) {
-        timestampoffset offsetstamp = *ensure_pdata<timestampoffset>(column);
-        result = date{offsetstamp.stamp.year, offsetstamp.stamp.month, offsetstamp.stamp.day};
-        return;
-      }
+        if (col.sqltype_ == SQL_SS_TIMESTAMPOFFSET)
+        {
+            timestampoffset offsetstamp = *ensure_pdata<timestampoffset>(column);
+            result = date{offsetstamp.stamp.year, offsetstamp.stamp.month, offsetstamp.stamp.day};
+            return;
+        }
     }
     }
     throw type_incompatible_error();
@@ -4252,11 +4253,12 @@ inline void result::result_impl::get_ref_impl<time>(short column, time& result) 
     }
     case SQL_C_BINARY:
     {
-      if (col.sqltype_ == SQL_SS_TIMESTAMPOFFSET) {
-        timestampoffset tstwoffset = *ensure_pdata<timestampoffset>(column);
-        result = time{tstwoffset.stamp.hour, tstwoffset.stamp.min, tstwoffset.stamp.sec};
-        return;
-      }
+        if (col.sqltype_ == SQL_SS_TIMESTAMPOFFSET)
+        {
+            timestampoffset tstwoffset = *ensure_pdata<timestampoffset>(column);
+            result = time{tstwoffset.stamp.hour, tstwoffset.stamp.min, tstwoffset.stamp.sec};
+            return;
+        }
     }
     }
     throw type_incompatible_error();
@@ -4281,18 +4283,20 @@ inline void result::result_impl::get_ref_impl<timestamp>(short column, timestamp
     }
     case SQL_C_BINARY:
     {
-      if (col.sqltype_ == SQL_SS_TIMESTAMPOFFSET) {
-        timestampoffset tstwoffset = *ensure_pdata<timestampoffset>(column);
-        result = tstwoffset.stamp;
-        return;
-      }
+        if (col.sqltype_ == SQL_SS_TIMESTAMPOFFSET)
+        {
+            timestampoffset tstwoffset = *ensure_pdata<timestampoffset>(column);
+            result = tstwoffset.stamp;
+            return;
+        }
     }
     }
     throw type_incompatible_error();
 }
 
 template <>
-inline void result::result_impl::get_ref_impl<timestampoffset>(short column, timestampoffset& result) const
+inline void
+result::result_impl::get_ref_impl<timestampoffset>(short column, timestampoffset& result) const
 {
     bound_column& col = bound_columns_[column];
     switch (col.ctype_)
@@ -4312,10 +4316,11 @@ inline void result::result_impl::get_ref_impl<timestampoffset>(short column, tim
     }
     case SQL_C_BINARY:
     {
-      if (col.sqltype_ == SQL_SS_TIMESTAMPOFFSET) {
-        result = *ensure_pdata<timestampoffset>(column);
-        return;
-      }
+        if (col.sqltype_ == SQL_SS_TIMESTAMPOFFSET)
+        {
+            result = *ensure_pdata<timestampoffset>(column);
+            return;
+        }
     }
     }
     throw type_incompatible_error();
