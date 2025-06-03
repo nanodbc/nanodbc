@@ -635,6 +635,14 @@ struct sql_ctype
 {
 };
 
+template <typename T>
+struct sql_ctype<
+    T,
+    typename std::enable_if<is_integral8<T>::value && std::is_signed<T>::value>::type>
+{
+    static const SQLSMALLINT value = SQL_C_STINYINT;
+};
+
 template <>
 struct sql_ctype<uint8_t>
 {
@@ -3718,6 +3726,35 @@ public:
         return col.ctype_;
     }
 
+    bool column_unsigned(short column) const
+    {
+        throw_if_column_is_out_of_range(column);
+
+        SQLLEN type_unsigned = SQL_FALSE;
+        RETCODE rc;
+        NANODBC_CALL_RC(
+            NANODBC_FUNC(SQLColAttribute),
+            rc,
+            stmt_.native_statement_handle(),
+            static_cast<SQLUSMALLINT>(column + 1),
+            SQL_DESC_UNSIGNED,
+            nullptr,
+            0,
+            nullptr,
+            &type_unsigned);
+        if (!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
+
+        // SQL_TRUE if the column is unsigned (or not numeric).
+        // SQL_FALSE if the column is signed.
+        return type_unsigned == SQL_TRUE;
+    }
+
+    bool column_unsigned(string const& column_name) const
+    {
+        return column_unsigned(this->column(column_name));
+    }
+
     bool next_result()
     {
         RETCODE rc;
@@ -4019,16 +4056,62 @@ private:
             col.scale_ = scale;
             bound_columns_by_name_[col.name_] = &col;
 
+            bool const is_unsigned = column_unsigned(i);
+
             using namespace std; // if int64_t is in std namespace (in c++11)
             switch (col.sqltype_)
             {
             case SQL_BIT:
+                col.ctype_ = SQL_C_BIT;
+                col.clen_ = sizeof(int8_t);
+                break;
             case SQL_TINYINT:
+                if (is_unsigned)
+                {
+                    col.ctype_ = SQL_C_UTINYINT;
+                    col.clen_ = sizeof(uint8_t);
+                }
+                else
+                {
+                    col.ctype_ = SQL_C_STINYINT;
+                    col.clen_ = sizeof(int8_t);
+                }
+                break;
             case SQL_SMALLINT:
-            case SQL_INTEGER:
+                if (is_unsigned)
+                {
+                    col.ctype_ = SQL_C_USHORT;
+                    col.clen_ = sizeof(uint16_t);
+                }
+                else
+                {
+                    col.ctype_ = SQL_C_SSHORT;
+                    col.clen_ = sizeof(int16_t);
+                }
+                break;
+            case SQL_INTEGER: // TODO: Can be 32 or 64 bit? Then sizeof(SQLINTEGER)
+                if (is_unsigned)
+                {
+                    col.ctype_ = SQL_C_ULONG;
+                    col.clen_ = sizeof(uint32_t);
+                }
+                else
+                {
+                    col.ctype_ = SQL_C_SLONG;
+                    col.clen_ = sizeof(int32_t);
+                }
+                break;
             case SQL_BIGINT:
-                col.ctype_ = SQL_C_SBIGINT;
-                col.clen_ = sizeof(int64_t);
+                if (is_unsigned)
+                {
+                    col.ctype_ = SQL_C_UBIGINT;
+                    col.clen_ = sizeof(uint64_t);
+                }
+                else
+                {
+                    col.ctype_ = SQL_C_SBIGINT;
+                    col.clen_ = sizeof(int64_t);
+                }
                 break;
             case SQL_DOUBLE:
             case SQL_FLOAT:
@@ -4391,6 +4474,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
     }
 
     case SQL_C_LONG:
+    case SQL_C_SLONG:
     {
         std::string buffer(column_size + 1, 0); // ensure terminating null
         const int32_t data = *ensure_pdata<int32_t>(column);
@@ -4635,7 +4719,7 @@ inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant
     }
     case SQL_C_BIT:
     {
-        auto const v = *(ensure_pdata<short>(column));
+        auto const v = *(ensure_pdata<int8_t>(column));
         result = _variant_t(!!v ? VARIANT_TRUE : VARIANT_FALSE, VT_BOOL);
         break;
     }
@@ -4655,22 +4739,28 @@ inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant
     }
     case SQL_C_TINYINT:
     case SQL_C_STINYINT:
-        result = (char)*(ensure_pdata<short>(column));
+        result = (char)*(ensure_pdata<int16_t>(column));
         break;
     case SQL_C_UTINYINT:
-        result = (unsigned char)*(ensure_pdata<unsigned short>(column));
+        result = (unsigned char)*(ensure_pdata<uint16_t>(column));
         break;
     case SQL_C_SHORT:
     case SQL_C_SSHORT:
-        result = *(ensure_pdata<short>(column));
+    {
+        auto d = *(ensure_pdata<int16_t>(column));
+        result = _variant_t(d, VT_I2);
         break;
+    }
     case SQL_C_USHORT:
-        result = *(ensure_pdata<unsigned short>(column));
+        result = *(ensure_pdata<uint16_t>(column));
         break;
     case SQL_C_LONG:
     case SQL_C_SLONG:
-        result = *(ensure_pdata<int32_t>(column));
+    {
+        long d = *(ensure_pdata<int32_t>(column));
+        result = _variant_t(d, VT_I4); // avoid VT_INT
         break;
+    }
     case SQL_C_ULONG:
         result = *(ensure_pdata<uint32_t>(column));
         break;
@@ -4896,15 +4986,26 @@ void result::result_impl::get_ref_impl(short column, T& result) const
     using namespace std; // if int64_t is in std namespace (in c++11)
     switch (col.ctype_)
     {
+    case SQL_C_BIT:
+        result = (T) * (ensure_pdata<int8_t>(column));
+        return;
     case SQL_C_CHAR:
     case SQL_C_WCHAR:
         get_ref_from_string_column(column, result);
         return;
+    case SQL_C_TINYINT:
+    case SQL_C_STINYINT:
+        result = (T) * (ensure_pdata<int8_t>(column));
+        return;
+    case SQL_C_UTINYINT:
+        result = (T) * (ensure_pdata<uint8_t>(column));
+        return;
+    case SQL_C_SHORT:
     case SQL_C_SSHORT:
-        result = (T) * (ensure_pdata<short>(column));
+        result = (T) * (ensure_pdata<int16_t>(column));
         return;
     case SQL_C_USHORT:
-        result = (T) * (ensure_pdata<unsigned short>(column));
+        result = (T) * (ensure_pdata<uint16_t>(column));
         return;
     case SQL_C_LONG:
     case SQL_C_SLONG:
@@ -7344,6 +7445,16 @@ int result::column_c_datatype(short column) const
 int result::column_c_datatype(string const& column_name) const
 {
     return impl_->column_c_datatype(column_name);
+}
+
+bool result::column_unsigned(short column) const
+{
+    return impl_->column_unsigned(column);
+}
+
+bool result::column_unsigned(string const& column_name) const
+{
+    return impl_->column_unsigned(column_name);
 }
 
 bool result::next_result()
