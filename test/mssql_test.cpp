@@ -1325,6 +1325,32 @@ TEST_CASE_METHOD(mssql_fixture, "test_datetimeoffset", "[mssql][datetime]")
     }
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_datetimeoffset2", "[mssql][datetimeoffset]")
+{
+#ifndef SQL_SS_TIMESTAMPOFFSET
+#define SQL_SS_TIMESTAMPOFFSET (-155)
+#endif
+    auto connection = connect();
+    auto result = execute(
+        connection,
+        NANODBC_TEXT("SELECT CONVERT(datetimeoffset, '2006-12-30T13:45:12.345-08:30', 127) AS "
+                     "offsettimestamp;"));
+    REQUIRE(result.column_name(0) == NANODBC_TEXT("offsettimestamp"));
+    REQUIRE(result.column_datatype(0) == SQL_SS_TIMESTAMPOFFSET);
+    REQUIRE(result.column_datatype_name(0) == NANODBC_TEXT("datetimeoffset"));
+    REQUIRE(result.next());
+    auto t = result.get<nanodbc::timestampoffset>(0);
+    REQUIRE(t.stamp.year == 2006);
+    REQUIRE(t.stamp.month == 12);
+    REQUIRE(t.stamp.day == 30);
+    REQUIRE(t.stamp.hour == 13);
+    REQUIRE(t.stamp.min == 45);
+    REQUIRE(t.stamp.sec == 12);
+    REQUIRE(t.stamp.fract > 0);
+    REQUIRE(t.offset_hour == -8);
+    REQUIRE(t.offset_minute == -30);
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_rowversion", "[mssql][rowversion][timestamp]")
 {
     // The rowversion data type is not a date or time data type, but
