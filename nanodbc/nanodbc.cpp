@@ -4227,7 +4227,7 @@ inline void result::result_impl::get_ref_impl<date>(short column, date& result) 
     {
         if (col.sqltype_ == SQL_SS_TIMESTAMPOFFSET)
         {
-            timestampoffset offsetstamp = *ensure_pdata<timestampoffset>(column);
+            const timestampoffset offsetstamp = *ensure_pdata<timestampoffset>(column);
             result = date{offsetstamp.stamp.year, offsetstamp.stamp.month, offsetstamp.stamp.day};
             return;
         }
@@ -4255,8 +4255,8 @@ inline void result::result_impl::get_ref_impl<time>(short column, time& result) 
     {
         if (col.sqltype_ == SQL_SS_TIMESTAMPOFFSET)
         {
-            timestampoffset tstwoffset = *ensure_pdata<timestampoffset>(column);
-            result = time{tstwoffset.stamp.hour, tstwoffset.stamp.min, tstwoffset.stamp.sec};
+            const timestampoffset offsetstamp = *ensure_pdata<timestampoffset>(column);
+            result = time{offsetstamp.stamp.hour, offsetstamp.stamp.min, offsetstamp.stamp.sec};
             return;
         }
     }
@@ -4272,7 +4272,7 @@ inline void result::result_impl::get_ref_impl<timestamp>(short column, timestamp
     {
     case SQL_C_DATE:
     {
-        date d = *ensure_pdata<date>(column);
+        const date d = *ensure_pdata<date>(column);
         result = timestamp{d.year, d.month, d.day, 0, 0, 0, 0};
         return;
     }
@@ -4303,14 +4303,14 @@ result::result_impl::get_ref_impl<timestampoffset>(short column, timestampoffset
     {
     case SQL_C_DATE:
     {
-        date d = *ensure_pdata<date>(column);
-        timestamp stamp = {d.year, d.month, d.day, 0, 0, 0, 0};
+        const date d = *ensure_pdata<date>(column);
+        const timestamp stamp = {d.year, d.month, d.day, 0, 0, 0, 0};
         result = timestampoffset{stamp, 0, 0};
         return;
     }
     case SQL_C_TIMESTAMP:
     {
-        timestamp stamp = *ensure_pdata<timestamp>(column);
+        const timestamp stamp = *ensure_pdata<timestamp>(column);
         result = timestampoffset{stamp, 0, 0};
         return;
     }
