@@ -4989,8 +4989,7 @@ std::list<datasource> list_datasources()
 
             datasource dsn;
             dsn.name = string(&name[0], &name[size(name)]);
-            dsn.driver =
-                string(&driver[0], &driver[size(driver)]);
+            dsn.driver = string(&driver[0], &driver[size(driver)]);
 
             dsns.push_back(std::move(dsn));
             direction = SQL_FETCH_NEXT;
