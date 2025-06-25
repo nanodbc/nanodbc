@@ -1792,7 +1792,7 @@ public:
         // so only raise the error if a non-default timeout was requested.
         try
         {
-            this->set_attribute(SQL_ATTR_QUERY_TIMEOUT, 0, &timeout);
+            this->set_attribute(SQL_ATTR_QUERY_TIMEOUT, 0, (void*)(std::intptr_t)timeout);
         }
         catch (...)
         {
