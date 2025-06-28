@@ -794,6 +794,59 @@ TEST_CASE_METHOD(mssql_fixture, "test_column_descriptor", "[mssql][columns]")
     test_column_descriptor();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_column_descriptor_unsigned", "[mssql][columns]")
+{
+    auto c = connect();
+    create_table(
+        c,
+        NANODBC_TEXT("test_column_descriptor_unsigned"),
+        NANODBC_TEXT("(name text, ti tinyint, si smallint, i int, bi bigint"));
+
+    // insert
+    {
+        execute(
+            c,
+            NANODBC_TEXT("insert into test_column_descriptor_unsigned (name,ti,si,i,bi) values "
+                         "('min', 0, -32768, -2147483648, -9223372036854775808);"));
+        execute(
+            c,
+            NANODBC_TEXT("insert into test_column_descriptor_unsigned (name,ti,si,i,bi) values "
+                         "('mid', 128, 1, 2, 3);"));
+        execute(
+            c,
+            NANODBC_TEXT("insert into test_column_descriptor_unsigned (name,ti,si,i,bi) values "
+                         "('max', 255, 32767, 2147483647, 9223372036854775807);"));
+    }
+
+    // select
+    {
+        auto result = execute(
+            c,
+            NANODBC_TEXT(
+                "select name,ti,si,i,bi from test_column_descriptor_unsigned order by ti asc;"));
+        REQUIRE(result.column_unsigned(0)); // SQL_TRUE for non-numeric by default
+        REQUIRE(result.column_unsigned(1)); // SQL_TRUE for TINYINT as always unsigned in SQL Server
+        REQUIRE(!result.column_unsigned(2)); // SMALLINT
+        REQUIRE(!result.column_unsigned(3)); // INT
+        REQUIRE(!result.column_unsigned(4)); // BIGINT
+        REQUIRE(result.next());
+        REQUIRE(result.get<std::int16_t>(1) == 0);
+        REQUIRE(result.get<std::int16_t>(2) == -32768);
+        REQUIRE(result.get<std::int32_t>(3) == (-2147483647 - 1));
+        REQUIRE(result.get<std::int64_t>(4) == (-9223372036854775807 - 1));
+        REQUIRE(result.next());
+        REQUIRE(result.get<std::int16_t>(1) == 128);
+        REQUIRE(result.get<std::int16_t>(2) == 1);
+        REQUIRE(result.get<std::int32_t>(3) == 2);
+        REQUIRE(result.get<std::int64_t>(4) == 3);
+        REQUIRE(result.next());
+        REQUIRE(result.get<std::int16_t>(1) == 255);
+        REQUIRE(result.get<std::int16_t>(2) == 32767);
+        REQUIRE(result.get<std::int32_t>(3) == 2147483647);
+        REQUIRE(result.get<std::int64_t>(4) == 9223372036854775807);
+    }
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_connection_environment", "[mssql][connection]")
 {
     test_connection_environment();
@@ -1405,6 +1458,24 @@ TEST_CASE_METHOD(mssql_fixture, "test_win32_variant_bit", "[mssql][variant][wind
     auto v = rs.get<_variant_t>(0);
     REQUIRE(v.vt == VT_BOOL);
     REQUIRE(static_cast<bool>(v) == true);
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_win32_variant_tinyint", "[mssql][variant][windows]")
+{
+    auto cn = connect();
+    auto rs = execute(
+        cn, NANODBC_TEXT("select CAST(0 AS TINYINT), CAST(128 AS TINYINT), CAST(255 AS TINYINT);"));
+    rs.next();
+
+    auto v0 = rs.get<_variant_t>(0);
+    REQUIRE(v0.vt == VT_UI1);
+    REQUIRE(static_cast<int>(v0) == 0);
+    auto v1 = rs.get<_variant_t>(1);
+    REQUIRE(v1.vt == VT_UI1);
+    REQUIRE(static_cast<int>(v1) == 128);
+    auto v2 = rs.get<_variant_t>(2);
+    REQUIRE(v2.vt == VT_UI1);
+    REQUIRE(static_cast<int>(v2) == 255);
 }
 
 TEST_CASE_METHOD(mssql_fixture, "test_win32_variant_timestamp", "[mssql][variant][windows]")
