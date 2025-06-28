@@ -743,6 +743,12 @@ struct sql_ctype<nanodbc::timestamp>
     static const SQLSMALLINT value = SQL_C_TIMESTAMP;
 };
 
+template <>
+struct sql_ctype<nanodbc::timestampoffset>
+{
+    static const SQLSMALLINT value = SQL_C_BINARY;
+};
+
 // Encapsulates resources needed for column binding.
 class bound_column
 {
@@ -4083,8 +4089,8 @@ private:
                 }
                 break;
             case SQL_SS_TIMESTAMPOFFSET:
-                col.ctype_ = sql_ctype<wide_string>::value;
-                col.clen_ = (col.sqlsize_ + 1) * sizeof(SQLWCHAR);
+                col.ctype_ = SQL_C_BINARY;
+                col.clen_ = sizeof(timestampoffset);
                 break;
             case SQL_LONGVARCHAR:
                 col.ctype_ = sql_ctype<std::string>::value;
@@ -4214,9 +4220,17 @@ inline void result::result_impl::get_ref_impl<date>(short column, date& result) 
     case SQL_C_TIMESTAMP:
     {
         timestamp stamp = *ensure_pdata<timestamp>(column);
-        date d = {stamp.year, stamp.month, stamp.day};
-        result = d;
+        result = date{stamp.year, stamp.month, stamp.day};
         return;
+    }
+    case SQL_C_BINARY:
+    {
+        if (col.sqltype_ == SQL_SS_TIMESTAMPOFFSET)
+        {
+            const timestampoffset offsetstamp = *ensure_pdata<timestampoffset>(column);
+            result = date{offsetstamp.stamp.year, offsetstamp.stamp.month, offsetstamp.stamp.day};
+            return;
+        }
     }
     }
     throw type_incompatible_error();
@@ -4234,9 +4248,17 @@ inline void result::result_impl::get_ref_impl<time>(short column, time& result) 
     case SQL_C_TIMESTAMP:
     {
         timestamp stamp = *ensure_pdata<timestamp>(column);
-        time t = {stamp.hour, stamp.min, stamp.sec};
-        result = t;
+        result = time{stamp.hour, stamp.min, stamp.sec};
         return;
+    }
+    case SQL_C_BINARY:
+    {
+        if (col.sqltype_ == SQL_SS_TIMESTAMPOFFSET)
+        {
+            const timestampoffset offsetstamp = *ensure_pdata<timestampoffset>(column);
+            result = time{offsetstamp.stamp.hour, offsetstamp.stamp.min, offsetstamp.stamp.sec};
+            return;
+        }
     }
     }
     throw type_incompatible_error();
@@ -4250,14 +4272,56 @@ inline void result::result_impl::get_ref_impl<timestamp>(short column, timestamp
     {
     case SQL_C_DATE:
     {
-        date d = *ensure_pdata<date>(column);
-        timestamp stamp = {d.year, d.month, d.day, 0, 0, 0, 0};
-        result = stamp;
+        const date d = *ensure_pdata<date>(column);
+        result = timestamp{d.year, d.month, d.day, 0, 0, 0, 0};
         return;
     }
     case SQL_C_TIMESTAMP:
+    {
         result = *ensure_pdata<timestamp>(column);
         return;
+    }
+    case SQL_C_BINARY:
+    {
+        if (col.sqltype_ == SQL_SS_TIMESTAMPOFFSET)
+        {
+            timestampoffset tstwoffset = *ensure_pdata<timestampoffset>(column);
+            result = tstwoffset.stamp;
+            return;
+        }
+    }
+    }
+    throw type_incompatible_error();
+}
+
+template <>
+inline void
+result::result_impl::get_ref_impl<timestampoffset>(short column, timestampoffset& result) const
+{
+    bound_column& col = bound_columns_[column];
+    switch (col.ctype_)
+    {
+    case SQL_C_DATE:
+    {
+        const date d = *ensure_pdata<date>(column);
+        const timestamp stamp = {d.year, d.month, d.day, 0, 0, 0, 0};
+        result = timestampoffset{stamp, 0, 0};
+        return;
+    }
+    case SQL_C_TIMESTAMP:
+    {
+        const timestamp stamp = *ensure_pdata<timestamp>(column);
+        result = timestampoffset{stamp, 0, 0};
+        return;
+    }
+    case SQL_C_BINARY:
+    {
+        if (col.sqltype_ == SQL_SS_TIMESTAMPOFFSET)
+        {
+            result = *ensure_pdata<timestampoffset>(column);
+            return;
+        }
+    }
     }
     throw type_incompatible_error();
 }
@@ -7576,6 +7640,7 @@ template wide_string result::get(short) const;
 template date result::get(short) const;
 template time result::get(short) const;
 template timestamp result::get(short) const;
+template timestampoffset result::get(short) const;
 template std::vector<std::uint8_t> result::get(short) const;
 #if defined(_MSC_VER)
 template _variant_t result::get(short) const;
@@ -7598,6 +7663,7 @@ template wide_string result::get(string const&) const;
 template date result::get(string const&) const;
 template time result::get(string const&) const;
 template timestamp result::get(string const&) const;
+template timestampoffset result::get(string const&) const;
 template std::vector<std::uint8_t> result::get(string const&) const;
 #if defined(_MSC_VER)
 template _variant_t result::get(string const&) const;
@@ -7668,6 +7734,7 @@ template wide_string result::get(short, const wide_string&) const;
 template date result::get(short, const date&) const;
 template time result::get(short, const time&) const;
 template timestamp result::get(short, const timestamp&) const;
+template timestampoffset result::get(short, const timestampoffset&) const;
 template std::vector<std::uint8_t> result::get(short, const std::vector<std::uint8_t>&) const;
 #if defined(_MSC_VER)
 template _variant_t result::get(short, _variant_t const&) const;
@@ -7690,6 +7757,7 @@ template wide_string result::get(string const&, const wide_string&) const;
 template date result::get(string const&, const date&) const;
 template time result::get(string const&, const time&) const;
 template timestamp result::get(string const&, const timestamp&) const;
+template timestampoffset result::get(string const&, const timestampoffset&) const;
 template std::vector<std::uint8_t>
 result::get(string const&, const std::vector<std::uint8_t>&) const;
 #if defined(_MSC_VER)
