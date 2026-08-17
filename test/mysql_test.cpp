@@ -258,6 +258,16 @@ TEST_CASE_METHOD(mysql_fixture, "test_integral", "[mysql][integral]")
     test_integral<mysql_fixture>();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_integral_small_types", "[mysql][integral]")
+{
+    test_integral_small_types();
+}
+
+TEST_CASE_METHOD(mysql_fixture, "test_integral_small_types_batch", "[mysql][integral][batch]")
+{
+    test_integral_small_types_batch();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_move", "[mysql][move]")
 {
     test_move();

@@ -4,6 +4,8 @@
 
 Added support for C++17 type std::optional with backward compatibility in C++14 via std::experimental::optional.
 
+Added the one-byte integral types and `bool` to the explicit instantiations of `statement::bind`, `table_valued_parameter::bind`, `result::get` and `result::get_ref`, so that `signed char`, `unsigned char` and `bool` can be used when nanodbc is consumed as a library rather than failing to link [`#445`](https://github.com/nanodbc/nanodbc/discussions/445).
+
 ## v2.15.0
 
 ### New Features

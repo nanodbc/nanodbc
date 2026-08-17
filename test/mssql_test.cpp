@@ -1062,6 +1062,16 @@ TEST_CASE_METHOD(mssql_fixture, "test_integral", "[mssql][integral]")
     test_integral<mssql_fixture>();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_integral_small_types", "[mssql][integral]")
+{
+    test_integral_small_types();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_integral_small_types_batch", "[mssql][integral][batch]")
+{
+    test_integral_small_types_batch();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_move", "[mssql][move]")
 {
     test_move();

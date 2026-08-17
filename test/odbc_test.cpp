@@ -104,6 +104,16 @@ TEST_CASE_METHOD(odbc_fixture, "test_integral", "[odbc][integral]")
     test_integral<odbc_fixture>();
 }
 
+TEST_CASE_METHOD(odbc_fixture, "test_integral_small_types", "[odbc][integral]")
+{
+    test_integral_small_types();
+}
+
+TEST_CASE_METHOD(odbc_fixture, "test_integral_small_types_batch", "[odbc][integral][batch]")
+{
+    test_integral_small_types_batch();
+}
+
 TEST_CASE_METHOD(odbc_fixture, "test_move", "[odbc][move]")
 {
     test_move();

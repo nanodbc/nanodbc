@@ -127,6 +127,16 @@ TEST_CASE_METHOD(vertica_fixture, "test_integral", "[vertica][integral]")
     test_integral<vertica_fixture>();
 }
 
+TEST_CASE_METHOD(vertica_fixture, "test_integral_small_types", "[vertica][integral]")
+{
+    test_integral_small_types();
+}
+
+TEST_CASE_METHOD(vertica_fixture, "test_integral_small_types_batch", "[vertica][integral][batch]")
+{
+    test_integral_small_types_batch();
+}
+
 TEST_CASE_METHOD(vertica_fixture, "test_move", "[vertica][move]")
 {
     test_move();

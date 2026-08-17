@@ -314,6 +314,16 @@ TEST_CASE_METHOD(sqlite_fixture, "test_integral", "[sqlite][integral]")
     test_integral<sqlite_fixture>();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "test_integral_small_types", "[sqlite][integral]")
+{
+    test_integral_small_types();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_integral_small_types_batch", "[sqlite][integral][batch]")
+{
+    test_integral_small_types_batch();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_integral_boundary", "[sqlite][integral]")
 {
     nanodbc::connection connection = connect();

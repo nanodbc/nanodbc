@@ -198,6 +198,19 @@ TEST_CASE_METHOD(postgresql_fixture, "test_integral", "[postgresql][integral]")
     test_integral<postgresql_fixture>();
 }
 
+TEST_CASE_METHOD(postgresql_fixture, "test_integral_small_types", "[postgresql][integral]")
+{
+    test_integral_small_types();
+}
+
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_integral_small_types_batch",
+    "[postgresql][integral][batch]")
+{
+    test_integral_small_types_batch();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_move", "[postgresql][move]")
 {
     test_move();

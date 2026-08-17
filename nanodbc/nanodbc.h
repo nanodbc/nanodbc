@@ -1134,6 +1134,24 @@ public:
     /// \addtogroup binding Binding parameters
     /// \brief These functions are used to bind values to ODBC parameters.
     ///
+    /// \attention When nanodbc is compiled as a library, bind() is only available for the
+    ///            types it is explicitly instantiated for in nanodbc.cpp. Using any other
+    ///            type compiles, because the declaration is visible here, but fails to
+    ///            link. The supported types are: bool, signed char, unsigned char, short,
+    ///            unsigned short, int, unsigned int, long int, unsigned long int,
+    ///            long long, unsigned long long, float, double,
+    ///            std::string::value_type, wide_string::value_type, date, time and
+    ///            timestamp. Binary data is bound through the
+    ///            std::vector<std::vector<std::uint8_t>> overloads, and strings through
+    ///            bind_strings().
+    ///
+    /// \attention bool is bound as ODBC's SQL_C_BIT, and only the overloads that carry no
+    ///            null information are available for it. The null_sentry overload takes
+    ///            `T const*` and the null flags overload takes `bool const*`, so for
+    ///            T=bool the two collapse into one signature that neither an explicit
+    ///            instantiation nor a call can choose between. Bind nullable booleans as a
+    ///            wider integral type instead.
+    ///
     /// @{
 
     /// \brief Binds given value to given parameter placeholder number in the prepared statement.
@@ -1844,6 +1862,23 @@ public:
     /// \throws database_error
     void unbind(short column);
 
+    /// \addtogroup result_get Reading column values
+    /// \brief Reads values from columns of the current rowset.
+    ///
+    /// \attention When nanodbc is compiled as a library, get() and get_ref() are only
+    ///            available for the types they are explicitly instantiated for in
+    ///            nanodbc.cpp. Using any other type compiles, because the declaration is
+    ///            visible here, but fails to link. The supported types are:
+    ///            bool, signed char, unsigned char, short, unsigned short, int,
+    ///            unsigned int, long int, unsigned long int, long long int,
+    ///            unsigned long long int, float, double, std::string, wide_string,
+    ///            std::string::value_type, wide_string::value_type, date, time,
+    ///            timestamp, timestampoffset and std::vector<std::uint8_t> for binary
+    ///            data. Each is also available wrapped in std::optional where the
+    ///            standard library provides it, and _variant_t on MSVC.
+    ///
+    /// @{
+
     /// \brief Gets data from the given column of the current rowset.
     ///
     /// Columns are numbered from left to right and 0-indexed.
@@ -1939,6 +1974,8 @@ public:
     /// \throws type_incompatible_error
     template <class T>
     T get(string const& column_name, T const& fallback) const;
+
+    /// @}
 
     /// \brief Returns true if and only if the given column of the current rowset is null.
     ///

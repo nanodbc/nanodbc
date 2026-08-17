@@ -1694,6 +1694,173 @@ PRIMARY KEY(t2_fid)
             <Fixture, integral_test_types>::run();
     }
 
+    // Exercises bind(), get() and get_ref() for the one-byte integral types and for bool.
+    // These are separate from test_integral because bool cannot be round-tripped through
+    // the float and decimal columns that test uses, and because the null-aware bind()
+    // overloads are unavailable for bool.
+    //
+    // The types are deliberately checked through a smallint column, which every backend
+    // supports, so this verifies the explicit instantiations rather than any backend's
+    // particular spelling of a one-byte column.
+    void test_integral_small_types()
+    {
+        nanodbc::connection connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_integral_small_types"),
+            NANODBC_TEXT("(sc smallint, uc smallint, b smallint)"));
+
+        auto const sql =
+            NANODBC_TEXT("insert into test_integral_small_types (sc, uc, b) values (?, ?, ?);");
+        auto const select =
+            NANODBC_TEXT("select sc, uc, b from test_integral_small_types order by sc asc;");
+
+        signed char const sc = -12;
+        unsigned char const uc = 234;
+        bool const b = true;
+
+        {
+            nanodbc::statement statement(connection);
+            prepare(statement, sql);
+            REQUIRE(statement.parameters() == 3);
+            statement.bind(0, &sc);
+            statement.bind(1, &uc);
+            statement.bind(2, &b);
+            REQUIRE(statement.connected());
+            execute(statement);
+        }
+
+        nanodbc::result results = execute(connection, select);
+        REQUIRE(results.next());
+
+        // by column index
+        REQUIRE(results.get<signed char>(0) == sc);
+        REQUIRE(results.get<unsigned char>(1) == uc);
+        REQUIRE(results.get<bool>(2) == b);
+
+        // by column name
+        REQUIRE(results.get<signed char>(NANODBC_TEXT("sc")) == sc);
+        REQUIRE(results.get<unsigned char>(NANODBC_TEXT("uc")) == uc);
+        REQUIRE(results.get<bool>(NANODBC_TEXT("b")) == b);
+
+        // with fallback, which is not used because none of the values are null
+        REQUIRE(results.get<signed char>(0, 0) == sc);
+        REQUIRE(results.get<unsigned char>(1, 0) == uc);
+        REQUIRE(results.get<bool>(2, false) == b);
+
+        // by reference
+        signed char sc_ref = 0;
+        unsigned char uc_ref = 0;
+        bool b_ref = false;
+        results.get_ref(0, sc_ref);
+        results.get_ref(1, uc_ref);
+        results.get_ref(2, b_ref);
+        REQUIRE(sc_ref == sc);
+        REQUIRE(uc_ref == uc);
+        REQUIRE(b_ref == b);
+
+        sc_ref = 0;
+        uc_ref = 0;
+        b_ref = false;
+        results.get_ref(NANODBC_TEXT("sc"), sc_ref);
+        results.get_ref(NANODBC_TEXT("uc"), uc_ref);
+        results.get_ref(NANODBC_TEXT("b"), b_ref);
+        REQUIRE(sc_ref == sc);
+        REQUIRE(uc_ref == uc);
+        REQUIRE(b_ref == b);
+
+        REQUIRE(!results.next());
+    }
+
+    // Exercises the batch bind() overloads for the one-byte integral types, including the
+    // null_sentry and null flags forms. bool only has the form without null information,
+    // because for bool the null_sentry and null flags overloads collapse into a single
+    // ambiguous signature.
+    void test_integral_small_types_batch()
+    {
+        std::size_t const batch_size = 3;
+        signed char const sc[batch_size] = {-3, -2, -1};
+        unsigned char const uc[batch_size] = {200, 201, 202};
+        bool const b[batch_size] = {true, false, true};
+
+        nanodbc::connection connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_integral_small_types_batch"),
+            NANODBC_TEXT("(sc smallint, uc smallint, b smallint)"));
+
+        auto const sql = NANODBC_TEXT(
+            "insert into test_integral_small_types_batch (sc, uc, b) values (?, ?, ?);");
+
+        {
+            nanodbc::statement statement(connection);
+            prepare(statement, sql);
+            statement.bind(0, sc, batch_size);
+            statement.bind(1, uc, batch_size);
+            statement.bind(2, b, batch_size);
+            nanodbc::transact(statement, batch_size);
+        }
+
+        nanodbc::result results = execute(
+            connection,
+            NANODBC_TEXT("select sc, uc, b from test_integral_small_types_batch order by sc asc;"));
+        for (std::size_t i = 0; i < batch_size; ++i)
+        {
+            REQUIRE(results.next());
+            REQUIRE(results.get<signed char>(0) == sc[i]);
+            REQUIRE(results.get<unsigned char>(1) == uc[i]);
+            REQUIRE(results.get<bool>(2) == b[i]);
+        }
+        REQUIRE(!results.next());
+
+        // The null flags and null sentry forms, which bool does not support. An explicit id
+        // column orders the rows, because where a backend sorts nulls is not portable.
+        //
+        // NOTE: The sentry is chosen so that it matches none of the bound values. Marking a
+        //       batch value null through a sentry is currently ineffective for the
+        //       non-string bind() overloads, for every type rather than only the ones added
+        //       here, so this checks that the overload binds its values and leaves
+        //       asserting the null marking to the null flags column.
+        bool const nulls[batch_size] = {false, true, false};
+        signed char const sc_sentry = 127;
+        int const ids[batch_size] = {0, 1, 2};
+
+        create_table(
+            connection,
+            NANODBC_TEXT("test_integral_small_types_batch"),
+            NANODBC_TEXT("(id int, sc smallint, uc smallint)"));
+        {
+            nanodbc::statement statement(connection);
+            prepare(
+                statement,
+                NANODBC_TEXT(
+                    "insert into test_integral_small_types_batch (id, sc, uc) values (?, ?, ?);"));
+            statement.bind(0, ids, batch_size);
+            statement.bind(1, sc, batch_size, &sc_sentry);
+            statement.bind(2, uc, batch_size, nulls);
+            nanodbc::transact(statement, batch_size);
+        }
+
+        results = execute(
+            connection,
+            NANODBC_TEXT("select sc, uc from test_integral_small_types_batch order by id asc;"));
+        for (std::size_t i = 0; i < batch_size; ++i)
+        {
+            REQUIRE(results.next());
+            REQUIRE(results.get<signed char>(0) == sc[i]);
+            if (nulls[i])
+            {
+                REQUIRE(results.is_null(1));
+                REQUIRE(results.get<unsigned char>(1, 0) == 0);
+            }
+            else
+            {
+                REQUIRE(results.get<unsigned char>(1) == uc[i]);
+            }
+        }
+        REQUIRE(!results.next());
+    }
+
     void test_move()
     {
         nanodbc::connection orig_connection = connect();
