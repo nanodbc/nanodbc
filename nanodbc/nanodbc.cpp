@@ -17,7 +17,6 @@
 
 #include <algorithm>
 #include <clocale>
-#include <codecvt>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -59,8 +58,6 @@ struct is_optional<std::optional<T>> : std::true_type
 #include <boost/locale/encoding_utf.hpp>
 #elif defined(__GNUC__) && (__GNUC__ < 5)
 #include <cwchar>
-#else
-#include <codecvt>
 #endif
 
 #ifdef __APPLE__
@@ -220,16 +217,6 @@ using nanodbc::wide_string;
 #define NANODBC_SQLCHAR SQLCHAR
 #endif
 
-#ifdef NANODBC_USE_IODBC_WIDE_STRINGS
-#define NANODBC_CODECVT_TYPE std::codecvt_utf8
-#else
-#ifdef _MSC_VER
-#define NANODBC_CODECVT_TYPE std::codecvt_utf8_utf16
-#else
-#define NANODBC_CODECVT_TYPE std::codecvt_utf8_utf16
-#endif
-#endif
-
 #if defined(NANODBC_OVERALLOCATE_CHAR)
 // If enabled, when auto-binding buffers to N/VAR/CHAR
 // columns, overallocate assuming each code-point
@@ -356,6 +343,163 @@ inline std::size_t size(NANODBC_SQLCHAR const (&array)[N]) noexcept
     return n < N ? n : N - 1;
 }
 
+// Conversion between UTF-8 and the wide encoding the driver manager expects.
+//
+// std::wstring_convert and the std::codecvt facets that used to do this were deprecated in
+// C++17 and removed in C++26. The encoding follows from the width of wide_char_t: four
+// bytes is UTF-32, which is what iODBC takes, and two bytes is UTF-16, which is what every
+// other driver manager takes.
+//
+// Malformed input throws std::range_error, as std::wstring_convert did, rather than being
+// silently replaced. A driver handing back text that does not decode is worth hearing
+// about instead of quietly turning into replacement characters.
+
+inline void throw_invalid_encoding()
+{
+    throw std::range_error("nanodbc: could not convert between UTF-8 and the driver encoding");
+}
+
+// A code point is valid if it is within range and is not one half of a surrogate pair.
+inline bool is_valid_code_point(char32_t cp)
+{
+    return cp <= 0x10FFFF && !(cp >= 0xD800 && cp <= 0xDFFF);
+}
+
+inline void append_as_utf8(char32_t cp, std::string& out)
+{
+    if (cp < 0x80)
+    {
+        out.push_back(static_cast<char>(cp));
+    }
+    else if (cp < 0x800)
+    {
+        out.push_back(static_cast<char>(0xC0 | (cp >> 6)));
+        out.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
+    }
+    else if (cp < 0x10000)
+    {
+        out.push_back(static_cast<char>(0xE0 | (cp >> 12)));
+        out.push_back(static_cast<char>(0x80 | ((cp >> 6) & 0x3F)));
+        out.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
+    }
+    else
+    {
+        out.push_back(static_cast<char>(0xF0 | (cp >> 18)));
+        out.push_back(static_cast<char>(0x80 | ((cp >> 12) & 0x3F)));
+        out.push_back(static_cast<char>(0x80 | ((cp >> 6) & 0x3F)));
+        out.push_back(static_cast<char>(0x80 | (cp & 0x3F)));
+    }
+}
+
+// Appends to a UTF-32 string, where every code point is one unit.
+template <class T, typename std::enable_if<sizeof(T) == 4, int>::type = 0>
+inline void append_as_wide(char32_t cp, std::basic_string<T>& out)
+{
+    out.push_back(static_cast<T>(cp));
+}
+
+// Appends to a UTF-16 string, splitting anything past the basic plane into a surrogate
+// pair.
+template <class T, typename std::enable_if<sizeof(T) == 2, int>::type = 0>
+inline void append_as_wide(char32_t cp, std::basic_string<T>& out)
+{
+    if (cp < 0x10000)
+    {
+        out.push_back(static_cast<T>(cp));
+    }
+    else
+    {
+        cp -= 0x10000;
+        out.push_back(static_cast<T>(0xD800 + (cp >> 10)));
+        out.push_back(static_cast<T>(0xDC00 + (cp & 0x3FF)));
+    }
+}
+
+// Reads one code point from UTF-8, leaving beg on the byte after it.
+inline char32_t next_utf8_code_point(char const*& beg, char const* end)
+{
+    auto const lead = static_cast<unsigned char>(*beg++);
+    if (lead < 0x80)
+        return lead;
+
+    // How many continuation bytes follow, and what the code point starts out as. Lead
+    // bytes of 0xC0 and 0xC1 only ever encode an overlong form, so they are rejected here
+    // along with the continuation bytes and the values above 0xF4.
+    int extra;
+    char32_t cp;
+    if (lead >= 0xC2 && lead <= 0xDF)
+    {
+        extra = 1;
+        cp = lead & 0x1F;
+    }
+    else if (lead >= 0xE0 && lead <= 0xEF)
+    {
+        extra = 2;
+        cp = lead & 0x0F;
+    }
+    else if (lead >= 0xF0 && lead <= 0xF4)
+    {
+        extra = 3;
+        cp = lead & 0x07;
+    }
+    else
+    {
+        throw_invalid_encoding();
+        return 0;
+    }
+
+    if (end - beg < extra)
+        throw_invalid_encoding();
+
+    for (int i = 0; i < extra; ++i)
+    {
+        auto const byte = static_cast<unsigned char>(*beg++);
+        if ((byte & 0xC0) != 0x80)
+            throw_invalid_encoding();
+        cp = (cp << 6) | (byte & 0x3F);
+    }
+
+    // Reject the encodings that are longer than the code point needs, since those let the
+    // same character be spelled more than one way.
+    if ((extra == 1 && cp < 0x80) || (extra == 2 && cp < 0x800) || (extra == 3 && cp < 0x10000))
+        throw_invalid_encoding();
+
+    if (!is_valid_code_point(cp))
+        throw_invalid_encoding();
+
+    return cp;
+}
+
+// Reads one code point from UTF-32.
+template <class T, typename std::enable_if<sizeof(T) == 4, int>::type = 0>
+inline char32_t next_wide_code_point(T const*& beg, T const*)
+{
+    auto const cp = static_cast<char32_t>(*beg++);
+    if (!is_valid_code_point(cp))
+        throw_invalid_encoding();
+    return cp;
+}
+
+// Reads one code point from UTF-16, joining a surrogate pair back together.
+template <class T, typename std::enable_if<sizeof(T) == 2, int>::type = 0>
+inline char32_t next_wide_code_point(T const*& beg, T const* end)
+{
+    char32_t const unit = static_cast<char16_t>(*beg++);
+    if (unit < 0xD800 || unit > 0xDFFF)
+        return unit;
+
+    // A low surrogate cannot lead, and a high surrogate must be followed by a low one.
+    if (unit >= 0xDC00 || beg == end)
+        throw_invalid_encoding();
+
+    char32_t const trail = static_cast<char16_t>(*beg);
+    if (trail < 0xDC00 || trail > 0xDFFF)
+        throw_invalid_encoding();
+    ++beg;
+
+    return 0x10000 + ((unit - 0xD800) << 10) + (trail - 0xDC00);
+}
+
 template <class T>
 inline void convert(T const* beg, size_t n, std::basic_string<T>& out)
 {
@@ -367,20 +511,12 @@ inline void convert(wide_char_t const* beg, size_t n, std::string& out)
 #ifdef NANODBC_ENABLE_BOOST
     using boost::locale::conv::utf_to_utf;
     out = utf_to_utf<char>(beg, beg + n);
-#elif defined(_MSC_VER) && (_MSC_VER == 1900)
-    // Workaround for confirmed bug in VS2015. See:
-    // https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
-    // https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error
-    // Why static? http://stackoverflow.com/questions/26196686/utf8-utf16-codecvt-poor-performance
-    static thread_local std::wstring_convert<NANODBC_CODECVT_TYPE<unsigned short>, unsigned short>
-        converter;
-    out = converter.to_bytes(
-        reinterpret_cast<unsigned short const*>(beg),
-        reinterpret_cast<unsigned short const*>(beg + n));
 #else
-    static thread_local std::wstring_convert<NANODBC_CODECVT_TYPE<wide_char_t>, wide_char_t>
-        converter;
-    out = converter.to_bytes(beg, beg + n);
+    out.clear();
+    out.reserve(n);
+    auto const* const end = beg + n;
+    while (beg != end)
+        append_as_utf8(next_wide_code_point(beg, end), out);
 #endif
 }
 
@@ -389,20 +525,12 @@ inline void convert(char const* beg, size_t n, wide_string& out)
 #ifdef NANODBC_ENABLE_BOOST
     using boost::locale::conv::utf_to_utf;
     out = utf_to_utf<wide_char_t>(beg, beg + n);
-#elif defined(_MSC_VER) && (_MSC_VER == 1900)
-    // Workaround for confirmed bug in VS2015. See:
-    // https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
-    // https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error
-    // Why static? http://stackoverflow.com/questions/26196686/utf8-utf16-codecvt-poor-performance
-    static thread_local std::wstring_convert<NANODBC_CODECVT_TYPE<unsigned short>, unsigned short>
-        converter;
-    auto s = converter.from_bytes(beg, beg + n);
-    auto p = reinterpret_cast<wide_char_t const*>(s.data());
-    out.assign(p, p + s.size());
 #else
-    static thread_local std::wstring_convert<NANODBC_CODECVT_TYPE<wide_char_t>, wide_char_t>
-        converter;
-    out = converter.from_bytes(beg, beg + n);
+    out.clear();
+    out.reserve(n);
+    auto const* const end = beg + n;
+    while (beg != end)
+        append_as_wide(next_utf8_code_point(beg, end), out);
 #endif
 }
 
