@@ -838,10 +838,15 @@ inline std::string
 timestampoffset_as_string(nanodbc::timestampoffset const& value, SQLSMALLINT scale)
 {
     auto const& stamp = value.stamp;
-    char buffer[64];
-    int size = std::snprintf(
-        buffer,
-        sizeof(buffer),
+
+    // Each part is formatted into its own buffer, sized for the widest value its fields can
+    // hold. The struct is filled in by the driver, so no field is assumed to be in range,
+    // and formatting the parts separately means an unexpectedly wide one cannot push a
+    // later write past the end of a shared buffer.
+    char date_time[48]; // six fields of at most six characters, plus five separators
+    std::snprintf(
+        date_time,
+        sizeof(date_time),
         "%04d-%02d-%02d %02d:%02d:%02d",
         static_cast<int>(stamp.year),
         static_cast<int>(stamp.month),
@@ -850,15 +855,16 @@ timestampoffset_as_string(nanodbc::timestampoffset const& value, SQLSMALLINT sca
         static_cast<int>(stamp.min),
         static_cast<int>(stamp.sec));
 
+    char fraction[16] = ""; // a point, plus at most the ten digits of an int32
     if (scale > 0 && scale <= 9)
     {
         // Narrow the billionths down to the digits the column carries.
         long divisor = 1;
         for (SQLSMALLINT i = scale; i < 9; ++i)
             divisor *= 10;
-        size += std::snprintf(
-            buffer + size,
-            sizeof(buffer) - size,
+        std::snprintf(
+            fraction,
+            sizeof(fraction),
             ".%0*ld",
             static_cast<int>(scale),
             static_cast<long>(stamp.fract) / divisor);
@@ -867,15 +873,16 @@ timestampoffset_as_string(nanodbc::timestampoffset const& value, SQLSMALLINT sca
     // Both offset fields carry the sign, so either one being negative means the whole
     // offset is behind UTC.
     bool const behind_utc = value.offset_hour < 0 || value.offset_minute < 0;
+    char offset[16]; // a space, a sign, two fields of at most five digits, and a colon
     std::snprintf(
-        buffer + size,
-        sizeof(buffer) - size,
+        offset,
+        sizeof(offset),
         " %c%02d:%02d",
         behind_utc ? '-' : '+',
         std::abs(static_cast<int>(value.offset_hour)),
         std::abs(static_cast<int>(value.offset_minute)));
 
-    return std::string(buffer);
+    return std::string(date_time) + fraction + offset;
 }
 
 // Encapsulates properties of statement parameter.
