@@ -1,0 +1,97 @@
+---
+# Config Documentation: https://docs.github.com/en/code-security/supply-chain-security/configuration-options-for-dependency-updates#about-the-dependabotyml-file
+#
+# nanodbc has no package manifest of its own, so what is kept up to date here is the
+# infrastructure around it: the actions the workflows call, and the images the development
+# and test environment is built from.
+#
+# In every ecosystem below the grouping follows the same shape:
+#   - security updates are grouped on their own, so a security PR is never held up behind
+#     an unrelated version bump
+#   - minor and patch updates are grouped into a single PR, since they rarely need
+#     individual review
+#   - major updates are deliberately left out of the groups, so each one arrives as its own
+#     PR and can be read on its own
+# The cooldown holds a newly published version back for a few days, so that a compromised
+# release has time to be discovered before it lands in a PR here.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    groups:
+      security:
+        applies-to: security-updates
+        patterns:
+          - "*"
+      # The codeql-action entry points must stay on matching versions, so bump them
+      # together even across a major.
+      codeql-action:
+        patterns:
+          - "github/codeql-action*"
+      actions:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+    labels:
+      - "dependencies"
+      - "docker"
+    commit-message:
+      prefix: "docker"
+      include: "scope"
+    groups:
+      security:
+        applies-to: security-updates
+        patterns:
+          - "*"
+      docker:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # The database images the test suite runs against, in docker-compose.yml. These are
+  # pinned to the versions nanodbc is tested against, so major bumps are a deliberate
+  # choice about coverage rather than routine maintenance.
+  - package-ecosystem: "docker-compose"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+    labels:
+      - "dependencies"
+      - "docker"
+    commit-message:
+      prefix: "docker"
+      include: "scope"
+    groups:
+      security:
+        applies-to: security-updates
+        patterns:
+          - "*"
+      docker-compose:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
