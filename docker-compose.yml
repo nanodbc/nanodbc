@@ -1,6 +1,6 @@
 ---
 # nanodbc development and testing multi-container docker setup
-version: '3'
+version: "3"
 services:
   mysql:
     image: mysql:8.4
@@ -20,9 +20,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER:  *default_credential
-      POSTGRES_PASSWORD:  *default_credential
-      POSTGRES_DB:  *default_credential
+      POSTGRES_USER: *default_credential
+      POSTGRES_PASSWORD: *default_credential
+      POSTGRES_DB: *default_credential
   mssql:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: nanomssql
