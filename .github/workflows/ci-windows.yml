@@ -77,7 +77,7 @@ jobs:
           Select-String -Path ${{ github.workspace }}/build/CMakeCache.txt -Pattern "CMAKE_GENERATOR:|CMAKE_GENERATOR_TOOLSET:|CMAKE_CXX_COMPILER:"
       - name: Build
         run: |
-          cmake --build ${{ github.workspace }}/build --config Release
+          cmake --build ${{ github.workspace }}/build --config Release --parallel
 
   build-mingw:
     needs: [check-format]
@@ -112,7 +112,7 @@ jobs:
           cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
       - name: Build
         run: |
-          cmake --build ${{ github.workspace }}/build --config Release --target utility_tests
+          cmake --build ${{ github.workspace }}/build --config Release --parallel --target utility_tests
       - name: Test
         run: |
           ctest --test-dir ${{ github.workspace }}/build --build-config Release --output-on-failure --no-tests=error -R utility_tests
@@ -152,7 +152,7 @@ jobs:
           cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
       - name: Build
         run: |
-          cmake --build ${{ github.workspace }}/build --config Release --target mssql_tests
+          cmake --build ${{ github.workspace }}/build --config Release --parallel --target mssql_tests
       - name: Test
         run: |
           $env:NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 17 for SQL Server};Server=(localdb)\MSSQLLocalDB;Database=tempdb;UID=sa;PWD=Password!123;"
@@ -183,7 +183,7 @@ jobs:
           cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
       - name: Build
         run: |
-          cmake --build ${{ github.workspace }}/build --config Release --target mysql_tests
+          cmake --build ${{ github.workspace }}/build --config Release --parallel --target mysql_tests
       - name: Test
         run: |
           # Take the driver name from what Chocolatey actually installed, since the
@@ -219,7 +219,7 @@ jobs:
           cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
       - name: Build
         run: |
-          cmake --build ${{ github.workspace }}/build --config Release --target mysql_tests
+          cmake --build ${{ github.workspace }}/build --config Release --parallel --target mysql_tests
       - name: Test
         run: |
           # Take the driver name from what Chocolatey actually installed, since the
@@ -253,7 +253,7 @@ jobs:
           cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
       - name: Build
         run: |
-          cmake --build ${{ github.workspace }}/build --config Release --target postgresql_tests
+          cmake --build ${{ github.workspace }}/build --config Release --parallel --target postgresql_tests
       - name: Test
         run: |
           $env:NANODBC_TEST_CONNSTR_PGSQL="Driver={PostgreSQL ANSI(x64)};Server=localhost;Port=5432;Database=nanodbc;UID=postgres;PWD="
@@ -276,7 +276,7 @@ jobs:
           cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
       - name: Build
         run: |
-          cmake --build ${{ github.workspace }}/build --config Release --target sqlite_tests
+          cmake --build ${{ github.workspace }}/build --config Release --parallel --target sqlite_tests
       - name: Test
         run: |
           ctest --test-dir ${{ github.workspace }}/build --build-config Release --output-on-failure --no-tests=error -R sqlite_tests
