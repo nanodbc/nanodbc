@@ -16,6 +16,12 @@ int main(int argc, char* argv[])
     {
         Catch::Session session;
 
+        // Catch2 v3 runs test cases in a random order by default, where v2 ran them in
+        // declaration order. Several of these tests read state an earlier test created, so
+        // a shuffled run fails intermittently. Keep the order v2 gave until those
+        // dependencies are gone; --order on the command line still overrides this.
+        session.configData().runOrder = Catch::TestRunOrder::Declared;
+
         // Add the connection string option to Catch's own parser, rather than parsing
         // argv separately and blanking out what Catch would not recognise.
         using namespace Catch::Clara;
