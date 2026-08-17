@@ -827,13 +827,6 @@ public:
     bool bound_;
 };
 
-// Renders a timestampoffset the way a backend renders a datetimeoffset value, for example
-// "2006-12-30 13:45:12.3450000 -08:00".
-//
-// A SQL_SS_TIMESTAMPOFFSET column is bound as a binary buffer holding the struct rather
-// than as text, so reading one as a string has to format it here. The struct counts
-// fractional seconds in billionths, while the column reports how many decimal digits it
-// actually carries, so scale decides how many of those digits are rendered.
 // Renders value as decimal digits, zero padded to at least width, keeping a minus sign in
 // front of the padding. Wider values keep all their digits rather than being truncated.
 inline std::string zero_padded(long value, std::size_t width)
@@ -849,6 +842,13 @@ inline std::string zero_padded(long value, std::size_t width)
     return sign + digits;
 }
 
+// Renders a timestampoffset the way a backend renders a datetimeoffset value, for example
+// "2006-12-30 13:45:12.3450000 -08:00".
+//
+// A SQL_SS_TIMESTAMPOFFSET column is bound as a binary buffer holding the struct rather
+// than as text, so reading one as a string has to format it here. The struct counts
+// fractional seconds in billionths, while the column reports how many decimal digits it
+// actually carries, so scale decides how many of those digits are rendered.
 inline std::string
 timestampoffset_as_string(nanodbc::timestampoffset const& value, SQLSMALLINT scale)
 {
@@ -905,14 +905,18 @@ template <typename T>
 struct bound_buffer
 {
     bound_buffer() = default;
-    bound_buffer(T const* values, std::size_t size, std::size_t value_size = 0)
+    bound_buffer(T const* values, std::size_t size, std::size_t value_size = 0) noexcept
         : values_(values)
         , size_(size)
         , value_size_(value_size)
     {
     }
 
-    bound_buffer(T const* values, std::size_t size, std::size_t value_size, SQLSMALLINT ctype)
+    bound_buffer(
+        T const* values,
+        std::size_t size,
+        std::size_t value_size,
+        SQLSMALLINT ctype) noexcept
         : values_(values)
         , size_(size)
         , value_size_(value_size)
