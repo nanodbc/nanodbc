@@ -91,8 +91,8 @@ inline char32_t next_utf8_code_point(char const*& beg, char const* end)
     if (lead < 0x80)
         return lead;
 
-    int extra;
-    char32_t cp;
+    int extra = 0;
+    char32_t cp = 0;
     if (lead >= 0xC2 && lead <= 0xDF)
     {
         extra = 1;

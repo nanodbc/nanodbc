@@ -360,7 +360,7 @@ inline void throw_invalid_encoding()
 }
 
 // A code point is valid if it is within range and is not one half of a surrogate pair.
-inline bool is_valid_code_point(char32_t cp)
+constexpr bool is_valid_code_point(char32_t cp)
 {
     return cp <= 0x10FFFF && !(cp >= 0xD800 && cp <= 0xDFFF);
 }
@@ -425,8 +425,8 @@ inline char32_t next_utf8_code_point(char const*& beg, char const* end)
     // How many continuation bytes follow, and what the code point starts out as. Lead
     // bytes of 0xC0 and 0xC1 only ever encode an overlong form, so they are rejected here
     // along with the continuation bytes and the values above 0xF4.
-    int extra;
-    char32_t cp;
+    int extra = 0;
+    char32_t cp = 0;
     if (lead >= 0xC2 && lead <= 0xDF)
     {
         extra = 1;
