@@ -64,23 +64,30 @@ jobs:
       CC: gcc-${{ matrix.gcc }}
       CXX: g++-${{ matrix.gcc }}
       DEBIAN_FRONTEND: noninteractive
+      CCACHE_DIR: /ccache
     steps:
       - name: Install
         run: |
           apt-get update
           apt-get install -y --no-install-recommends \
-            ca-certificates cmake g++-${{ matrix.gcc }} git make unixodbc-dev
+            ca-certificates ccache cmake g++-${{ matrix.gcc }} git make unixodbc-dev
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Restore compiled objects
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: /ccache
+          key: ccache-gcc${{ matrix.gcc }}-std${{ matrix.cxxstd }}-${{ github.sha }}
+          restore-keys: ccache-gcc${{ matrix.gcc }}-std${{ matrix.cxxstd }}-
       - name: Check
         run: |
           ${CXX} --version
           cmake --version
       - name: Configure
         run: |
-          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=${{ matrix.cxxstd }}
+          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=${{ matrix.cxxstd }} -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
       - name: Build
         run: |
-          cmake --build ${GITHUB_WORKSPACE}/build
+          cmake --build ${GITHUB_WORKSPACE}/build --parallel
 
   # Clang 19 through 22, on the same basis as the GCC matrix above.
   build-clang:
@@ -97,24 +104,31 @@ jobs:
       CC: clang-${{ matrix.clang }}
       CXX: clang++-${{ matrix.clang }}
       DEBIAN_FRONTEND: noninteractive
+      CCACHE_DIR: /ccache
     steps:
       - name: Install
         run: |
           apt-get update
           apt-get install -y --no-install-recommends \
-            ca-certificates clang-${{ matrix.clang }} cmake git \
+            ca-certificates ccache clang-${{ matrix.clang }} cmake git \
             libc++-${{ matrix.clang }}-dev libc++abi-${{ matrix.clang }}-dev make unixodbc-dev
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Restore compiled objects
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: /ccache
+          key: ccache-clang${{ matrix.clang }}-std${{ matrix.cxxstd }}-${{ github.sha }}
+          restore-keys: ccache-clang${{ matrix.clang }}-std${{ matrix.cxxstd }}-
       - name: Check
         run: |
           ${CXX} --version
           cmake --version
       - name: Configure
         run: |
-          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=${{ matrix.cxxstd }}
+          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=${{ matrix.cxxstd }} -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
       - name: Build
         run: |
-          cmake --build ${GITHUB_WORKSPACE}/build
+          cmake --build ${GITHUB_WORKSPACE}/build --parallel
 
   test-utility:
     runs-on: ubuntu-latest
@@ -123,13 +137,19 @@ jobs:
       - name: Install
         run: |
           sudo apt-get update
-          sudo apt-get install -y unixodbc-dev
+          sudo apt-get install -y ccache unixodbc-dev
+      - name: Restore compiled objects
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.ccache
+          key: ccache-utility-${{ github.sha }}
+          restore-keys: ccache-utility-
       - name: Configure
         run: |
-          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release
+          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
       - name: Build
         run: |
-          cmake --build ${GITHUB_WORKSPACE}/build --target utility_tests
+          cmake --build ${GITHUB_WORKSPACE}/build --parallel --target utility_tests
       - name: Test
         run: |
           ctest --test-dir ${GITHUB_WORKSPACE}/build --output-on-failure --no-tests=error -R utility_tests
@@ -161,13 +181,19 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install
         run: |
-          sudo apt-get install -y unixodbc-dev odbc-postgresql
+          sudo apt-get install -y ccache unixodbc-dev odbc-postgresql
+      - name: Restore compiled objects
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.ccache
+          key: ccache-postgresql-${{ github.sha }}
+          restore-keys: ccache-postgresql-
       - name: Configure
         run: |
-          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release
+          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
       - name: Build
         run: |
-          cmake --build ${GITHUB_WORKSPACE}/build --target postgresql_tests
+          cmake --build ${GITHUB_WORKSPACE}/build --parallel --target postgresql_tests
       - name: Test
         run: |
           export NANODBC_TEST_CONNSTR_PGSQL="Driver={PostgreSQL ANSI};Server=localhost;Port=5432;Database=nanodbc;UID=postgres;PWD=postgres"
@@ -190,14 +216,20 @@ jobs:
           apt-get update
           curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
           curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list > /etc/apt/sources.list.d/mssql-release.list
-          ACCEPT_EULA=Y apt-get install -y unixodbc-dev msodbcsql17
+          ACCEPT_EULA=Y apt-get install -y ccache unixodbc-dev msodbcsql17
         shell: sudo bash {0}
+      - name: Restore compiled objects
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.ccache
+          key: ccache-mssql-${{ github.sha }}
+          restore-keys: ccache-mssql-
       - name: Configure
         run: |
-          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release
+          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
       - name: Build
         run: |
-          cmake --build ${GITHUB_WORKSPACE}/build --target mssql_tests
+          cmake --build ${GITHUB_WORKSPACE}/build --parallel --target mssql_tests
       - name: Test
         run: |
           export NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 17 for SQL Server};Server=localhost;Database=master;UID=sa;PWD=Password!123;"
@@ -209,7 +241,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install
         run: |
-          apt-get install -y unixodbc-dev libsqliteodbc
+          apt-get install -y ccache unixodbc-dev libsqliteodbc
           cat <<EOF > ${GITHUB_WORKSPACE}/.odbcinst.ini
           [SQLite3]
           Description=SQLite 3 ODBC Driver
@@ -220,12 +252,18 @@ jobs:
           sudo odbcinst -i -d -f ${GITHUB_WORKSPACE}/.odbcinst.ini
           cat /etc/odbcinst.ini
         shell: sudo bash {0}
+      - name: Restore compiled objects
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.ccache
+          key: ccache-sqlite-${{ github.sha }}
+          restore-keys: ccache-sqlite-
       - name: Configure
         run: |
-          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release
+          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
       - name: Build
         run: |
-          cmake --build ${GITHUB_WORKSPACE}/build --target sqlite_tests
+          cmake --build ${GITHUB_WORKSPACE}/build --parallel --target sqlite_tests
       - name: Test
         run: |
           ctest --test-dir ${GITHUB_WORKSPACE}/build --output-on-failure --no-tests=error -R sqlite_tests

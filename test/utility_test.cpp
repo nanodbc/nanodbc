@@ -201,3 +201,12 @@ SECTION("narrowing conversion")
     }
 }
 }
+
+// Catch is compiled without its own main(), so that the one large translation unit is
+// built once for every test program rather than twice.
+int main(int argc, char* argv[])
+{
+    Catch::Session session;
+    session.configData().runOrder = Catch::TestRunOrder::Declared;
+    return session.run(argc, argv);
+}
