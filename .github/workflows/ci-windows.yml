@@ -128,7 +128,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        mssql: [2022, 2019]
+        # SQL Server 2022 is covered by the Linux job, which runs it in a container.
+        # Here it is installed as LocalDB, which rejects the sa login for 2022.
+        mssql: [2019]
     steps:
       - uses: actions/checkout@v3
       - name: Install SQL Server
@@ -143,7 +145,7 @@ jobs:
         run: |
           # LocalDB does not always accept connections the moment the install step
           # returns, so give it a few attempts before treating it as broken.
-          $deadline = (Get-Date).AddMinutes(3)
+          $deadline = (Get-Date).AddSeconds(90)
           do {
             sqlcmd -S "(localdb)\MSSQLLocalDB" -U sa -P "Password!123" -Q "SELECT @@VERSION;"
             if ($LASTEXITCODE -eq 0) { break }
