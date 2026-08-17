@@ -36,6 +36,11 @@ TEST_CASE_METHOD(vertica_fixture, "test_batch_insert_integer", "[vertica][batch]
     test_batch_insert_integral();
 }
 
+TEST_CASE_METHOD(vertica_fixture, "test_batch_insert_null", "[vertica][batch][null]")
+{
+    test_batch_insert_null();
+}
+
 TEST_CASE_METHOD(vertica_fixture, "test_batch_insert_string", "[vertica][batch][string]")
 {
     test_batch_insert_string();

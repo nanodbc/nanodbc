@@ -72,6 +72,53 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(i == batch_size);
         }
     }
+
+    // Both ways of marking values in a batch null: a sentry value, and a flag per value.
+    // An id column orders the rows, because where a backend sorts nulls is not portable.
+    void test_batch_insert_null()
+    {
+        auto conn = connect();
+        create_table(
+            conn,
+            NANODBC_TEXT("test_batch_insert_null"),
+            NANODBC_TEXT("(id int, sentried int, flagged int)"));
+
+        std::size_t const batch_size = 5;
+        int const ids[batch_size] = {0, 1, 2, 3, 4};
+        int const values[batch_size] = {10, 20, 30, 20, 50};
+        int const sentry = 20; // matches values[1] and values[3]
+        bool const nulls[batch_size] = {false, false, true, false, true};
+
+        nanodbc::statement stmt(conn);
+        prepare(
+            stmt,
+            NANODBC_TEXT(
+                "insert into test_batch_insert_null(id, sentried, flagged) values (?, ?, ?)"));
+        REQUIRE(stmt.parameters() == 3);
+        stmt.bind(0, ids, batch_size);
+        stmt.bind(1, values, batch_size, &sentry);
+        stmt.bind(2, values, batch_size, nulls);
+        nanodbc::transact(stmt, batch_size);
+
+        auto result = nanodbc::execute(
+            conn,
+            NANODBC_TEXT("select sentried, flagged from test_batch_insert_null order by id asc"));
+        for (std::size_t i = 0; i < batch_size; ++i)
+        {
+            REQUIRE(result.next());
+
+            if (values[i] == sentry)
+                REQUIRE(result.is_null(0));
+            else
+                REQUIRE(result.get<int>(0) == values[i]);
+
+            if (nulls[i])
+                REQUIRE(result.is_null(1));
+            else
+                REQUIRE(result.get<int>(1) == values[i]);
+        }
+        REQUIRE(!result.next());
+    }
 #ifdef NANODBC_HAS_STD_OPTIONAL
     void test_batch_insert_integral_optional()
     {
@@ -1822,14 +1869,9 @@ PRIMARY KEY(t2_fid)
 
         // The null flags and null sentry forms, which bool does not support. An explicit id
         // column orders the rows, because where a backend sorts nulls is not portable.
-        //
-        // NOTE: The sentry is chosen so that it matches none of the bound values. Marking a
-        //       batch value null through a sentry is currently ineffective for the
-        //       non-string bind() overloads, for every type rather than only the ones added
-        //       here, so this checks that the overload binds its values and leaves
-        //       asserting the null marking to the null flags column.
+        // The sentry matches sc[1], so that row is null in both columns.
         bool const nulls[batch_size] = {false, true, false};
-        signed char const sc_sentry = 127;
+        signed char const sc_sentry = sc[1];
         int const ids[batch_size] = {0, 1, 2};
 
         create_table(
@@ -1854,7 +1896,15 @@ PRIMARY KEY(t2_fid)
         for (std::size_t i = 0; i < batch_size; ++i)
         {
             REQUIRE(results.next());
-            REQUIRE(results.get<signed char>(0) == sc[i]);
+            if (sc[i] == sc_sentry)
+            {
+                REQUIRE(results.is_null(0));
+                REQUIRE(results.get<signed char>(0, 0) == 0);
+            }
+            else
+            {
+                REQUIRE(results.get<signed char>(0) == sc[i]);
+            }
             if (nulls[i])
             {
                 REQUIRE(results.is_null(1));

@@ -29,6 +29,11 @@ TEST_CASE_METHOD(odbc_fixture, "test_blob", "[odbc][blob]")
     test_blob();
 }
 
+TEST_CASE_METHOD(odbc_fixture, "test_batch_insert_null", "[odbc][batch][null]")
+{
+    test_batch_insert_null();
+}
+
 TEST_CASE_METHOD(odbc_fixture, "test_catalog_list_catalogs", "[odbc][catalog][catalogs]")
 {
     test_catalog_list_catalogs();

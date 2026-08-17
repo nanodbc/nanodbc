@@ -2621,10 +2621,18 @@ void statement::statement_impl::bind(
     bound_parameter param;
     prepare_bind(param_index, batch_size, direction, param);
 
-    if (nulls || null_sentry)
+    // prepare_bind starts every indicator out as SQL_NULL_DATA, so only the values that
+    // are not null need marking here.
+    if (null_sentry)
     {
         for (std::size_t i = 0; i < batch_size; ++i)
-            if ((null_sentry && !equals(values[i], *null_sentry)) || (nulls && !nulls[i]) || !nulls)
+            if (!equals(values[i], *null_sentry))
+                bind_len_or_null_[param_index][i] = param.size_;
+    }
+    else if (nulls)
+    {
+        for (std::size_t i = 0; i < batch_size; ++i)
+            if (!nulls[i])
                 bind_len_or_null_[param_index][i] = param.size_;
     }
     else
@@ -3319,10 +3327,18 @@ void table_valued_parameter::table_valued_parameter_impl::bind(
     bound_parameter param;
     prepare_bind(param_index, batch_size, param);
 
-    if (nulls || null_sentry)
+    // prepare_bind starts every indicator out as SQL_NULL_DATA, so only the values that
+    // are not null need marking here.
+    if (null_sentry)
     {
         for (std::size_t i = 0; i < batch_size; ++i)
-            if ((null_sentry && !equals(values[i], *null_sentry)) || (nulls && !nulls[i]) || !nulls)
+            if (!equals(values[i], *null_sentry))
+                bind_len_or_null_[param_index][i] = param.size_;
+    }
+    else if (nulls)
+    {
+        for (std::size_t i = 0; i < batch_size; ++i)
+            if (!nulls[i])
                 bind_len_or_null_[param_index][i] = param.size_;
     }
     else
