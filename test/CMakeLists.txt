@@ -17,6 +17,16 @@ target_compile_definitions(CatchCustomMain PRIVATE CATCH_AMALGAMATED_CUSTOM_MAIN
 target_include_directories(CatchCustomMain PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_features(CatchCustomMain PUBLIC cxx_std_14)
 
+# Catch used to be header only, so its code was compiled into each test target and picked
+# up the standard library selection from there. Now that it is compiled on its own it has
+# to be told, or it builds against the default library and fails to link against the rest.
+if(NANODBC_FORCE_LIBCXX)
+  foreach(catch_target Catch CatchCustomMain)
+    target_compile_options(${catch_target} PUBLIC -stdlib=libc++)
+    target_link_options(${catch_target} PUBLIC -stdlib=libc++ -lc++abi)
+  endforeach()
+endif()
+
 add_custom_target(tests)
 
 message( STATUS "Building utility tests")
