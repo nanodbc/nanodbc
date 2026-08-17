@@ -34,8 +34,8 @@ jobs:
           - check: "example"
             ignore: ""
     steps:
-      - uses: actions/checkout@v3
-      - uses: jidicula/clang-format-action@v4.11.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: jidicula/clang-format-action@654a770daa28443dd111d133e4083e21c1075674 # v4.18.0
         with:
           clang-format-version: "15"
           check-path: ${{ matrix.path['check'] }}
@@ -74,7 +74,7 @@ jobs:
       CC: ${{ matrix.cc }}
       CXX: ${{ matrix.cxx }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Check
         run: |
           cmake --version
@@ -94,7 +94,7 @@ jobs:
           - { cxxstd: "14", configuration: Release, warnings-as-errors: "OFF" }
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Check
         run: |
           cmake --version
@@ -109,7 +109,7 @@ jobs:
   test-utility:
     runs-on: windows-2022
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Check
         run: |
           cmake --version
@@ -132,11 +132,11 @@ jobs:
         # Here it is installed as LocalDB, which rejects the sa login for 2022.
         mssql: [2019]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install SQL Server
         # Alternative https://github.com/ankane/setup-sqlserver
         # seems more flexible but it takes twice as long or longer
-        uses: potatoqualitee/mssqlsuite@v1.7
+        uses: potatoqualitee/mssqlsuite@2291d923e83859edd871679c05b379037376761f # v1.12
         with:
           install: localdb
           sa-password: Password!123
@@ -171,9 +171,9 @@ jobs:
       matrix:
         mariadb: ["12.3", "11.8", "11.4", "10.11"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install MariaDB ${{ matrix.mariadb }}
-        uses: ankane/setup-mariadb@v1
+        uses: ankane/setup-mariadb@e34d4859081a8192918ea2302b7c9a71475a0d73 # v1
         with:
           database: nanodbc
           mariadb-version: ${{ matrix.mariadb }}
@@ -207,9 +207,9 @@ jobs:
       matrix:
         mysql: ["9.7", "8.4"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install MySQL ${{ matrix.mysql }}
-        uses: ankane/setup-mysql@v1
+        uses: ankane/setup-mysql@19fbb7ee54446ac7f3aed34db192ec70dbec6092 # v1
         with:
           database: nanodbc
           mysql-version: ${{ matrix.mysql }}
@@ -241,9 +241,9 @@ jobs:
       matrix:
         postgres: [14] # Only version currently available on Windows via ankane/setup-postgres
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install PostgreSQL
-        uses: ankane/setup-postgres@v1
+        uses: ankane/setup-postgres@e9cd5bc1babecb0e441a640646d782056dbb67f5 # v1
         with:
           database: nanodbc
           postgres-version: ${{ matrix.postgres }}
@@ -268,7 +268,7 @@ jobs:
   test-sqlite:
     runs-on: windows-2022
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install SQLite ODBC Driver
         run: |
           (New-Object Net.WebClient).DownloadFile('http://www.ch-werner.de/sqliteodbc/sqliteodbc_w64.exe', "$($env:TEMP)\sqliteodbc_w64.exe")
