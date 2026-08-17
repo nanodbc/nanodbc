@@ -129,6 +129,11 @@ TEST_CASE_METHOD(sqlite_fixture, "test_batch_insert_integral", "[sqlite][batch][
     test_batch_insert_integral();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "test_batch_insert_null", "[sqlite][batch][null]")
+{
+    test_batch_insert_null();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_batch_insert_mixed", "[sqlite][batch]")
 {
     test_batch_insert_mixed();
@@ -312,6 +317,16 @@ TEST_CASE_METHOD(sqlite_fixture, "test_implementation_row_descriptor_with_expres
 TEST_CASE_METHOD(sqlite_fixture, "test_integral", "[sqlite][integral]")
 {
     test_integral<sqlite_fixture>();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_integral_small_types", "[sqlite][integral]")
+{
+    test_integral_small_types();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_integral_small_types_batch", "[sqlite][integral][batch]")
+{
+    test_integral_small_types_batch();
 }
 
 TEST_CASE_METHOD(sqlite_fixture, "test_integral_boundary", "[sqlite][integral]")

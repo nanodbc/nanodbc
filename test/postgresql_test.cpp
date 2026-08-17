@@ -14,6 +14,27 @@ struct postgresql_fixture : public test_case_fixture
         if (connection_string_.empty())
             connection_string_ = get_env("NANODBC_TEST_CONNSTR_PGSQL");
     }
+
+    // Whether the driver can report the implementation row descriptor of a prepared but
+    // not yet executed statement, which is how the IRD tests below use it.
+    //
+    // Only some psqlODBC versions can. The rest fail to read even SQL_DESC_COUNT, and
+    // without leaving a diagnostic record to explain why, so this is probed the same way
+    // the tests use the IRD rather than compiling them out for every version.
+    bool supports_implementation_row_descriptor()
+    {
+        try
+        {
+            auto c = connect();
+            nanodbc::statement s(c, NANODBC_TEXT("select 1;"));
+            nanodbc::implementation_row_descriptor ird(s);
+            return ird.count() > 0;
+        }
+        catch (nanodbc::database_error const&)
+        {
+            return false;
+        }
+    }
 };
 } // namespace
 
@@ -37,6 +58,11 @@ TEST_CASE_METHOD(postgresql_fixture, "test_datasources", "[postgresql][datasourc
 TEST_CASE_METHOD(postgresql_fixture, "test_batch_insert_integer", "[postgresql][batch][integral]")
 {
     test_batch_insert_integral();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "test_batch_insert_null", "[postgresql][batch][null]")
+{
+    test_batch_insert_null();
 }
 
 TEST_CASE_METHOD(postgresql_fixture, "test_batch_insert_string", "[postgresql][batch][string]")
@@ -160,6 +186,12 @@ TEST_CASE_METHOD(
     "test_implementation_row_descriptor",
     "[postgresql][descriptor][ird]")
 {
+    if (!supports_implementation_row_descriptor())
+    {
+        WARN("skipped: driver does not implement the implementation row descriptor");
+        return;
+    }
+
     test_implementation_row_descriptor();
 }
 
@@ -168,6 +200,12 @@ TEST_CASE_METHOD(
     "test_implementation_row_descriptor_with_expressions",
     "[postgresql][descriptor][ird]")
 {
+    if (!supports_implementation_row_descriptor())
+    {
+        WARN("skipped: driver does not implement the implementation row descriptor");
+        return;
+    }
+
     test_implementation_row_descriptor_with_expressions();
 }
 
@@ -176,6 +214,12 @@ TEST_CASE_METHOD(
     "test_implementation_row_descriptor_auto_unique_value",
     "[postgresql][descriptor][ird]")
 {
+    if (!supports_implementation_row_descriptor())
+    {
+        WARN("skipped: driver does not implement the implementation row descriptor");
+        return;
+    }
+
     auto c = connect();
 
     create_table(
@@ -196,6 +240,19 @@ name varchar(60)
 TEST_CASE_METHOD(postgresql_fixture, "test_integral", "[postgresql][integral]")
 {
     test_integral<postgresql_fixture>();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "test_integral_small_types", "[postgresql][integral]")
+{
+    test_integral_small_types();
+}
+
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_integral_small_types_batch",
+    "[postgresql][integral][batch]")
+{
+    test_integral_small_types_batch();
 }
 
 TEST_CASE_METHOD(postgresql_fixture, "test_move", "[postgresql][move]")

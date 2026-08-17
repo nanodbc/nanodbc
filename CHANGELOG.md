@@ -4,6 +4,8 @@
 
 Added support for C++17 type std::optional with backward compatibility in C++14 via std::experimental::optional.
 
+Added the one-byte integral types and `bool` to the explicit instantiations of `statement::bind`, `table_valued_parameter::bind`, `result::get` and `result::get_ref`, so that `signed char`, `unsigned char` and `bool` can be used when nanodbc is consumed as a library rather than failing to link [`#445`](https://github.com/nanodbc/nanodbc/discussions/445).
+
 ## v2.15.0
 
 ### New Features
@@ -248,9 +250,9 @@ case of iODBC with Unicode build enabled, `char32_t`. Boost.Test dropped in this
     - tests: builds all tests, but does not run them
     - check: builds all tests and then runs all tests
   - For individual tests then, it makes sense to use:
-    - ${name}_test: runs ${name}_test, but will not build it
-    - ${name}_tests: builds ${name}_test, but does not run it
-    - ${name}_check: builds ${name}_test and then runs it
+    - ${name}\_test: runs ${name}\_test, but will not build it
+    - ${name}\_tests: builds ${name}\_test, but does not run it
+    - ${name}\_check: builds ${name}\_test and then runs it
 
 ## Bug Fixes
 

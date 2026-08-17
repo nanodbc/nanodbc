@@ -1,9 +1,9 @@
 ---
 # nanodbc development and testing multi-container docker setup
-version: '3'
+version: "3"
 services:
   mysql:
-    image: mysql:5.7
+    image: mysql:8.4
     container_name: nanomysql
     restart: unless-stopped
     ports:
@@ -20,9 +20,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER:  *default_credential
-      POSTGRES_PASSWORD:  *default_credential
-      POSTGRES_DB:  *default_credential
+      POSTGRES_USER: *default_credential
+      POSTGRES_PASSWORD: *default_credential
+      POSTGRES_DB: *default_credential
   mssql:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: nanomssql
@@ -33,7 +33,9 @@ services:
       ACCEPT_EULA: Y
       SA_PASSWORD: Password12! # required, must meet requied password complexity
   nanodbc:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     container_name: nanodbc
     stdin_open: true
     tty: true
@@ -41,6 +43,9 @@ services:
       - pgsql
       - mysql
       - mssql
+    # Build and test the working tree rather than the copy Dockerfile.dev cloned.
+    volumes:
+      - .:/opt/nanodbc
     environment:
       # Make client command line friendlier
       MYSQL_HOST: mysql
@@ -53,3 +58,10 @@ services:
       PGUSER: *default_credential
       PGPASSWORD: *default_credential # required, psql no longer accepts passwords from command line
       PGDATABASE: *default_credential
+      # Connection strings the test programs pick up, so that `ctest` needs no arguments.
+      # The host names are the service names above. The drivers are the ones registered by
+      # Dockerfile.dev; check with `odbcinst -q -d` if a driver name looks wrong.
+      NANODBC_TEST_CONNSTR_PGSQL: "Driver={PostgreSQL ANSI};Server=pgsql;Port=5432;Database=nanodbc;UID=nanodbc;PWD=nanodbc;"
+      NANODBC_TEST_CONNSTR_MYSQL: "Driver={MySQL ODBC 8.4 ANSI Driver};Server=mysql;Database=nanodbc;User=nanodbc;Password=nanodbc;big_packets=1;"
+      # Driver 18 encrypts by default, and the server image uses a self-signed certificate.
+      NANODBC_TEST_CONNSTR_MSSQL: "Driver={ODBC Driver 18 for SQL Server};Server=mssql;Database=master;UID=sa;PWD=Password12!;TrustServerCertificate=yes;"

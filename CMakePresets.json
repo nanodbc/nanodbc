@@ -64,35 +64,35 @@
     },
     {
       "name": "cxx14-x64-debug",
-      "inherits": [ "base", "cxx-14", "x64", "debug" ]
+      "inherits": ["base", "cxx-14", "x64", "debug"]
     },
     {
       "name": "cxx14-x64-debug-unicode",
-      "inherits": [ "base", "cxx-14", "x64", "debug", "unicode" ]
+      "inherits": ["base", "cxx-14", "x64", "debug", "unicode"]
     },
     {
       "name": "cxx14-x64-release",
-      "inherits": [ "base", "cxx-14", "x64", "release" ]
+      "inherits": ["base", "cxx-14", "x64", "release"]
     },
     {
       "name": "cxx14-x64-release-unicode",
-      "inherits": [ "base", "cxx-14", "x64", "release", "unicode" ]
+      "inherits": ["base", "cxx-14", "x64", "release", "unicode"]
     },
     {
       "name": "cxx17-x64-debug",
-      "inherits": [ "base", "cxx-17", "x64", "debug" ]
+      "inherits": ["base", "cxx-17", "x64", "debug"]
     },
     {
       "name": "cxx17-x64-release",
-      "inherits": [ "base", "cxx-17", "x64", "release" ]
+      "inherits": ["base", "cxx-17", "x64", "release"]
     },
     {
       "name": "cxx20-x64-debug",
-      "inherits": [ "base", "cxx-20", "x64", "debug" ]
+      "inherits": ["base", "cxx-20", "x64", "debug"]
     },
     {
       "name": "cxx20-x64-release",
-      "inherits": [ "base", "cxx-20", "x64", "release" ]
+      "inherits": ["base", "cxx-20", "x64", "release"]
     }
   ]
 }

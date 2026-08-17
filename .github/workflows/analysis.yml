@@ -5,20 +5,20 @@ name: "Analysis"
 on:
   push:
     branches:
-    - main
+      - main
     paths:
-      - '**.cpp'
-      - '**.h'
-      - '.github/workflows/analysis.yml'
+      - "**.cpp"
+      - "**.h"
+      - ".github/workflows/analysis.yml"
   pull_request:
     paths:
-      - '**.cpp'
-      - '**.h'
-      - '.github/workflows/analysis.yml'
+      - "**.cpp"
+      - "**.h"
+      - ".github/workflows/analysis.yml"
 
 env:
-  build: '${{ github.workspace }}/build'
-  config: 'Debug'
+  build: "${{ github.workspace }}/build"
+  config: "Debug"
 
 jobs:
   core:
@@ -27,13 +27,13 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Configure CMake
         run: cmake -B ${{ env.build }} -DCMAKE_BUILD_TYPE=${{ env.config }}
 
       - name: Run MSVC Code Analysis
-        uses: microsoft/msvc-code-analysis-action@v0.1.1
+        uses: microsoft/msvc-code-analysis-action@24c285ab36952c9e9182f4b78dfafbac38a7e5ee # v0.1.1
         # Provide a unique ID to access the sarif output path
         id: run-core-analysis
         with:
@@ -46,13 +46,13 @@ jobs:
 
       # Upload SARIF file to GitHub Code Scanning Alerts
       - name: Upload SARIF to GitHub
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4
         with:
           sarif_file: ${{ steps.run-core-analysis.outputs.sarif }}
 
       # Upload SARIF file as an Artifact to download and view
       - name: Upload SARIF as an Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: sarif-file
           path: ${{ steps.run-core-analysis.outputs.sarif }}
@@ -64,13 +64,13 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Configure CMake
         run: cmake -B ${{ env.build }} -DCMAKE_BUILD_TYPE=${{ env.config }}
 
       - name: Run MSVC Code Analysis
-        uses: microsoft/msvc-code-analysis-action@v0.1.1
+        uses: microsoft/msvc-code-analysis-action@24c285ab36952c9e9182f4b78dfafbac38a7e5ee # v0.1.1
         # Provide a unique ID to access the sarif output path
         id: run-native-analysis
         with:
@@ -83,13 +83,13 @@ jobs:
 
       # Upload SARIF file to GitHub Code Scanning Alerts
       - name: Upload SARIF to GitHub
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4
         with:
           sarif_file: ${{ steps.run-native-analysis.outputs.sarif }}
 
       # Upload SARIF file as an Artifact to download and view
       - name: Upload SARIF as an Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: sarif-file
           path: ${{ steps.run-native-analysis.outputs.sarif }}
@@ -104,15 +104,15 @@ jobs:
       security-events: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: flawfinder_scan
-        uses: david-a-wheeler/flawfinder@8e4a779ad59dbfaee5da586aa9210853b701959c
+        uses: david-a-wheeler/flawfinder@c4216b74cf2639ffa98503768bd6e4299b5440c9 # master, the action has no tagged releases
         with:
-          arguments: '--sarif ./'
-          output: 'flawfinder_results.sarif'
+          arguments: "--sarif ./"
+          output: "flawfinder_results.sarif"
 
       - name: Upload analysis results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4
         with:
           sarif_file: ${{github.workspace}}/flawfinder_results.sarif

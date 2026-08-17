@@ -111,6 +111,11 @@ TEST_CASE_METHOD(mysql_fixture, "test_batch_insert_integer", "[mysql][batch][int
     test_batch_insert_integral();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_batch_insert_null", "[mysql][batch][null]")
+{
+    test_batch_insert_null();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_batch_insert_string", "[mysql][batch][string]")
 {
     test_batch_insert_string();
@@ -256,6 +261,16 @@ PRIMARY KEY(fid)
 TEST_CASE_METHOD(mysql_fixture, "test_integral", "[mysql][integral]")
 {
     test_integral<mysql_fixture>();
+}
+
+TEST_CASE_METHOD(mysql_fixture, "test_integral_small_types", "[mysql][integral]")
+{
+    test_integral_small_types();
+}
+
+TEST_CASE_METHOD(mysql_fixture, "test_integral_small_types_batch", "[mysql][integral][batch]")
+{
+    test_integral_small_types_batch();
 }
 
 TEST_CASE_METHOD(mysql_fixture, "test_move", "[mysql][move]")

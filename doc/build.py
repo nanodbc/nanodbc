@@ -1,63 +1,79 @@
 # Build the documentation for nanodbc library
 
 # Configuration
-nanodbc_name = 'nanodbc'
-nanodbc_versions = ['main', '2.14.0', '2.13.0']
+nanodbc_name = "nanodbc"
+nanodbc_versions = ["main", "2.14.0", "2.13.0"]
 # End of Configuration
 
 import errno
 import os
 import sys
-from subprocess import check_call, CalledProcessError, Popen, PIPE
+from subprocess import PIPE, CalledProcessError, Popen, check_call
+
 
 def build_docs(**kwargs):
     assert nanodbc_versions
-    version = kwargs.get('version', nanodbc_versions[0])
-    doc_dir = kwargs.get('doc_dir', os.path.dirname(
-        os.path.realpath(__file__)))
-    work_dir = kwargs.get('work_dir', '.')
-    include_dir = kwargs.get('include_dir', os.path.join(
-        os.path.dirname(doc_dir), 'nanodbc'))
-    doxyxml_dir = os.path.join(work_dir, 'doxyxml')
+    version = kwargs.get("version", nanodbc_versions[0])
+    doc_dir = kwargs.get("doc_dir", os.path.dirname(os.path.realpath(__file__)))
+    work_dir = kwargs.get("work_dir", ".")
+    include_dir = kwargs.get(
+        "include_dir", os.path.join(os.path.dirname(doc_dir), "nanodbc")
+    )
+    doxyxml_dir = os.path.join(work_dir, "doxyxml")
 
-    doxyfile = r'''
-        PROJECT_NAME      = {0}
+    doxyfile = rf"""
+        PROJECT_NAME      = {nanodbc_name}
         GENERATE_XML      = YES
         GENERATE_HTML     = NO
         GENERATE_LATEX    = NO
-        INPUT             = {1}
+        INPUT             = {include_dir}
         JAVADOC_AUTOBRIEF = YES
         AUTOLINK_SUPPORT  = NO
-        XML_OUTPUT        = {2}
+        XML_OUTPUT        = {doxyxml_dir}
         MACRO_EXPANSION   = YES
         PREDEFINED        = DOXYGEN=1
-        '''.format(nanodbc_name, include_dir, doxyxml_dir).encode('UTF-8')
-    cmd = ['doxygen', '-']
+        """.encode()
+    cmd = ["doxygen", "-"]
     p = Popen(cmd, stdin=PIPE)
     p.communicate(input=doxyfile)
     if p.returncode != 0:
         raise CalledProcessError(p.returncode, cmd)
     sys.exit()
-    html_dir = os.path.join(work_dir, 'html')
+    html_dir = os.path.join(work_dir, "html")
     versions = nanodbc_versions
     assert versions
-    check_call(['sphinx-build',
-                '-Dbreathe_projects.format=' + os.path.abspath(doxyxml_dir),
-                '-Dversion=' + version, '-Drelease=' + version,
-                '-Aversion=' + version, '-Aversions=' + ','.join(versions),
-                '-b', 'html', doc_dir, html_dir])
+    check_call(
+        [
+            "sphinx-build",
+            "-Dbreathe_projects.format=" + os.path.abspath(doxyxml_dir),
+            "-Dversion=" + version,
+            "-Drelease=" + version,
+            "-Aversion=" + version,
+            "-Aversions=" + ",".join(versions),
+            "-b",
+            "html",
+            doc_dir,
+            html_dir,
+        ]
+    )
     try:
-        check_call(['lessc', '--clean-css',
-                    '--include-path=' + os.path.join(doc_dir, 'bootstrap'),
-                    os.path.join(doc_dir, 'nanodbc.less'),
-                    os.path.join(html_dir, '_static', 'nanodbc.css')])
+        check_call(
+            [
+                "lessc",
+                "--clean-css",
+                "--include-path=" + os.path.join(doc_dir, "bootstrap"),
+                os.path.join(doc_dir, "nanodbc.less"),
+                os.path.join(html_dir, "_static", "nanodbc.css"),
+            ]
+        )
     except OSError as err:
         if err.errno != errno.ENOENT:
             raise
-        print('lessc (http://lesscss.org/) not found')
+        print("lessc (http://lesscss.org/) not found")
         sys.exit(1)
     return html_dir
 
-if __name__ == '__main__':
-    #create_build_env()
+
+if __name__ == "__main__":
+    # create_build_env()
     build_docs()

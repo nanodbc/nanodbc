@@ -29,6 +29,11 @@ TEST_CASE_METHOD(odbc_fixture, "test_blob", "[odbc][blob]")
     test_blob();
 }
 
+TEST_CASE_METHOD(odbc_fixture, "test_batch_insert_null", "[odbc][batch][null]")
+{
+    test_batch_insert_null();
+}
+
 TEST_CASE_METHOD(odbc_fixture, "test_catalog_list_catalogs", "[odbc][catalog][catalogs]")
 {
     test_catalog_list_catalogs();
@@ -102,6 +107,16 @@ TEST_CASE_METHOD(odbc_fixture, "test_execute_multiple", "[odbc][execute]")
 TEST_CASE_METHOD(odbc_fixture, "test_integral", "[odbc][integral]")
 {
     test_integral<odbc_fixture>();
+}
+
+TEST_CASE_METHOD(odbc_fixture, "test_integral_small_types", "[odbc][integral]")
+{
+    test_integral_small_types();
+}
+
+TEST_CASE_METHOD(odbc_fixture, "test_integral_small_types_batch", "[odbc][integral][batch]")
+{
+    test_integral_small_types_batch();
 }
 
 TEST_CASE_METHOD(odbc_fixture, "test_move", "[odbc][move]")

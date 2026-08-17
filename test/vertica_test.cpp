@@ -36,6 +36,11 @@ TEST_CASE_METHOD(vertica_fixture, "test_batch_insert_integer", "[vertica][batch]
     test_batch_insert_integral();
 }
 
+TEST_CASE_METHOD(vertica_fixture, "test_batch_insert_null", "[vertica][batch][null]")
+{
+    test_batch_insert_null();
+}
+
 TEST_CASE_METHOD(vertica_fixture, "test_batch_insert_string", "[vertica][batch][string]")
 {
     test_batch_insert_string();
@@ -125,6 +130,16 @@ TEST_CASE_METHOD(vertica_fixture, "test_execute_multiple", "[vertica][execute]")
 TEST_CASE_METHOD(vertica_fixture, "test_integral", "[vertica][integral]")
 {
     test_integral<vertica_fixture>();
+}
+
+TEST_CASE_METHOD(vertica_fixture, "test_integral_small_types", "[vertica][integral]")
+{
+    test_integral_small_types();
+}
+
+TEST_CASE_METHOD(vertica_fixture, "test_integral_small_types_batch", "[vertica][integral][batch]")
+{
+    test_integral_small_types_batch();
 }
 
 TEST_CASE_METHOD(vertica_fixture, "test_move", "[vertica][move]")

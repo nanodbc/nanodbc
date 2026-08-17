@@ -5,7 +5,7 @@ name: "Lint"
 on:
   push:
     branches:
-    - main
+      - main
   pull_request:
 
 jobs:
@@ -14,27 +14,20 @@ jobs:
   documentation:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: avto-dev/markdown-lint@v1
-      with:
-        args: '**/*.md'
-    - uses: docker://oskarstark/doctor-rst
-      with:
-        args: --short --error-format=github
-      env:
-        DOCS_DIR: 'doc/'
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: avto-dev/markdown-lint@04d43ee9191307b50935a753da3b775ab695eceb # v1.5.0
+        with:
+          args: "**/*.md"
+      - uses: docker://oskarstark/doctor-rst@sha256:6aa5162837be9d25505b2bcdd154bfe7352057503ce9de1b492b254c8e61a0e3 # 1.78.0
+        with:
+          args: --short --error-format=github
+        env:
+          DOCS_DIR: "doc/"
 
   docker:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: hadolint/hadolint-action@v2.0.0
-      with:
-        dockerfile: Dockerfile
-
-  vagrant:
-    runs-on: macos-12
-    steps:
-    - uses: actions/checkout@v3
-    - run: vagrant version
-    - run: vagrant validate
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: hadolint/hadolint-action@2a66e89f53d0771bb131a7fa31f3136336094aa6 # v3.4.0
+        with:
+          dockerfile: Dockerfile.dev
