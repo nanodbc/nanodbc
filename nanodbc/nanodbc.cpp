@@ -834,55 +834,57 @@ public:
 // than as text, so reading one as a string has to format it here. The struct counts
 // fractional seconds in billionths, while the column reports how many decimal digits it
 // actually carries, so scale decides how many of those digits are rendered.
+// Renders value as decimal digits, zero padded to at least width, keeping a minus sign in
+// front of the padding. Wider values keep all their digits rather than being truncated.
+inline std::string zero_padded(long value, std::size_t width)
+{
+    // Negating the most negative value is undefined, so the digits come from an unsigned
+    // copy. Fields of a driver-filled struct are not assumed to be in range.
+    auto const magnitude =
+        value < 0 ? 0UL - static_cast<unsigned long>(value) : static_cast<unsigned long>(value);
+    std::string const sign = value < 0 ? "-" : "";
+    auto digits = std::to_string(magnitude);
+    if (sign.size() + digits.size() < width)
+        digits.insert(0, width - sign.size() - digits.size(), '0');
+    return sign + digits;
+}
+
 inline std::string
 timestampoffset_as_string(nanodbc::timestampoffset const& value, SQLSMALLINT scale)
 {
     auto const& stamp = value.stamp;
 
-    // Each part is formatted into its own buffer, sized for the widest value its fields can
-    // hold. The struct is filled in by the driver, so no field is assumed to be in range,
-    // and formatting the parts separately means an unexpectedly wide one cannot push a
-    // later write past the end of a shared buffer.
-    char date_time[48]; // six fields of at most six characters, plus five separators
-    std::snprintf(
-        date_time,
-        sizeof(date_time),
-        "%04d-%02d-%02d %02d:%02d:%02d",
-        static_cast<int>(stamp.year),
-        static_cast<int>(stamp.month),
-        static_cast<int>(stamp.day),
-        static_cast<int>(stamp.hour),
-        static_cast<int>(stamp.min),
-        static_cast<int>(stamp.sec));
+    auto result = zero_padded(stamp.year, 4);
+    result += '-';
+    result += zero_padded(stamp.month, 2);
+    result += '-';
+    result += zero_padded(stamp.day, 2);
+    result += ' ';
+    result += zero_padded(stamp.hour, 2);
+    result += ':';
+    result += zero_padded(stamp.min, 2);
+    result += ':';
+    result += zero_padded(stamp.sec, 2);
 
-    char fraction[16] = ""; // a point, plus at most the ten digits of an int32
     if (scale > 0 && scale <= 9)
     {
         // Narrow the billionths down to the digits the column carries.
         long divisor = 1;
         for (SQLSMALLINT i = scale; i < 9; ++i)
             divisor *= 10;
-        std::snprintf(
-            fraction,
-            sizeof(fraction),
-            ".%0*ld",
-            static_cast<int>(scale),
-            static_cast<long>(stamp.fract) / divisor);
+        result += '.';
+        result += zero_padded(stamp.fract / divisor, static_cast<std::size_t>(scale));
     }
 
     // Both offset fields carry the sign, so either one being negative means the whole
     // offset is behind UTC.
     bool const behind_utc = value.offset_hour < 0 || value.offset_minute < 0;
-    char offset[16]; // a space, a sign, two fields of at most five digits, and a colon
-    std::snprintf(
-        offset,
-        sizeof(offset),
-        " %c%02d:%02d",
-        behind_utc ? '-' : '+',
-        std::abs(static_cast<int>(value.offset_hour)),
-        std::abs(static_cast<int>(value.offset_minute)));
+    result += behind_utc ? " -" : " +";
+    result += zero_padded(std::abs(static_cast<int>(value.offset_hour)), 2);
+    result += ':';
+    result += zero_padded(std::abs(static_cast<int>(value.offset_minute)), 2);
 
-    return std::string(date_time) + fraction + offset;
+    return result;
 }
 
 // Encapsulates properties of statement parameter.
