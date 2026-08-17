@@ -3,7 +3,8 @@
 version: '3'
 services:
   mysql:
-    image: mysql:5.7
+    # 8.4 is the current LTS; 5.7 reached end of life in October 2023.
+    image: mysql:8.4
     container_name: nanomysql
     restart: unless-stopped
     ports:

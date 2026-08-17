@@ -32,9 +32,7 @@ jobs:
       with:
         dockerfile: Dockerfile.dev
 
-  vagrant:
-    runs-on: macos-12
-    steps:
-    - uses: actions/checkout@v3
-    - run: vagrant version
-    - run: vagrant validate
+  # The Vagrantfile used to be validated here, on macos-12. That runner image has been
+  # retired, and Vagrant is not present on the images that replaced it, so the job could
+  # never start. The Vagrantfile itself is stale too, building on bento/ubuntu-18.04, so it
+  # wants a refresh before it is worth validating again.
