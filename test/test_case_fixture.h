@@ -792,6 +792,17 @@ struct test_case_fixture : public base_test_fixture
         nanodbc::connection connection = connect();
         nanodbc::catalog catalog(connection);
 
+        // Make sure at least one table exists before asking the catalog for tables. The
+        // counts below require a non-empty result, which otherwise holds only when some
+        // earlier test has left a table behind, and not at all against a database that
+        // starts out empty.
+        {
+            nanodbc::string const any_table(NANODBC_TEXT("test_catalog_tables_present"));
+            drop_table(connection, any_table);
+            execute(
+                connection, NANODBC_TEXT("create table ") + any_table + NANODBC_TEXT("(a int);"));
+        }
+
         // Check we can iterate over any tables
         {
             nanodbc::catalog::tables tables = catalog.find_tables();
