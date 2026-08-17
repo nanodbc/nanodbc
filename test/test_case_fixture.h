@@ -481,6 +481,13 @@ struct test_case_fixture : public base_test_fixture
                     NANODBC_TEXT("\'sample value\'::character varying"));
             else if (contains_string(dbms, NANODBC_TEXT("SQL Server")))
                 REQUIRE(columns.column_default() == NANODBC_TEXT("(\'sample value\')"));
+            else if (
+                contains_string(dbms, NANODBC_TEXT("MariaDB")) ||
+                contains_string(connection.dbms_version(), NANODBC_TEXT("MariaDB")))
+                // MariaDB stores a string column default together with its quotes, and
+                // reports that stored form through information_schema, so by the time it
+                // arrives here the quotes appear twice.
+                REQUIRE(columns.column_default() == NANODBC_TEXT("\'\'sample value\'\'"));
             else
                 REQUIRE(columns.column_default() == NANODBC_TEXT("\'sample value\'"));
 

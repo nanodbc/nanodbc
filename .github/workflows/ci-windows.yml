@@ -50,11 +50,12 @@ jobs:
         - { cxxstd: '20', toolset: v143, vs: 2022, architecture: x64, os: windows-2022 }
         - { cxxstd: '17', toolset: v143, vs: 2022, architecture: x64, os: windows-2022 }
         - { cxxstd: '14', toolset: v143, vs: 2022, architecture: x64, os: windows-2022 }
-        - { cxxstd: '17', toolset: v142, vs: 2019, architecture: x64, os: windows-2019 }
-        - { cxxstd: '14', toolset: v142, vs: 2019, architecture: x64, os: windows-2019 }
-        # Visual Studio 2017
-        - { cxxstd: '17', toolset: v141, vs: 2019, architecture: x64, os: windows-2019 }
-        - { cxxstd: '14', toolset: v141, vs: 2019, architecture: x64, os: windows-2019 }
+        # The v142 toolset ships with Visual Studio 2022, so it is still built here even
+        # though the windows-2019 image it used to build on has been retired.
+        - { cxxstd: '17', toolset: v142, vs: 2022, architecture: x64, os: windows-2022 }
+        - { cxxstd: '14', toolset: v142, vs: 2022, architecture: x64, os: windows-2022 }
+        # The v141 toolset is not available on windows-2022, and Visual Studio 2017 is out
+        # of support, so those jobs are gone rather than perpetually queued.
     name: build-vs${{ matrix.vs }}-${{ matrix.toolset }}-std-${{ matrix.cxxstd }}
     runs-on: ${{ matrix.os }}
     env:
@@ -115,7 +116,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        mssql: [2017, 2019]
+        mssql: [2022, 2019] # the only versions potatoqualitee/mssqlsuite installs
     steps:
     - uses: actions/checkout@v3
     - name: Install SQL Server
@@ -146,7 +147,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        mariadb: ['10.11', '10.5']
+        mariadb: ['12.3', '11.8', '11.4', '10.11'] # current, LTS releases, oldest supported
     steps:
     - uses: actions/checkout@v3
     - name: Install MariaDB ${{ matrix.mariadb }}
@@ -172,7 +173,9 @@ jobs:
         # Take the driver name from what Chocolatey actually installed, since the
         # Connector/ODBC version it ships changes over time.
         $driver = Get-OdbcDriver -Platform 64-bit -Name "MySQL ODBC * ANSI Driver" | Select-Object -First 1 -ExpandProperty Name
-        $env:NANODBC_TEST_CONNSTR_MYSQL="Driver={$driver};Server=127.0.0.1;Database=nanodbc;User=root;Password=;big_packets=1;"
+        # NO_SCHEMA=false because Connector/ODBC disables schema support by default, which
+        # makes the catalog schema calls fail.
+        $env:NANODBC_TEST_CONNSTR_MYSQL="Driver={$driver};Server=127.0.0.1;Database=nanodbc;User=root;Password=;big_packets=1;NO_SCHEMA=false"
         ctest --test-dir ${{ github.workspace }}/build --build-config Release --output-on-failure --no-tests=error -R mysql_tests
 
   test-mysql:
@@ -180,7 +183,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        mysql: [8.0]
+        mysql: ['9.7', '8.4'] # innovation release and current LTS
     steps:
     - uses: actions/checkout@v3
     - name: Install MySQL ${{ matrix.mysql }}
