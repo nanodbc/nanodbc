@@ -116,7 +116,7 @@ environment to use [Boost][boost].
 | -----------------------------------| ---------------------| ------- |
 | `NANODBC_BUILD_EXAMPLES`           | `OFF` or `ON`        | Build examples. On by default when nanodbc is the top level project. |
 | `NANODBC_BUILD_TESTS`              | `OFF` or `ON`        | Build tests. On by default when nanodbc is the top level project. |
-| `NANODBC_DISABLE_ASYNC`            | `OFF` or `ON`        | Disable all async features. May resolve build issues in older ODBC versions. |
+| `NANODBC_DISABLE_ASYNC`            | `OFF` or `ON`        | Disable all async features. The ODBC 3.8 async API is switched off automatically when the ODBC headers found at configure time do not declare it. |
 | `NANODBC_DISABLE_MSSQL_TVP`        | `OFF` or `ON`        | Do not use MSSQL table-valued parameters. |
 | `NANODBC_ENABLE_BOOST`             | `OFF` or `ON`        | Use Boost for Unicode string convertions (requires [Boost.Locale][boost-locale]). Workaround to issue [#24](https://github.com/nanodbc/nanodbc/issues/24). |
 | `NANODBC_ENABLE_COVERAGE`          | `OFF` or `ON`        | Enable code coverage analysis. Requires tests to be built. |

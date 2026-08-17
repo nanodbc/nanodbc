@@ -74,7 +74,9 @@ if no initial value is provided, `OFF` is used.
 List of CMake options specific to nanodbc, in alphabetical order:
 
 NANODBC_DISABLE_ASYNC : *boolean*
-    Disable all async features. May resolve build issues in older ODBC versions.
+    Disable all async features. The async API is ODBC 3.8, and it is switched off
+    automatically when the ODBC headers found at configure time do not declare it, so this
+    is only needed to turn it off against headers that do.
 
 NANODBC_DISABLE_EXAMPLES : *boolean*
     Do not build examples.

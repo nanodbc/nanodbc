@@ -95,10 +95,9 @@ jobs:
       - name: Configure
         run: |
           cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "MinGW Makefiles" -D CMAKE_BUILD_TYPE=${{ matrix.configuration }} -DCMAKE_COMPILE_WARNING_AS_ERROR=${{ matrix.warnings-as-errors }}
-    # FIXME: undefined references to async methods
-    # - name: Build
-    #   run: |
-    #     cmake --build ${{ github.workspace }}/build --verbose
+      - name: Build
+        run: |
+          cmake --build ${{ github.workspace }}/build --parallel
 
   test-utility:
     runs-on: windows-2022
