@@ -38,8 +38,6 @@ struct postgresql_fixture : public test_case_fixture
 };
 } // namespace
 
-// TODO: add blob (bytea) test
-
 TEST_CASE_METHOD(postgresql_fixture, "test_driver", "[postgresql][driver]")
 {
     test_driver();
@@ -249,6 +247,11 @@ TEST_CASE_METHOD(
     test_integral_small_types_batch();
 }
 
+TEST_CASE_METHOD(postgresql_fixture, "test_integral_to_string_conversion", "[postgresql][integral]")
+{
+    test_integral_to_string_conversion();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_move", "[postgresql][move]")
 {
     test_move();
@@ -303,6 +306,11 @@ TEST_CASE_METHOD(postgresql_fixture, "test_string_vector", "[postgresql][string]
 TEST_CASE_METHOD(postgresql_fixture, "test_string_view_vector", "[postgresql][string]")
 {
     test_string_view_vector();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "test_blob_binary", "[postgresql][blob][binary]")
+{
+    test_blob_binary();
 }
 
 TEST_CASE_METHOD(postgresql_fixture, "test_batch_binary", "[postgresql][binary]")

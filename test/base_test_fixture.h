@@ -549,9 +549,8 @@ struct base_test_fixture
 
             bool operator()(char_type const& lhs, char_type const& rhs)
             {
-                // FIXME: This is ugly, but ctype<char16_t> and ctype<char32_t> specializations
-                // are not mandatory according to the C++11, only for char and wchar_t are.
-                // So, use the one with bigger capacity of the two.
+                // Only ctype<char> and ctype<wchar_t> are required to exist, so char16_t
+                // and char32_t are folded through the wider of the two.
                 return std::toupper<wchar_t>(lhs, loc_) == std::toupper<wchar_t>(rhs, loc_);
             }
 

@@ -621,8 +621,9 @@ TEST_CASE_METHOD(
     "[mssql][blob][varchar][unbound]")
 {
     // This test is based on https://knowledgebase.progress.com/articles/Article/9384,
-    // it illustrates a canonical sitaution leading to the Invalid Descriptor Index error.
-    // TODO: Port it to database-agnostic tests.
+    // it illustrates a canonical situation leading to the Invalid Descriptor Index error.
+    // It stays here because the restriction is the SQL Server driver's own: the PostgreSQL,
+    // MySQL and SQLite drivers read the same columns in the same order without complaint.
 
     nanodbc::connection connection = connect();
     create_table(
@@ -898,20 +899,10 @@ TEST_CASE_METHOD(mssql_fixture, "test_execute_multiple", "[mssql][execute]")
     test_execute_multiple();
 }
 
-// FIXME(mloskot): Strange behaviour of SQLGetDescField on Linux with SQL Server, see
-// https://github.com/nanodbc/nanodbc/pull/342#issuecomment-2077942587
-#if defined(NANODBC_TEST_CI) && defined(CATCH_PLATFORM_LINUX)
-#define NANODBC_TESTS_SKIP_IRD 1
-#else
-#define NANODBC_TEST_SKIP_IRD_DUE_STRANGE_FAILURES_ON_LINUX 0
-#endif
-
-#if defined(NANODBC_TEST_SKIP_IRD_DUE_STRANGE_FAILURES_ON_LINUX)
 TEST_CASE_METHOD(mssql_fixture, "test_implementation_row_descriptor", "[mssql][descriptor][ird]")
 {
     test_implementation_row_descriptor();
 }
-#endif // defined(NANODBC_TEST_SKIP_IRD_DUE_STRANGE_FAILURES_ON_LINUX)
 
 TEST_CASE_METHOD(
     mssql_fixture,
@@ -1078,6 +1069,11 @@ TEST_CASE_METHOD(mssql_fixture, "test_integral_small_types", "[mssql][integral]"
 TEST_CASE_METHOD(mssql_fixture, "test_integral_small_types_batch", "[mssql][integral][batch]")
 {
     test_integral_small_types_batch();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_integral_to_string_conversion", "[mssql][integral]")
+{
+    test_integral_to_string_conversion();
 }
 
 TEST_CASE_METHOD(mssql_fixture, "test_move", "[mssql][move]")

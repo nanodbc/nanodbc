@@ -4808,10 +4808,11 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
     case SQL_C_LONG:
     case SQL_C_SLONG:
     {
-        std::string buffer(column_size + 1, 0); // ensure terminating null
+        // The SQL column size counts digits, so the sign needs a character of its own.
+        const SQLULEN width = column_size + 1;
+        std::string buffer(width + 1, 0); // ensure terminating null
         const int32_t data = *ensure_pdata<int32_t>(column);
-        const int bytes =
-            std::snprintf(const_cast<char*>(buffer.data()), column_size + 1, "%d", data);
+        const int bytes = std::snprintf(const_cast<char*>(buffer.data()), width + 1, "%d", data);
         if (bytes == -1)
             throw type_incompatible_error();
         convert(buffer.data(), result); // passing the C pointer drops trailing nulls
@@ -4820,11 +4821,12 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
 
     case SQL_C_SBIGINT:
     {
-        using namespace std;                    // in case intmax_t is in namespace std
-        std::string buffer(column_size + 1, 0); // ensure terminating null
+        using namespace std; // in case intmax_t is in namespace std
+        // The SQL column size counts digits, so the sign needs a character of its own.
+        const SQLULEN width = column_size + 1;
+        std::string buffer(width + 1, 0); // ensure terminating null
         const intmax_t data = (intmax_t)*ensure_pdata<int64_t>(column);
-        const int bytes =
-            std::snprintf(const_cast<char*>(buffer.data()), column_size + 1, "%jd", data);
+        const int bytes = std::snprintf(const_cast<char*>(buffer.data()), width + 1, "%jd", data);
         if (bytes == -1)
             throw type_incompatible_error();
         convert(buffer.data(), result); // passing the C pointer drops trailing nulls
@@ -4833,10 +4835,10 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
 
     case SQL_C_FLOAT:
     {
-        std::string buffer(column_size + 1, 0); // ensure terminating null
+        const SQLULEN width = column_size + 2; // account for decimal mark and sign
+        std::string buffer(width + 1, 0);      // ensure terminating null
         const float data = *ensure_pdata<float>(column);
-        const int bytes =
-            std::snprintf(const_cast<char*>(buffer.data()), column_size + 1, "%f", data);
+        const int bytes = std::snprintf(const_cast<char*>(buffer.data()), width + 1, "%f", data);
         if (bytes == -1)
             throw type_incompatible_error();
         convert(buffer.data(), result); // passing the C pointer drops trailing nulls

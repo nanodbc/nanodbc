@@ -89,7 +89,9 @@ SECTION("malformed utf-16")
 
 TEST_CASE("convert", "[string]")
 {
-    std::string const u8 = (char const*)u8"Hello ツ World"; // FIXME: Hack! C++20 adds std::u8string
+    // The cast is what carries the literal across the standards: it is char const* through
+    // C++17 and char8_t const* from C++20.
+    std::string const u8 = (char const*)u8"Hello ツ World";
     std::u16string const u16 = u"Hello ツ World";
     std::u32string const u32 = U"Hello ツ World";
     std::wstring const w = L"Hello ツ World";

@@ -353,6 +353,37 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(results.get<nanodbc::string>(0) == s);
     }
 
+    // The counterpart of test_blob() for the backends whose long binary type does not
+    // accept a character literal, PostgreSQL bytea among them.
+    void test_blob_binary()
+    {
+        std::vector<std::uint8_t> data(5000);
+        for (std::size_t i = 0; i < data.size(); ++i)
+            data[i] = static_cast<std::uint8_t>(i % 256);
+
+        nanodbc::connection connection = connect();
+        // PostgreSQL does not allow a limit on a bytea field, where the others want one.
+        nanodbc::string const column_type = vendor_ == database_vendor::postgresql
+                                                ? get_binary_type_name()
+                                                : get_binary_type_name(int(data.size()));
+        create_table(
+            connection,
+            NANODBC_TEXT("test_blob_binary"),
+            NANODBC_TEXT("(data ") + column_type + NANODBC_TEXT(")"));
+
+        nanodbc::statement insert(connection);
+        prepare(insert, NANODBC_TEXT("insert into test_blob_binary(data) values (?);"));
+        std::vector<std::vector<std::uint8_t>> const values{data};
+        insert.bind(0, values);
+        nanodbc::execute(insert);
+
+        auto results =
+            nanodbc::execute(connection, NANODBC_TEXT("select data from test_blob_binary;"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<std::vector<std::uint8_t>>(0) == data);
+        REQUIRE(!results.next());
+    }
+
     void test_catalog_columns()
     {
         nanodbc::connection connection = connect();
@@ -1782,6 +1813,53 @@ PRIMARY KEY(t2_fid)
     // The types are deliberately checked through a smallint column, which every backend
     // supports, so this verifies the explicit instantiations rather than any backend's
     // particular spelling of a one-byte column.
+    void test_integral_to_string_conversion()
+    {
+        nanodbc::connection connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_integral_to_string_conversion"),
+            NANODBC_TEXT("(i int, n int)"));
+        auto const values = {
+            NANODBC_TEXT("(1, 0)"),
+            NANODBC_TEXT("(2, 255)"),
+            NANODBC_TEXT("(3, -128)"),
+            NANODBC_TEXT("(4, 127)"),
+            NANODBC_TEXT("(5, -32768)"),
+            NANODBC_TEXT("(6, 32767)"),
+            NANODBC_TEXT("(7, -2147483648)"),
+            NANODBC_TEXT("(8, 2147483647)")};
+        for (auto const& value : values)
+        {
+            execute(
+                connection,
+                nanodbc::string(NANODBC_TEXT("insert into test_integral_to_string_conversion "
+                                             "values ")) +
+                    value + NANODBC_TEXT(";"));
+        }
+
+        auto results = execute(
+            connection,
+            NANODBC_TEXT("select * from test_integral_to_string_conversion order by i asc;"));
+
+        for (auto const& expected :
+             {NANODBC_TEXT("0"),
+              NANODBC_TEXT("255"),
+              NANODBC_TEXT("-128"),
+              NANODBC_TEXT("127"),
+              NANODBC_TEXT("-32768"),
+              NANODBC_TEXT("32767")})
+        {
+            REQUIRE(results.next());
+            REQUIRE(results.get<nanodbc::string>(1) == expected);
+        }
+
+        REQUIRE(results.next());
+        REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("-2147483648"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("2147483647"));
+    }
+
     void test_integral_small_types()
     {
         nanodbc::connection connection = connect();

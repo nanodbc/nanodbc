@@ -387,58 +387,7 @@ TEST_CASE_METHOD(sqlite_fixture, "test_integral_boundary", "[sqlite][integral]")
 
 TEST_CASE_METHOD(sqlite_fixture, "test_integral_to_string_conversion", "[sqlite][integral]")
 {
-    // TODO: Move to common tests
-    nanodbc::connection connection = connect();
-    create_table(
-        connection,
-        NANODBC_TEXT("test_integral_to_string_conversion"),
-        NANODBC_TEXT("(i int, n int)"));
-    execute(
-        connection, NANODBC_TEXT("insert into test_integral_to_string_conversion values (1, 0);"));
-    execute(
-        connection,
-        NANODBC_TEXT("insert into test_integral_to_string_conversion values (2, 255);"));
-    execute(
-        connection,
-        NANODBC_TEXT("insert into test_integral_to_string_conversion values (3, -128);"));
-    execute(
-        connection,
-        NANODBC_TEXT("insert into test_integral_to_string_conversion values (4, 127);"));
-    execute(
-        connection,
-        NANODBC_TEXT("insert into test_integral_to_string_conversion values (5, -32768);"));
-    execute(
-        connection,
-        NANODBC_TEXT("insert into test_integral_to_string_conversion values (6, 32767);"));
-    execute(
-        connection,
-        NANODBC_TEXT("insert into test_integral_to_string_conversion values (7, -2147483648);"));
-    execute(
-        connection,
-        NANODBC_TEXT("insert into test_integral_to_string_conversion values (8, 2147483647);"));
-    auto results = execute(
-        connection,
-        NANODBC_TEXT("select * from test_integral_to_string_conversion order by i asc;"));
-
-    REQUIRE(results.next());
-    REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("0"));
-    REQUIRE(results.next());
-    REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("255"));
-    REQUIRE(results.next());
-    REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("-128"));
-    REQUIRE(results.next());
-    REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("127"));
-    REQUIRE(results.next());
-    REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("-32768"));
-    REQUIRE(results.next());
-    REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("32767"));
-    REQUIRE(results.next());
-    // FIXME: SQLite ODBC driver reports column size of 10 leading to truncation
-    // "-214748364" == "-2147483648"
-    // The driver bug?
-    // REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("-2147483648"));
-    REQUIRE(results.next());
-    REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("2147483647"));
+    test_integral_to_string_conversion();
 }
 
 TEST_CASE_METHOD(sqlite_fixture, "test_move", "[sqlite][move]")

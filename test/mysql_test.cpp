@@ -37,8 +37,6 @@ struct mysql_fixture : public test_case_fixture
 };
 } // namespace
 
-// FIXME: No catlog_* tests for MySQL. Not supported?
-
 TEST_CASE_METHOD(mysql_fixture, "test_driver", "[mysql][driver]")
 {
     test_driver();
@@ -189,7 +187,8 @@ TEST_CASE_METHOD(mysql_fixture, "test_catalog_tables", "[mysql][catalog][tables]
     test_catalog_tables();
 }
 
-// TODO: Add test_catalog_table_privileges - SQLTablePrivileges returns empty result set
+// The MySQL driver answers SQLTablePrivileges with an empty result set however the
+// privileges are granted, so test_catalog_table_privileges has nothing to find here.
 
 TEST_CASE_METHOD(mysql_fixture, "test_column_descriptor", "[mysql][columns]")
 {
@@ -306,6 +305,11 @@ TEST_CASE_METHOD(mysql_fixture, "test_integral_small_types", "[mysql][integral]"
 TEST_CASE_METHOD(mysql_fixture, "test_integral_small_types_batch", "[mysql][integral][batch]")
 {
     test_integral_small_types_batch();
+}
+
+TEST_CASE_METHOD(mysql_fixture, "test_integral_to_string_conversion", "[mysql][integral]")
+{
+    test_integral_to_string_conversion();
 }
 
 TEST_CASE_METHOD(mysql_fixture, "test_move", "[mysql][move]")

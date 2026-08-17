@@ -14,8 +14,6 @@ struct vertica_fixture : public test_case_fixture
 };
 } // namespace
 
-// TODO: add blob (bytea) test
-
 TEST_CASE_METHOD(vertica_fixture, "test_driver", "[vertica][driver]")
 {
     test_driver();
@@ -203,6 +201,11 @@ TEST_CASE_METHOD(vertica_fixture, "test_time", "[vertica][time]")
 TEST_CASE_METHOD(vertica_fixture, "test_transaction", "[vertica][transaction]")
 {
     test_transaction();
+}
+
+TEST_CASE_METHOD(vertica_fixture, "test_blob_binary", "[vertica][blob][binary]")
+{
+    test_blob_binary();
 }
 
 TEST_CASE_METHOD(vertica_fixture, "test_batch_binary", "[vertica][binary]")
