@@ -169,14 +169,15 @@ from the [doc/README.md](doc/README.md) file.
 
 ### Quick Setup for Testing or Development Environments
 
-To get up and running with nanodbc as fast as possible consider using the provided
-[Dockerfile](Dockerfile) and [docker-compose.yml](docker-compose.yml) or [Vagrantfile](Vagrantfile).
+To get up and running with nanodbc as fast as possible consider using the provided [Dockerfile.dev](Dockerfile.dev) and [docker-compose.yml](docker-compose.yml) or [Vagrantfile](Vagrantfile).
+
+`Dockerfile.dev` builds a development and testing environment: a compiler toolchain, CMake, and the ODBC driver managers, drivers and client tools for every database nanodbc is tested against. Because it is not named `Dockerfile`, pass it to `docker build` with `-f`.
 
 For example, to spin up a [docker][docker] container suitable for testing and development of nanodbc:
 
 ```shell
 $ cd /path/to/nanodbc
-$ docker build -t nanodbc .
+$ docker build -f Dockerfile.dev -t nanodbc .
 
 # To build using the nanodbc already source within the container
 $ docker run -it nanodbc /bin/bash
@@ -191,14 +192,24 @@ root@hash:/opt/nanodbc/build# cmake ..
 root@hash:/opt/nanodbc/build# make nanodbc
 ```
 
-Or, spin up the complete multi-container environment with database services:
+Or, spin up the complete multi-container environment with database services. This is the easiest way to run the database tests, since it starts PostgreSQL, MySQL and SQL Server alongside the development container, mounts your working tree at `/opt/nanodbc`, and presets the `NANODBC_TEST_CONNSTR_*` variables the test programs read:
 
 ```shell
 cd /path/to/nanodbc
 docker-compose build
 docker-compose up -d
 docker exec -it nanodbc /bin/bash
+
+# Then, inside the container, build and run the tests:
+root@hash:/# cmake -S /opt/nanodbc -B /opt/nanodbc/build -DCMAKE_BUILD_TYPE=Release
+root@hash:/# cmake --build /opt/nanodbc/build
+
+# All of them, or one database at a time
+root@hash:/# ctest --test-dir /opt/nanodbc/build --output-on-failure
+root@hash:/# ctest --test-dir /opt/nanodbc/build --output-on-failure -R sqlite_tests
 ```
+
+The SQLite and utility tests need no server. Give the database services a few seconds to finish initializing before running the tests against them.
 
 Or, to build and ssh into a [vagrant][vagrant] VM (using VirtualBox for example) use:
 
