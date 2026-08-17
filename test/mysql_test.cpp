@@ -15,6 +15,25 @@ struct mysql_fixture : public test_case_fixture
         if (connection_string_.empty())
             connection_string_ = get_env("NANODBC_TEST_CONNSTR_MYSQL");
     }
+
+    // Whether the driver can report the implementation row descriptor of a prepared but
+    // not yet executed statement, which is how the IRD tests below use it. Some
+    // Connector/ODBC versions answer SQL_DESC_COUNT with zero however many columns the
+    // statement has, so this is probed the same way the tests use it.
+    bool supports_implementation_row_descriptor()
+    {
+        try
+        {
+            auto c = connect();
+            nanodbc::statement s(c, NANODBC_TEXT("select 1;"));
+            nanodbc::implementation_row_descriptor ird(s);
+            return ird.count() > 0;
+        }
+        catch (nanodbc::database_error const&)
+        {
+            return false;
+        }
+    }
 };
 } // namespace
 
@@ -220,9 +239,14 @@ TEST_CASE_METHOD(mysql_fixture, "test_execute_multiple", "[mysql][execute]")
     test_execute_multiple();
 }
 
-#if 0 // FIXME: MySQL driver always reports Zero for SQL_DESC_COUNT
 TEST_CASE_METHOD(mysql_fixture, "test_implementation_row_descriptor", "[mysql][descriptor][ird]")
 {
+    if (!supports_implementation_row_descriptor())
+    {
+        WARN("skipped: driver does not implement the implementation row descriptor");
+        return;
+    }
+
     test_implementation_row_descriptor();
 }
 
@@ -231,6 +255,12 @@ TEST_CASE_METHOD(
     "test_implementation_row_descriptor_with_expressions",
     "[mysql][descriptor][ird]")
 {
+    if (!supports_implementation_row_descriptor())
+    {
+        WARN("skipped: driver does not implement the implementation row descriptor");
+        return;
+    }
+
     test_implementation_row_descriptor_with_expressions();
 }
 
@@ -239,6 +269,12 @@ TEST_CASE_METHOD(
     "test_implementation_row_descriptor_auto_unique_value",
     "[mysql][descriptor][ird]")
 {
+    if (!supports_implementation_row_descriptor())
+    {
+        WARN("skipped: driver does not implement the implementation row descriptor");
+        return;
+    }
+
     auto c = connect();
 
     create_table(
@@ -256,7 +292,6 @@ PRIMARY KEY(fid)
     REQUIRE(ird.auto_unique_value(0));
     REQUIRE(!ird.auto_unique_value(1));
 }
-#endif
 
 TEST_CASE_METHOD(mysql_fixture, "test_integral", "[mysql][integral]")
 {
