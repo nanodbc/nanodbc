@@ -41,38 +41,23 @@ jobs:
           check-path: ${{ matrix.path['check'] }}
           exclude-regex: ${{ matrix.path['ignore'] }}
 
+  # Visual Studio 2026 and 2022, the two toolsets the runner images provide. No generator
+  # is named, so CMake selects the newest Visual Studio present on each image, which keeps
+  # this working as the images move forward.
   build-msvc:
     needs: [check-format]
     strategy:
       fail-fast: false
       matrix:
+        os: [windows-latest, windows-2022]
+        cxxstd: ["20", "17", "14"]
         include:
-          - {
-              cxxstd: "20",
-              toolset: v143,
-              vs: 2022,
-              architecture: x64,
-              os: windows-2022,
-            }
-          - {
-              cxxstd: "17",
-              toolset: v143,
-              vs: 2022,
-              architecture: x64,
-              os: windows-2022,
-            }
-          - {
-              cxxstd: "14",
-              toolset: v143,
-              vs: 2022,
-              architecture: x64,
-              os: windows-2022,
-            }
-    name: build-vs${{ matrix.vs }}-${{ matrix.toolset }}-std-${{ matrix.cxxstd }}
+          - os: windows-latest
+            vs: 2026
+          - os: windows-2022
+            vs: 2022
+    name: build-vs${{ matrix.vs }}-std-${{ matrix.cxxstd }}
     runs-on: ${{ matrix.os }}
-    env:
-      CC: ${{ matrix.cc }}
-      CXX: ${{ matrix.cxx }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Check
@@ -80,10 +65,13 @@ jobs:
           cmake --version
       - name: Configure
         run: |
-          cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "Visual Studio ${{ matrix.vs == '2022' && '17' || '16' }} ${{matrix.vs }}" -A ${{ matrix.architecture }} -T ${{ matrix.toolset }} -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=${{matrix.cxxstd}}
+          cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -A x64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=${{ matrix.cxxstd }}
+      - name: Show generator and toolset
+        run: |
+          Select-String -Path ${{ github.workspace }}/build/CMakeCache.txt -Pattern "CMAKE_GENERATOR:|CMAKE_GENERATOR_TOOLSET:|CMAKE_CXX_COMPILER:"
       - name: Build
         run: |
-          cmake --build ${{ github.workspace }}/build
+          cmake --build ${{ github.workspace }}/build --config Release
 
   build-mingw:
     needs: [check-format]

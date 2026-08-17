@@ -42,139 +42,71 @@ jobs:
           check-path: ${{ matrix.path['check'] }}
           exclude-regex: ${{ matrix.path['ignore'] }}
 
+  # GCC 13 through 16, the current release and the three before it. Ubuntu 26.04 is the
+  # only image carrying that range, and its runner is still a preview, so it is used as a
+  # container on a stable runner instead.
   build-gcc:
     needs: [check-format]
     strategy:
       fail-fast: false
       matrix:
-        include:
-          # TODO: Compilation with GCC 12 fails with errors related to char8_t conversions
-          #- { cxxstd: '20', cxx: g++-12, cc: gcc-12, os: ubuntu-22.04 }
-          #- { cxxstd: '17', cxx: g++-12, cc: gcc-12, os: ubuntu-22.04 }
-          #- { cxxstd: '14', cxx: g++-12, cc: gcc-12, os: ubuntu-22.04 }
-          #- { cxxstd: '17', cxx: g++-11, cc: gcc-11, os: ubuntu-22.04 }
-          - { cxxstd: "14", cxx: g++-11, cc: gcc-11, os: ubuntu-22.04 }
-          - { cxxstd: "17", cxx: g++-10, cc: gcc-10, os: ubuntu-22.04 }
-          - { cxxstd: "14", cxx: g++-10, cc: gcc-10, os: ubuntu-22.04 }
-          - { cxxstd: "17", cxx: g++-9, cc: gcc-9, os: ubuntu-22.04 }
-          - { cxxstd: "14", cxx: g++-9, cc: gcc-9, os: ubuntu-22.04 }
-
-    name: build-${{ matrix.cc }}-std-${{ matrix.cxxstd }}
-
-    runs-on: ${{ matrix.os }}
-
+        gcc: [16, 15, 14, 13]
+        cxxstd: ["20", "17", "14"]
+    name: build-gcc-${{ matrix.gcc }}-std-${{ matrix.cxxstd }}
+    runs-on: ubuntu-latest
+    container: ubuntu:26.04
     env:
-      CC: ${{ matrix.cc }}
-      CXX: ${{ matrix.cxx }}
-
+      CC: gcc-${{ matrix.gcc }}
+      CXX: g++-${{ matrix.gcc }}
+      DEBIAN_FRONTEND: noninteractive
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install
         run: |
-          sudo apt-get update
-          sudo apt-get install -y curl make ${{ matrix.cxx }}
-      - name: Install CMake
-        run: |
-          curl -OL https://github.com/Kitware/CMake/releases/download/v3.27.1/cmake-3.27.1-linux-x86_64.tar.gz
-          tar -xf cmake-3.27.1-linux-x86_64.tar.gz
-          echo "${PWD}/cmake-3.27.1-linux-x86_64/bin" >> $GITHUB_PATH
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            ca-certificates cmake g++-${{ matrix.gcc }} git make unixodbc-dev
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Check
         run: |
-          echo && type g++ && which g++ && g++ --version
-          echo CC=${CC} && echo CXX=${CXX} && type ${CXX} && which ${CXX} && ${CXX} --version
-          echo && type cmake && which cmake && cmake --version
+          ${CXX} --version
+          cmake --version
       - name: Configure
         run: |
-          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=${{matrix.cxxstd}}
+          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=${{ matrix.cxxstd }}
       - name: Build
         run: |
           cmake --build ${GITHUB_WORKSPACE}/build
 
+  # Clang 19 through 22, on the same basis as the GCC matrix above.
   build-clang:
     needs: [check-format]
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - {
-              cxxstd: "20",
-              cxx: clang++-14,
-              cc: clang-14,
-              os: ubuntu-22.04,
-              pkg: "libc++-14-dev libc++abi-14-dev",
-            }
-          - {
-              cxxstd: "17",
-              cxx: clang++-14,
-              cc: clang-14,
-              os: ubuntu-22.04,
-              pkg: "libc++-14-dev libc++abi-14-dev",
-            }
-          - {
-              cxxstd: "14",
-              cxx: clang++-14,
-              cc: clang-14,
-              os: ubuntu-22.04,
-              pkg: "libc++-14-dev libc++abi-14-dev",
-            }
-          - {
-              cxxstd: "20",
-              cxx: clang++-13,
-              cc: clang-13,
-              os: ubuntu-22.04,
-              pkg: "libc++-13-dev libc++abi-13-dev",
-            }
-          - {
-              cxxstd: "17",
-              cxx: clang++-13,
-              cc: clang-13,
-              os: ubuntu-22.04,
-              pkg: "libc++-13-dev libc++abi-13-dev",
-            }
-          - {
-              cxxstd: "14",
-              cxx: clang++-13,
-              cc: clang-13,
-              os: ubuntu-22.04,
-              pkg: "libc++-13-dev libc++abi-13-dev",
-            }
-
-    name: build-${{ matrix.cc }}-std-${{ matrix.cxxstd }}
-
-    runs-on: ${{ matrix.os }}
-
-    container: ${{matrix.container}}
-
+        clang: [22, 21, 20, 19]
+        cxxstd: ["20", "17", "14"]
+    name: build-clang-${{ matrix.clang }}-std-${{ matrix.cxxstd }}
+    runs-on: ubuntu-latest
+    container: ubuntu:26.04
     env:
-      CC: ${{ matrix.cc }}
-      CXX: ${{ matrix.cxx }}
-
+      CC: clang-${{ matrix.clang }}
+      CXX: clang++-${{ matrix.clang }}
+      DEBIAN_FRONTEND: noninteractive
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Setup container
-        if: matrix.container
-        run: |
-          apt-get update
-          apt-get install -y git python sudo unixodbc-dev
       - name: Install
         run: |
-          sudo apt-get update
-          sudo apt-get purge libc++-dev libc++abi-dev
-          sudo apt-get autoremove
-          sudo apt-get install -y curl make ${{ matrix.cc }} ${{ matrix.pkg }}
-      - name: Install CMake
-        run: |
-          curl -OL https://github.com/Kitware/CMake/releases/download/v3.27.1/cmake-3.27.1-linux-x86_64.tar.gz
-          tar -xf cmake-3.27.1-linux-x86_64.tar.gz
-          echo "${PWD}/cmake-3.27.1-linux-x86_64/bin" >> $GITHUB_PATH
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            ca-certificates clang-${{ matrix.clang }} cmake git \
+            libc++-${{ matrix.clang }}-dev libc++abi-${{ matrix.clang }}-dev make unixodbc-dev
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Check
         run: |
-          echo && type clang++ && which clang++ && clang++ --version
-          echo CC=${CC} && echo CXX=${CXX} && type ${CXX} && which ${CXX} && ${CXX} --version
-          echo && type cmake && which cmake && cmake --version
+          ${CXX} --version
+          cmake --version
       - name: Configure
         run: |
-          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=${{matrix.cxxstd}}
+          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=${{ matrix.cxxstd }}
       - name: Build
         run: |
           cmake --build ${GITHUB_WORKSPACE}/build
