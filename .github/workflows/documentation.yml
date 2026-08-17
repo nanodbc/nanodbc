@@ -5,30 +5,30 @@ name: "Documentation"
 on:
   push:
     branches:
-    - main
-    - gh-pages
+      - main
+      - gh-pages
     paths:
-      - 'doc/**'
-      - 'nanodbc/**'
+      - "doc/**"
+      - "nanodbc/**"
   pull_request:
     paths:
-      - 'doc/**'
-      - 'nanodbc/**'
+      - "doc/**"
+      - "nanodbc/**"
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
-    - name: Install Doxygen
-      run: sudo apt-get update -y && sudo apt-get install -y doxygen
-    - name: Install Python
-      uses: actions/setup-python@v3
-    - name: Install Sphinx
-      run: pip install -r doc/requirements.txt
-    - name: Build Documentation
-      run: make html
-      working-directory: ./doc
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
+      - name: Install Doxygen
+        run: sudo apt-get update -y && sudo apt-get install -y doxygen
+      - name: Install Python
+        uses: actions/setup-python@v3
+      - name: Install Sphinx
+        run: pip install -r doc/requirements.txt
+      - name: Build Documentation
+        run: make html
+        working-directory: ./doc
     # TODO: Parse warnings
     # TODO: Deploy to gh-pages without removing existing folders with docs of historical releases

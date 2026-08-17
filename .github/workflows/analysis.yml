@@ -5,20 +5,20 @@ name: "Analysis"
 on:
   push:
     branches:
-    - main
+      - main
     paths:
-      - '**.cpp'
-      - '**.h'
-      - '.github/workflows/analysis.yml'
+      - "**.cpp"
+      - "**.h"
+      - ".github/workflows/analysis.yml"
   pull_request:
     paths:
-      - '**.cpp'
-      - '**.h'
-      - '.github/workflows/analysis.yml'
+      - "**.cpp"
+      - "**.h"
+      - ".github/workflows/analysis.yml"
 
 env:
-  build: '${{ github.workspace }}/build'
-  config: 'Debug'
+  build: "${{ github.workspace }}/build"
+  config: "Debug"
 
 jobs:
   core:
@@ -109,8 +109,8 @@ jobs:
       - name: flawfinder_scan
         uses: david-a-wheeler/flawfinder@8e4a779ad59dbfaee5da586aa9210853b701959c
         with:
-          arguments: '--sarif ./'
-          output: 'flawfinder_results.sarif'
+          arguments: "--sarif ./"
+          output: "flawfinder_results.sarif"
 
       - name: Upload analysis results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3

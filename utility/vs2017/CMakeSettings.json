@@ -26,92 +26,212 @@
       "name": "x64-Debug-Ninja",
       "generator": "Ninja",
       "configurationType": "Debug",
-      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "inheritEnvironments": ["msvc_x64_x64"],
       "buildRoot": "${env.BuildDir}\\${name}",
       "installRoot": "${env.InstallDir}\\${name}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
       "variables": [
-        { "name": "CMAKE_CXX_STANDARD", "value": "${env.NANODBC_DEFAULT_D_CXX_STANDARD}" },
-        { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
-        { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
-        { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
-        { "name": "NANODBC_DISABLE_LIBCXX", "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}" },
-        { "name": "NANODBC_DISABLE_TESTS", "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}" },
-        { "name": "NANODBC_ENABLE_COVERAGE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}" },
-        { "name": "NANODBC_ENABLE_BOOST", "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}" },
-        { "name": "NANODBC_ENABLE_UNICODE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}" },
-        { "name": "NANODBC_ENABLE_WORKAROUND_NODATA", "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}" }
+        {
+          "name": "CMAKE_CXX_STANDARD",
+          "value": "${env.NANODBC_DEFAULT_D_CXX_STANDARD}"
+        },
+        {
+          "name": "NANODBC_DISABLE_ASYNC",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}"
+        },
+        {
+          "name": "NANODBC_DISABLE_EXAMPLES",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}"
+        },
+        {
+          "name": "NANODBC_DISABLE_INSTALL",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}"
+        },
+        {
+          "name": "NANODBC_DISABLE_LIBCXX",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}"
+        },
+        {
+          "name": "NANODBC_DISABLE_TESTS",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}"
+        },
+        {
+          "name": "NANODBC_ENABLE_COVERAGE",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}"
+        },
+        {
+          "name": "NANODBC_ENABLE_BOOST",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}"
+        },
+        {
+          "name": "NANODBC_ENABLE_UNICODE",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}"
+        },
+        {
+          "name": "NANODBC_ENABLE_WORKAROUND_NODATA",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}"
+        }
       ]
     },
     {
       "name": "x64-Release-Ninja",
       "generator": "Ninja",
       "configurationType": "RelWithDebInfo",
-      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "inheritEnvironments": ["msvc_x64_x64"],
       "buildRoot": "${env.BuildDir}\\${name}",
       "installRoot": "${env.InstallDir}\\${name}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
       "variables": [
-        { "name": "CMAKE_CXX_STANDARD", "value": "${env.NANODBC_DEFAULT_D_CXX_STANDARD}" },
-        { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
-        { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
-        { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
-        { "name": "NANODBC_DISABLE_LIBCXX", "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}" },
-        { "name": "NANODBC_DISABLE_TESTS", "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}" },
-        { "name": "NANODBC_ENABLE_COVERAGE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}" },
-        { "name": "NANODBC_ENABLE_BOOST", "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}" },
-        { "name": "NANODBC_ENABLE_UNICODE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}" },
-        { "name": "NANODBC_ENABLE_WORKAROUND_NODATA", "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}" }
+        {
+          "name": "CMAKE_CXX_STANDARD",
+          "value": "${env.NANODBC_DEFAULT_D_CXX_STANDARD}"
+        },
+        {
+          "name": "NANODBC_DISABLE_ASYNC",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}"
+        },
+        {
+          "name": "NANODBC_DISABLE_EXAMPLES",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}"
+        },
+        {
+          "name": "NANODBC_DISABLE_INSTALL",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}"
+        },
+        {
+          "name": "NANODBC_DISABLE_LIBCXX",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}"
+        },
+        {
+          "name": "NANODBC_DISABLE_TESTS",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}"
+        },
+        {
+          "name": "NANODBC_ENABLE_COVERAGE",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}"
+        },
+        {
+          "name": "NANODBC_ENABLE_BOOST",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}"
+        },
+        {
+          "name": "NANODBC_ENABLE_UNICODE",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}"
+        },
+        {
+          "name": "NANODBC_ENABLE_WORKAROUND_NODATA",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}"
+        }
       ]
     },
     {
       "name": "x86-Debug-Ninja",
       "generator": "Ninja",
       "configurationType": "Debug",
-      "inheritEnvironments": [ "msvc_x86" ],
+      "inheritEnvironments": ["msvc_x86"],
       "buildRoot": "${env.BuildDir}\\${name}",
       "installRoot": "${env.InstallDir}\\${name}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
       "variables": [
-        { "name": "CMAKE_CXX_STANDARD", "value": "${env.NANODBC_DEFAULT_D_CXX_STANDARD}" },
-        { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
-        { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
-        { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
-        { "name": "NANODBC_DISABLE_LIBCXX", "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}" },
-        { "name": "NANODBC_DISABLE_TESTS", "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}" },
-        { "name": "NANODBC_ENABLE_COVERAGE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}" },
-        { "name": "NANODBC_ENABLE_BOOST", "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}" },
-        { "name": "NANODBC_ENABLE_UNICODE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}" },
-        { "name": "NANODBC_ENABLE_WORKAROUND_NODATA", "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}" }
+        {
+          "name": "CMAKE_CXX_STANDARD",
+          "value": "${env.NANODBC_DEFAULT_D_CXX_STANDARD}"
+        },
+        {
+          "name": "NANODBC_DISABLE_ASYNC",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}"
+        },
+        {
+          "name": "NANODBC_DISABLE_EXAMPLES",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}"
+        },
+        {
+          "name": "NANODBC_DISABLE_INSTALL",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}"
+        },
+        {
+          "name": "NANODBC_DISABLE_LIBCXX",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}"
+        },
+        {
+          "name": "NANODBC_DISABLE_TESTS",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}"
+        },
+        {
+          "name": "NANODBC_ENABLE_COVERAGE",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}"
+        },
+        {
+          "name": "NANODBC_ENABLE_BOOST",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}"
+        },
+        {
+          "name": "NANODBC_ENABLE_UNICODE",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}"
+        },
+        {
+          "name": "NANODBC_ENABLE_WORKAROUND_NODATA",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}"
+        }
       ]
     },
     {
       "name": "x86-Release-Ninja",
       "generator": "Ninja",
       "configurationType": "RelWithDebInfo",
-      "inheritEnvironments": [ "msvc_x86" ],
+      "inheritEnvironments": ["msvc_x86"],
       "buildRoot": "${env.BuildDir}\\${name}",
       "installRoot": "${env.InstallDir}\\${name}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "-v",
       "ctestCommandArgs": "",
       "variables": [
-        { "name": "CMAKE_CXX_STANDARD", "value": "${env.NANODBC_DEFAULT_D_CXX_STANDARD}" },
-        { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
-        { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
-        { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
-        { "name": "NANODBC_DISABLE_LIBCXX", "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}" },
-        { "name": "NANODBC_DISABLE_TESTS", "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}" },
-        { "name": "NANODBC_ENABLE_COVERAGE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}" },
-        { "name": "NANODBC_ENABLE_BOOST", "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}" },
-        { "name": "NANODBC_ENABLE_UNICODE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}" },
-        { "name": "NANODBC_ENABLE_WORKAROUND_NODATA", "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}" }
+        {
+          "name": "CMAKE_CXX_STANDARD",
+          "value": "${env.NANODBC_DEFAULT_D_CXX_STANDARD}"
+        },
+        {
+          "name": "NANODBC_DISABLE_ASYNC",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}"
+        },
+        {
+          "name": "NANODBC_DISABLE_EXAMPLES",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}"
+        },
+        {
+          "name": "NANODBC_DISABLE_INSTALL",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}"
+        },
+        {
+          "name": "NANODBC_DISABLE_LIBCXX",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}"
+        },
+        {
+          "name": "NANODBC_DISABLE_TESTS",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}"
+        },
+        {
+          "name": "NANODBC_ENABLE_COVERAGE",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}"
+        },
+        {
+          "name": "NANODBC_ENABLE_BOOST",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}"
+        },
+        {
+          "name": "NANODBC_ENABLE_UNICODE",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}"
+        },
+        {
+          "name": "NANODBC_ENABLE_WORKAROUND_NODATA",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}"
+        }
       ]
     },
     {
@@ -124,16 +244,46 @@
       "cmakeCommandArgs": "",
       "ctestCommandArgs": "",
       "variables": [
-        { "name": "CMAKE_CXX_STANDARD", "value": "${env.NANODBC_DEFAULT_D_CXX_STANDARD}" },
-        { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
-        { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
-        { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
-        { "name": "NANODBC_DISABLE_LIBCXX", "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}" },
-        { "name": "NANODBC_DISABLE_TESTS", "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}" },
-        { "name": "NANODBC_ENABLE_COVERAGE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}" },
-        { "name": "NANODBC_ENABLE_BOOST", "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}" },
-        { "name": "NANODBC_ENABLE_UNICODE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}" },
-        { "name": "NANODBC_ENABLE_WORKAROUND_NODATA", "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}" }
+        {
+          "name": "CMAKE_CXX_STANDARD",
+          "value": "${env.NANODBC_DEFAULT_D_CXX_STANDARD}"
+        },
+        {
+          "name": "NANODBC_DISABLE_ASYNC",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}"
+        },
+        {
+          "name": "NANODBC_DISABLE_EXAMPLES",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}"
+        },
+        {
+          "name": "NANODBC_DISABLE_INSTALL",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}"
+        },
+        {
+          "name": "NANODBC_DISABLE_LIBCXX",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}"
+        },
+        {
+          "name": "NANODBC_DISABLE_TESTS",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}"
+        },
+        {
+          "name": "NANODBC_ENABLE_COVERAGE",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}"
+        },
+        {
+          "name": "NANODBC_ENABLE_BOOST",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}"
+        },
+        {
+          "name": "NANODBC_ENABLE_UNICODE",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}"
+        },
+        {
+          "name": "NANODBC_ENABLE_WORKAROUND_NODATA",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}"
+        }
       ]
     },
     {
@@ -146,16 +296,46 @@
       "cmakeCommandArgs": "",
       "ctestCommandArgs": "",
       "variables": [
-        { "name": "CMAKE_CXX_STANDARD", "value": "${env.NANODBC_DEFAULT_D_CXX_STANDARD}" },
-        { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
-        { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
-        { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
-        { "name": "NANODBC_DISABLE_LIBCXX", "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}" },
-        { "name": "NANODBC_DISABLE_TESTS", "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}" },
-        { "name": "NANODBC_ENABLE_COVERAGE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}" },
-        { "name": "NANODBC_ENABLE_BOOST", "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}" },
-        { "name": "NANODBC_ENABLE_UNICODE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}" },
-        { "name": "NANODBC_ENABLE_WORKAROUND_NODATA", "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}" }
+        {
+          "name": "CMAKE_CXX_STANDARD",
+          "value": "${env.NANODBC_DEFAULT_D_CXX_STANDARD}"
+        },
+        {
+          "name": "NANODBC_DISABLE_ASYNC",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}"
+        },
+        {
+          "name": "NANODBC_DISABLE_EXAMPLES",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}"
+        },
+        {
+          "name": "NANODBC_DISABLE_INSTALL",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}"
+        },
+        {
+          "name": "NANODBC_DISABLE_LIBCXX",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}"
+        },
+        {
+          "name": "NANODBC_DISABLE_TESTS",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}"
+        },
+        {
+          "name": "NANODBC_ENABLE_COVERAGE",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}"
+        },
+        {
+          "name": "NANODBC_ENABLE_BOOST",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}"
+        },
+        {
+          "name": "NANODBC_ENABLE_UNICODE",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}"
+        },
+        {
+          "name": "NANODBC_ENABLE_WORKAROUND_NODATA",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}"
+        }
       ]
     },
     {
@@ -168,16 +348,46 @@
       "cmakeCommandArgs": "",
       "ctestCommandArgs": "",
       "variables": [
-        { "name": "CMAKE_CXX_STANDARD", "value": "${env.NANODBC_DEFAULT_D_CXX_STANDARD}" },
-        { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
-        { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
-        { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
-        { "name": "NANODBC_DISABLE_LIBCXX", "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}" },
-        { "name": "NANODBC_DISABLE_TESTS", "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}" },
-        { "name": "NANODBC_ENABLE_COVERAGE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}" },
-        { "name": "NANODBC_ENABLE_BOOST", "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}" },
-        { "name": "NANODBC_ENABLE_UNICODE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}" },
-        { "name": "NANODBC_ENABLE_WORKAROUND_NODATA", "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}" }
+        {
+          "name": "CMAKE_CXX_STANDARD",
+          "value": "${env.NANODBC_DEFAULT_D_CXX_STANDARD}"
+        },
+        {
+          "name": "NANODBC_DISABLE_ASYNC",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}"
+        },
+        {
+          "name": "NANODBC_DISABLE_EXAMPLES",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}"
+        },
+        {
+          "name": "NANODBC_DISABLE_INSTALL",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}"
+        },
+        {
+          "name": "NANODBC_DISABLE_LIBCXX",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}"
+        },
+        {
+          "name": "NANODBC_DISABLE_TESTS",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}"
+        },
+        {
+          "name": "NANODBC_ENABLE_COVERAGE",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}"
+        },
+        {
+          "name": "NANODBC_ENABLE_BOOST",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}"
+        },
+        {
+          "name": "NANODBC_ENABLE_UNICODE",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}"
+        },
+        {
+          "name": "NANODBC_ENABLE_WORKAROUND_NODATA",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}"
+        }
       ]
     },
     {
@@ -190,16 +400,46 @@
       "cmakeCommandArgs": "",
       "ctestCommandArgs": "",
       "variables": [
-        { "name": "CMAKE_CXX_STANDARD", "value": "${env.NANODBC_DEFAULT_D_CXX_STANDARD}" },
-        { "name": "NANODBC_DISABLE_ASYNC", "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}" },
-        { "name": "NANODBC_DISABLE_EXAMPLES", "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}" },
-        { "name": "NANODBC_DISABLE_INSTALL", "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}" },
-        { "name": "NANODBC_DISABLE_LIBCXX", "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}" },
-        { "name": "NANODBC_DISABLE_TESTS", "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}" },
-        { "name": "NANODBC_ENABLE_COVERAGE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}" },
-        { "name": "NANODBC_ENABLE_BOOST", "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}" },
-        { "name": "NANODBC_ENABLE_UNICODE", "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}" },
-        { "name": "NANODBC_ENABLE_WORKAROUND_NODATA", "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}" }
+        {
+          "name": "CMAKE_CXX_STANDARD",
+          "value": "${env.NANODBC_DEFAULT_D_CXX_STANDARD}"
+        },
+        {
+          "name": "NANODBC_DISABLE_ASYNC",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_ASYNC}"
+        },
+        {
+          "name": "NANODBC_DISABLE_EXAMPLES",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_EXAMPLES}"
+        },
+        {
+          "name": "NANODBC_DISABLE_INSTALL",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_INSTALL}"
+        },
+        {
+          "name": "NANODBC_DISABLE_LIBCXX",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_LIBCXX}"
+        },
+        {
+          "name": "NANODBC_DISABLE_TESTS",
+          "value": "${env.NANODBC_DEFAULT_D_DISABLE_TESTS}"
+        },
+        {
+          "name": "NANODBC_ENABLE_COVERAGE",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_COVERAGE}"
+        },
+        {
+          "name": "NANODBC_ENABLE_BOOST",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_BOOST}"
+        },
+        {
+          "name": "NANODBC_ENABLE_UNICODE",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_UNICODE}"
+        },
+        {
+          "name": "NANODBC_ENABLE_WORKAROUND_NODATA",
+          "value": "${env.NANODBC_DEFAULT_D_ENABLE_WORKAROUND_NODATA}"
+        }
       ]
     }
   ]
