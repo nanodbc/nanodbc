@@ -1,5 +1,4 @@
-#define CATCH_CONFIG_RUNNER
-#include "catch/catch.hpp"
+#include "catch/catch_amalgamated.hpp"
 
 #include <exception>
 #include <iostream>
@@ -15,36 +14,22 @@ int main(int argc, char* argv[])
 {
     try
     {
-        // Specify custom command line options
-        auto cli =
-            Catch::clara::Help(cfg.show_help_) |
-            Catch::clara::Opt(cfg.connection_string_, "connection")["-z"]["--connection-string"](
-                "connection string to test database; if not specified, "
-                "an attempt will be made to read it from environment variables: "
-                "NANODBC_TEST_CONNSTR or NANODBC_TEST_CONNSTR_<DB>") |
-            Catch::clara::Arg(cfg.test_, "test")("test name|pattern|tags to run");
-        auto parse_result = cli.parse(Catch::clara::Args(argc, argv));
-        (void)parse_result; // ignore as invalid due to Catch options not being recognized
-        // Disable custom options to avoid Catch warnings or failures
-        for (int i = 1; i < argc; ++i)
-        {
-            if (strcmp(argv[i], "-z") == 0 || strcmp(argv[i], "--connection-string") == 0)
-            {
-                *argv[i++] = 0;
-                *argv[i] = 0;
-            }
-        }
-
         Catch::Session session;
-        if (cfg.show_help_)
-        {
-            session.showHelp();
 
-            Catch::cerr() << Catch::Colour(Catch::Colour::Yellow) << "nanodbc\n"
-                          << cli << std::endl;
+        // Catch2 v3 runs test cases in a random order by default, where v2 ran them in
+        // declaration order. Several of these tests read state an earlier test created, so
+        // a shuffled run fails intermittently. Keep the order v2 gave until those
+        // dependencies are gone; --order on the command line still overrides this.
+        session.configData().runOrder = Catch::TestRunOrder::Declared;
 
-            return EXIT_FAILURE;
-        }
+        // Add the connection string option to Catch's own parser, rather than parsing
+        // argv separately and blanking out what Catch would not recognise.
+        using namespace Catch::Clara;
+        session.cli(
+            session.cli() | Opt(cfg.connection_string_, "connection")["-z"]["--connection-string"](
+                                "connection string to test database; if not specified, "
+                                "an attempt will be made to read it from environment variables: "
+                                "NANODBC_TEST_CONNSTR or NANODBC_TEST_CONNSTR_<DB>"));
 
         // Path to data folder with data files used in some tests
 #ifdef NANODBC_TEST_DATA
@@ -56,16 +41,16 @@ int main(int argc, char* argv[])
             return EXIT_FAILURE;
 
         // Run tests
-        if (session.run(argc, argv) == 0)
+        if (session.run() == 0)
             return EXIT_SUCCESS;
     }
     catch (std::exception const& e)
     {
-        Catch::cerr() << Catch::Colour(Catch::Colour::Red) << "\nError(s):\n" << e.what() << '\n';
+        std::cerr << "\nError(s):\n" << e.what() << '\n';
     }
     catch (...)
     {
-        Catch::cerr() << Catch::Colour(Catch::Colour::Red) << "\nError(s): uncaught exception\n";
+        std::cerr << "\nError(s): uncaught exception\n";
     }
     return EXIT_FAILURE;
 }

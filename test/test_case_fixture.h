@@ -792,6 +792,17 @@ struct test_case_fixture : public base_test_fixture
         nanodbc::connection connection = connect();
         nanodbc::catalog catalog(connection);
 
+        // Make sure at least one table exists before asking the catalog for tables. The
+        // counts below require a non-empty result, which otherwise holds only when some
+        // earlier test has left a table behind, and not at all against a database that
+        // starts out empty.
+        {
+            nanodbc::string const any_table(NANODBC_TEXT("test_catalog_tables_present"));
+            drop_table(connection, any_table);
+            execute(
+                connection, NANODBC_TEXT("create table ") + any_table + NANODBC_TEXT("(a int);"));
+        }
+
         // Check we can iterate over any tables
         {
             nanodbc::catalog::tables tables = catalog.find_tables();
@@ -978,7 +989,8 @@ struct test_case_fixture : public base_test_fixture
         else if (vendor_ == database_vendor::sqlite)
         {
             std::string const type_name = nanodbc::test::convert(result.column_datatype_name(0));
-            REQUIRE_THAT(type_name, Catch::Contains("int", Catch::CaseSensitive::No));
+            REQUIRE_THAT(
+                type_name, Catch::Matchers::ContainsSubstring("int", Catch::CaseSensitive::No));
             REQUIRE(result.column_c_datatype(0) == SQL_C_SLONG);
         }
         REQUIRE(result.column_size(0) == 10);
@@ -1337,8 +1349,8 @@ struct test_case_fixture : public base_test_fixture
         // - SQL Server driver changed the code from 3621 to 2627 and state from 01000 to 23000
         // if (error_result.n >= 0)
         //     REQUIRE(error.native() == error_result.n);
-        // REQUIRE_THAT(error.state(), Catch::Matches(error_result.s));
-        REQUIRE_THAT(error.what(), Catch::Contains(error_result.w));
+        // REQUIRE_THAT(error.state(), Catch::Matchers::Matches(error_result.s));
+        REQUIRE_THAT(error.what(), Catch::Matchers::ContainsSubstring(error_result.w));
     }
 
     void test_exception()
@@ -1658,7 +1670,9 @@ PRIMARY KEY(t2_fid)
         {
             REQUIRE(ird.base_column_name(2) == NANODBC_TEXT("2 * 3"));
             REQUIRE(ird.name(2) == NANODBC_TEXT("2 * 3"));
-            REQUIRE_THROWS_WITH(!ird.unnamed(2), Catch::Contains("unsupported column attribute"));
+            REQUIRE_THROWS_WITH(
+                !ird.unnamed(2),
+                Catch::Matchers::ContainsSubstring("unsupported column attribute"));
         }
         else
         {
@@ -1706,13 +1720,13 @@ PRIMARY KEY(t2_fid)
         p = 0;
         results.get_ref(p, ref);
         REQUIRE((ref == static_cast<T>(i)));
-        REQUIRE((results.get<T>(p++) == Approx(static_cast<T>(i))));
+        REQUIRE((results.get<T>(p++) == Catch::Approx(static_cast<T>(i))));
         results.get_ref(p, ref);
-        REQUIRE((static_cast<float>(ref) == Approx(static_cast<T>(f))));
-        REQUIRE((static_cast<float>(results.get<T>(p++)) == Approx(static_cast<T>(f))));
+        REQUIRE((static_cast<float>(ref) == Catch::Approx(static_cast<T>(f))));
+        REQUIRE((static_cast<float>(results.get<T>(p++)) == Catch::Approx(static_cast<T>(f))));
         results.get_ref(p, ref);
-        REQUIRE((static_cast<double>(ref) == Approx(static_cast<T>(d))));
-        REQUIRE((static_cast<double>(results.get<T>(p++)) == Approx(static_cast<T>(d))));
+        REQUIRE((static_cast<double>(ref) == Catch::Approx(static_cast<T>(d))));
+        REQUIRE((static_cast<double>(results.get<T>(p++)) == Catch::Approx(static_cast<T>(d))));
     }
 
     template <class Fixture, class TypeList, size_t i = std::tuple_size<TypeList>::value - 1>
@@ -2192,7 +2206,7 @@ PRIMARY KEY(t2_fid)
         }
         catch (std::runtime_error const& e)
         {
-            REQUIRE_THAT(e.what(), Catch::Contains("a==2"));
+            REQUIRE_THAT(e.what(), Catch::Matchers::ContainsSubstring("a==2"));
             REQUIRE(s.open());
             nanodbc::result r = s.execute(); // statement remains usable, re-execute it
             int sum = 0;
@@ -2765,7 +2779,7 @@ PRIMARY KEY(t2_fid)
         {
             auto v = rs.get<_variant_t>(1);
             REQUIRE(v.vt == VT_R8);
-            REQUIRE(static_cast<double>(v) == Approx(f));
+            REQUIRE(static_cast<double>(v) == Catch::Approx(f));
         }
         {
             auto v = rs.get<_variant_t>(2);
@@ -2777,7 +2791,7 @@ PRIMARY KEY(t2_fid)
             else
             {
                 REQUIRE(v.vt == VT_DECIMAL);
-                REQUIRE(static_cast<double>(v) == Approx(d));
+                REQUIRE(static_cast<double>(v) == Catch::Approx(d));
             }
         }
         {
@@ -2796,7 +2810,7 @@ PRIMARY KEY(t2_fid)
 
             auto v = rs.get<_variant_t>(3);
             REQUIRE(v.vt == VT_DATE);
-            REQUIRE(v == Approx(v_date));
+            REQUIRE(v == Catch::Approx(v_date));
         }
         {
             ::SYSTEMTIME st{
@@ -2814,7 +2828,7 @@ PRIMARY KEY(t2_fid)
 
             auto v = rs.get<_variant_t>(4);
             REQUIRE(v.vt == VT_DATE);
-            REQUIRE(v == Approx(v_date));
+            REQUIRE(v == Catch::Approx(v_date));
         }
         {
             auto v = rs.get<_variant_t>(5);

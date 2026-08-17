@@ -1,7 +1,7 @@
 #ifndef NANODBC_TEST_BASE_FIXTURE_H
 #define NANODBC_TEST_BASE_FIXTURE_H
 
-#include "catch/catch.hpp"
+#include "catch/catch_amalgamated.hpp"
 
 #include <nanodbc/nanodbc.h>
 
@@ -193,11 +193,10 @@ struct Config
     std::string connection_string_;
     std::string data_path_;
     std::string test_; // if set, itis test name, pattern or tags
-    bool show_help_{false};
 };
 
 // Custom matcher for Catch to use with REQUIRE_THAT(a, IsAnyOf({a, b, c}));
-class IntAnyOf : public Catch::MatcherBase<int>
+class IntAnyOf : public Catch::Matchers::MatcherBase<int>
 {
     std::vector<int> m_values;
 

@@ -644,7 +644,8 @@ TEST_CASE_METHOD(
         REQUIRE(results.next());
         REQUIRE(results.get<int>(0) == 1);
         REQUIRE_THROWS_WITH(
-            results.get<nanodbc::string>(1), Catch::Contains("07009")); // Invalid Descriptor Index
+            results.get<nanodbc::string>(1),
+            Catch::Matchers::ContainsSubstring("07009")); // Invalid Descriptor Index
     }
 
     // Query bound first, then unbound.
@@ -686,7 +687,8 @@ TEST_CASE_METHOD(
         REQUIRE(results.get<int>(1) == 11);
         REQUIRE(results.get<nanodbc::string>(3) == NANODBC_TEXT("this is text"));
         REQUIRE_THROWS_WITH(
-            results.get<nanodbc::string>(2), Catch::Contains("07009")); // Invalid Descriptor Index
+            results.get<nanodbc::string>(2),
+            Catch::Matchers::ContainsSubstring("07009")); // Invalid Descriptor Index
     }
 
     // Query bound and unbound interleaved.
@@ -716,7 +718,8 @@ TEST_CASE_METHOD(
         REQUIRE(results.next());
         REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("this is varchar max"));
         REQUIRE_THROWS_WITH(
-            results.get<int>(0), Catch::Contains("07009")); // Invalid Descriptor Index
+            results.get<int>(0),
+            Catch::Matchers::ContainsSubstring("07009")); // Invalid Descriptor Index
     }
 
     // Query bound and unbound interleaved.
@@ -1123,7 +1126,8 @@ TEST_CASE_METHOD(mssql_fixture, "test_statement_with_empty_connection", "[mssql]
     c.allocate();
     nanodbc::statement s;
     REQUIRE_THROWS_AS(s.open(c), nanodbc::database_error);
-    REQUIRE_THROWS_WITH(s.open(c), Catch::Contains("08003")); // Connection not open
+    REQUIRE_THROWS_WITH(
+        s.open(c), Catch::Matchers::ContainsSubstring("08003")); // Connection not open
 }
 
 TEST_CASE_METHOD(mssql_fixture, "test_string", "[mssql][string]")
