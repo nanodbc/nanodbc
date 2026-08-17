@@ -4353,7 +4353,7 @@ private:
                     col.clen_ = sizeof(int16_t);
                 }
                 break;
-            case SQL_INTEGER: // TODO: Can be 32 or 64 bit? Then sizeof(SQLINTEGER)
+            case SQL_INTEGER:
                 if (is_unsigned)
                 {
                     col.ctype_ = SQL_C_ULONG;
@@ -5010,8 +5010,8 @@ inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant
     bound_column& col = bound_columns_[column];
     auto c_type = col.ctype_;
 
-    // SQL type to C type mapping could have been simplified by auto-binding
-    // FIXME: Correct the auto_bind_columns to not to 'flatten' types
+    // Column binding maps several SQL types onto one C type, so where that is too coarse to
+    // pick a VARIANT type the SQL type decides instead.
     auto const sql_type = col.sqltype_;
     switch (sql_type)
     {
@@ -5028,7 +5028,6 @@ inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant
     {
     case SQL_C_BINARY:
     {
-        // TODO: Optimise with bespoke implementation of get_ref_impl<SAFEARRAY>
         std::vector<std::uint8_t> v;
         get_ref_impl(column, v);
         ::SAFEARRAYBOUND bounds[1] = {static_cast<unsigned long>(v.size()), 0};
@@ -5110,8 +5109,8 @@ inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant
         break;
     case SQL_C_NUMERIC:
     {
-        // FIXME: Likely, this is never called as SQL_DECIMAL is auto-bound as SQL_C_CHAR
-        // TODO: Review this for SQL Server (and other databases?) types money, smallmoney as VT_CY
+        // SQL Server money and smallmoney arrive as SQL_DECIMAL, so they are carried as
+        // VT_DECIMAL rather than the VT_CY the currency types would otherwise suggest.
         std::wstring v;
         get_ref_impl(column, v);
         DECIMAL d{0};

@@ -76,10 +76,8 @@ void variant_row_cached_result::clear_row()
 void variant_row_cached_result::fill_row()
 {
     NANODBC_ASSERT(row_size_ > 0);
-    // FIXME: There is a mess in drivers support for SQL_ATTR_ROW_NUMBER, so at_end is buggy
-    // if (result::at_end())
-    //     NANODBC_ASSERT(0); // throw programming_error
-
+    // Driver support for SQL_ATTR_ROW_NUMBER is inconsistent, so result::at_end() cannot be
+    // relied on here to reject a call made past the last row.
     if (!row_.empty())
         return; // Do not allow refilling from the same data source tuple
 
