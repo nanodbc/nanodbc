@@ -154,9 +154,9 @@ jobs:
       with:
         database: nanodbc
         mariadb-version: ${{ matrix.mariadb }}
-    - name: Install MySQL Connector 5.3
+    - name: Install MySQL Connector
       run: |
-        choco install mysql-odbc
+        choco install mysql.odbc
     - name: Check
       run: |
         mysql -D nanodbc -e 'SELECT VERSION()'
@@ -169,7 +169,10 @@ jobs:
         cmake --build ${{ github.workspace }}/build --config Release --target mysql_tests
     - name: Test
       run: |
-        $env:NANODBC_TEST_CONNSTR_MYSQL="Driver={MySQL ODBC 5.3 ANSI Driver};Server=127.0.0.1;Database=nanodbc;User=root;Password=;big_packets=1;"
+        # Take the driver name from what Chocolatey actually installed, since the
+        # Connector/ODBC version it ships changes over time.
+        $driver = Get-OdbcDriver -Platform 64-bit -Name "MySQL ODBC * ANSI Driver" | Select-Object -First 1 -ExpandProperty Name
+        $env:NANODBC_TEST_CONNSTR_MYSQL="Driver={$driver};Server=127.0.0.1;Database=nanodbc;User=root;Password=;big_packets=1;"
         ctest --test-dir ${{ github.workspace }}/build --build-config Release --output-on-failure --no-tests=error -R mysql_tests
 
   test-mysql:
@@ -200,7 +203,10 @@ jobs:
         cmake --build ${{ github.workspace }}/build --config Release --target mysql_tests
     - name: Test
       run: |
-        $env:NANODBC_TEST_CONNSTR_MYSQL="Driver={MySQL ODBC 9.0 ANSI Driver};Server=127.0.0.1;Database=nanodbc;User=root;Password=;big_packets=1;NO_SCHEMA=false"
+        # Take the driver name from what Chocolatey actually installed, since the
+        # Connector/ODBC version it ships changes over time.
+        $driver = Get-OdbcDriver -Platform 64-bit -Name "MySQL ODBC * ANSI Driver" | Select-Object -First 1 -ExpandProperty Name
+        $env:NANODBC_TEST_CONNSTR_MYSQL="Driver={$driver};Server=127.0.0.1;Database=nanodbc;User=root;Password=;big_packets=1;NO_SCHEMA=false"
         ctest --test-dir ${{ github.workspace }}/build --build-config Release --output-on-failure --no-tests=error -R mysql_tests
 
   test-postgresql:

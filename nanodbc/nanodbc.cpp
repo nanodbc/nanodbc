@@ -827,6 +827,57 @@ public:
     bool bound_;
 };
 
+// Renders a timestampoffset the way a backend renders a datetimeoffset value, for example
+// "2006-12-30 13:45:12.3450000 -08:00".
+//
+// A SQL_SS_TIMESTAMPOFFSET column is bound as a binary buffer holding the struct rather
+// than as text, so reading one as a string has to format it here. The struct counts
+// fractional seconds in billionths, while the column reports how many decimal digits it
+// actually carries, so scale decides how many of those digits are rendered.
+inline std::string
+timestampoffset_as_string(nanodbc::timestampoffset const& value, SQLSMALLINT scale)
+{
+    auto const& stamp = value.stamp;
+    char buffer[64];
+    int size = std::snprintf(
+        buffer,
+        sizeof(buffer),
+        "%04d-%02d-%02d %02d:%02d:%02d",
+        static_cast<int>(stamp.year),
+        static_cast<int>(stamp.month),
+        static_cast<int>(stamp.day),
+        static_cast<int>(stamp.hour),
+        static_cast<int>(stamp.min),
+        static_cast<int>(stamp.sec));
+
+    if (scale > 0 && scale <= 9)
+    {
+        // Narrow the billionths down to the digits the column carries.
+        long divisor = 1;
+        for (SQLSMALLINT i = scale; i < 9; ++i)
+            divisor *= 10;
+        size += std::snprintf(
+            buffer + size,
+            sizeof(buffer) - size,
+            ".%0*ld",
+            static_cast<int>(scale),
+            static_cast<long>(stamp.fract) / divisor);
+    }
+
+    // Both offset fields carry the sign, so either one being negative means the whole
+    // offset is behind UTC.
+    bool const behind_utc = value.offset_hour < 0 || value.offset_minute < 0;
+    std::snprintf(
+        buffer + size,
+        sizeof(buffer) - size,
+        " %c%02d:%02d",
+        behind_utc ? '-' : '+',
+        std::abs(static_cast<int>(value.offset_hour)),
+        std::abs(static_cast<int>(value.offset_minute)));
+
+    return std::string(buffer);
+}
+
 // Encapsulates properties of statement parameter.
 // Parameter corresponds to parameter marker associated with a prepared SQL statement.
 struct bound_parameter
@@ -4462,6 +4513,16 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
     case SQL_C_CHAR:
     case SQL_C_BINARY:
     {
+        if (col.ctype_ == SQL_C_BINARY && col.sqltype_ == SQL_SS_TIMESTAMPOFFSET)
+        {
+            // This buffer holds a timestampoffset struct rather than text, so render it
+            // instead of copying it out as characters.
+            convert(
+                timestampoffset_as_string(*ensure_pdata<timestampoffset>(column), col.scale_),
+                result);
+            return;
+        }
+
         if (!is_bound(column))
         {
             // Input is always std::string, while output may be std::string or wide_string
