@@ -30,5 +30,3 @@ jobs:
       - name: Build Documentation
         run: make html
         working-directory: ./doc
-    # TODO: Parse warnings
-    # TODO: Deploy to gh-pages without removing existing folders with docs of historical releases
