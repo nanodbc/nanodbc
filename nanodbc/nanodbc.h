@@ -238,6 +238,8 @@ typedef unspecified - type string;
 typedef unspecified - type null_type;
 #endif
 
+/// \def NANODBC_DEPRECATED
+/// \brief Marks a declaration as deprecated, in whichever way the compiler supports.
 #if __cplusplus >= 201402L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201402L)
 // [[deprecated]] is only available in C++14
 #define NANODBC_DEPRECATED [[deprecated]]
@@ -292,6 +294,8 @@ class type_incompatible_error : public std::runtime_error
 {
 public:
     type_incompatible_error();
+
+    /// \brief Returns the message describing the incompatibility.
     char const* what() const noexcept override;
 };
 
@@ -301,6 +305,8 @@ class null_access_error : public std::runtime_error
 {
 public:
     null_access_error();
+
+    /// \brief Returns the message describing the null access.
     char const* what() const noexcept override;
 };
 
@@ -310,6 +316,8 @@ class index_range_error : public std::runtime_error
 {
 public:
     index_range_error();
+
+    /// \brief Returns the message describing the out of range index.
     char const* what() const noexcept override;
 };
 
@@ -318,7 +326,11 @@ public:
 class programming_error : public std::runtime_error
 {
 public:
+    /// \brief Creates a programming error with the given message.
+    /// \param info The message describing the error.
     explicit programming_error(std::string const& info);
+
+    /// \brief Returns the message describing the error.
     char const* what() const noexcept override;
 };
 
@@ -332,8 +344,14 @@ public:
     /// \param handle_type The native ODBC handle type code for the given handle.
     /// \param info Additional info that will be appended to the beginning of the error message.
     database_error(void* handle, short handle_type, std::string const& info = "");
+
+    /// \brief Returns the full message, including the driver's own text.
     char const* what() const noexcept override;
+
+    /// \brief Returns the native error code reported by the driver.
     long native() const noexcept;
+
+    /// \brief Returns the five character SQLSTATE reported by the driver.
     std::string const& state() const noexcept;
 
 private:
@@ -365,12 +383,16 @@ private:
 /// number of rows in a rowset of a result.
 struct batch_ops
 {
-    long parameter_array_length;
-    long rowset_size;
+    long parameter_array_length; ///< Number of parameter values bound per execution.
+    long rowset_size;            ///< Number of rows fetched into a rowset at a time.
 
+    /// \brief Creates lengths of -1, meaning neither has been chosen.
     batch_ops() noexcept
         : parameter_array_length(-1L)
         , rowset_size(-1L){};
+
+    /// \brief Creates both lengths with the same value.
+    /// \param all_length Value used for the parameter array length and the rowset size.
     batch_ops(const long all_length) noexcept
         : parameter_array_length(all_length)
         , rowset_size(all_length){};
@@ -407,7 +429,7 @@ struct timestamp
 /// \brief A type for representing timestamp+offset data.
 struct timestampoffset
 {
-    timestamp stamp;
+    timestamp stamp;            ///< Date and time, in the offset's local terms.
     std::int16_t offset_hour;   ///< Whole hour part of time zone offset
     std::int16_t offset_minute; ///< Minutes part of time zome offset
 };
@@ -435,30 +457,48 @@ public:
 #endif
     attribute() = delete;
     attribute& operator=(attribute const&) = delete;
+
+    /// \brief Copy constructor.
     attribute(attribute const& other) noexcept;
+
+    /// \brief Creates an attribute from the three arguments the ODBC call takes.
+    /// \param attribute The Attribute argument of SQLSetConnectAttr or SQLSetStmtAttr.
+    /// \param string_length The StringLength argument.
+    /// \param resource The value the ValuePtr argument should refer to.
     attribute(long const& attribute, long const& string_length, variant const& resource) noexcept;
 
 protected:
+    /// \brief Points value_ptr_ at the resource, according to which type it holds.
     void extractValuePtr();
 
-    long attribute_;
-    long string_length_;
-    variant resource_;
-    void* value_ptr_;
+    long attribute_;     ///< The Attribute argument of the ODBC call.
+    long string_length_; ///< The StringLength argument of the ODBC call.
+    variant resource_;   ///< Owns the value that value_ptr_ refers to.
+    void* value_ptr_;    ///< The ValuePtr argument of the ODBC call.
 };
 #else
+/// \brief A class representing a connection or a statement attribute.
+///
+/// This is the variant-free form, used where std::variant is unavailable. The caller owns
+/// whatever value_ptr refers to and must keep it alive for as long as the attribute is used.
+///
+/// See https://learn.microsoft.com/en-us/sql/odbc/reference/syntax/sqlsetconnectattr-function
 class attribute
 {
 public:
+    /// \brief Creates an attribute from the three arguments the ODBC call takes.
+    /// \param attribute The Attribute argument of SQLSetConnectAttr or SQLSetStmtAttr.
+    /// \param string_length The StringLength argument.
+    /// \param value_ptr The ValuePtr argument, as an integer or a pointer.
     attribute(long const& attribute, long const& string_length, std::uintptr_t value_ptr) noexcept
         : attribute_(attribute)
         , string_length_(string_length)
         , value_ptr_((void*)value_ptr){};
 
 protected:
-    long attribute_;
-    long string_length_;
-    void* value_ptr_;
+    long attribute_;     ///< The Attribute argument of the ODBC call.
+    long string_length_; ///< The StringLength argument of the ODBC call.
+    void* value_ptr_;    ///< The ValuePtr argument of the ODBC call.
 };
 #endif
 
@@ -483,9 +523,11 @@ using is_character = std::integral_constant<
     std::is_same<typename std::decay<T>::type, std::string::value_type>::value ||
         std::is_same<typename std::decay<T>::type, wide_char_t>::value>;
 
+/// \brief Enables an overload only for the string types nanodbc binds as strings.
 template <typename T>
 using enable_if_string = typename std::enable_if<is_string<T>::value>::type;
 
+/// \brief Enables an overload only for the character types nanodbc binds as strings.
 template <typename T>
 using enable_if_character = typename std::enable_if<is_character<T>::value>::type;
 
@@ -578,14 +620,35 @@ private:
 class table_valued_parameter
 {
 public:
+    /// \brief Creates a table-valued parameter that is not yet open.
     table_valued_parameter();
+
+    /// \brief Copy constructor.
     table_valued_parameter(const table_valued_parameter& rhs);
+
+    /// \brief Move constructor.
     table_valued_parameter(table_valued_parameter&& rhs) noexcept;
+
+    /// \brief Creates a table-valued parameter and opens it on the given statement.
+    /// \see open()
     table_valued_parameter(statement& stmt, short param_index, size_t row_count);
 
+    /// \brief Closes the parameter, if it is still open.
     ~table_valued_parameter() noexcept;
 
+    /// \brief Opens the parameter on a statement, ready for values to be bound to it.
+    ///
+    /// Only one table-valued parameter may be open on a statement at a time, and it must be
+    /// closed before other parameters of that statement are bound.
+    ///
+    /// \param stmt The prepared statement carrying the parameter marker.
+    /// \param param_index Zero-based index of parameter marker (placeholder position).
+    /// \param row_count Number of rows that will be bound.
+    /// \throws database_error
     void open(statement& stmt, short param_index, std::size_t row_count);
+
+    /// \brief Finishes the parameter, so the statement can be executed or bound further.
+    /// \throws database_error
     void close();
 
     /// \addtogroup bind_multi Binding multiple non-string values
@@ -752,8 +815,23 @@ public:
         bind_strings(param_index, param_values, ValueSize, BatchSize, nulls);
     }
 
+    /// @}
+
+    /// \brief Binds a null value to the given column of every row.
+    /// \param param_index Zero-based index of the column within the parameter.
+    /// \throws database_error
     void bind_null(short param_index);
 
+    /// \brief Sets descriptions for columns of the table-valued parameter.
+    ///
+    /// Describing a column up front avoids the call to SQLDescribeParam that binding would
+    /// otherwise make. A description is re-used across binds until the parameter is closed.
+    ///
+    /// \param idx Vector of zero-based indices of the columns being described.
+    /// \param type Vector of (short integer) types.
+    /// \param size Vector of (unsigned long) sizes.
+    /// \param scale Vector of (short integer) decimal precision / scale.
+    /// \throws programming_error
     void describe_parameters(
         const std::vector<short>& idx,
         const std::vector<short>& type,
@@ -854,6 +932,11 @@ public:
     /// \see open(), prepare()
     explicit statement(class connection& conn);
 
+    /// \brief Constructs a statement object and associates it to the given connection,
+    ///        applying the given ODBC statement attributes.
+    /// \param conn The connection to use.
+    /// \param attributes Statement attributes to set before the statement is used.
+    /// \see open(), prepare()
     explicit statement(class connection& conn, std::list<attribute> const& attributes);
 
     /// \brief Constructs and prepares a statement using the given connection and query.
@@ -1415,7 +1498,6 @@ public:
         const std::vector<unsigned long>& size,
         const std::vector<short>& scale);
 
-    /// @}
 private:
     typedef std::function<bool(std::size_t)> null_predicate_type;
     friend class nanodbc::result;
@@ -2701,6 +2783,7 @@ struct driver
     std::list<attribute> attributes; ///< List of driver attributes.
 };
 
+/// \brief A data source name registered with the driver manager.
 struct datasource
 {
     nanodbc::string name;   ///< DSN name.

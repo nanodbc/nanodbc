@@ -32,6 +32,7 @@ def build_docs(**kwargs):
         XML_OUTPUT        = {doxyxml_dir}
         MACRO_EXPANSION   = YES
         PREDEFINED        = DOXYGEN=1
+        HIDE_FRIEND_COMPOUNDS = YES
         """.encode()
     cmd = ["doxygen", "-"]
     p = Popen(cmd, stdin=PIPE)
