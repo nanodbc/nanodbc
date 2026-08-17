@@ -47,8 +47,9 @@ jobs:
           buildConfiguration: ${{ env.config }}
           # Ruleset file that will determine what checks will be run
           ruleset: CppCoreCheckRules.ruleset
-          # Paths to ignore analysis of CMake targets and includes
-          ignoredPaths: ${{ github.workspace }}/test/catch
+          # Paths to ignore analysis of CMake targets and includes. The tests are not
+          # shipped to anyone, and their findings drown out the library's.
+          ignoredPaths: ${{ github.workspace }}/test
 
       # Upload SARIF file to GitHub Code Scanning Alerts
       - name: Upload SARIF to GitHub
@@ -84,8 +85,9 @@ jobs:
           buildConfiguration: ${{ env.config }}
           # Ruleset file that will determine what checks will be run
           ruleset: NativeRecommendedRules.ruleset
-          # Paths to ignore analysis of CMake targets and includes
-          ignoredPaths: ${{ github.workspace }}/test/catch
+          # Paths to ignore analysis of CMake targets and includes. The tests are not
+          # shipped to anyone, and their findings drown out the library's.
+          ignoredPaths: ${{ github.workspace }}/test
 
       # Upload SARIF file to GitHub Code Scanning Alerts
       - name: Upload SARIF to GitHub
@@ -115,7 +117,7 @@ jobs:
       - name: flawfinder_scan
         uses: david-a-wheeler/flawfinder@c4216b74cf2639ffa98503768bd6e4299b5440c9 # master, the action has no tagged releases
         with:
-          arguments: "--sarif ./"
+          arguments: "--sarif --exclude './test/*' ./"
           output: "flawfinder_results.sarif"
 
       - name: Upload analysis results to GitHub Security tab
