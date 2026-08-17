@@ -38,10 +38,8 @@ include( CheckCXXCompilerFlag )
 check_cxx_compiler_flag( "-stdlib=libc++" CXX_COMPILER_SUPPORTS_LIBCXX )
 check_cxx_compiler_flag( "-Werror" CXX_COMPILER_SUPPORTS_WERROR )
 # Coverage is instrumented differently by each compiler, so ask about the flags that will
-# actually be used. Instrumentation also has to reach the link line, or the check fails on
-# the profiling runtime being missing rather than on the flag being unsupported. That is
-# what the previous check did, which quietly forced NANODBC_ENABLE_COVERAGE off however it
-# was set.
+# actually be used. They have to reach the link line as well, or the check fails on the
+# profiling runtime being missing rather than on the flag being unsupported.
 if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
   set( NANODBC_COVERAGE_COMPILE_OPTIONS -fprofile-instr-generate -fcoverage-mapping -O0 -g )
   set( NANODBC_COVERAGE_LINK_OPTIONS -fprofile-instr-generate )
@@ -228,9 +226,9 @@ endif()
 message( STATUS "nanodbc build: Enable test coverage - ${NANODBC_ENABLE_COVERAGE}" )
 
 if( NANODBC_ENABLE_COVERAGE )
-  # Under Clang this is source based coverage: it records which regions of an expression
-  # ran rather than only which lines were reached, and llvm-cov reads the result out of the
-  # binary. Under GCC it is gcov as before.
+  # Clang instruments source based coverage, recording which regions of an expression ran
+  # rather than only which lines were reached; llvm-cov reads the result out of the binary.
+  # GCC instruments gcov.
   target_compile_options( nanodbc PUBLIC ${NANODBC_COVERAGE_COMPILE_OPTIONS} )
   target_link_options( nanodbc PUBLIC ${NANODBC_COVERAGE_LINK_OPTIONS} )
 endif()

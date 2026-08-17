@@ -14,9 +14,9 @@ target_compile_definitions(Catch PRIVATE CATCH_AMALGAMATED_CUSTOM_MAIN)
 target_include_directories(Catch PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_features(Catch PUBLIC cxx_std_14)
 
-# Catch used to be header only, so its code was compiled into each test target and picked
-# up the standard library selection from there. Now that it is compiled on its own it has
-# to be told, or it builds against the default library and fails to link against the rest.
+# Catch is compiled on its own, so it needs the same standard library selection as
+# everything it links with. Left to itself it builds against the default library and the
+# link fails on missing symbols.
 if(NANODBC_FORCE_LIBCXX)
   target_compile_options(Catch PUBLIC -stdlib=libc++)
   target_link_options(Catch PUBLIC -stdlib=libc++ -lc++abi)

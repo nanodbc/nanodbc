@@ -345,14 +345,14 @@ inline std::size_t size(NANODBC_SQLCHAR const (&array)[N]) noexcept
 
 // Conversion between UTF-8 and the wide encoding the driver manager expects.
 //
-// std::wstring_convert and the std::codecvt facets that used to do this were deprecated in
-// C++17 and removed in C++26. The encoding follows from the width of wide_char_t: four
-// bytes is UTF-32, which is what iODBC takes, and two bytes is UTF-16, which is what every
-// other driver manager takes.
+// std::wstring_convert and the std::codecvt facets are deprecated in C++17 and removed in
+// C++26, so the conversion is done here. The encoding follows from the width of
+// wide_char_t: four bytes is UTF-32, which is what iODBC takes, and two bytes is UTF-16,
+// which is what every other driver manager takes.
 //
-// Malformed input throws std::range_error, as std::wstring_convert did, rather than being
-// silently replaced. A driver handing back text that does not decode is worth hearing
-// about instead of quietly turning into replacement characters.
+// Malformed input throws std::range_error rather than being silently replaced. A driver
+// handing back text that does not decode is worth hearing about instead of quietly turning
+// into replacement characters.
 
 inline void throw_invalid_encoding()
 {

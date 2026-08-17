@@ -10,9 +10,14 @@ user information, example usage, propaganda, and detailed source level documenta
 
 ## Build Status
 
-| Branch | Linux                                                                                                                                                                | Windows                                                                                                                                                                  |
-| :----- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `main` | [![main](https://github.com/nanodbc/nanodbc/actions/workflows/ci-linux.yml/badge.svg?branch=main)](https://github.com/nanodbc/nanodbc/actions/workflows/ci-linux.yml) | [![main](https://github.com/nanodbc/nanodbc/actions/workflows/ci-windows.yml/badge.svg?branch=main)](https://github.com/nanodbc/nanodbc/actions/workflows/ci-windows.yml) |
+| Branch | Linux                                                                                                                                                                | Windows                                                                                                                                                                  | Coverage                                                                                                              |
+| :----- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------- |
+| `main` | [![main](https://github.com/nanodbc/nanodbc/actions/workflows/ci-linux.yml/badge.svg?branch=main)](https://github.com/nanodbc/nanodbc/actions/workflows/ci-linux.yml) | [![main](https://github.com/nanodbc/nanodbc/actions/workflows/ci-windows.yml/badge.svg?branch=main)](https://github.com/nanodbc/nanodbc/actions/workflows/ci-windows.yml) | [![codecov](https://codecov.io/gh/nanodbc/nanodbc/branch/main/graph/badge.svg)](https://codecov.io/gh/nanodbc/nanodbc) |
+
+Coverage is measured by the `coverage` job in [ci-linux.yml](.github/workflows/ci-linux.yml), which
+instruments the library with llvm-cov and runs the utility, SQLite and PostgreSQL suites. The same
+report is printed into the job summary of every run, so the figure is available there whether or not
+the badge service is reachable.
 
 ## Philosophy
 
