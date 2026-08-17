@@ -1435,22 +1435,21 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(!connection.get_info<nanodbc::string>(SQL_ODBC_VER).empty());
 
         // Test SQLUSMALLINT results
-        REQUIRE(connection.get_info<unsigned short>(SQL_NON_NULLABLE_COLUMNS) == SQL_NNC_NON_NULL);
+        REQUIRE(connection.get_info<SQLUSMALLINT>(SQL_NON_NULLABLE_COLUMNS) == SQL_NNC_NON_NULL);
 
-        // Test SQUINTEGER results
-        REQUIRE(connection.get_info<uint32_t>(SQL_ODBC_INTERFACE_CONFORMANCE) > 0);
+        // Test SQLUINTEGER results
+        REQUIRE(connection.get_info<SQLUINTEGER>(SQL_ODBC_INTERFACE_CONFORMANCE) > 0);
 
-        // get_info is robust to a SQUINTEGER InfoType being retrieved
-        // as uint64_t
+        // get_info is robust to a SQLUINTEGER InfoType being retrieved as a wider type
         REQUIRE(
-            connection.get_info<uint64_t>(SQL_ODBC_INTERFACE_CONFORMANCE) ==
-            connection.get_info<uint32_t>(SQL_ODBC_INTERFACE_CONFORMANCE));
+            connection.get_info<SQLULEN>(SQL_ODBC_INTERFACE_CONFORMANCE) ==
+            connection.get_info<SQLUINTEGER>(SQL_ODBC_INTERFACE_CONFORMANCE));
 
-        // Test SQUINTEGER bitmask results
-        REQUIRE((connection.get_info<uint32_t>(SQL_CREATE_TABLE) & SQL_CT_CREATE_TABLE));
+        // Test SQLUINTEGER bitmask results
+        REQUIRE((connection.get_info<SQLUINTEGER>(SQL_CREATE_TABLE) & SQL_CT_CREATE_TABLE));
 
         // Test SQLULEN results
-        REQUIRE(connection.get_info<uint64_t>(SQL_DRIVER_HDBC) > 0);
+        REQUIRE(connection.get_info<SQLULEN>(SQL_DRIVER_HDBC) > 0);
     }
 
     void test_implementation_row_descriptor()
