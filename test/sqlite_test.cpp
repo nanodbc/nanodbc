@@ -42,16 +42,6 @@ struct sqlite_fixture : public test_case_fixture
 };
 } // namespace
 
-// Unicode build on Ubuntu 12.04 with unixODBC 2.2.14p2 and libsqliteodbc 0.91-3 throws:
-// test/sqlite_test.cpp:42: FAILED:
-// due to a fatal error condition:
-//   SIGSEGV - Segmentation violation signal
-// See discussions at
-// https://github.com/lexicalunit/nanodbc/pull/154
-// (Notice, lexicalunit/nanodbc has been archived now)
-// https://groups.google.com/forum/#!msg/catch-forum/7tIpgm8SvDA/1QZZESIuCQAJ
-// TODO: Uncomment as soon as the SIGSEGV issue has been fixed.
-#ifndef NANODBC_ENABLE_UNICODE
 TEST_CASE_METHOD(sqlite_fixture, "test_affected_rows", "[sqlite][affected_rows]")
 {
     nanodbc::connection conn = connect();
@@ -103,7 +93,6 @@ TEST_CASE_METHOD(sqlite_fixture, "test_affected_rows", "[sqlite][affected_rows]"
         REQUIRE_THAT(result.affected_rows(), nanodbc::test::IsAnyOf({0, 1}));
     }
 }
-#endif
 
 TEST_CASE_METHOD(sqlite_fixture, "test_driver", "[sqlite][driver]")
 {
@@ -120,10 +109,6 @@ TEST_CASE_METHOD(sqlite_fixture, "test_datasources", "[sqlite][datasources]")
     test_datasources();
 }
 
-// TODO: Investigate why these tests fail on Linux
-// See https://github.com/lexicalunit/nanodbc/pull/220#issuecomment-257029475
-// (Notice, lexicalunit/nanodbc has been archived now)
-#ifdef _WIN32
 TEST_CASE_METHOD(sqlite_fixture, "test_batch_insert_integral", "[sqlite][batch][integral]")
 {
     test_batch_insert_integral();
@@ -138,7 +123,6 @@ TEST_CASE_METHOD(sqlite_fixture, "test_batch_insert_mixed", "[sqlite][batch]")
 {
     test_batch_insert_mixed();
 }
-#endif // _WIN32
 
 TEST_CASE_METHOD(sqlite_fixture, "test_batch_insert_string", "[sqlite][batch][string]")
 {
