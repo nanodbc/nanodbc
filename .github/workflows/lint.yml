@@ -8,6 +8,12 @@ on:
       - main
   pull_request:
 
+# One run per workflow per ref. A new push cancels the run it superseded, except on main,
+# where each merge should be allowed to finish reporting.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
   # source code format checked before builds by ci-{linux,windows}.yml
 

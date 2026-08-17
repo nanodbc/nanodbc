@@ -1664,9 +1664,17 @@ string connection::connection_impl::database_name() const
 }
 
 template string connection::get_info(short info_type) const;
+
+// SQLUSMALLINT, SQLUINTEGER and SQLULEN are spelled with different underlying types from
+// one platform to the next, and the fixed width names callers reach for do not always
+// agree with them: here SQLULEN is unsigned long while uint64_t is unsigned long long, so
+// naming one leaves the other undefined at link time. The four fundamental unsigned types
+// are always distinct from each other and between them cover every spelling of these three
+// on every platform, so every correct way of asking links.
 template unsigned short connection::get_info(short info_type) const;
-template uint32_t connection::get_info(short info_type) const;
-template uint64_t connection::get_info(short info_type) const;
+template unsigned int connection::get_info(short info_type) const;
+template unsigned long connection::get_info(short info_type) const;
+template unsigned long long connection::get_info(short info_type) const;
 
 } // namespace nanodbc
 

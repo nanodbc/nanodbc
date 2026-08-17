@@ -8,7 +8,6 @@ on:
   push:
     branches:
       - main
-      - ml/*
     paths:
       - "**.cpp"
       - "**.h"
@@ -20,6 +19,12 @@ on:
       - "**.h"
       - "**/CMakeLists.txt"
       - ".github/workflows/ci-linux.yml"
+
+# One run per workflow per ref. A new push cancels the run it superseded, except on main,
+# where each merge should be allowed to finish reporting.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   check-format:
