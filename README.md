@@ -169,7 +169,7 @@ from the [doc/README.md](doc/README.md) file.
 
 ### Quick Setup for Testing or Development Environments
 
-To get up and running with nanodbc as fast as possible consider using the provided [Dockerfile.dev](Dockerfile.dev) and [docker-compose.yml](docker-compose.yml) or [Vagrantfile](Vagrantfile).
+To get up and running with nanodbc as fast as possible consider using the provided [Dockerfile.dev](Dockerfile.dev) and [docker-compose.yml](docker-compose.yml).
 
 `Dockerfile.dev` builds a development and testing environment: a compiler toolchain, CMake, and the ODBC driver managers, drivers and client tools for every database nanodbc is tested against. Because it is not named `Dockerfile`, pass it to `docker build` with `-f`.
 
@@ -210,18 +210,6 @@ root@hash:/# ctest --test-dir /opt/nanodbc/build --output-on-failure -R sqlite_t
 ```
 
 The SQLite and utility tests need no server. Give the database services a few seconds to finish initializing before running the tests against them.
-
-Or, to build and ssh into a [vagrant][vagrant] VM (using VirtualBox for example) use:
-
-```shell
-cd /path/to/nanodbc
-vagrant up
-vagrant ssh
-vagrant@vagrant-ubuntu-precise-64:~$ git clone https://github.com/nanodbc/nanodbc.git
-vagrant@vagrant-ubuntu-precise-64:~$ mkdir -p nanodbc/build && cd nanodbc/build
-vagrant@vagrant-ubuntu-precise-64:~$ CXX=g++-5 cmake ..
-vagrant@vagrant-ubuntu-precise-64:~$ make nanodbc
-```
 
 ### Tests
 
@@ -321,7 +309,6 @@ Finally, announce the new release to the public.
 [sqlite]:       https://www.sqlite.org/
 [sqliteodbc]:   http://www.ch-werner.de/sqliteodbc/
 [unixodbc]:     http://www.unixodbc.org/
-[vagrant]:      https://www.vagrantup.com/
 
 [coverity]:         https://scan.coverity.com/projects/nanodbc-nanodbc
 [coverity-badge]:   https://scan.coverity.com/projects/7437/badge.svg

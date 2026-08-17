@@ -50,12 +50,10 @@ jobs:
         - { cxxstd: '20', toolset: v143, vs: 2022, architecture: x64, os: windows-2022 }
         - { cxxstd: '17', toolset: v143, vs: 2022, architecture: x64, os: windows-2022 }
         - { cxxstd: '14', toolset: v143, vs: 2022, architecture: x64, os: windows-2022 }
-        # The v142 toolset ships with Visual Studio 2022, so it is still built here even
-        # though the windows-2019 image it used to build on has been retired.
+        # The v142 toolset ships with Visual Studio 2022, so it is built with the 2022
+        # generator.
         - { cxxstd: '17', toolset: v142, vs: 2022, architecture: x64, os: windows-2022 }
         - { cxxstd: '14', toolset: v142, vs: 2022, architecture: x64, os: windows-2022 }
-        # The v141 toolset is not available on windows-2022, and Visual Studio 2017 is out
-        # of support, so those jobs are gone rather than perpetually queued.
     name: build-vs${{ matrix.vs }}-${{ matrix.toolset }}-std-${{ matrix.cxxstd }}
     runs-on: ${{ matrix.os }}
     env:

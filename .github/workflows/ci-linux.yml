@@ -58,8 +58,6 @@ jobs:
         - { cxxstd: '14', cxx: g++-10, cc: gcc-10, os: ubuntu-22.04 }
         - { cxxstd: '17', cxx: g++-9,  cc: gcc-9,  os: ubuntu-22.04 }
         - { cxxstd: '14', cxx: g++-9,  cc: gcc-9,  os: ubuntu-22.04 }
-        # GCC 8 is not packaged for ubuntu-22.04, and the ubuntu-20.04 runner image it
-        # used to build on has been retired, so those jobs could never start.
 
     name: build-${{ matrix.cc }}-std-${{ matrix.cxxstd }}
 
@@ -104,8 +102,6 @@ jobs:
         - { cxxstd: '20', cxx: clang++-13,  cc: clang-13,  os: ubuntu-22.04, pkg: 'libc++-13-dev libc++abi-13-dev' }
         - { cxxstd: '17', cxx: clang++-13,  cc: clang-13,  os: ubuntu-22.04, pkg: 'libc++-13-dev libc++abi-13-dev' }
         - { cxxstd: '14', cxx: clang++-13,  cc: clang-13,  os: ubuntu-22.04, pkg: 'libc++-13-dev libc++abi-13-dev' }
-        # Clang 7 through 12 are not packaged for ubuntu-22.04, and the ubuntu-20.04 runner
-        # image they used to build on has been retired, so those jobs could never start.
 
     name: build-${{ matrix.cc }}-std-${{ matrix.cxxstd }}
 
