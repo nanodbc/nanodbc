@@ -54,3 +54,7 @@ website/
 * Copy.*
 *.csv
 *.db
+
+# Python bytecode, e.g. from doc/build.py
+__pycache__/
+*.py[cod]

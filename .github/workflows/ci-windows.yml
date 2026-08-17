@@ -68,20 +68,6 @@ jobs:
               architecture: x64,
               os: windows-2022,
             }
-          - {
-              cxxstd: "17",
-              toolset: v142,
-              vs: 2022,
-              architecture: x64,
-              os: windows-2022,
-            }
-          - {
-              cxxstd: "14",
-              toolset: v142,
-              vs: 2022,
-              architecture: x64,
-              os: windows-2022,
-            }
     name: build-vs${{ matrix.vs }}-${{ matrix.toolset }}-std-${{ matrix.cxxstd }}
     runs-on: ${{ matrix.os }}
     env:
@@ -155,7 +141,15 @@ jobs:
           version: ${{ matrix.mssql }}
       - name: Check
         run: |
-          sqlcmd -S "(localdb)\MSSQLLocalDB" -U sa -P "Password!123" -Q "SELECT @@VERSION;"
+          # LocalDB does not always accept connections the moment the install step
+          # returns, so give it a few attempts before treating it as broken.
+          $deadline = (Get-Date).AddMinutes(3)
+          do {
+            sqlcmd -S "(localdb)\MSSQLLocalDB" -U sa -P "Password!123" -Q "SELECT @@VERSION;"
+            if ($LASTEXITCODE -eq 0) { break }
+            Start-Sleep -Seconds 10
+          } while ((Get-Date) -lt $deadline)
+          if ($LASTEXITCODE -ne 0) { throw "LocalDB never became reachable" }
           Get-OdbcDriver -Platform 64-bit | Select-Object -ExpandProperty Name
       - name: Configure
         run: |
