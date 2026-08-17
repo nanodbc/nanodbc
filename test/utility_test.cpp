@@ -1,5 +1,4 @@
-#define CATCH_CONFIG_MAIN
-#include "catch/catch.hpp"
+#include "catch/catch_amalgamated.hpp"
 
 // clang-format off
 #define NANODBC_DISABLE_NANODBC_NAMESPACE_FOR_INTERNAL_TESTS

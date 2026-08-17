@@ -5,8 +5,18 @@ if(DEFINED ENV{CI})
 endif()
 add_compile_definitions( "$<$<CXX_COMPILER_ID:MSVC>:_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING>" )
 
-# Prepare "Catch" library for other executables
-add_library(Catch INTERFACE)
+# Catch2 v3 is vendored as its amalgamated distribution, so the tests still build with no
+# network access. Two libraries from the one source: the amalgamation supplies main() unless
+# CATCH_AMALGAMATED_CUSTOM_MAIN is defined, and the database tests bring their own.
+add_library(Catch STATIC catch/catch_amalgamated.cpp)
+target_include_directories(Catch PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_compile_features(Catch PUBLIC cxx_std_14)
+
+add_library(CatchCustomMain STATIC catch/catch_amalgamated.cpp)
+target_compile_definitions(CatchCustomMain PRIVATE CATCH_AMALGAMATED_CUSTOM_MAIN)
+target_include_directories(CatchCustomMain PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_compile_features(CatchCustomMain PUBLIC cxx_std_14)
+
 add_custom_target(tests)
 
 message( STATUS "Building utility tests")
@@ -39,7 +49,7 @@ foreach(test_item IN LISTS test_list)
       base_test_fixture.h
       test_case_fixture.h
       )
-  target_link_libraries(${test_name} PRIVATE Catch ODBC::ODBC nanodbc)
+  target_link_libraries(${test_name} PRIVATE CatchCustomMain ODBC::ODBC nanodbc)
 
   target_compile_definitions(${test_name}
     PRIVATE

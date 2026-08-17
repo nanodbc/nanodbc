@@ -47,9 +47,9 @@ files into your project and run with it. For those that want it, I have also pro
 [CMake][cmake] files which build a library object, or build and run the included tests.
 The CMake files will also support out of source builds.
 
-Tests use the [Catch][catch] test framework, and CMake will automatically fetch the latest version
-of Catch for you at build time. To build the nanodbc and the tests you will also need to have
-either [unixODBC] or [iODBC] installed and discoverable by CMake.
+Tests use the [Catch2][catch] test framework, vendored under `test/catch` as its amalgamated
+distribution so that the tests build without network access. To build the nanodbc and the tests
+you will also need to have either [unixODBC] or [iODBC] installed and discoverable by CMake.
 This is easy on OS X where you can use [Homebrew][brew] to install unixODBC with `brew install unixodbc`,
 or use the system provided iODBC if you have OS X 10.9 or earlier.
 
@@ -282,7 +282,7 @@ Finally, announce the new release to the public.
 [boost]: http://www.boost.org/
 [boost-locale]: http://www.boost.org/doc/libs/release/libs/locale/
 [brew]: http://brew.sh/
-[catch]: https://github.com/philsquared/Catch
+[catch]: https://github.com/catchorg/Catch2
 [clang-format]: http://clang.llvm.org/docs/ClangFormat.html
 [cmake-docs]: https://cmake.org/cmake/help/latest/manual/cmake.1.html
 [cmake]: http://www.cmake.org/
