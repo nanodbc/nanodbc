@@ -173,47 +173,47 @@ from the [doc/README.md](doc/README.md) file.
 
 ### Quick Setup for Testing or Development Environments
 
-To get up and running with nanodbc as fast as possible consider using the provided [Dockerfile.dev](Dockerfile.dev) and [docker-compose.yml](docker-compose.yml).
-
-`Dockerfile.dev` builds a development and testing environment: a compiler toolchain, CMake, and the ODBC driver managers, drivers and client tools for every database nanodbc is tested against. Because it is not named `Dockerfile`, pass it to `docker build` with `-f`.
-
-For example, to spin up a [docker][docker] container suitable for testing and development of nanodbc:
-
-```shell
-$ cd /path/to/nanodbc
-$ docker build -f Dockerfile.dev -t nanodbc .
-
-# To build using the nanodbc already source within the container
-$ docker run -it nanodbc /bin/bash
-
-# Alternatively, mount the nanodbc repository into the container as a volume
-$ docker run -v "$(pwd)":"/opt/$(basename $(pwd))" -it nanodbc /bin/bash
-
-# Then, enter the source directory and build nanodbc:
-root@hash:/# mkdir -p /opt/nanodbc/build
-root@hash:/# cd /opt/nanodbc/build
-root@hash:/opt/nanodbc/build# cmake ..
-root@hash:/opt/nanodbc/build# make nanodbc
-```
-
-Or, spin up the complete multi-container environment with database services. This is the easiest way to run the database tests, since it starts PostgreSQL, MySQL and SQL Server alongside the development container, mounts your working tree at `/opt/nanodbc`, and presets the `NANODBC_TEST_CONNSTR_*` variables the test programs read:
+Every database nanodbc is tested against runs as a container, so none of them has to be installed on your machine. [docker-compose.yml](docker-compose.yml) defines a service per database plus a `nanodbc` development container built from [Dockerfile.dev](Dockerfile.dev), which carries a compiler toolchain, CMake, and the ODBC driver managers, drivers and client tools for all of them.
 
 ```shell
 cd /path/to/nanodbc
-docker-compose build
-docker-compose up -d
-docker exec -it nanodbc /bin/bash
 
-# Then, inside the container, build and run the tests:
-root@hash:/# cmake -S /opt/nanodbc -B /opt/nanodbc/build -DCMAKE_BUILD_TYPE=Release
-root@hash:/# cmake --build /opt/nanodbc/build
+# Start the database servers and wait until each one is accepting connections
+docker compose up -d
 
-# All of them, or one database at a time
-root@hash:/# ctest --test-dir /opt/nanodbc/build --output-on-failure
-root@hash:/# ctest --test-dir /opt/nanodbc/build --output-on-failure -R sqlite_tests
+# Open a shell in the development container, with your working tree mounted at /opt/nanodbc
+docker compose run --rm nanodbc /bin/bash
 ```
 
-The SQLite and utility tests need no server. Give the database services a few seconds to finish initializing before running the tests against them.
+The development container presets the `NANODBC_TEST_CONNSTR_*` variables the test programs read, so inside it a build and a full test run need no arguments:
+
+```shell
+root@hash:/opt/nanodbc# cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+root@hash:/opt/nanodbc# cmake --build build --parallel
+
+# All of them, or one database at a time
+root@hash:/opt/nanodbc# ctest --test-dir build --output-on-failure -E vertica_tests
+root@hash:/opt/nanodbc# ctest --test-dir build --output-on-failure -R sqlite_tests
+```
+
+The SQLite and utility tests need no server at all, so they are the quickest way to check a change.
+
+Each server version can be overridden, which is how a version from the CI matrix is reproduced:
+
+```shell
+POSTGRES_VERSION=14 docker compose up -d pgsql
+```
+
+The Vertica tests need Vertica's own ODBC driver, which the development image does not carry, so a full `ctest` run excludes them with `-E vertica_tests`.
+
+When you are done, `docker compose down` stops everything, and `docker compose down -v` also discards the databases' data.
+
+To build the development image on its own, without the database services, pass the file to `docker build` with `-f`, since it is not named `Dockerfile`:
+
+```shell
+docker build -f Dockerfile.dev -t nanodbc .
+docker run -v "$(pwd)":/opt/nanodbc -it nanodbc /bin/bash
+```
 
 ### Tests
 
@@ -243,7 +243,7 @@ If a feature requires a database-specific test case for each database, then skip
 `test/<database>_test.cpp` file.
 
 The SQLite and utility tests need no server, so they are the quickest way to check a change
-locally. `docker-compose.yml` brings up PostgreSQL, MySQL and SQL Server for the rest; see
+locally. `docker-compose.yml` brings up the database servers for the rest, all as containers; see
 [Quick Setup for Testing or Development Environments](#quick-setup-for-testing-or-development-environments).
 
 ## Publish and Release Process
