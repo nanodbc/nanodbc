@@ -154,6 +154,93 @@ jobs:
         run: |
           ctest --test-dir ${GITHUB_WORKSPACE}/build --output-on-failure --no-tests=error -R utility_tests
 
+  # Coverage of the library, driven by the suites that can run here: the utility tests, the
+  # SQLite tests and the PostgreSQL tests. Clang records which regions of an expression ran,
+  # not merely which lines were reached, so the percentages are stricter than gcov's.
+  coverage:
+    runs-on: ubuntu-latest
+    services:
+      postgresql:
+        image: postgres:18
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: nanodbc
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install
+        run: |
+          sudo apt-get update
+          # libclang-rt-dev carries the profiling runtime, without which the instrumented
+          # build does not link. libc++ is installed because NANODBC_FORCE_LIBCXX turns
+          # itself on wherever clang accepts -stdlib=libc++, whether or not its headers
+          # are actually present.
+          sudo apt-get install -y ccache clang libclang-rt-dev libc++-dev libc++abi-dev llvm \
+            unixodbc-dev odbc-postgresql libsqliteodbc
+          sudo odbcinst -i -d -f /usr/share/sqliteodbc/unixodbc.ini
+      - name: Restore compiled objects
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.ccache
+          key: ccache-coverage-${{ github.sha }}
+          restore-keys: ccache-coverage-
+      - name: Configure
+        run: |
+          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build \
+            -DCMAKE_BUILD_TYPE=Debug -DNANODBC_ENABLE_COVERAGE=ON \
+            -DNANODBC_BUILD_EXAMPLES=OFF -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+        env:
+          CC: clang
+          CXX: clang++
+      - name: Build
+        run: cmake --build ${GITHUB_WORKSPACE}/build --parallel
+      - name: Run the suites
+        run: |
+          mkdir -p "${GITHUB_WORKSPACE}/profraw"
+          export NANODBC_TEST_CONNSTR_PGSQL="Driver={PostgreSQL ANSI};Server=localhost;Port=5432;Database=nanodbc;UID=postgres;PWD=postgres"
+          for suite in utility sqlite postgresql; do
+            LLVM_PROFILE_FILE="${GITHUB_WORKSPACE}/profraw/${suite}-%p.profraw" \
+              "${GITHUB_WORKSPACE}/build/test/${suite}_tests"
+          done
+      - name: Report
+        run: |
+          llvm-profdata merge -sparse ${GITHUB_WORKSPACE}/profraw/*.profraw \
+            -o ${GITHUB_WORKSPACE}/coverage.profdata
+          # llvm-cov takes the first binary positionally and the rest after -object.
+          binaries=("${GITHUB_WORKSPACE}/build/test/utility_tests"
+                    -object "${GITHUB_WORKSPACE}/build/test/sqlite_tests"
+                    -object "${GITHUB_WORKSPACE}/build/test/postgresql_tests")
+          llvm-cov export -format=lcov "${binaries[@]}" \
+            -instr-profile="${GITHUB_WORKSPACE}/coverage.profdata" \
+            "${GITHUB_WORKSPACE}/nanodbc/" > "${GITHUB_WORKSPACE}/coverage.lcov"
+          {
+            echo '## Coverage'
+            echo
+            echo '```'
+            llvm-cov report "${binaries[@]}" \
+              -instr-profile="${GITHUB_WORKSPACE}/coverage.profdata" "${GITHUB_WORKSPACE}/nanodbc/"
+            echo '```'
+          } >> "${GITHUB_STEP_SUMMARY}"
+      - name: Upload the lcov report
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: coverage-lcov
+          path: coverage.lcov
+          overwrite: true
+      - name: Send to Codecov
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        with:
+          files: coverage.lcov
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+
   test-postgresql:
     runs-on: ubuntu-latest
     strategy:
