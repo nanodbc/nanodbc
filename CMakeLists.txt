@@ -37,7 +37,21 @@ option( NANODBC_ENABLE_WORKAROUND_NODATA "Enable SQL_NO_DATA workaround (see Iss
 include( CheckCXXCompilerFlag )
 check_cxx_compiler_flag( "-stdlib=libc++" CXX_COMPILER_SUPPORTS_LIBCXX )
 check_cxx_compiler_flag( "-Werror" CXX_COMPILER_SUPPORTS_WERROR )
-check_cxx_compiler_flag( "--coverage -O0" CXX_COMPILER_SUPPORTS_COVERAGE )
+# Coverage is instrumented differently by each compiler, so ask about the flags that will
+# actually be used. Instrumentation also has to reach the link line, or the check fails on
+# the profiling runtime being missing rather than on the flag being unsupported. That is
+# what the previous check did, which quietly forced NANODBC_ENABLE_COVERAGE off however it
+# was set.
+if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
+  set( NANODBC_COVERAGE_COMPILE_OPTIONS -fprofile-instr-generate -fcoverage-mapping -O0 -g )
+  set( NANODBC_COVERAGE_LINK_OPTIONS -fprofile-instr-generate )
+else()
+  set( NANODBC_COVERAGE_COMPILE_OPTIONS --coverage -O0 -g )
+  set( NANODBC_COVERAGE_LINK_OPTIONS --coverage )
+endif()
+set( CMAKE_REQUIRED_LINK_OPTIONS ${NANODBC_COVERAGE_LINK_OPTIONS} )
+check_cxx_compiler_flag( "${NANODBC_COVERAGE_COMPILE_OPTIONS}" CXX_COMPILER_SUPPORTS_COVERAGE )
+unset( CMAKE_REQUIRED_LINK_OPTIONS )
 
 include( CMakeDependentOption )
 cmake_dependent_option( NANODBC_FORCE_LIBCXX "Force the use of libc++ (default on if compiler supports it)" ON "CXX_COMPILER_SUPPORTS_LIBCXX" OFF )
@@ -214,9 +228,11 @@ endif()
 message( STATUS "nanodbc build: Enable test coverage - ${NANODBC_ENABLE_COVERAGE}" )
 
 if( NANODBC_ENABLE_COVERAGE )
-  target_compile_options( nanodbc PUBLIC --coverage -O0 )
-  find_library( gcov gcov )
-  target_link_libraries( nanodbc PUBLIC gcov )
+  # Under Clang this is source based coverage: it records which regions of an expression
+  # ran rather than only which lines were reached, and llvm-cov reads the result out of the
+  # binary. Under GCC it is gcov as before.
+  target_compile_options( nanodbc PUBLIC ${NANODBC_COVERAGE_COMPILE_OPTIONS} )
+  target_link_options( nanodbc PUBLIC ${NANODBC_COVERAGE_LINK_OPTIONS} )
 endif()
 
 # #######################################

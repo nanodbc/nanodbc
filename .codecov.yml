@@ -4,5 +4,5 @@ comment: off
 ignore:
   - "doc"
   - "example"
-  - "test/catch"
+  - "test"
   - "utility"
