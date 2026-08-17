@@ -50,8 +50,6 @@ jobs:
         - { cxxstd: '20', toolset: v143, vs: 2022, architecture: x64, os: windows-2022 }
         - { cxxstd: '17', toolset: v143, vs: 2022, architecture: x64, os: windows-2022 }
         - { cxxstd: '14', toolset: v143, vs: 2022, architecture: x64, os: windows-2022 }
-        # The v142 toolset ships with Visual Studio 2022, so it is built with the 2022
-        # generator.
         - { cxxstd: '17', toolset: v142, vs: 2022, architecture: x64, os: windows-2022 }
         - { cxxstd: '14', toolset: v142, vs: 2022, architecture: x64, os: windows-2022 }
     name: build-vs${{ matrix.vs }}-${{ matrix.toolset }}-std-${{ matrix.cxxstd }}
@@ -114,7 +112,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        mssql: [2022, 2019] # the only versions potatoqualitee/mssqlsuite installs
+        mssql: [2022, 2019]
     steps:
     - uses: actions/checkout@v3
     - name: Install SQL Server
@@ -145,7 +143,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        mariadb: ['12.3', '11.8', '11.4', '10.11'] # current, LTS releases, oldest supported
+        mariadb: ['12.3', '11.8', '11.4', '10.11']
     steps:
     - uses: actions/checkout@v3
     - name: Install MariaDB ${{ matrix.mariadb }}
@@ -181,7 +179,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        mysql: ['9.7', '8.4'] # innovation release and current LTS
+        mysql: ['9.7', '8.4']
     steps:
     - uses: actions/checkout@v3
     - name: Install MySQL ${{ matrix.mysql }}
