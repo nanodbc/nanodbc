@@ -20,6 +20,12 @@ env:
   build: "${{ github.workspace }}/build"
   config: "Debug"
 
+# One run per workflow per ref. A new push cancels the run it superseded, except on main,
+# where each merge should be allowed to finish reporting.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
   core:
     name: CppCoreCheckRules
