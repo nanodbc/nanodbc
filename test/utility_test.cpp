@@ -6,7 +6,87 @@
 #include "nanodbc/nanodbc.cpp" // access private conversion routines
 // clang-format on
 
+#include <stdexcept>
 #include <string>
+#include <vector>
+
+// The UTF-8 codec replaced std::wstring_convert, so it is exercised directly here:
+// round trips across every encoded length, the surrogate pairs UTF-16 needs for anything
+// past the basic plane, and the malformed input it is expected to reject.
+TEST_CASE("convert_utf8_round_trip", "[string][unicode]")
+{
+    // Built from explicit units rather than literals, so the test does not depend on the
+    // encoding of this source file.
+    struct sample
+    {
+        char const* name;
+        std::string utf8;
+        std::u16string utf16;
+        std::u32string utf32;
+    };
+
+    std::vector<sample> const samples{
+        {"ASCII", "A", u"A", U"A"},
+        {"two byte (U+00E9)", "\xC3\xA9", u"\u00E9", U"\u00E9"},
+        {"three byte (U+30C4)", "\xE3\x83\x84", u"\u30C4", U"\u30C4"},
+        {"four byte (U+1F600)", "\xF0\x9F\x98\x80", {0xD83D, 0xDE00}, {0x1F600}},
+        {"largest code point (U+10FFFF)", "\xF4\x8F\xBF\xBF", {0xDBFF, 0xDFFF}, {0x10FFFF}},
+        {"embedded null is data",
+         std::string("a\0b", 3),
+         std::u16string(u"a\0b", 3),
+         std::u32string(U"a\0b", 3)},
+    };
+
+    for (auto const& s : samples)
+    {
+        SECTION(s.name)
+        {
+            SECTION("utf-8 to wide and back")
+            {
+                nanodbc::wide_string wide;
+                convert(s.utf8, wide);
+#ifdef NANODBC_USE_IODBC_WIDE_STRINGS
+                REQUIRE(wide == nanodbc::wide_string(s.utf32.begin(), s.utf32.end()));
+#else
+                REQUIRE(wide == nanodbc::wide_string(s.utf16.begin(), s.utf16.end()));
+#endif
+                std::string utf8;
+                convert(wide, utf8);
+                REQUIRE(utf8 == s.utf8);
+            }
+        }
+    }
+}
+
+TEST_CASE("convert_rejects_malformed_input", "[string][unicode]"){SECTION("malformed utf-8"){
+    auto const bad = GENERATE(
+        std::string("\x80"),             // a continuation byte cannot lead
+        std::string("\xC3"),             // truncated two byte sequence
+        std::string("\xE3\x83"),         // truncated three byte sequence
+        std::string("\xC0\xAF"),         // overlong encoding of '/'
+        std::string("\xE0\x80\xAF"),     // overlong again, one byte longer
+        std::string("\xED\xA0\x80"),     // a surrogate has no utf-8 encoding
+        std::string("\xF5\x80\x80\x80"), // beyond U+10FFFF
+        std::string("\xE3\x28\x84"));    // continuation byte is not one
+
+nanodbc::wide_string out;
+REQUIRE_THROWS_AS(convert(bad, out), std::range_error);
+}
+
+#ifndef NANODBC_USE_IODBC_WIDE_STRINGS
+SECTION("malformed utf-16")
+{
+    auto const bad = GENERATE(
+        std::u16string(1, 0xD83D),     // high surrogate with nothing after it
+        std::u16string(1, 0xDE00),     // low surrogate leading
+        std::u16string{0xD83D, u'A'}); // high surrogate followed by a non surrogate
+
+    std::string out;
+    nanodbc::wide_string const wide(bad.begin(), bad.end());
+    REQUIRE_THROWS_AS(convert(wide, out), std::range_error);
+}
+#endif
+}
 
 TEST_CASE("convert", "[string]")
 {

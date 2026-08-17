@@ -2077,10 +2077,9 @@ TEST_CASE_METHOD(mssql_fixture, "test_conn_attributes", "[mssql][conn_attibutes]
  */
 TEST_CASE_METHOD(mssql_fixture, "test_overallocate", "[mssql][overallocate]")
 {
-    std::u16string u16val = u"grün";
-    std::wstring wval(u16val.begin(), u16val.end());
-    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> convert_utf8;
-    nanodbc::string val = nanodbc::test::convert(convert_utf8.to_bytes(wval));
+    // "grün" as UTF-8, spelled in bytes so the test does not depend on the encoding of
+    // this source file.
+    nanodbc::string val = nanodbc::test::convert(std::string("gr\xC3\xBCn"));
     auto sql = NANODBC_TEXT("SELECT '") + val + NANODBC_TEXT("' AS A");
     auto conn = connect();
     nanodbc::result result = execute(conn, sql);
