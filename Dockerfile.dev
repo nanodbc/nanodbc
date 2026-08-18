@@ -12,7 +12,7 @@ RUN apt-get -qy update \
     ca-certificates \
     ccache \
     clang \
-    clang-format-15 \
+    clang-format-20 \
     cmake \
     curl \
     g++ \
@@ -30,6 +30,7 @@ RUN apt-get -qy update \
     make \
     mysql-client \
     ninja-build \
+    odbc-mariadb \
     odbc-postgresql \
     postgresql-client \
     sqlite3 \

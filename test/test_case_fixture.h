@@ -450,8 +450,9 @@ struct test_case_fixture : public base_test_fixture
             NANODBC_TEXT("(i int, s varchar(10), f float, bg bigint)"));
         execute(
             connection,
-            NANODBC_TEXT("insert into test_result_accessors (i, s, f, bg) "
-                         "values (42, 'forty two', 42.0, 42);"));
+            NANODBC_TEXT(
+                "insert into test_result_accessors (i, s, f, bg) "
+                "values (42, 'forty two', 42.0, 42);"));
 
         auto results =
             execute(connection, NANODBC_TEXT("select i, s, f, bg from test_result_accessors;"));
@@ -516,8 +517,9 @@ struct test_case_fixture : public base_test_fixture
             nanodbc::statement statement(connection);
             prepare(
                 statement,
-                NANODBC_TEXT("insert into test_temporal_conversions(d, t, ts) "
-                             "values (?, ?, ?);"));
+                NANODBC_TEXT(
+                    "insert into test_temporal_conversions(d, t, ts) "
+                    "values (?, ?, ?);"));
             statement.bind(0, &d);
             statement.bind(1, &t);
             statement.bind(2, &ts);
@@ -743,8 +745,9 @@ struct test_case_fixture : public base_test_fixture
         nanodbc::statement statement(connection);
         prepare(
             statement,
-            NANODBC_TEXT("insert into test_statement_parameter_description(i, s) "
-                         "values (?, ?);"));
+            NANODBC_TEXT(
+                "insert into test_statement_parameter_description(i, s) "
+                "values (?, ?);"));
         REQUIRE(statement.parameters() == 2);
 
         // first ask reaches the driver, second is answered from what was remembered
@@ -1064,8 +1067,8 @@ struct test_case_fixture : public base_test_fixture
             else if (contains_string(dbms, NANODBC_TEXT("SQL Server")))
                 REQUIRE(columns.column_default() == NANODBC_TEXT("(\'sample value\')"));
             else if (
-                contains_string(dbms, NANODBC_TEXT("MariaDB")) ||
-                contains_string(connection.dbms_version(), NANODBC_TEXT("MariaDB")))
+                !mariadb_ && (contains_string(dbms, NANODBC_TEXT("MariaDB")) ||
+                              contains_string(connection.dbms_version(), NANODBC_TEXT("MariaDB"))))
                 // MariaDB stores a string column default together with its quotes, and
                 // reports that stored form through information_schema, so by the time it
                 // arrives here the quotes appear twice.
@@ -1139,13 +1142,13 @@ struct test_case_fixture : public base_test_fixture
         // be, and rejects the query rather than answering with an empty list.
         if (vendor_ == database_vendor::mysql)
         {
-            // A database stands where a schema would be, and the Connector/ODBC builds
-            // disagree on what to make of that: some list the databases, others refuse the
-            // query outright.
+            // A database stands where a schema would be, and the drivers disagree on what
+            // to make of that: some list the databases, MariaDB's answers with an empty
+            // list, and some refuse the query outright.
             try
             {
                 auto names = catalog.list_schemas();
-                REQUIRE(!names.empty());
+                REQUIRE((!names.empty() || mariadb_));
             }
             catch (nanodbc::database_error const&)
             {
@@ -1268,11 +1271,12 @@ struct test_case_fixture : public base_test_fixture
             execute(
                 connection,
                 NANODBC_TEXT("CREATE PROCEDURE " + procedure_name) +
-                    NANODBC_TEXT(" @arg_varchar VARCHAR(10), @arg_int INT "
-                                 "AS "
-                                 "BEGIN "
-                                 "        SELECT @arg_varchar AS A, @arg_int AS B, GETDATE() AS C "
-                                 "END;"));
+                    NANODBC_TEXT(
+                        " @arg_varchar VARCHAR(10), @arg_int INT "
+                        "AS "
+                        "BEGIN "
+                        "        SELECT @arg_varchar AS A, @arg_int AS B, GETDATE() AS C "
+                        "END;"));
 
             // Use brute-force look-up
             {
@@ -1546,8 +1550,9 @@ struct test_case_fixture : public base_test_fixture
         create_table(
             connection,
             NANODBC_TEXT("test_column_descriptor"),
-            NANODBC_TEXT("(i int, d decimal(7,3), n numeric(7,3), f float, s varchar(60), dt date, "
-                         "t timestamp)"));
+            NANODBC_TEXT(
+                "(i int, d decimal(7,3), n numeric(7,3), f float, s varchar(60), dt date, "
+                "t timestamp)"));
 
         auto result =
             execute(connection, NANODBC_TEXT("select i,d,n,f,s,dt,t from test_column_descriptor;"));
@@ -1821,7 +1826,8 @@ struct test_case_fixture : public base_test_fixture
             bool found = std::any_of(
                 dsns.cbegin(),
                 dsns.cend(),
-                [&driver_name](nanodbc::datasource const& dsn) {
+                [&driver_name](nanodbc::datasource const& dsn)
+                {
                     return dsn.name == nanodbc::test::convert("testdsn") &&
                            dsn.driver == driver_name;
                 });
@@ -2059,7 +2065,9 @@ PRIMARY KEY(t2_fid)
             {
                 if (vendor_ == database_vendor::mysql)
                 {
-                    REQUIRE(ird.catalog_name(i) != NANODBC_TEXT(""));
+                    // MariaDB's driver reports no catalog where Connector/ODBC names one.
+                    if (!mariadb_)
+                        REQUIRE(ird.catalog_name(i) != NANODBC_TEXT(""));
                     REQUIRE(ird.schema_name(i) == NANODBC_TEXT(""));
                 }
                 else if (vendor_ == database_vendor::postgresql)
@@ -2092,7 +2100,10 @@ PRIMARY KEY(t2_fid)
                 REQUIRE(ird.base_column_name(0) == NANODBC_TEXT("fid1"));
             else
                 REQUIRE(ird.base_column_name(0) == NANODBC_TEXT("t1_fid1"));
-            REQUIRE(ird.name(0) == NANODBC_TEXT("fid1"));
+            if (mariadb_)
+                REQUIRE(ird.name(0) == NANODBC_TEXT("t1_fid1"));
+            else
+                REQUIRE(ird.name(0) == NANODBC_TEXT("fid1"));
             REQUIRE(ird.base_table_name(0) == NANODBC_TEXT("t1"));
             if (vendor_ == database_vendor::mysql)
                 REQUIRE(ird.table_name(0) == NANODBC_TEXT("t"));
@@ -2125,8 +2136,9 @@ PRIMARY KEY(t2_fid)
 
         // view
         {
-            nanodbc::string sql = NANODBC_TEXT("SELECT t1_fid1 AS fid1, t1_fid2 AS fid2, t2_fid AS "
-                                               "fid3, name AS n, age AS a FROM v_t1_t2");
+            nanodbc::string sql = NANODBC_TEXT(
+                "SELECT t1_fid1 AS fid1, t1_fid2 AS fid2, t2_fid AS "
+                "fid3, name AS n, age AS a FROM v_t1_t2");
             if (vendor_ == database_vendor::sqlserver)
                 sql +=
                     NANODBC_TEXT(" FOR BROWSE"); // attributes like table name available only for
@@ -2140,7 +2152,10 @@ PRIMARY KEY(t2_fid)
                 REQUIRE(ird.base_column_name(0) == NANODBC_TEXT("fid1"));
             else
                 REQUIRE(ird.base_column_name(0) == NANODBC_TEXT("t1_fid1"));
-            REQUIRE(ird.name(0) == NANODBC_TEXT("fid1"));
+            if (mariadb_)
+                REQUIRE(ird.name(0) == NANODBC_TEXT("t1_fid1"));
+            else
+                REQUIRE(ird.name(0) == NANODBC_TEXT("fid1"));
             if (vendor_ == database_vendor::mysql || vendor_ == database_vendor::postgresql)
             {
                 REQUIRE(ird.base_table_name(0) == NANODBC_TEXT("v_t1_t2"));
@@ -2170,7 +2185,9 @@ PRIMARY KEY(t2_fid)
         {
             if (vendor_ == database_vendor::mysql)
             {
-                REQUIRE(ird.catalog_name(i) != NANODBC_TEXT(""));
+                // MariaDB's driver reports no catalog where Connector/ODBC names one.
+                if (!mariadb_)
+                    REQUIRE(ird.catalog_name(i) != NANODBC_TEXT(""));
                 REQUIRE(ird.schema_name(i) == NANODBC_TEXT(""));
             }
             else if (vendor_ == database_vendor::postgresql)
@@ -2200,7 +2217,11 @@ PRIMARY KEY(t2_fid)
             REQUIRE(ird.base_column_name(0) == NANODBC_TEXT("name"));
         else
             REQUIRE(ird.base_column_name(0) == NANODBC_TEXT(""));
-        REQUIRE(ird.name(0) == NANODBC_TEXT("name"));
+        // For a column of an expression MariaDB's driver reports no name at all.
+        if (mariadb_)
+            REQUIRE(ird.name(0) == NANODBC_TEXT(""));
+        else
+            REQUIRE(ird.name(0) == NANODBC_TEXT("name"));
         REQUIRE(ird.base_table_name(0) == NANODBC_TEXT(""));
         REQUIRE(ird.table_name(0) == NANODBC_TEXT(""));
         // age
@@ -2209,7 +2230,10 @@ PRIMARY KEY(t2_fid)
             REQUIRE(ird.base_column_name(1) == NANODBC_TEXT("age"));
         else
             REQUIRE(ird.base_column_name(1) == NANODBC_TEXT(""));
-        REQUIRE(ird.name(1) == NANODBC_TEXT("age"));
+        if (mariadb_)
+            REQUIRE(ird.name(1) == NANODBC_TEXT(""));
+        else
+            REQUIRE(ird.name(1) == NANODBC_TEXT("age"));
         REQUIRE(ird.base_table_name(1) == NANODBC_TEXT(""));
         REQUIRE(ird.table_name(1) == NANODBC_TEXT(""));
         // 2 * 3
@@ -2217,7 +2241,10 @@ PRIMARY KEY(t2_fid)
         if (vendor_ == database_vendor::mysql)
         {
             REQUIRE(ird.base_column_name(2) == NANODBC_TEXT(""));
-            REQUIRE(ird.name(2) == NANODBC_TEXT("2 * 3"));
+            if (mariadb_)
+                REQUIRE(ird.name(2) == NANODBC_TEXT(""));
+            else
+                REQUIRE(ird.name(2) == NANODBC_TEXT("2 * 3"));
             REQUIRE(!ird.unnamed(2));
         }
         else if (vendor_ == database_vendor::postgresql)
@@ -2350,8 +2377,9 @@ PRIMARY KEY(t2_fid)
         {
             execute(
                 connection,
-                nanodbc::string(NANODBC_TEXT("insert into test_integral_to_string_conversion "
-                                             "values ")) +
+                nanodbc::string(NANODBC_TEXT(
+                    "insert into test_integral_to_string_conversion "
+                    "values ")) +
                     value + NANODBC_TEXT(";"));
         }
 
@@ -3035,8 +3063,9 @@ PRIMARY KEY(t2_fid)
         drop_table(connection, NANODBC_TEXT("test_string_vector"));
         execute(
             connection,
-            NANODBC_TEXT("create table test_string_vector (first varchar(10), last "
-                         "varchar(10), gender varchar(10));"));
+            NANODBC_TEXT(
+                "create table test_string_vector (first varchar(10), last "
+                "varchar(10), gender varchar(10));"));
 
         nanodbc::statement query(connection);
         prepare(
@@ -3097,8 +3126,9 @@ PRIMARY KEY(t2_fid)
         drop_table(connection, NANODBC_TEXT("test_string_view_vector"));
         execute(
             connection,
-            NANODBC_TEXT("create table test_string_view_vector (first varchar(10), last "
-                         "varchar(10), gender varchar(10));"));
+            NANODBC_TEXT(
+                "create table test_string_view_vector (first varchar(10), last "
+                "varchar(10), gender varchar(10));"));
 
         nanodbc::statement query(connection);
         prepare(
@@ -3612,9 +3642,10 @@ PRIMARY KEY(t2_fid)
             nanodbc::statement st(cn);
             prepare(
                 st,
-                NANODBC_TEXT("insert into test_win32_variant_row_cached_result "
-                             "(i0,s1,f2,s3,d4,b5,dt6,s7,t8) values "
-                             "(?,?,?,?,?,?,?,?,?);"));
+                NANODBC_TEXT(
+                    "insert into test_win32_variant_row_cached_result "
+                    "(i0,s1,f2,s3,d4,b5,dt6,s7,t8) values "
+                    "(?,?,?,?,?,?,?,?,?);"));
             st.bind(0, &i);
             st.bind_strings(1, s1.c_str(), s1.size(), 1);
             st.bind(2, &f);
@@ -3629,8 +3660,9 @@ PRIMARY KEY(t2_fid)
 
         nanodbc::variant_row_cached_result rs = execute(
             cn,
-            NANODBC_TEXT("select i0,s1,f2,s3,d4,b5,dt6,s7,t8 from "
-                         "test_win32_variant_row_cached_result;"));
+            NANODBC_TEXT(
+                "select i0,s1,f2,s3,d4,b5,dt6,s7,t8 from "
+                "test_win32_variant_row_cached_result;"));
         rs.unbind(); // allow interleaved bound and unbound columns access
         short row_count = 0;
         while (rs.next())

@@ -1,4 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
+#
+# Publish a new version of nanodbc: bump VERSION.txt, commit it, and push the tag.
+
+set -euo pipefail
 
 usage()
 {
@@ -9,46 +13,52 @@ usage()
     exit 1
 }
 
-if echo "$*" | egrep -q -- "--help|-h"; then
-    usage
-fi
+abort()
+{
+    echo "error: $1" >&2
+    exit 1
+}
 
-pushd "$(git rev-parse --show-toplevel)" >/dev/null
-source utility/shell_control.sh
+run()
+{
+    echo "\$ $*"
+    "$@"
+}
 
-if [[ -n "$(git status -s)" ]]; then
+case "${1-}" in
+    major | minor | patch) part="$1" ;;
+    *) usage ;;
+esac
+
+cd "$(git rev-parse --show-toplevel)"
+
+[[ -z "$(git status --porcelain)" ]] ||
     abort "changes exist in workspace, please commit or stash them first."
-fi
 
-version=$(cat VERSION.txt)
-major="$(echo "$version" | cut -d. -f1)"
-minor="$(echo "$version" | cut -d. -f2)"
-patch="$(echo "$version" | cut -d. -f3)"
+IFS=. read -r major minor patch < VERSION.txt
 
-if [[ "$1" == "major" ]]; then
-    major="$(( major + 1 ))"
-    minor="0"
-    patch="0"
-elif [[ "$1" == "minor" ]]; then
-    minor="$(( minor + 1 ))"
-    patch="0"
-elif [[ "$1" == "patch" ]]; then
-    patch="$(( patch + 1 ))"
-else
-    usage
-fi
+case "${part}" in
+    major)
+        major=$((major + 1))
+        minor=0
+        patch=0
+        ;;
+    minor)
+        minor=$((minor + 1))
+        patch=0
+        ;;
+    patch) patch=$((patch + 1)) ;;
+esac
 
-version="$major.$minor.$patch"
-tag="v$version"
+version="${major}.${minor}.${patch}"
+tag="v${version}"
 
-if ! head -n 1 CHANGELOG.md | egrep -q "^# $tag$"; then
-    abort "Please update CHANGELOG.md! The file should start with '# $tag'."
-fi
+head -n 1 CHANGELOG.md | grep -qx "# ${tag}" ||
+    abort "Please update CHANGELOG.md! The file should start with '# ${tag}'."
 
-show "Publishing nanodbc version: $version"
-set -ue
-run "echo '$version' > VERSION.txt"
-run "git add VERSION.txt"
-run "git commit -m 'Preparing $version release.'"
-run "git tag -f '$tag'"
-run "git push -f origin '$tag'"
+echo "Publishing nanodbc version: ${version}"
+echo "${version}" > VERSION.txt
+run git add VERSION.txt
+run git commit -m "Preparing ${version} release."
+run git tag -f "${tag}"
+run git push -f origin "${tag}"

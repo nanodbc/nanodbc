@@ -27,6 +27,26 @@ services:
       retries: 30
       start_period: 30s
 
+  # MariaDB speaks the MySQL protocol and the tests reach it through the same driver, so
+  # it runs on a port of its own and the suite is pointed at it by connection string.
+  mariadb:
+    image: mariadb:${MARIADB_VERSION:-12.3}
+    container_name: nanomariadb
+    restart: unless-stopped
+    ports:
+      - "3307:3306"
+    environment:
+      MARIADB_ROOT_PASSWORD: *default_credential
+      MARIADB_DATABASE: *default_credential
+      MARIADB_USER: *default_credential
+      MARIADB_PASSWORD: *default_credential
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
   pgsql:
     image: postgres:${POSTGRES_VERSION:-18}-alpine
     container_name: nanopgsql
@@ -84,6 +104,8 @@ services:
         condition: service_healthy
       mysql:
         condition: service_healthy
+      mariadb:
+        condition: service_healthy
       mssql:
         condition: service_healthy
     # Build and test the working tree rather than a copy taken at image build time.
@@ -110,5 +132,9 @@ services:
       # Some tests create a database of their own, which the unprivileged account
       # the image sets up may not do.
       NANODBC_TEST_CONNSTR_MYSQL: "Driver={MySQL ODBC 8.4 ANSI Driver};Server=mysql;Database=nanodbc;User=root;Password=nanodbc;big_packets=1;"
+      # MariaDB answers on the same driver, so the suite is aimed at it by overriding the
+      # MySQL connection string:
+      #   docker compose run -e NANODBC_TEST_CONNSTR_MYSQL="$NANODBC_TEST_CONNSTR_MARIADB" nanodbc
+      NANODBC_TEST_CONNSTR_MARIADB: "Driver={MariaDB Unicode};Server=mariadb;Port=3306;Database=nanodbc;User=root;Password=nanodbc;"
       # Driver 18 encrypts by default, and the server image uses a self-signed certificate.
       NANODBC_TEST_CONNSTR_MSSQL: "Driver={ODBC Driver 18 for SQL Server};Server=mssql;Database=master;UID=sa;PWD=Password12!;TrustServerCertificate=yes;"

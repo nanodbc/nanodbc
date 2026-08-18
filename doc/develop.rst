@@ -29,17 +29,21 @@ Style
 handles all C++ code formatting for nanodbc.
 
 See our `.clang-format <https://github.com/nanodbc/nanodbc/blob/main/.clang-format>`_
-configuration file for details on the style and currently required version of
-`clang-format`` specified in the comment at the top of the file
+configuration file for the style, and for the major version of ``clang-format`` it is
+written against, which is named in the comment at the top of the file. A different major
+version will reformat code that is already correct, so match the one named there. The
+development container carries it, and ``pip install clang-format==<major>.*`` supplies it
+on a host.
 
-The script `utility/style.sh <https://github.com/nanodbc/nanodbc/blob/main/utility/style.sh>`_
-formats all code in the repository automatically.
-
-To run `clang-format` against the whole nanodbc codebase:
+To run ``clang-format`` against the whole nanodbc codebase:
 
 .. code-block:: console
 
-  ./utility/style.sh
+  clang-format -i $(git ls-files '*.h' '*.cpp')
+
+`.clang-format-ignore <https://github.com/nanodbc/nanodbc/blob/main/.clang-format-ignore>`_
+lists what to leave alone, so vendored code is skipped even when it is named on the
+command line.
 
 To run ``clang-format`` on a single file use the following.
 

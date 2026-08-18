@@ -57,33 +57,36 @@ TEST_CASE("convert_utf8_round_trip", "[string][unicode]")
     }
 }
 
-TEST_CASE("convert_rejects_malformed_input", "[string][unicode]"){SECTION("malformed utf-8"){
-    auto const bad = GENERATE(
-        std::string("\x80"),             // a continuation byte cannot lead
-        std::string("\xC3"),             // truncated two byte sequence
-        std::string("\xE3\x83"),         // truncated three byte sequence
-        std::string("\xC0\xAF"),         // overlong encoding of '/'
-        std::string("\xE0\x80\xAF"),     // overlong again, one byte longer
-        std::string("\xED\xA0\x80"),     // a surrogate has no utf-8 encoding
-        std::string("\xF5\x80\x80\x80"), // beyond U+10FFFF
-        std::string("\xE3\x28\x84"));    // continuation byte is not one
+TEST_CASE("convert_rejects_malformed_input", "[string][unicode]")
+{
+    SECTION("malformed utf-8")
+    {
+        auto const bad = GENERATE(
+            std::string("\x80"),             // a continuation byte cannot lead
+            std::string("\xC3"),             // truncated two byte sequence
+            std::string("\xE3\x83"),         // truncated three byte sequence
+            std::string("\xC0\xAF"),         // overlong encoding of '/'
+            std::string("\xE0\x80\xAF"),     // overlong again, one byte longer
+            std::string("\xED\xA0\x80"),     // a surrogate has no utf-8 encoding
+            std::string("\xF5\x80\x80\x80"), // beyond U+10FFFF
+            std::string("\xE3\x28\x84"));    // continuation byte is not one
 
-nanodbc::wide_string out;
-REQUIRE_THROWS_AS(convert(bad, out), std::range_error);
-}
+        nanodbc::wide_string out;
+        REQUIRE_THROWS_AS(convert(bad, out), std::range_error);
+    }
 
 #ifndef NANODBC_USE_IODBC_WIDE_STRINGS
-SECTION("malformed utf-16")
-{
-    auto const bad = GENERATE(
-        std::u16string(1, 0xD83D),     // high surrogate with nothing after it
-        std::u16string(1, 0xDE00),     // low surrogate leading
-        std::u16string{0xD83D, u'A'}); // high surrogate followed by a non surrogate
+    SECTION("malformed utf-16")
+    {
+        auto const bad = GENERATE(
+            std::u16string(1, 0xD83D),     // high surrogate with nothing after it
+            std::u16string(1, 0xDE00),     // low surrogate leading
+            std::u16string{0xD83D, u'A'}); // high surrogate followed by a non surrogate
 
-    std::string out;
-    nanodbc::wide_string const wide(bad.begin(), bad.end());
-    REQUIRE_THROWS_AS(convert(wide, out), std::range_error);
-}
+        std::string out;
+        nanodbc::wide_string const wide(bad.begin(), bad.end());
+        REQUIRE_THROWS_AS(convert(wide, out), std::range_error);
+    }
 #endif
 }
 
@@ -127,81 +130,86 @@ TEST_CASE("convert", "[string]")
         }
     }
 
-    SECTION("widening conversion"){
+    SECTION("widening conversion")
+    {
 #ifndef _MSC_VER
-        SECTION("std::string to std::u16string"){std::u16string out;
-    convert(u8, out);
-    REQUIRE(u16 == out);
-}
+        SECTION("std::string to std::u16string")
+        {
+            std::u16string out;
+            convert(u8, out);
+            REQUIRE(u16 == out);
+        }
 #else
-        SECTION("std::string to std::wstring"){std::wstring out;
-    convert(u8, out);
-    REQUIRE(w == out);
-}
+        SECTION("std::string to std::wstring")
+        {
+            std::wstring out;
+            convert(u8, out);
+            REQUIRE(w == out);
+        }
 #endif
 
 #ifdef NANODBC_USE_IODBC_WIDE_STRINGS
-SECTION("std::string to std::u32string")
-{
-    std::u32string out;
-    convert(u8, out);
-    REQUIRE(u32 == out);
-}
+        SECTION("std::string to std::u32string")
+        {
+            std::u32string out;
+            convert(u8, out);
+            REQUIRE(u32 == out);
+        }
 #endif
-}
+    }
 
-SECTION("narrowing conversion")
-{
+    SECTION("narrowing conversion")
+    {
 #ifndef _MSC_VER
-    SECTION("std::u16string to std::string")
-    {
-        std::string out;
-        convert(u16, out);
-        REQUIRE(u8 == out);
-    }
+        SECTION("std::u16string to std::string")
+        {
+            std::string out;
+            convert(u16, out);
+            REQUIRE(u8 == out);
+        }
 #else
-    SECTION("std::wstring to std::string")
-    {
-        std::string out;
-        convert(w, out);
-        REQUIRE(u8 == out);
-    }
+        SECTION("std::wstring to std::string")
+        {
+            std::string out;
+            convert(w, out);
+            REQUIRE(u8 == out);
+        }
 #endif
 
 #ifdef NANODBC_USE_IODBC_WIDE_STRINGS
-    SECTION("std::u32string to std::string")
-    {
-        std::string out;
-        convert(u32, out);
-        REQUIRE(u8 == out);
-    }
+        SECTION("std::u32string to std::string")
+        {
+            std::string out;
+            convert(u32, out);
+            REQUIRE(u8 == out);
+        }
 #endif
 
-    SECTION("SQLWCHAR via nanodbc::wide_char_t to std::string")
-    {
+        SECTION("SQLWCHAR via nanodbc::wide_char_t to std::string")
+        {
 #ifdef NANODBC_USE_IODBC_WIDE_STRINGS
-        static_assert(sizeof(WCHAR) == sizeof(char32_t), "WCHAR size is invalid");
-        static_assert(sizeof(WCHAR) == sizeof(nanodbc::wide_char_t), "WCHAR size is invalid");
+            static_assert(sizeof(WCHAR) == sizeof(char32_t), "WCHAR size is invalid");
+            static_assert(sizeof(WCHAR) == sizeof(nanodbc::wide_char_t), "WCHAR size is invalid");
 
-        std::string out;
-        SQLWCHAR const* s = reinterpret_cast<WCHAR const*>(u32.data());
-        auto const us = reinterpret_cast<nanodbc::wide_char_t const*>(
-            s); // no-op or unsigned short to signed char16_t
-        convert(us, u32.size(), out);
-        REQUIRE(u8 == out);
+            std::string out;
+            SQLWCHAR const* s = reinterpret_cast<WCHAR const*>(u32.data());
+            auto const us = reinterpret_cast<nanodbc::wide_char_t const*>(
+                s); // no-op or unsigned short to signed char16_t
+            convert(us, u32.size(), out);
+            REQUIRE(u8 == out);
 #else
-        static_assert(sizeof(WCHAR) == sizeof(char16_t), "WCHAR size is invalid");
-        static_assert(sizeof(WCHAR) == sizeof(nanodbc::wide_char_t), "WCHAR size is invalid");
+            static_assert(sizeof(WCHAR) == sizeof(char16_t), "WCHAR size is invalid");
+            static_assert(sizeof(WCHAR) == sizeof(nanodbc::wide_char_t), "WCHAR size is invalid");
 
-        std::string out;
-        SQLWCHAR const* s = reinterpret_cast<WCHAR const*>(u16.data());
-        auto const us = reinterpret_cast<nanodbc::wide_char_t const*>(
-            s); // no-op or unsigned short to signed char16_t
-        convert(us, u16.size(), out);
-        REQUIRE(u8 == out);
+            std::string out;
+            SQLWCHAR const* s = reinterpret_cast<WCHAR const*>(u16.data());
+            auto const us = reinterpret_cast<nanodbc::wide_char_t const*>(
+                s); // no-op or unsigned short to signed char16_t
+            convert(us, u16.size(), out);
+            REQUIRE(u8 == out);
 #endif
+        }
     }
-}
 }
 
 // Catch is compiled without its own main(), so that the one large translation unit is

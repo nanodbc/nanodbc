@@ -77,11 +77,12 @@ void run_test(nanodbc::string const& connection_string)
     // create tvp_param
     execute(
         connection,
-        NANODBC_TEXT("CREATE TYPE dbo.TVPParam AS TABLE "
-                     " (col0 INT,"
-                     "  col1 VARCHAR(MAX),"
-                     "  col2 NVARCHAR(MAX),"
-                     "  col3 VARBINARY(MAX));"));
+        NANODBC_TEXT(
+            "CREATE TYPE dbo.TVPParam AS TABLE "
+            " (col0 INT,"
+            "  col1 VARCHAR(MAX),"
+            "  col2 NVARCHAR(MAX),"
+            "  col3 VARBINARY(MAX));"));
     // create stored procedure
     execute(
         connection,
