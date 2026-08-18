@@ -19,8 +19,9 @@
     <!-- bounds.3: no array to pointer decay, use gsl::span. Same reason. -->
     <Rule Id="C26485" Action="None" />
     <!-- type.1: use gsl::narrow or gsl::narrow_cast rather than static_cast for an
-         arithmetic conversion. Worth revisiting: a narrow_cast of nanodbc's own may
-         satisfy the intent, if not the checker. -->
+         arithmetic conversion. A narrow_cast of nanodbc's own would be a static_cast under
+         another name, which buys the reader nothing the cast does not already say, so this
+         one is settled rather than open. -->
     <Rule Id="C26472" Action="None" />
   </Rules>
 </RuleSet>
