@@ -16,9 +16,9 @@ user information, example usage, propaganda, and detailed source level documenta
 
 Coverage is measured by the `coverage` job in [ci-linux.yml](.github/workflows/ci-linux.yml), which
 instruments the library with llvm-cov and runs the utility, SQLite and PostgreSQL suites. The job
-prints the full per-file report into its own summary, so the numbers are there for every run,
-including pull requests, and it publishes the figure the badge above reads to the `badges` branch.
-The lcov report is attached to each run as an artifact.
+comments the figures on each pull request and prints the same report into its own summary, so the
+coverage change is visible before merging, and it publishes the figure the badge above reads to the
+`badges` branch. The lcov report is attached to each run as an artifact.
 
 ## Philosophy
 
