@@ -164,6 +164,8 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      contents: write
     services:
       postgresql:
         image: postgres:18
@@ -233,6 +235,36 @@ jobs:
               -instr-profile="${GITHUB_WORKSPACE}/coverage.profdata" "${GITHUB_WORKSPACE}/nanodbc/"
             echo '```'
           } >> "${GITHUB_STEP_SUMMARY}"
+          # Shields renders a badge from this, reading it off the branch the next step writes.
+          llvm-cov export -summary-only "${binaries[@]}" \
+            -instr-profile="${GITHUB_WORKSPACE}/coverage.profdata" \
+            "${GITHUB_WORKSPACE}/nanodbc/" > "${GITHUB_WORKSPACE}/coverage-summary.json"
+          python3 - "${GITHUB_WORKSPACE}/coverage-summary.json" \
+                    "${GITHUB_WORKSPACE}/coverage.json" <<'PYTHON'
+          import json, sys
+
+          summary, badge = sys.argv[1], sys.argv[2]
+          with open(summary) as f:
+              percent = json.load(f)["data"][0]["totals"]["lines"]["percent"]
+
+          for threshold, color in ((50, "red"), (60, "orange"), (75, "yellow"), (90, "green")):
+              if percent < threshold:
+                  break
+          else:
+              color = "brightgreen"
+
+          with open(badge, "w") as f:
+              json.dump(
+                  {
+                      "schemaVersion": 1,
+                      "label": "coverage",
+                      "message": f"{percent:.1f}%",
+                      "color": color,
+                  },
+                  f,
+              )
+          print(f"line coverage {percent:.1f}%")
+          PYTHON
       - name: Upload the lcov report
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -254,6 +286,24 @@ jobs:
                  'coverage badge cannot fill in. The lcov report is attached to this run.' \
                  >> "${GITHUB_STEP_SUMMARY}"
           fi
+      - name: Publish the coverage badge
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # The branch carries the one file and no history, so it is rewritten each time
+          # rather than accumulating a commit per run.
+          work="$(mktemp -d)"
+          cp "${GITHUB_WORKSPACE}/coverage.json" "${work}/"
+          cd "${work}"
+          git init -q
+          git checkout -qb badges
+          git add coverage.json
+          git -c user.name='github-actions[bot]' \
+              -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+              commit -qm "Coverage badge for ${GITHUB_SHA}"
+          git push -q --force \
+            "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" badges
       - name: Send to Codecov
         if: steps.codecov_token.outputs.present == 'true'
         uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
