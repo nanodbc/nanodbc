@@ -474,6 +474,11 @@ struct test_case_fixture : public base_test_fixture
         nanodbc::string const s_name = NANODBC_TEXT("s");
         check_every_accessor<nanodbc::string>(results, 1, s_name, NANODBC_TEXT("forty two"));
 
+        // A text column can also be read one character at a time, which is a conversion of
+        // its own rather than a narrowing of the string.
+        REQUIRE(results.get<std::string::value_type>(1) == 'f');
+        REQUIRE(results.get<nanodbc::wide_string::value_type>(1) == u'f');
+
         REQUIRE(!results.next());
     }
 
@@ -651,6 +656,36 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(nulls == 1);
         REQUIRE(integers == std::set<int>{1, 3});
         REQUIRE(texts == std::set<nanodbc::string>{NANODBC_TEXT("one"), NANODBC_TEXT("three")});
+    }
+
+    // A sentry marks nulls in a batch of binary values as well, on a path of its own.
+    void test_bind_binary_null_sentry()
+    {
+        auto connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_bind_binary_null_sentry"),
+            NANODBC_TEXT("(b ") + get_binary_type_name(4) + NANODBC_TEXT(")"));
+
+        std::vector<std::vector<std::uint8_t>> const values{
+            {0x01, 0x02, 0x03, 0x04}, {0xff, 0xff, 0xff, 0xff}, {0x05, 0x06, 0x07, 0x08}};
+        std::vector<std::uint8_t> const sentry{0xff, 0xff, 0xff, 0xff};
+
+        nanodbc::statement statement(connection);
+        prepare(
+            statement,
+            NANODBC_TEXT("insert into test_bind_binary_null_sentry(b) values (?);"),
+            values.size());
+        statement.bind(0, values, sentry.data());
+        execute(statement, values.size());
+
+        // Asked of the server rather than of the result set, so that the answer does not
+        // depend on how a binary column reports a null once bound.
+        auto counted = execute(
+            connection,
+            NANODBC_TEXT("select count(*) from test_bind_binary_null_sentry where b is null;"));
+        REQUIRE(counted.next());
+        REQUIRE(counted.get<int>(0) == 1);
     }
 
     void test_catalog_columns()

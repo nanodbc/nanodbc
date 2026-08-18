@@ -425,6 +425,11 @@ TEST_CASE_METHOD(sqlite_fixture, "test_bind_null_sentry", "[sqlite][statement]")
     test_bind_null_sentry();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "test_bind_binary_null_sentry", "[sqlite][binary][null]")
+{
+    test_bind_binary_null_sentry();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_result_accessors", "[sqlite][result][accessors]")
 {
     test_result_accessors();

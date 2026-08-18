@@ -293,6 +293,11 @@ TEST_CASE_METHOD(postgresql_fixture, "test_bind_null_sentry", "[postgresql][stat
     test_bind_null_sentry();
 }
 
+TEST_CASE_METHOD(postgresql_fixture, "test_bind_binary_null_sentry", "[postgresql][binary][null]")
+{
+    test_bind_binary_null_sentry();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_result_accessors", "[postgresql][result][accessors]")
 {
     test_result_accessors();

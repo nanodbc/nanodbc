@@ -352,6 +352,11 @@ TEST_CASE_METHOD(mysql_fixture, "test_bind_null_sentry", "[mysql][statement]")
     test_bind_null_sentry();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_bind_binary_null_sentry", "[mysql][binary][null]")
+{
+    test_bind_binary_null_sentry();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_result_accessors", "[mysql][result][accessors]")
 {
     test_result_accessors();
