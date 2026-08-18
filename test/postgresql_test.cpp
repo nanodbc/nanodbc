@@ -275,6 +275,68 @@ TEST_CASE_METHOD(postgresql_fixture, "test_result_at_end", "[postgresql][result]
     test_result_at_end();
 }
 
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_temporal_conversions",
+    "[postgresql][date][time][timestamp]")
+{
+    test_temporal_conversions();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "test_statement_open_close", "[postgresql][statement]")
+{
+    test_statement_open_close();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "test_bind_null_sentry", "[postgresql][statement]")
+{
+    test_bind_null_sentry();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "test_bind_binary_null_sentry", "[postgresql][binary][null]")
+{
+    test_bind_binary_null_sentry();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "test_timeouts", "[postgresql][statement]")
+{
+    test_timeouts();
+}
+
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_statement_parameter_description",
+    "[postgresql][statement]")
+{
+    test_statement_parameter_description();
+}
+
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_result_rowset_navigation",
+    "[postgresql][result][rowset]")
+{
+    test_result_rowset_navigation();
+}
+
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_execute_direct_batch_ops",
+    "[postgresql][statement][batch]")
+{
+    test_execute_direct_batch_ops();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "test_result_unbind", "[postgresql][result][unbind]")
+{
+    test_result_unbind();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "test_result_accessors", "[postgresql][result][accessors]")
+{
+    test_result_accessors();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_result_iterator", "[postgresql][result][iterator]")
 {
     test_result_iterator();

@@ -319,6 +319,18 @@ struct base_test_fixture
         }
     }
 
+    nanodbc::string get_timestamp_type_name()
+    {
+        switch (vendor_)
+        {
+        case database_vendor::mysql:
+        case database_vendor::sqlserver:
+            return NANODBC_TEXT("datetime");
+        default:
+            return NANODBC_TEXT("timestamp");
+        }
+    }
+
     nanodbc::string get_text_type_name()
     {
         switch (vendor_)

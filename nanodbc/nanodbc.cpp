@@ -2414,7 +2414,6 @@ public:
 
         describe_parameters(param_index);
         const SQLSMALLINT& param_scale = param_descr_data_.at(param_index).scale_;
-        NANODBC_ASSERT(param_scale < static_cast<SQLULEN>(std::numeric_limits<short>::max()));
         return static_cast<short>(param_scale);
     }
 
@@ -2427,7 +2426,6 @@ public:
 
         describe_parameters(param_index);
         const SQLSMALLINT& param_type = param_descr_data_.at(param_index).type_;
-        NANODBC_ASSERT(param_type < static_cast<SQLULEN>(std::numeric_limits<short>::max()));
         return static_cast<short>(param_type);
     }
 
