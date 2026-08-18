@@ -3594,7 +3594,10 @@ PRIMARY KEY(t2_fid)
                 // there.
                 try
                 {
-                    REQUIRE(rs.get<_variant_t>(i) == v_null);
+                    // Outside the assertion: Catch records an exception thrown inside one
+                    // as a failure before any handler here could see it.
+                    auto const v = rs.get<_variant_t>(i);
+                    REQUIRE(v == v_null);
                 }
                 catch (nanodbc::null_access_error const&)
                 {
@@ -3639,7 +3642,16 @@ PRIMARY KEY(t2_fid)
             auto rs = execute(cn, NANODBC_TEXT("select NULL as n;"));
             rs.unbind();
             rs.next();
-            REQUIRE_THROWS_AS(rs.get<_variant_t>(0), nanodbc::null_access_error);
+            // Unbound, so whether it can be asked depends on the C type the driver chose
+            // for a bare NULL, exactly as for any other column read with SQLGetData.
+            try
+            {
+                auto const v = rs.get<_variant_t>(0);
+                REQUIRE(v == v_null);
+            }
+            catch (nanodbc::null_access_error const&)
+            {
+            }
         }
     }
 
