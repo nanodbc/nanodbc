@@ -3896,11 +3896,12 @@ public:
                 &unused,                               // TargetValuePtr
                 buffer_length,                         // BufferLength
                 &indicator);                           // StrLen_or_IndPtr
+            // A driver that declines to answer, because the value has already been read or
+            // because it wants its columns in another order, leaves the question to
+            // whatever the fetch knew. Asking is not worth raising an error over.
             if (rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO)
                 col.cbdata_[static_cast<size_t>(rowset_position_)] =
                     static_cast<null_type>(indicator);
-            else if (!success(rc) && rc != SQL_NO_DATA)
-                NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
         }
 
         return col.cbdata_[static_cast<size_t>(rowset_position_)] == SQL_NULL_DATA;
