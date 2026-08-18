@@ -12,12 +12,13 @@ user information, example usage, propaganda, and detailed source level documenta
 
 | Branch | Linux                                                                                                                                                                | Windows                                                                                                                                                                  | Coverage                                                                                                              |
 | :----- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------- |
-| `main` | [![main](https://github.com/nanodbc/nanodbc/actions/workflows/ci-linux.yml/badge.svg?branch=main)](https://github.com/nanodbc/nanodbc/actions/workflows/ci-linux.yml) | [![main](https://github.com/nanodbc/nanodbc/actions/workflows/ci-windows.yml/badge.svg?branch=main)](https://github.com/nanodbc/nanodbc/actions/workflows/ci-windows.yml) | [![codecov](https://codecov.io/gh/nanodbc/nanodbc/branch/main/graph/badge.svg)](https://codecov.io/gh/nanodbc/nanodbc) |
+| `main` | [![main](https://github.com/nanodbc/nanodbc/actions/workflows/ci-linux.yml/badge.svg?branch=main)](https://github.com/nanodbc/nanodbc/actions/workflows/ci-linux.yml) | [![main](https://github.com/nanodbc/nanodbc/actions/workflows/ci-windows.yml/badge.svg?branch=main)](https://github.com/nanodbc/nanodbc/actions/workflows/ci-windows.yml) | [![coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fnanodbc%2Fnanodbc%2Fbadges%2Fcoverage.json)](https://github.com/nanodbc/nanodbc/actions/workflows/ci-linux.yml?query=branch%3Amain) |
 
 Coverage is measured by the `coverage` job in [ci-linux.yml](.github/workflows/ci-linux.yml), which
-instruments the library with llvm-cov and runs the utility, SQLite and PostgreSQL suites. The same
-report is printed into the job summary of every run, so the figure is available there whether or not
-the badge service is reachable.
+instruments the library with llvm-cov and runs the utility, SQLite and PostgreSQL suites. The job
+comments the figures on each pull request and prints the same report into its own summary, so the
+coverage change is visible before merging, and it publishes the figure the badge above reads to the
+`badges` branch. The lcov report is attached to each run as an artifact.
 
 ## Philosophy
 
