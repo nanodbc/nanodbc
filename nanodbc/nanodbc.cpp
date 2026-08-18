@@ -920,7 +920,7 @@ public:
     bound_column(bound_column const& rhs) = delete;
     bound_column& operator=(bound_column const& rhs) = delete;
 
-    bound_column()
+    bound_column() noexcept
         : name_()
         , column_(0)
         , sqltype_(0)
@@ -1194,7 +1194,7 @@ public:
     connection_impl(connection_impl const&) = delete;
     connection_impl& operator=(connection_impl const&) = delete;
 
-    connection_impl()
+    connection_impl() noexcept
         : env_(nullptr)
         , dbc_(nullptr)
         , connected_(false)
@@ -7605,7 +7605,7 @@ std::list<string> catalog::list_table_types()
 namespace nanodbc
 {
 
-result::result()
+result::result() noexcept
     : impl_()
 {
 }

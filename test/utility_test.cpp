@@ -7,6 +7,7 @@
 
 #include <stdexcept>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 // The UTF-8 codec replaced std::wstring_convert, so it is exercised directly here:
@@ -214,6 +215,21 @@ TEST_CASE("convert", "[string]")
 
 // Catch is compiled without its own main(), so that the one large translation unit is
 // built once for every test program rather than twice.
+// Default construction of these is declared to throw nothing, and a caller may rely on it.
+// A change that makes one of them allocate would still compile and would still pass the
+// suite, so it is asserted here rather than left to be noticed.
+static_assert(
+    std::is_nothrow_default_constructible<nanodbc::result>::value,
+    "result holds one shared_ptr and its default constructor cannot throw");
+static_assert(
+    std::is_nothrow_default_constructible<nanodbc::result_iterator>::value,
+    "result_iterator follows result");
+static_assert(
+    std::is_nothrow_default_constructible<nanodbc::date>::value &&
+        std::is_nothrow_default_constructible<nanodbc::time>::value &&
+        std::is_nothrow_default_constructible<nanodbc::timestamp>::value,
+    "the temporal types are aggregates of integers");
+
 int main(int argc, char* argv[])
 {
     Catch::Session session;
