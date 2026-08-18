@@ -239,12 +239,28 @@ jobs:
           name: coverage-lcov
           path: coverage.lcov
           overwrite: true
+      # Codecov rejects an upload to a protected branch without a token, and the action
+      # reports success either way, so the absence of the secret is called out here rather
+      # than left to be inferred from a badge that never fills in.
+      - name: Check for the Codecov token
+        id: codecov_token
+        run: |
+          if [ -n "${{ secrets.CODECOV_TOKEN }}" ]; then
+            echo "present=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "present=false" >> "${GITHUB_OUTPUT}"
+            echo '> [!WARNING]' >> "${GITHUB_STEP_SUMMARY}"
+            echo '> CODECOV_TOKEN is not set, so this report was not sent to Codecov and the' \
+                 'coverage badge cannot fill in. The lcov report is attached to this run.' \
+                 >> "${GITHUB_STEP_SUMMARY}"
+          fi
       - name: Send to Codecov
+        if: steps.codecov_token.outputs.present == 'true'
         uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         with:
           files: coverage.lcov
           token: ${{ secrets.CODECOV_TOKEN }}
-          fail_ci_if_error: false
+          fail_ci_if_error: true
 
   test-postgresql:
     runs-on: ubuntu-latest
