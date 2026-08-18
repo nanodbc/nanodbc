@@ -1544,9 +1544,9 @@ public:
 
     std::size_t transactions() const { return transactions_; }
 
-    void* native_dbc_handle() const { return dbc_; }
+    void* native_dbc_handle() const noexcept { return dbc_; }
 
-    void* native_env_handle() const { return env_; }
+    void* native_env_handle() const noexcept { return env_; }
 
     template <class T>
     T get_info(short info_type) const
@@ -4603,6 +4603,8 @@ inline void result::result_impl::get_ref_impl<date>(short column, date& result) 
             return;
         }
     }
+    default:
+        break;
     }
     throw type_incompatible_error();
 }
@@ -4631,6 +4633,8 @@ inline void result::result_impl::get_ref_impl<time>(short column, time& result) 
             return;
         }
     }
+    default:
+        break;
     }
     throw type_incompatible_error();
 }
@@ -4661,6 +4665,8 @@ inline void result::result_impl::get_ref_impl<timestamp>(short column, timestamp
             return;
         }
     }
+    default:
+        break;
     }
     throw type_incompatible_error();
 }
@@ -4693,6 +4699,8 @@ result::result_impl::get_ref_impl<timestampoffset>(short column, timestampoffset
             return;
         }
     }
+    default:
+        break;
     }
     throw type_incompatible_error();
 }
@@ -4992,6 +5000,8 @@ inline void result::result_impl::get_ref_impl<std::vector<std::uint8_t>>(
         }
         return;
     }
+    default:
+        break;
     }
     throw type_incompatible_error();
 }
@@ -5253,6 +5263,8 @@ void result::result_impl::get_ref_from_string_column(short column, T& result) co
     case SQL_C_WCHAR:
         result = static_cast<T>(*ensure_pdata<wide_char_t>(column));
         return;
+    default:
+        break;
     }
     throw type_incompatible_error();
 }
@@ -5351,6 +5363,8 @@ void result::result_impl::get_ref_impl(short column, T& result) const
     case SQL_C_UBIGINT:
         result = (T) * (ensure_pdata<uint64_t>(column));
         return;
+    default:
+        break;
     }
     throw type_incompatible_error();
 }
@@ -5686,12 +5700,12 @@ T connection::get_info(short info_type) const
     return impl_->get_info<T>(info_type);
 }
 
-void* connection::native_dbc_handle() const
+void* connection::native_dbc_handle() const noexcept
 {
     return impl_->native_dbc_handle();
 }
 
-void* connection::native_env_handle() const
+void* connection::native_env_handle() const noexcept
 {
     return impl_->native_env_handle();
 }
@@ -5908,7 +5922,7 @@ class connection& statement::connection()
     return impl_->connection();
 }
 
-void* statement::native_statement_handle() const
+void* statement::native_statement_handle() const noexcept
 {
     return impl_->native_statement_handle();
 }
@@ -7625,7 +7639,7 @@ void result::swap(result& rhs) noexcept
     swap(impl_, rhs.impl_);
 }
 
-void* result::native_statement_handle() const
+void* result::native_statement_handle() const noexcept
 {
     return impl_->native_statement_handle();
 }

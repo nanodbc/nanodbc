@@ -935,6 +935,75 @@ struct test_case_fixture : public base_test_fixture
         }
     }
 
+    // The sibling of the sentry: an array of flags saying which of a batch are null. Scalar
+    // and binary values take separate paths to the same place.
+    void test_bind_null_array()
+    {
+        auto connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_bind_null_array"),
+            NANODBC_TEXT("(i int, b ") + get_binary_type_name(4) + NANODBC_TEXT(")"));
+
+        std::size_t const batch = 3;
+        int const values[batch] = {10, 20, 30};
+        std::vector<std::vector<std::uint8_t>> const binaries{
+            {0x01, 0x02, 0x03, 0x04}, {0x05, 0x06, 0x07, 0x08}, {0x09, 0x0a, 0x0b, 0x0c}};
+        bool const nulls[batch] = {false, true, false};
+
+        nanodbc::statement statement(connection);
+        prepare(statement, NANODBC_TEXT("insert into test_bind_null_array(i, b) values (?, ?);"));
+        statement.bind(0, values, batch, nulls);
+        statement.bind(1, binaries, nulls);
+        execute(statement, batch);
+
+        auto counted = execute(
+            connection,
+            NANODBC_TEXT(
+                "select count(*) from test_bind_null_array "
+                "where i is null and b is null;"));
+        REQUIRE(counted.next());
+        REQUIRE(counted.get<int>(0) == 1);
+
+        auto rest = execute(
+            connection,
+            NANODBC_TEXT(
+                "select count(*) from test_bind_null_array "
+                "where i is not null and b is not null;"));
+        REQUIRE(rest.next());
+        REQUIRE(rest.get<int>(0) == 2);
+    }
+
+    // A boolean column binds to SQL_C_BIT, which no other column type reaches.
+    void test_boolean_column()
+    {
+        auto connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_boolean_column"),
+            NANODBC_TEXT("(i int, b ") + get_bool_type_name() + NANODBC_TEXT(")"));
+
+        nanodbc::statement statement(connection);
+        prepare(statement, NANODBC_TEXT("insert into test_boolean_column(i, b) values (?, ?);"));
+        int index = 1;
+        bool truth = true;
+        statement.bind(0, &index);
+        statement.bind(1, &truth);
+        execute(statement);
+
+        auto results = execute(connection, NANODBC_TEXT("select i, b from test_boolean_column;"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<bool>(1));
+        // The same column answers the integral types.
+        REQUIRE(results.get<int>(1) == 1);
+        REQUIRE(results.get<short>(1) == 1);
+
+        // Reading one as text is left alone here: rendering a string has no case for the C
+        // types the drivers bind a boolean to, so it reports the types are incompatible
+        // rather than answering. That is worth its own change.
+        REQUIRE(!results.next());
+    }
+
     void test_catalog_columns()
     {
         nanodbc::connection connection = connect();

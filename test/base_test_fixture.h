@@ -324,6 +324,17 @@ struct base_test_fixture
         }
     }
 
+    nanodbc::string get_bool_type_name()
+    {
+        switch (vendor_)
+        {
+        case database_vendor::sqlserver:
+            return NANODBC_TEXT("bit");
+        default:
+            return NANODBC_TEXT("boolean");
+        }
+    }
+
     nanodbc::string get_timestamp_type_name()
     {
         switch (vendor_)
