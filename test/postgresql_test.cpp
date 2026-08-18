@@ -332,6 +332,11 @@ TEST_CASE_METHOD(postgresql_fixture, "test_result_unbind", "[postgresql][result]
     test_result_unbind();
 }
 
+TEST_CASE_METHOD(postgresql_fixture, "test_is_null_binary", "[postgresql][binary][null]")
+{
+    test_is_null_binary();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_result_accessors", "[postgresql][result][accessors]")
 {
     test_result_accessors();

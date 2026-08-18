@@ -892,6 +892,49 @@ struct test_case_fixture : public base_test_fixture
         }
     }
 
+    // A binary column is not bound, so the fetch leaves no indicator behind for it and
+    // whether it is null has to be asked of the driver.
+    void test_is_null_binary()
+    {
+        auto connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_is_null_binary"),
+            NANODBC_TEXT("(i int, b ") + get_binary_type_name(8) + NANODBC_TEXT(")"));
+        execute(
+            connection, NANODBC_TEXT("insert into test_is_null_binary(i, b) values (1, NULL);"));
+        {
+            nanodbc::statement statement(connection);
+            prepare(
+                statement, NANODBC_TEXT("insert into test_is_null_binary(i, b) values (2, ?);"));
+            std::vector<std::vector<std::uint8_t>> const values{{0x01, 0x02, 0x03, 0x04}};
+            statement.bind(0, values);
+            execute(statement, 1);
+        }
+
+        {
+            auto results = execute(
+                connection, NANODBC_TEXT("select i, b from test_is_null_binary where i = 1;"));
+            REQUIRE(results.next());
+            // Asked before anything has read the column.
+            REQUIRE(results.is_null(1));
+            REQUIRE(results.is_null(NANODBC_TEXT("b")));
+            // And a read of it says so rather than handing back an empty value.
+            REQUIRE_THROWS_AS(
+                results.get<std::vector<std::uint8_t>>(1), nanodbc::null_access_error);
+        }
+
+        {
+            auto results = execute(
+                connection, NANODBC_TEXT("select i, b from test_is_null_binary where i = 2;"));
+            REQUIRE(results.next());
+            REQUIRE(!results.is_null(1));
+            // Asking must not spend the only read there is.
+            auto const value = results.get<std::vector<std::uint8_t>>(1);
+            REQUIRE(value == std::vector<std::uint8_t>{0x01, 0x02, 0x03, 0x04});
+        }
+    }
+
     void test_catalog_columns()
     {
         nanodbc::connection connection = connect();
@@ -2706,21 +2749,23 @@ PRIMARY KEY(t2_fid)
 
         REQUIRE(results.next());
 
+        // These columns hold fixed size types, which a driver will not hand over twice, so
+        // nanodbc cannot ask after them without spending the only read there is. Until
+        // something reads them the answer is whatever the fetch left behind, which only the
+        // MySQL driver fills in.
         if (vendor_ == database_vendor::mysql)
-            REQUIRE(results.is_null(0)); // MySQL: Bug or non-standard behaviour? SQLBindCol sets
-                                         // the indicator to SQL_NULL_DATA
+            REQUIRE(results.is_null(0));
         else
-            REQUIRE(!results.is_null(0)); // false as undetermined until SQLGetData is called
+            REQUIRE(!results.is_null(0));
         REQUIRE(results.get<int>(0, -1) == -1);
-        REQUIRE(results.is_null(0)); // determined
+        REQUIRE(results.is_null(0)); // determined by the read
 
         if (vendor_ == database_vendor::mysql)
-            REQUIRE(results.is_null(1)); // MySQL: Bug or non-standard behaviour? SQLBindCol sets
-                                         // the indicator to SQL_NULL_DATA
+            REQUIRE(results.is_null(1));
         else
-            REQUIRE(!results.is_null(1)); // false as undetermined until SQLGetData is called
+            REQUIRE(!results.is_null(1));
         REQUIRE(results.get<double>(1, 1.23) >= 1.23);
-        REQUIRE(results.is_null(1)); // determined
+        REQUIRE(results.is_null(1)); // determined by the read
     }
 
     void test_result_at_end()

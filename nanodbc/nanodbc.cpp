@@ -3866,6 +3866,43 @@ public:
         bound_column& col = bound_columns_[column];
         if (rowset_position_ >= rows())
             throw index_range_error();
+
+        // A column that is not bound is read with SQLGetData, and the fetch leaves no
+        // indicator behind for it, so whether it is null has to be asked of the driver.
+        // Asking for none of the data reports the length, or that there is no value, and
+        // leaves the data itself where it is. That only holds for the variable length
+        // types: for a fixed size one the buffer length is ignored, the driver hands over
+        // the value, and it will not hand it over twice, so those are left to report what
+        // the fetch knew.
+        bool const variable_length =
+            col.ctype_ == SQL_C_CHAR || col.ctype_ == SQL_C_WCHAR || col.ctype_ == SQL_C_BINARY;
+        if (!col.bound_ && variable_length)
+        {
+            // Binary data takes a buffer length of zero, but character data has to be left
+            // room for the terminator it is always given, so ask for room for that alone.
+            SQLLEN const buffer_length =
+                col.ctype_ == SQL_C_BINARY
+                    ? 0
+                    : (col.ctype_ == SQL_C_WCHAR ? sizeof(SQLWCHAR) : sizeof(SQLCHAR));
+            SQLWCHAR unused = 0;
+            SQLLEN indicator = 0;
+            RETCODE rc;
+            NANODBC_CALL_RC(
+                SQLGetData,
+                rc,
+                stmt_.native_statement_handle(),       // StatementHandle
+                static_cast<SQLUSMALLINT>(column + 1), // Col_or_Param_Num
+                col.ctype_,                            // TargetType
+                &unused,                               // TargetValuePtr
+                buffer_length,                         // BufferLength
+                &indicator);                           // StrLen_or_IndPtr
+            if (rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO)
+                col.cbdata_[static_cast<size_t>(rowset_position_)] =
+                    static_cast<null_type>(indicator);
+            else if (!success(rc) && rc != SQL_NO_DATA)
+                NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
+        }
+
         return col.cbdata_[static_cast<size_t>(rowset_position_)] == SQL_NULL_DATA;
     }
 

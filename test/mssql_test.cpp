@@ -1172,6 +1172,11 @@ TEST_CASE_METHOD(mssql_fixture, "test_result_unbind", "[mssql][result][unbind]")
     test_result_unbind();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_is_null_binary", "[mssql][binary][null]")
+{
+    test_is_null_binary();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_result_accessors", "[mssql][result][accessors]")
 {
     test_result_accessors();
@@ -2183,18 +2188,12 @@ TEST_CASE_METHOD(
 
         REQUIRE(p1_col2_[rcnt] == results.get<std::string>(3));
 
-        // we need call get/get_ref function first,
-        // for get correct is_null() value nvarchar(max) column
-        auto p1_col3_result = results.get<nanodbc::wide_string>(4);
+        REQUIRE(p1_col3_nulls._data[rcnt] == results.is_null(4));
         if (!p1_col3_nulls._data[rcnt])
         {
-            REQUIRE(p1_col3_[rcnt] == p1_col3_result);
+            REQUIRE(p1_col3_[rcnt] == results.get<nanodbc::wide_string>(4));
         }
-        REQUIRE(p1_col3_nulls._data[rcnt] == results.is_null(4));
 
-        // we need call get/get_ref function first,
-        // for get correct is_null() value nvarchar(max) column
-        auto p1_col4_result = results.get<std::vector<uint8_t>>(5);
         REQUIRE(results.is_null(5));
 
         REQUIRE(p2_ == results.get<nanodbc::string>(6));

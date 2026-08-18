@@ -2061,11 +2061,16 @@ public:
 
     /// \brief Returns true if and only if the given column of the current rowset is null.
     ///
-    /// There is a bug/limitation in ODBC drivers for SQL Server (and possibly others)
-    /// which causes SQLBindCol() to never write SQL_NOT_NULL to the length/indicator
-    /// buffer unless you also bind the data column. nanodbc's is_null() will return
-    /// correct values for (n)varchar(max) columns when you ensure that SQLGetData()
-    /// has been called for that column (i.e. after get() or get_ref() is called).
+    /// A long column, such as a blob or (n)varchar(max), is not bound to a buffer, and most
+    /// drivers leave its length/indicator unwritten at fetch even where the ODBC
+    /// specification says binding the indicator alone is enough. For such a column this
+    /// asks the driver, which costs a call to SQLGetData and carries the same restrictions
+    /// as reading the column does: SQL Server, in particular, requires that unbound columns
+    /// are visited in ascending order, and answers an earlier column after a later one with
+    /// SQLSTATE 07009. Ask about such a column in the order you intend to read it.
+    ///
+    /// The value itself is left where it is, so a get() or get_ref() after this returns the
+    /// whole of it.
     ///
     /// Columns are numbered from left to right and 0-indexed.
     /// \see get(), get_ref()
