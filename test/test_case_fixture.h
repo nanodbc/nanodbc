@@ -384,6 +384,275 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(!results.next());
     }
 
+    // date, time and timestamp carry no equality operator of their own.
+    static bool values_equal(nanodbc::date const& lhs, nanodbc::date const& rhs)
+    {
+        return lhs.year == rhs.year && lhs.month == rhs.month && lhs.day == rhs.day;
+    }
+
+    static bool values_equal(nanodbc::time const& lhs, nanodbc::time const& rhs)
+    {
+        return lhs.hour == rhs.hour && lhs.min == rhs.min && lhs.sec == rhs.sec;
+    }
+
+    static bool values_equal(nanodbc::timestamp const& lhs, nanodbc::timestamp const& rhs)
+    {
+        return lhs.year == rhs.year && lhs.month == rhs.month && lhs.day == rhs.day &&
+               lhs.hour == rhs.hour && lhs.min == rhs.min && lhs.sec == rhs.sec &&
+               lhs.fract == rhs.fract;
+    }
+
+    template <class T>
+    static bool values_equal(T const& lhs, T const& rhs)
+    {
+        return lhs == rhs;
+    }
+
+    // A column is reachable eight ways: get and get_ref, each by index and by name, each
+    // with and without a fallback. They are separate templates, so a type is only covered
+    // once every one of them has been asked for it.
+    template <class T>
+    void check_every_accessor(
+        nanodbc::result& results,
+        short index,
+        nanodbc::string const& name,
+        T const& expected)
+    {
+        T const fallback{};
+        REQUIRE(values_equal(results.template get<T>(index), expected));
+        REQUIRE(values_equal(results.template get<T>(name), expected));
+        REQUIRE(values_equal(results.template get<T>(index, fallback), expected));
+        REQUIRE(values_equal(results.template get<T>(name, fallback), expected));
+
+        T out{};
+        results.template get_ref<T>(index, out);
+        REQUIRE(values_equal(out, expected));
+
+        out = T{};
+        results.template get_ref<T>(name, out);
+        REQUIRE(values_equal(out, expected));
+
+        out = T{};
+        results.template get_ref<T>(index, fallback, out);
+        REQUIRE(values_equal(out, expected));
+
+        out = T{};
+        results.template get_ref<T>(name, fallback, out);
+        REQUIRE(values_equal(out, expected));
+    }
+
+    void test_result_accessors()
+    {
+        auto connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_result_accessors"),
+            NANODBC_TEXT("(i int, s varchar(10))"));
+        execute(
+            connection,
+            NANODBC_TEXT("insert into test_result_accessors (i, s) values (42, 'forty two');"));
+
+        auto results = execute(connection, NANODBC_TEXT("select i, s from test_result_accessors;"));
+        REQUIRE(results.next());
+
+        nanodbc::string const i_name = NANODBC_TEXT("i");
+        check_every_accessor<bool>(results, 0, i_name, true);
+        check_every_accessor<signed char>(results, 0, i_name, 42);
+        check_every_accessor<unsigned char>(results, 0, i_name, 42);
+        check_every_accessor<short>(results, 0, i_name, 42);
+        check_every_accessor<unsigned short>(results, 0, i_name, 42);
+        check_every_accessor<int>(results, 0, i_name, 42);
+        check_every_accessor<unsigned int>(results, 0, i_name, 42u);
+        check_every_accessor<long>(results, 0, i_name, 42L);
+        check_every_accessor<unsigned long>(results, 0, i_name, 42UL);
+        check_every_accessor<long long>(results, 0, i_name, 42LL);
+        check_every_accessor<unsigned long long>(results, 0, i_name, 42ULL);
+        check_every_accessor<float>(results, 0, i_name, 42.0f);
+        check_every_accessor<double>(results, 0, i_name, 42.0);
+        check_every_accessor<nanodbc::string>(results, 0, i_name, NANODBC_TEXT("42"));
+
+        nanodbc::string const s_name = NANODBC_TEXT("s");
+        check_every_accessor<nanodbc::string>(results, 1, s_name, NANODBC_TEXT("forty two"));
+
+        REQUIRE(!results.next());
+    }
+
+    // A temporal column can be asked for as text, and a wider temporal type can be asked
+    // for as a narrower one. Both go through conversions that reading a column into its
+    // own type does not reach.
+    void test_temporal_conversions()
+    {
+        auto connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_temporal_conversions"),
+            NANODBC_TEXT("(d date, t time, ts ") + get_timestamp_type_name() + NANODBC_TEXT(")"));
+
+        nanodbc::date const d{2016, 7, 12};
+        nanodbc::time const t{11, 45, 59};
+        nanodbc::timestamp const ts{2016, 7, 12, 11, 45, 59, 0};
+        {
+            nanodbc::statement statement(connection);
+            prepare(
+                statement,
+                NANODBC_TEXT("insert into test_temporal_conversions(d, t, ts) "
+                             "values (?, ?, ?);"));
+            statement.bind(0, &d);
+            statement.bind(1, &t);
+            statement.bind(2, &ts);
+            execute(statement);
+        }
+
+        auto results =
+            execute(connection, NANODBC_TEXT("select d, t, ts from test_temporal_conversions;"));
+        REQUIRE(results.next());
+
+        REQUIRE(results.get<nanodbc::string>(0) == NANODBC_TEXT("2016-07-12"));
+        REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("11:45:59"));
+        REQUIRE(results.get<nanodbc::string>(2).find(NANODBC_TEXT("2016-07-12 11:45:59")) == 0);
+
+        REQUIRE(values_equal(results.get<nanodbc::date>(2), d));
+        REQUIRE(values_equal(results.get<nanodbc::time>(2), t));
+
+        auto const widened = results.get<nanodbc::timestamp>(0);
+        REQUIRE(widened.year == d.year);
+        REQUIRE(widened.month == d.month);
+        REQUIRE(widened.day == d.day);
+
+        REQUIRE(!results.next());
+    }
+
+    // The descriptor exposes two dozen fields, each its own call into SQLGetDescField.
+    // Drivers differ over which they answer for a given statement, so the ones that are
+    // not universal are asked for without insisting on a particular answer.
+    void test_implementation_row_descriptor_fields()
+    {
+        auto c = connect();
+        create_table(
+            c, NANODBC_TEXT("test_ird_fields"), NANODBC_TEXT("(i int NOT NULL, s varchar(30))"));
+        execute(c, NANODBC_TEXT("insert into test_ird_fields(i, s) values (1, 'one');"));
+
+        nanodbc::statement stmt(c, NANODBC_TEXT("select i, s from test_ird_fields;"));
+        nanodbc::implementation_row_descriptor ird(stmt);
+        REQUIRE(ird.count() == 2);
+
+        for (short record = 0; record < ird.count(); ++record)
+        {
+            REQUIRE(!ird.name(record).empty());
+            REQUIRE(ird.type(record) != 0);
+            REQUIRE(ird.concise_type(record) != 0);
+            REQUIRE(!ird.type_name(record).empty());
+            REQUIRE(ird.length(record) > 0);
+            REQUIRE(ird.octet_length(record) > 0);
+            REQUIRE(ird.display_size(record) > 0);
+
+            // Asked for, not asserted on: the answers are the driver's to choose.
+            ird.auto_unique_value(record);
+            ird.base_column_name(record);
+            ird.base_table_name(record);
+            ird.case_sensitive(record);
+            ird.catalog_name(record);
+            ird.fixed_prec_scale(record);
+            ird.label(record);
+            ird.local_type_name(record);
+            ird.nullable(record);
+            ird.num_prec_radix(record);
+            ird.precision(record);
+            ird.rowver(record);
+            ird.scale(record);
+            ird.schema_name(record);
+            ird.searchable(record);
+            ird.table_name(record);
+            ird.unnamed(record);
+            ird.unsigned_(record);
+            ird.updatable(record);
+        }
+
+        // Every field goes through the same range check.
+        REQUIRE_THROWS_AS(ird.name(ird.count()), nanodbc::index_range_error);
+        REQUIRE_THROWS_AS(ird.type(-1), nanodbc::index_range_error);
+    }
+
+    // A statement can be built without a connection and opened afterwards, and closing it
+    // leaves it reusable.
+    void test_statement_open_close()
+    {
+        auto connection = connect();
+        create_table(
+            connection, NANODBC_TEXT("test_statement_open_close"), NANODBC_TEXT("(i int)"));
+
+        nanodbc::statement statement;
+        REQUIRE(!statement.open());
+        REQUIRE(!statement.connected());
+
+        statement.open(connection);
+        REQUIRE(statement.open());
+        REQUIRE(statement.connected());
+
+        prepare(statement, NANODBC_TEXT("insert into test_statement_open_close(i) values (?);"));
+        int value = 7;
+        statement.bind(0, &value);
+        execute(statement);
+
+        statement.close();
+        REQUIRE(!statement.open());
+
+        auto results =
+            execute(connection, NANODBC_TEXT("select i from test_statement_open_close;"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<int>(0) == 7);
+    }
+
+    // A sentry marks which of a batch of values is null, in place of a separate array of
+    // flags. Strings take a different path from the other types.
+    void test_bind_null_sentry()
+    {
+        auto connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_bind_null_sentry"),
+            NANODBC_TEXT("(i int, s varchar(10))"));
+
+        std::size_t const batch = 3;
+        int const values[batch] = {1, -1, 3};
+        int const sentry = -1;
+        char const strings[batch][6] = {"one", "xxx", "three"};
+        char const string_sentry[6] = "xxx";
+
+        nanodbc::statement statement(connection);
+        prepare(
+            statement,
+            NANODBC_TEXT("insert into test_bind_null_sentry(i, s) values (?, ?);"),
+            batch);
+        statement.bind(0, values, batch, &sentry);
+        statement.bind_strings(1, strings, string_sentry);
+        execute(statement, batch);
+
+        // Where a null sorts differs between backends, so the rows are gathered rather than
+        // expected in an order.
+        auto results = execute(connection, NANODBC_TEXT("select i, s from test_bind_null_sentry;"));
+
+        int nulls = 0;
+        std::set<int> integers;
+        std::set<nanodbc::string> texts;
+        while (results.next())
+        {
+            if (results.is_null(0))
+            {
+                REQUIRE(results.is_null(1));
+                ++nulls;
+                continue;
+            }
+            integers.insert(results.get<int>(0));
+            texts.insert(results.get<nanodbc::string>(1));
+        }
+
+        // The value matching the sentry became a null in both columns.
+        REQUIRE(nulls == 1);
+        REQUIRE(integers == std::set<int>{1, 3});
+        REQUIRE(texts == std::set<nanodbc::string>{NANODBC_TEXT("one"), NANODBC_TEXT("three")});
+    }
+
     void test_catalog_columns()
     {
         nanodbc::connection connection = connect();

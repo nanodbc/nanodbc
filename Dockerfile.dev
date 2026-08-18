@@ -11,6 +11,7 @@ RUN apt-get -qy update \
     apt-utils \
     ca-certificates \
     ccache \
+    clang \
     clang-format-15 \
     cmake \
     curl \
@@ -18,8 +19,12 @@ RUN apt-get -qy update \
     git \
     gnupg \
     iputils-ping \
+    libc++-dev \
+    libc++abi-dev \
+    libclang-rt-dev \
     libsqliteodbc \
     libssl-dev \
+    llvm \
     locales \
     lsb-release \
     make \

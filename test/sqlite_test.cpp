@@ -415,6 +415,21 @@ TEST_CASE_METHOD(sqlite_fixture, "test_result_at_end", "[sqlite][result]")
     test_result_at_end();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "test_statement_open_close", "[sqlite][statement]")
+{
+    test_statement_open_close();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_bind_null_sentry", "[sqlite][statement]")
+{
+    test_bind_null_sentry();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_result_accessors", "[sqlite][result][accessors]")
+{
+    test_result_accessors();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_result_iterator", "[sqlite][result][iterator]")
 {
     test_result_iterator();

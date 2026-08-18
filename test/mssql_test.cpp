@@ -1101,6 +1101,34 @@ TEST_CASE_METHOD(mssql_fixture, "test_result_at_end", "[mssql][result]")
     test_result_at_end();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_temporal_conversions", "[mssql][date][time][timestamp]")
+{
+    test_temporal_conversions();
+}
+
+TEST_CASE_METHOD(
+    mssql_fixture,
+    "test_implementation_row_descriptor_fields",
+    "[mssql][descriptor][ird]")
+{
+    test_implementation_row_descriptor_fields();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_statement_open_close", "[mssql][statement]")
+{
+    test_statement_open_close();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_bind_null_sentry", "[mssql][statement]")
+{
+    test_bind_null_sentry();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_result_accessors", "[mssql][result][accessors]")
+{
+    test_result_accessors();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_result_iterator", "[mssql][result][iterator]")
 {
     test_result_iterator();
