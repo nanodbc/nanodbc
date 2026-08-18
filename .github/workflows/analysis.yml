@@ -47,7 +47,7 @@ jobs:
           cmakeBuildDirectory: ${{ env.build }}
           buildConfiguration: ${{ env.config }}
           # Ruleset file that will determine what checks will be run
-          ruleset: CppCoreCheckRules.ruleset
+          ruleset: ${{ github.workspace }}/nanodbc.ruleset
           # Paths to ignore analysis of CMake targets and includes. Neither the tests nor
           # the examples are shipped to anyone, and their findings drown out the library's.
           # The list is ";" separated.
