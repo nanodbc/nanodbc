@@ -19,8 +19,20 @@
     <!-- bounds.3: no array to pointer decay, use gsl::span. Same reason. -->
     <Rule Id="C26485" Action="None" />
     <!-- type.1: use gsl::narrow or gsl::narrow_cast rather than static_cast for an
-         arithmetic conversion. Worth revisiting: a narrow_cast of nanodbc's own may
-         satisfy the intent, if not the checker. -->
+         arithmetic conversion. A narrow_cast of nanodbc's own would be a static_cast under
+         another name, which buys the reader nothing the cast does not already say, so this
+         one is settled rather than open. -->
     <Rule Id="C26472" Action="None" />
+    <!-- f.23: mark a parameter gsl::not_null. -->
+    <Rule Id="C26429" Action="None" />
+    <!-- i.11: only delete through a gsl::owner. -->
+    <Rule Id="C26401" Action="None" />
+    <!-- i.11 again, for the allocation rather than the delete. -->
+    <Rule Id="C26400" Action="None" />
+    <!-- Calling an STL algorithm with a pointer, where the remedy offered is a gsl::span. -->
+    <Rule Id="C26459" Action="None" />
+    <!-- type.7: prefer a variant to a naked union. The union objected to is the VARIANT
+         of the Windows SDK, which the _variant_t support exists to speak to. -->
+    <Rule Id="C26476" Action="None" />
   </Rules>
 </RuleSet>

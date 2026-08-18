@@ -58,12 +58,15 @@ jobs:
         uses: github/codeql-action/upload-sarif@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4
         with:
           sarif_file: ${{ steps.run-core-analysis.outputs.sarif }}
+          # Each tool needs a category of its own, or the three uploads for a commit
+          # overwrite each other and the losers' alerts are never superseded.
+          category: msvc-core-guidelines
 
       # Upload SARIF file as an Artifact to download and view
       - name: Upload SARIF as an Artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: sarif-file
+          name: sarif-core-guidelines
           path: ${{ steps.run-core-analysis.outputs.sarif }}
           overwrite: true
 
@@ -98,12 +101,13 @@ jobs:
         uses: github/codeql-action/upload-sarif@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4
         with:
           sarif_file: ${{ steps.run-native-analysis.outputs.sarif }}
+          category: msvc-native-recommended
 
       # Upload SARIF file as an Artifact to download and view
       - name: Upload SARIF as an Artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: sarif-file
+          name: sarif-native-recommended
           path: ${{ steps.run-native-analysis.outputs.sarif }}
           overwrite: true
 
@@ -129,3 +133,4 @@ jobs:
         uses: github/codeql-action/upload-sarif@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4
         with:
           sarif_file: ${{github.workspace}}/flawfinder_results.sarif
+          category: flawfinder

@@ -920,7 +920,7 @@ public:
     bound_column(bound_column const& rhs) = delete;
     bound_column& operator=(bound_column const& rhs) = delete;
 
-    bound_column()
+    bound_column() noexcept
         : name_()
         , column_(0)
         , sqltype_(0)
@@ -1194,7 +1194,7 @@ public:
     connection_impl(connection_impl const&) = delete;
     connection_impl& operator=(connection_impl const&) = delete;
 
-    connection_impl()
+    connection_impl() noexcept
         : env_(nullptr)
         , dbc_(nullptr)
         , connected_(false)
@@ -3878,7 +3878,7 @@ public:
         if (!col.bound_ && col.ctype_ == SQL_C_BINARY)
         {
             SQLCHAR unused = 0;
-            SQLLEN const buffer_length = 0;
+            constexpr SQLLEN buffer_length = 0;
             SQLLEN indicator = 0;
             RETCODE rc = SQL_SUCCESS;
             NANODBC_CALL_RC(
@@ -3910,7 +3910,7 @@ public:
     bool is_bound(short column) const
     {
         throw_if_column_is_out_of_range(column);
-        bound_column& col = bound_columns_[column];
+        bound_column const& col = bound_columns_[column];
         return col.bound_;
     }
 
@@ -3937,7 +3937,7 @@ public:
     long column_size(short column) const
     {
         throw_if_column_is_out_of_range(column);
-        bound_column& col = bound_columns_[column];
+        bound_column const& col = bound_columns_[column];
         NANODBC_ASSERT(col.sqlsize_ <= static_cast<SQLULEN>(std::numeric_limits<long>::max()));
         return static_cast<long>(col.sqlsize_);
     }
@@ -3951,28 +3951,28 @@ public:
     int column_decimal_digits(short column) const
     {
         throw_if_column_is_out_of_range(column);
-        bound_column& col = bound_columns_[column];
+        bound_column const& col = bound_columns_[column];
         return col.scale_;
     }
 
     int column_decimal_digits(string const& column_name) const
     {
         const short column = this->column(column_name);
-        bound_column& col = bound_columns_[column];
+        bound_column const& col = bound_columns_[column];
         return col.scale_;
     }
 
     int column_datatype(short column) const
     {
         throw_if_column_is_out_of_range(column);
-        bound_column& col = bound_columns_[column];
+        bound_column const& col = bound_columns_[column];
         return col.sqltype_;
     }
 
     int column_datatype(string const& column_name) const
     {
         const short column = this->column(column_name);
-        bound_column& col = bound_columns_[column];
+        bound_column const& col = bound_columns_[column];
         return col.sqltype_;
     }
 
@@ -4009,14 +4009,14 @@ public:
     int column_c_datatype(short column) const
     {
         throw_if_column_is_out_of_range(column);
-        bound_column& col = bound_columns_[column];
+        bound_column const& col = bound_columns_[column];
         return col.ctype_;
     }
 
     int column_c_datatype(string const& column_name) const
     {
         const short column = this->column(column_name);
-        bound_column& col = bound_columns_[column];
+        bound_column const& col = bound_columns_[column];
         return col.ctype_;
     }
 
@@ -4582,7 +4582,7 @@ private:
 template <>
 inline void result::result_impl::get_ref_impl<date>(short column, date& result) const
 {
-    bound_column& col = bound_columns_[column];
+    bound_column const& col = bound_columns_[column];
     switch (col.ctype_)
     {
     case SQL_C_DATE:
@@ -4612,7 +4612,7 @@ inline void result::result_impl::get_ref_impl<date>(short column, date& result) 
 template <>
 inline void result::result_impl::get_ref_impl<time>(short column, time& result) const
 {
-    bound_column& col = bound_columns_[column];
+    bound_column const& col = bound_columns_[column];
     switch (col.ctype_)
     {
     case SQL_C_TIME:
@@ -4642,7 +4642,7 @@ inline void result::result_impl::get_ref_impl<time>(short column, time& result) 
 template <>
 inline void result::result_impl::get_ref_impl<timestamp>(short column, timestamp& result) const
 {
-    bound_column& col = bound_columns_[column];
+    bound_column const& col = bound_columns_[column];
     switch (col.ctype_)
     {
     case SQL_C_DATE:
@@ -4675,7 +4675,7 @@ template <>
 inline void
 result::result_impl::get_ref_impl<timestampoffset>(short column, timestampoffset& result) const
 {
-    bound_column& col = bound_columns_[column];
+    bound_column const& col = bound_columns_[column];
     switch (col.ctype_)
     {
     case SQL_C_DATE:
@@ -4708,7 +4708,7 @@ result::result_impl::get_ref_impl<timestampoffset>(short column, timestampoffset
 template <class T, typename std::enable_if<is_string<T>::value, int>::type>
 inline void result::result_impl::get_ref_impl(short column, T& result) const
 {
-    bound_column& col = bound_columns_[column];
+    bound_column const& col = bound_columns_[column];
     const SQLULEN column_size = col.sqlsize_;
 
     switch (col.ctype_)
@@ -4872,7 +4872,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
         st.tm_mday = d.day;
         std::string old_lc_time_container;
         const char* old_lc_time = nullptr;
-        if (char* olc_lc_time_ptr = std::setlocale(LC_TIME, nullptr))
+        if (char const* olc_lc_time_ptr = std::setlocale(LC_TIME, nullptr))
         {
             old_lc_time_container = olc_lc_time_ptr;
             old_lc_time = old_lc_time_container.c_str();
@@ -4894,7 +4894,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
         st.tm_sec = t.sec;
         std::string old_lc_time_container;
         const char* old_lc_time = nullptr;
-        if (char* olc_lc_time_ptr = std::setlocale(LC_TIME, nullptr))
+        if (char const* olc_lc_time_ptr = std::setlocale(LC_TIME, nullptr))
         {
             old_lc_time_container = olc_lc_time_ptr;
             old_lc_time = old_lc_time_container.c_str();
@@ -4919,7 +4919,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
         st.tm_sec = stamp.sec;
         std::string old_lc_time_container;
         const char* old_lc_time = nullptr;
-        if (char* olc_lc_time_ptr = std::setlocale(LC_TIME, nullptr))
+        if (char const* olc_lc_time_ptr = std::setlocale(LC_TIME, nullptr))
         {
             old_lc_time_container = olc_lc_time_ptr;
             old_lc_time = old_lc_time_container.c_str();
@@ -5011,7 +5011,7 @@ template <>
 inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant_t& result) const
 {
     result.Clear(); // VT_EMPTY, not SQL-like VT_NULL
-    bound_column& col = bound_columns_[column];
+    bound_column const& col = bound_columns_[column];
     auto c_type = col.ctype_;
 
     // Column binding maps several SQL types onto one C type, so where that is too coarse to
@@ -5254,7 +5254,7 @@ auto from_string(std::string const& s) -> R
 template <class T, typename std::enable_if<is_character<T>::value, int>::type>
 void result::result_impl::get_ref_from_string_column(short column, T& result) const
 {
-    bound_column& col = bound_columns_[column];
+    bound_column const& col = bound_columns_[column];
     switch (col.ctype_)
     {
     case SQL_C_CHAR:
@@ -5272,7 +5272,7 @@ void result::result_impl::get_ref_from_string_column(short column, T& result) co
 template <class T, typename std::enable_if<!is_character<T>::value, int>::type>
 void result::result_impl::get_ref_from_string_column(short column, T& result) const
 {
-    bound_column& col = bound_columns_[column];
+    bound_column const& col = bound_columns_[column];
     if (col.ctype_ != SQL_C_CHAR && col.ctype_ != SQL_C_WCHAR)
         throw type_incompatible_error();
     std::string str;
@@ -5319,7 +5319,7 @@ std::unique_ptr<T, std::function<void(T*)>> result::result_impl::ensure_pdata(sh
 template <class T, typename std::enable_if<!is_string<T>::value, int>::type>
 void result::result_impl::get_ref_impl(short column, T& result) const
 {
-    bound_column& col = bound_columns_[column];
+    bound_column const& col = bound_columns_[column];
     using namespace std; // if int64_t is in std namespace (in c++11)
     switch (col.ctype_)
     {
@@ -7605,7 +7605,7 @@ std::list<string> catalog::list_table_types()
 namespace nanodbc
 {
 
-result::result()
+result::result() noexcept
     : impl_()
 {
 }

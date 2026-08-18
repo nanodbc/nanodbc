@@ -1818,7 +1818,7 @@ class result
 {
 public:
     /// \brief Empty result set.
-    result();
+    result() noexcept;
 
     /// \brief Free result set.
     ~result() noexcept;
