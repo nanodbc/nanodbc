@@ -23,5 +23,14 @@
          another name, which buys the reader nothing the cast does not already say, so this
          one is settled rather than open. -->
     <Rule Id="C26472" Action="None" />
+    <!-- f.23: mark a parameter gsl::not_null. -->
+    <Rule Id="C26429" Action="None" />
+    <!-- i.11: only delete through a gsl::owner. -->
+    <Rule Id="C26401" Action="None" />
+    <!-- Calling an STL algorithm with a pointer, where the remedy offered is a gsl::span. -->
+    <Rule Id="C26459" Action="None" />
+    <!-- type.7: prefer a variant to a naked union. The union objected to is the VARIANT
+         of the Windows SDK, which the _variant_t support exists to speak to. -->
+    <Rule Id="C26476" Action="None" />
   </Rules>
 </RuleSet>
