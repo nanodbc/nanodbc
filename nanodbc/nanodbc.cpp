@@ -4812,7 +4812,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
         const SQLULEN width = column_size + 1;
         std::string buffer(width + 1, 0); // ensure terminating null
         const int32_t data = *ensure_pdata<int32_t>(column);
-        const int bytes = std::snprintf(const_cast<char*>(buffer.data()), width + 1, "%d", data);
+        const int bytes = std::snprintf(&buffer[0], width + 1, "%d", data);
         if (bytes == -1)
             throw type_incompatible_error();
         convert(buffer.data(), result); // passing the C pointer drops trailing nulls
@@ -4826,7 +4826,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
         const SQLULEN width = column_size + 1;
         std::string buffer(width + 1, 0); // ensure terminating null
         const intmax_t data = (intmax_t)*ensure_pdata<int64_t>(column);
-        const int bytes = std::snprintf(const_cast<char*>(buffer.data()), width + 1, "%jd", data);
+        const int bytes = std::snprintf(&buffer[0], width + 1, "%jd", data);
         if (bytes == -1)
             throw type_incompatible_error();
         convert(buffer.data(), result); // passing the C pointer drops trailing nulls
@@ -4838,7 +4838,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
         const SQLULEN width = column_size + 2; // account for decimal mark and sign
         std::string buffer(width + 1, 0);      // ensure terminating null
         const float data = *ensure_pdata<float>(column);
-        const int bytes = std::snprintf(const_cast<char*>(buffer.data()), width + 1, "%f", data);
+        const int bytes = std::snprintf(&buffer[0], width + 1, "%f", data);
         if (bytes == -1)
             throw type_incompatible_error();
         convert(buffer.data(), result); // passing the C pointer drops trailing nulls
@@ -4851,7 +4851,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
         std::string buffer(width + 1, 0);      // ensure terminating null
         const double data = *ensure_pdata<double>(column);
         const int bytes = std::snprintf(
-            const_cast<char*>(buffer.data()),
+            &buffer[0],
             width + 1,
             "%f", // do not restrict the number of digits, because for floating-point
                   // columns the scale is undefined - number of digits to the right
