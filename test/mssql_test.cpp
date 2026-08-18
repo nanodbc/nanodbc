@@ -1421,6 +1421,49 @@ TEST_CASE_METHOD(mssql_fixture, "test_datetimeoffset", "[mssql][datetime]")
     }
 }
 
+// A datetimeoffset column answers to the narrower temporal types, and a date or datetime
+// column answers to timestampoffset, each through its own conversion.
+TEST_CASE_METHOD(mssql_fixture, "test_datetimeoffset_conversions", "[mssql][datetimeoffset]")
+{
+    auto connection = connect();
+    auto result = execute(
+        connection,
+        NANODBC_TEXT("SELECT CONVERT(datetimeoffset, '2006-12-30T13:45:12.345-08:30', 127) AS dto,"
+                     " CONVERT(date, '2006-12-30', 23) AS d,"
+                     " CONVERT(datetime, '2006-12-30T13:45:12', 126) AS dt;"));
+    REQUIRE(result.next());
+
+    // datetimeoffset read as the narrower types
+    auto const as_date = result.get<nanodbc::date>(0);
+    REQUIRE(as_date.year == 2006);
+    REQUIRE(as_date.month == 12);
+    REQUIRE(as_date.day == 30);
+
+    auto const as_time = result.get<nanodbc::time>(0);
+    REQUIRE(as_time.hour == 13);
+    REQUIRE(as_time.min == 45);
+    REQUIRE(as_time.sec == 12);
+
+    auto const as_stamp = result.get<nanodbc::timestamp>(0);
+    REQUIRE(as_stamp.year == 2006);
+    REQUIRE(as_stamp.month == 12);
+    REQUIRE(as_stamp.day == 30);
+    REQUIRE(as_stamp.hour == 13);
+
+    // date and datetime read as timestampoffset, which they carry no offset for
+    auto const date_as_offset = result.get<nanodbc::timestampoffset>(1);
+    REQUIRE(date_as_offset.stamp.year == 2006);
+    REQUIRE(date_as_offset.stamp.month == 12);
+    REQUIRE(date_as_offset.stamp.day == 30);
+
+    auto const stamp_as_offset = result.get<nanodbc::timestampoffset>(2);
+    REQUIRE(stamp_as_offset.stamp.year == 2006);
+    REQUIRE(stamp_as_offset.stamp.hour == 13);
+    REQUIRE(stamp_as_offset.stamp.min == 45);
+
+    REQUIRE(!result.next());
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_datetimeoffset2", "[mssql][datetimeoffset]")
 {
 #ifndef SQL_SS_TIMESTAMPOFFSET
@@ -1806,6 +1849,41 @@ TEST_CASE_METHOD(
     auto result = stmt.execute();
     REQUIRE(!result.next());
     REQUIRE(0 == result.rows());
+}
+
+// Describing the columns up front is what parameter_type, parameter_size and
+// parameter_scale then report, in place of asking the driver.
+TEST_CASE_METHOD(
+    mssql_table_valued_parameter_fixture,
+    "test_table_valued_parameter_described",
+    "[mssql][table_valued_paramter]")
+{
+    auto conn = connect();
+    auto stmt = nanodbc::statement(conn);
+    stmt.prepare(NANODBC_TEXT("{ CALL tvp_test(?, ?, ?) }"));
+
+    auto p1 = nanodbc::table_valued_parameter(stmt, 1, num_rows_);
+
+    std::vector<short> const idx{0, 1, 2, 3, 4};
+    std::vector<short> const type{
+        SQL_INTEGER, SQL_BIGINT, SQL_VARCHAR, SQL_WVARCHAR, SQL_VARBINARY};
+    std::vector<unsigned long> const size{10, 19, 60, 60, 100};
+    std::vector<short> const scale{0, 0, 0, 0, 0};
+    p1.describe_parameters(idx, type, size, scale);
+
+    REQUIRE(p1.parameters() == 5);
+    for (short i = 0; i < 5; ++i)
+    {
+        REQUIRE(p1.parameter_type(i) == type[static_cast<std::size_t>(i)]);
+        REQUIRE(p1.parameter_size(i) == size[static_cast<std::size_t>(i)]);
+        REQUIRE(p1.parameter_scale(i) == scale[static_cast<std::size_t>(i)]);
+    }
+
+    std::vector<short> const too_few{SQL_INTEGER};
+    REQUIRE_THROWS_AS(
+        p1.describe_parameters(idx, too_few, size, scale), nanodbc::programming_error);
+
+    p1.close();
 }
 
 TEST_CASE_METHOD(
