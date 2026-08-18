@@ -29,6 +29,7 @@ concurrency:
 jobs:
   check-format:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -59,6 +60,7 @@ jobs:
         cxxstd: ["20", "17", "14"]
     name: build-gcc-${{ matrix.gcc }}-std-${{ matrix.cxxstd }}
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     container: ubuntu:26.04
     env:
       CC: gcc-${{ matrix.gcc }}
@@ -68,8 +70,8 @@ jobs:
     steps:
       - name: Install
         run: |
-          apt-get update
-          apt-get install -y --no-install-recommends \
+          apt-get -o DPkg::Lock::Timeout=120 update
+          apt-get -o DPkg::Lock::Timeout=120 install -y --no-install-recommends \
             ca-certificates ccache cmake g++-${{ matrix.gcc }} git make unixodbc-dev
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Restore compiled objects
@@ -99,6 +101,7 @@ jobs:
         cxxstd: ["20", "17", "14"]
     name: build-clang-${{ matrix.clang }}-std-${{ matrix.cxxstd }}
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     container: ubuntu:26.04
     env:
       CC: clang-${{ matrix.clang }}
@@ -108,8 +111,8 @@ jobs:
     steps:
       - name: Install
         run: |
-          apt-get update
-          apt-get install -y --no-install-recommends \
+          apt-get -o DPkg::Lock::Timeout=120 update
+          apt-get -o DPkg::Lock::Timeout=120 install -y --no-install-recommends \
             ca-certificates ccache clang-${{ matrix.clang }} cmake git \
             libc++-${{ matrix.clang }}-dev libc++abi-${{ matrix.clang }}-dev make unixodbc-dev
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -132,12 +135,13 @@ jobs:
 
   test-utility:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ccache unixodbc-dev
+          sudo apt-get -o DPkg::Lock::Timeout=120 update
+          sudo apt-get -o DPkg::Lock::Timeout=120 install -y ccache unixodbc-dev
       - name: Restore compiled objects
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
@@ -159,6 +163,7 @@ jobs:
   # not merely which lines were reached, so the percentages are stricter than gcov's.
   coverage:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     services:
       postgresql:
         image: postgres:18
@@ -177,12 +182,12 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install
         run: |
-          sudo apt-get update
+          sudo apt-get -o DPkg::Lock::Timeout=120 update
           # libclang-rt-dev carries the profiling runtime, without which the instrumented
           # build does not link. libc++ is installed because NANODBC_FORCE_LIBCXX turns
           # itself on wherever clang accepts -stdlib=libc++, whether or not its headers
           # are actually present.
-          sudo apt-get install -y ccache clang libclang-rt-dev libc++-dev libc++abi-dev llvm \
+          sudo apt-get -o DPkg::Lock::Timeout=120 install -y ccache clang libclang-rt-dev libc++-dev libc++abi-dev llvm \
             unixodbc-dev odbc-postgresql libsqliteodbc
           sudo odbcinst -i -d -f /usr/share/sqliteodbc/unixodbc.ini
       - name: Restore compiled objects
@@ -243,6 +248,7 @@ jobs:
 
   test-postgresql:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -268,7 +274,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install
         run: |
-          sudo apt-get install -y ccache unixodbc-dev odbc-postgresql
+          sudo apt-get -o DPkg::Lock::Timeout=120 install -y ccache unixodbc-dev odbc-postgresql
       - name: Restore compiled objects
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
@@ -288,6 +294,7 @@ jobs:
 
   test-mssql:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     services:
       sqlserver:
         image: mcr.microsoft.com/mssql/server:2022-latest
@@ -300,10 +307,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install
         run: |
-          apt-get update
+          apt-get -o DPkg::Lock::Timeout=120 update
           curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
           curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list > /etc/apt/sources.list.d/mssql-release.list
-          ACCEPT_EULA=Y apt-get install -y ccache unixodbc-dev msodbcsql17
+          ACCEPT_EULA=Y apt-get -o DPkg::Lock::Timeout=120 install -y ccache unixodbc-dev msodbcsql17
         shell: sudo bash {0}
       - name: Restore compiled objects
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -324,11 +331,12 @@ jobs:
 
   test-sqlite:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install
         run: |
-          apt-get install -y ccache unixodbc-dev libsqliteodbc
+          apt-get -o DPkg::Lock::Timeout=120 install -y ccache unixodbc-dev libsqliteodbc
           cat <<EOF > ${GITHUB_WORKSPACE}/.odbcinst.ini
           [SQLite3]
           Description=SQLite 3 ODBC Driver
