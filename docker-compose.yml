@@ -1,9 +1,16 @@
 ---
-# nanodbc development and testing multi-container docker setup
-version: "3"
+# nanodbc development and testing multi-container docker setup.
+#
+# The database servers run only as containers, so nothing has to be installed on the host.
+#
+#   docker compose up -d              start the database servers
+#   docker compose run --rm nanodbc   shell in the build container, with drivers configured
+#
+# Each server version can be overridden, so a version the CI matrix covers can be
+# reproduced locally, for example POSTGRES_VERSION=14 docker compose up -d
 services:
   mysql:
-    image: mysql:26.7
+    image: mysql:${MYSQL_VERSION:-26.7}
     container_name: nanomysql
     restart: unless-stopped
     ports:
@@ -13,8 +20,15 @@ services:
       MYSQL_DATABASE: *default_credential
       MYSQL_USER: *default_credential
       MYSQL_PASSWORD: *default_credential
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-unanodbc", "-pnanodbc"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
   pgsql:
-    image: postgres:15-alpine
+    image: postgres:${POSTGRES_VERSION:-18}-alpine
     container_name: nanopgsql
     restart: unless-stopped
     ports:
@@ -23,15 +37,41 @@ services:
       POSTGRES_USER: *default_credential
       POSTGRES_PASSWORD: *default_credential
       POSTGRES_DB: *default_credential
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nanodbc -d nanodbc"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
   mssql:
-    image: mcr.microsoft.com/mssql/server:2025-latest
+    image: mcr.microsoft.com/mssql/server:${MSSQL_VERSION:-2025}-latest
     container_name: nanomssql
     restart: unless-stopped
+    # The image is published for amd64 only, so on other hosts it runs emulated.
+    platform: linux/amd64
     ports:
       - "1433:1433"
     environment:
       ACCEPT_EULA: Y
-      SA_PASSWORD: Password12! # required, must meet requied password complexity
+      MSSQL_SA_PASSWORD: &mssql_credential Password12! # must meet the server password complexity rules
+    healthcheck:
+      test:
+        - "CMD"
+        - "/opt/mssql-tools18/bin/sqlcmd"
+        - "-S"
+        - "localhost"
+        - "-U"
+        - "sa"
+        - "-P"
+        - *mssql_credential
+        - "-C"
+        - "-Q"
+        - "select 1"
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 60s
+
   nanodbc:
     build:
       context: .
@@ -40,20 +80,24 @@ services:
     stdin_open: true
     tty: true
     depends_on:
-      - pgsql
-      - mysql
-      - mssql
-    # Build and test the working tree rather than the copy Dockerfile.dev cloned.
+      pgsql:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      mssql:
+        condition: service_healthy
+    # Build and test the working tree rather than a copy taken at image build time.
     volumes:
       - .:/opt/nanodbc
+    working_dir: /opt/nanodbc
     environment:
       # Make client command line friendlier
       MYSQL_HOST: mysql
       USER: *default_credential
       MYSQL_PWD: *default_credential
       SQLCMDSERVER: mssql
-      SQLCMDUSER: *default_credential
-      SQLCMDPASSWORD: Password12!
+      SQLCMDUSER: sa
+      SQLCMDPASSWORD: *mssql_credential
       PGHOST: pgsql
       PGUSER: *default_credential
       PGPASSWORD: *default_credential # required, psql no longer accepts passwords from command line
@@ -61,7 +105,10 @@ services:
       # Connection strings the test programs pick up, so that `ctest` needs no arguments.
       # The host names are the service names above. The drivers are the ones registered by
       # Dockerfile.dev; check with `odbcinst -q -d` if a driver name looks wrong.
+      NANODBC_TEST_CONNSTR_SQLITE: "Driver={SQLite3};Database=/tmp/nanodbc.db;"
       NANODBC_TEST_CONNSTR_PGSQL: "Driver={PostgreSQL ANSI};Server=pgsql;Port=5432;Database=nanodbc;UID=nanodbc;PWD=nanodbc;"
-      NANODBC_TEST_CONNSTR_MYSQL: "Driver={MySQL ODBC 8.4 ANSI Driver};Server=mysql;Database=nanodbc;User=nanodbc;Password=nanodbc;big_packets=1;"
+      # Some tests create a database of their own, which the unprivileged account
+      # the image sets up may not do.
+      NANODBC_TEST_CONNSTR_MYSQL: "Driver={MySQL ODBC 8.4 ANSI Driver};Server=mysql;Database=nanodbc;User=root;Password=nanodbc;big_packets=1;"
       # Driver 18 encrypts by default, and the server image uses a self-signed certificate.
       NANODBC_TEST_CONNSTR_MSSQL: "Driver={ODBC Driver 18 for SQL Server};Server=mssql;Database=master;UID=sa;PWD=Password12!;TrustServerCertificate=yes;"

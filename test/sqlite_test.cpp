@@ -42,16 +42,6 @@ struct sqlite_fixture : public test_case_fixture
 };
 } // namespace
 
-// Unicode build on Ubuntu 12.04 with unixODBC 2.2.14p2 and libsqliteodbc 0.91-3 throws:
-// test/sqlite_test.cpp:42: FAILED:
-// due to a fatal error condition:
-//   SIGSEGV - Segmentation violation signal
-// See discussions at
-// https://github.com/lexicalunit/nanodbc/pull/154
-// (Notice, lexicalunit/nanodbc has been archived now)
-// https://groups.google.com/forum/#!msg/catch-forum/7tIpgm8SvDA/1QZZESIuCQAJ
-// TODO: Uncomment as soon as the SIGSEGV issue has been fixed.
-#ifndef NANODBC_ENABLE_UNICODE
 TEST_CASE_METHOD(sqlite_fixture, "test_affected_rows", "[sqlite][affected_rows]")
 {
     nanodbc::connection conn = connect();
@@ -103,7 +93,6 @@ TEST_CASE_METHOD(sqlite_fixture, "test_affected_rows", "[sqlite][affected_rows]"
         REQUIRE_THAT(result.affected_rows(), nanodbc::test::IsAnyOf({0, 1}));
     }
 }
-#endif
 
 TEST_CASE_METHOD(sqlite_fixture, "test_driver", "[sqlite][driver]")
 {
@@ -120,10 +109,6 @@ TEST_CASE_METHOD(sqlite_fixture, "test_datasources", "[sqlite][datasources]")
     test_datasources();
 }
 
-// TODO: Investigate why these tests fail on Linux
-// See https://github.com/lexicalunit/nanodbc/pull/220#issuecomment-257029475
-// (Notice, lexicalunit/nanodbc has been archived now)
-#ifdef _WIN32
 TEST_CASE_METHOD(sqlite_fixture, "test_batch_insert_integral", "[sqlite][batch][integral]")
 {
     test_batch_insert_integral();
@@ -138,7 +123,6 @@ TEST_CASE_METHOD(sqlite_fixture, "test_batch_insert_mixed", "[sqlite][batch]")
 {
     test_batch_insert_mixed();
 }
-#endif // _WIN32
 
 TEST_CASE_METHOD(sqlite_fixture, "test_batch_insert_string", "[sqlite][batch][string]")
 {
@@ -403,58 +387,7 @@ TEST_CASE_METHOD(sqlite_fixture, "test_integral_boundary", "[sqlite][integral]")
 
 TEST_CASE_METHOD(sqlite_fixture, "test_integral_to_string_conversion", "[sqlite][integral]")
 {
-    // TODO: Move to common tests
-    nanodbc::connection connection = connect();
-    create_table(
-        connection,
-        NANODBC_TEXT("test_integral_to_string_conversion"),
-        NANODBC_TEXT("(i int, n int)"));
-    execute(
-        connection, NANODBC_TEXT("insert into test_integral_to_string_conversion values (1, 0);"));
-    execute(
-        connection,
-        NANODBC_TEXT("insert into test_integral_to_string_conversion values (2, 255);"));
-    execute(
-        connection,
-        NANODBC_TEXT("insert into test_integral_to_string_conversion values (3, -128);"));
-    execute(
-        connection,
-        NANODBC_TEXT("insert into test_integral_to_string_conversion values (4, 127);"));
-    execute(
-        connection,
-        NANODBC_TEXT("insert into test_integral_to_string_conversion values (5, -32768);"));
-    execute(
-        connection,
-        NANODBC_TEXT("insert into test_integral_to_string_conversion values (6, 32767);"));
-    execute(
-        connection,
-        NANODBC_TEXT("insert into test_integral_to_string_conversion values (7, -2147483648);"));
-    execute(
-        connection,
-        NANODBC_TEXT("insert into test_integral_to_string_conversion values (8, 2147483647);"));
-    auto results = execute(
-        connection,
-        NANODBC_TEXT("select * from test_integral_to_string_conversion order by i asc;"));
-
-    REQUIRE(results.next());
-    REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("0"));
-    REQUIRE(results.next());
-    REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("255"));
-    REQUIRE(results.next());
-    REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("-128"));
-    REQUIRE(results.next());
-    REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("127"));
-    REQUIRE(results.next());
-    REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("-32768"));
-    REQUIRE(results.next());
-    REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("32767"));
-    REQUIRE(results.next());
-    // FIXME: SQLite ODBC driver reports column size of 10 leading to truncation
-    // "-214748364" == "-2147483648"
-    // The driver bug?
-    // REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("-2147483648"));
-    REQUIRE(results.next());
-    REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("2147483647"));
+    test_integral_to_string_conversion();
 }
 
 TEST_CASE_METHOD(sqlite_fixture, "test_move", "[sqlite][move]")

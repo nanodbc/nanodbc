@@ -29,6 +29,7 @@ concurrency:
 jobs:
   check-format:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -64,6 +65,7 @@ jobs:
             vs: 2022
     name: build-vs${{ matrix.vs }}-std-${{ matrix.cxxstd }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Check
@@ -87,6 +89,7 @@ jobs:
         include:
           - { cxxstd: "14", configuration: Release, warnings-as-errors: "OFF" }
     runs-on: windows-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Check
@@ -95,13 +98,13 @@ jobs:
       - name: Configure
         run: |
           cmake -S ${{ github.workspace }} -B ${{ github.workspace }}/build -G "MinGW Makefiles" -D CMAKE_BUILD_TYPE=${{ matrix.configuration }} -DCMAKE_COMPILE_WARNING_AS_ERROR=${{ matrix.warnings-as-errors }}
-    # FIXME: undefined references to async methods
-    # - name: Build
-    #   run: |
-    #     cmake --build ${{ github.workspace }}/build --verbose
+      - name: Build
+        run: |
+          cmake --build ${{ github.workspace }}/build --parallel
 
   test-utility:
     runs-on: windows-2022
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Check
@@ -119,6 +122,7 @@ jobs:
 
   test-mssql:
     runs-on: windows-2022
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -160,6 +164,7 @@ jobs:
 
   test-mariadb:
     runs-on: windows-2022
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -196,6 +201,7 @@ jobs:
 
   test-mysql:
     runs-on: windows-2022
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -230,6 +236,7 @@ jobs:
 
   test-postgresql:
     runs-on: windows-2022
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -261,6 +268,7 @@ jobs:
 
   test-sqlite:
     runs-on: windows-2022
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install SQLite ODBC Driver

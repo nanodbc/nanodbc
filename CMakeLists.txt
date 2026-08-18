@@ -30,7 +30,6 @@ cmake_policy( SET CMP0127 NEW )
 # nanodbc specific options
 option( NANODBC_DISABLE_ASYNC "Disable async features entirely (default off)" OFF )
 option( NANODBC_DISABLE_MSSQL_TVP "Do not use MSSQL Table-valued parameter (default off)" OFF )
-option( NANODBC_DISABLE_ASYNC "Disable async features entirely (default off)" OFF )
 option( NANODBC_ENABLE_UNICODE "Enable Unicode support (default on)" OFF )
 option( NANODBC_ENABLE_WORKAROUND_NODATA "Enable SQL_NO_DATA workaround (see Issue #33) (default off)" OFF )
 
@@ -177,6 +176,33 @@ endif()
 
 message( STATUS "nanodbc feature: Allocate buffers of sufficient length such that Unicode can be stored in VAR/CHAR columns - ${NANODBC_OVERALLOCATE_CHAR}" )
 message( STATUS "nanodbc feature: Enable SQL_NO_DATA bug workaround - ${NANODBC_ENABLE_WORKAROUND_NODATA}" )
+
+# The async API is ODBC 3.8. nanodbc.h declares it without consulting the ODBC headers,
+# which it does not include, so whether the driver manager can back those declarations is
+# settled here and answered for every consumer of the target.
+if( NOT NANODBC_DISABLE_ASYNC )
+  include( CheckCXXSourceCompiles )
+  set( CMAKE_REQUIRED_INCLUDES ${ODBC_INCLUDE_DIRS} )
+  check_cxx_source_compiles( "
+#ifdef _WIN32
+#include <windows.h>
+#endif
+#include <sql.h>
+#include <sqlext.h>
+int main()
+{
+    return SQL_ATTR_ASYNC_DBC_EVENT + SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE +
+           SQL_ATTR_ASYNC_STMT_EVENT + SQL_API_SQLCOMPLETEASYNC;
+}
+" ODBC_HEADERS_SUPPORT_ASYNC )
+  unset( CMAKE_REQUIRED_INCLUDES )
+
+  if( NOT ODBC_HEADERS_SUPPORT_ASYNC )
+    message( STATUS "nanodbc feature: ODBC headers predate 3.8, async features unavailable" )
+    set( NANODBC_DISABLE_ASYNC ON )
+  endif()
+endif()
+
 message( STATUS "nanodbc feature: Disable async features - ${NANODBC_DISABLE_ASYNC}" )
 message( STATUS "nanodbc feature: Disable MSSQL Table-valued parameter - ${NANODBC_DISABLE_MSSQL_TVP}" )
 
