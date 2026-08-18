@@ -48,6 +48,16 @@ No features unsupported by existing ODBC API calls.
 
 ## Building
 
+### C++ Standard
+
+Each release line targets one C++ standard. Pick the nanodbc version that matches the standard your
+project compiles with.
+
+| nanodbc version | C++ standard |
+| --------------- | ------------ |
+| `< 2.12`        | C++11        |
+| `>= 2.12`       | C++14        |
+
 nanodbc is intentionally small enough that you can drag and drop the header and implementation
 files into your project and run with it. For those that want it, I have also provided
 [CMake][cmake] files which build a library object, or build and run the included tests.
@@ -147,16 +157,21 @@ If you must use iODBC, consider _disabling_ unicode mode to avoid `wchar_t` issu
 
 ### Code Style
 
-[clang-format][clang-format] handles all C++ code formatting for nanodbc.
-See our [.clang-format](.clang-format) configuration file for details on the style and
-currently required version of `clang-format` specified in the comment at the top of the file
-The script [utility/style.sh](utility/style.sh) formats all code in the repository automatically.
+[clang-format][clang-format] handles all C++ code formatting for nanodbc. See our
+[.clang-format](.clang-format) configuration file for the style, and for the major version of
+`clang-format` it is written against, which is named in the comment at the top of the file. A
+different major version will reformat code that is already correct, so match the one named there.
+The development container carries it, and `pip install clang-format==<major>.*` supplies it on a
+host.
 
 To run `clang-format` against the whole nanodbc codebase:
 
 ```shell
-./utility/style.sh
+clang-format -i $(git ls-files '*.h' '*.cpp')
 ```
+
+[.clang-format-ignore](.clang-format-ignore) lists what to leave alone, so vendored code is
+skipped even when it is named on the command line.
 
 To run `clang-format` on a single file use the following.
 
@@ -203,6 +218,15 @@ Each server version can be overridden, which is how a version from the CI matrix
 
 ```shell
 POSTGRES_VERSION=14 docker compose up -d pgsql
+```
+
+MariaDB runs alongside MySQL on its own port and answers through its own ODBC driver. The MySQL
+suite is the one that covers it, so point that suite at it:
+
+```shell
+docker compose run --rm \
+  -e NANODBC_TEST_CONNSTR_MYSQL="$NANODBC_TEST_CONNSTR_MARIADB" nanodbc \
+  ctest --test-dir build --output-on-failure -R mysql_tests
 ```
 
 The Vertica tests need Vertica's own ODBC driver, which the development image does not carry, so a full `ctest` run excludes them with `-E vertica_tests`.
@@ -259,7 +283,8 @@ and update version number wherever necessary.
 
 > **Important:** Always update [`CHANGELOG.md`](CHANGELOG.md) with information about new changes,
 > bug fixes, and features when making a new release.
-> Use the `./utility/changes.sh` script to aid in your composition of this document.
+> `git log "v$(cat VERSION.txt)"..HEAD` lists what has landed since the last release, which is a
+> good starting point for it.
 > The publish script itself will attempt to verify that the changelog file has been properly updated.
 
 To do this manually instead, use the following steps &mdash; for example a minor update from

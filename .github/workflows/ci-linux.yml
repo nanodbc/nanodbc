@@ -30,23 +30,12 @@ jobs:
   check-format:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        path:
-          - check: "nanodbc"
-            ignore: ""
-          - check: "test"
-            ignore: "catch"
-          - check: "example"
-            ignore: ""
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: jidicula/clang-format-action@654a770daa28443dd111d133e4083e21c1075674 # v4.18.0
         with:
-          clang-format-version: "15"
-          check-path: ${{ matrix.path['check'] }}
-          exclude-regex: ${{ matrix.path['ignore'] }}
+          clang-format-version: "20"
+          check-path: "." 
 
   # GCC 13 through 16, the current release and the three before it. Ubuntu 26.04 is the
   # only image carrying that range, and its runner is still a preview, so it is used as a

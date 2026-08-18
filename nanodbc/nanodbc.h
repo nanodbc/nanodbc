@@ -389,13 +389,13 @@ struct batch_ops
     /// \brief Creates lengths of -1, meaning neither has been chosen.
     batch_ops() noexcept
         : parameter_array_length(-1L)
-        , rowset_size(-1L){};
+        , rowset_size(-1L) {};
 
     /// \brief Creates both lengths with the same value.
     /// \param all_length Value used for the parameter array length and the rowset size.
     batch_ops(const long all_length) noexcept
         : parameter_array_length(all_length)
-        , rowset_size(all_length){};
+        , rowset_size(all_length) {};
 };
 
 /// \brief A type for representing date data.
@@ -493,7 +493,7 @@ public:
     attribute(long const& attribute, long const& string_length, std::uintptr_t value_ptr) noexcept
         : attribute_(attribute)
         , string_length_(string_length)
-        , value_ptr_((void*)value_ptr){};
+        , value_ptr_((void*)value_ptr) {};
 
 protected:
     long attribute_;     ///< The Attribute argument of the ODBC call.
@@ -885,12 +885,12 @@ public:
     {
     public:
         attribute(attribute const& other) noexcept
-            : nanodbc::attribute(other){};
+            : nanodbc::attribute(other) {};
         attribute(
             long const& attribute,
             long const& string_length,
             variant const& resource) noexcept
-            : nanodbc::attribute(attribute, string_length, resource){};
+            : nanodbc::attribute(attribute, string_length, resource) {};
 
     private:
         friend class nanodbc::statement::statement_impl;
@@ -904,7 +904,7 @@ private:
             long const& attribute,
             long const& string_length,
             std::uintptr_t value_ptr) noexcept
-            : nanodbc::attribute(attribute, string_length, value_ptr){};
+            : nanodbc::attribute(attribute, string_length, value_ptr) {};
 
     private:
         friend class nanodbc::statement::statement_impl;
@@ -1535,12 +1535,12 @@ public:
     {
     public:
         attribute(attribute const& other) noexcept
-            : nanodbc::attribute(other){};
+            : nanodbc::attribute(other) {};
         attribute(
             long const& attribute,
             long const& string_length,
             variant const& resource) noexcept
-            : nanodbc::attribute(attribute, string_length, resource){};
+            : nanodbc::attribute(attribute, string_length, resource) {};
 
     private:
         friend class nanodbc::connection::connection_impl;
@@ -1554,7 +1554,7 @@ private:
             long const& attribute,
             long const& string_length,
             std::uintptr_t value_ptr) noexcept
-            : nanodbc::attribute(attribute, string_length, value_ptr){};
+            : nanodbc::attribute(attribute, string_length, value_ptr) {};
 
     private:
         friend class nanodbc::connection::connection_impl;

@@ -394,8 +394,9 @@ TEST_CASE_METHOD(postgresql_fixture, "test_time_without_time_zone", "[postgresql
     // insert
     execute(
         connection,
-        NANODBC_TEXT("insert into test_time_without_tz(t) values "
-                     "('2006-12-30 13:45:12.345'::time with time zone);"));
+        NANODBC_TEXT(
+            "insert into test_time_without_tz(t) values "
+            "('2006-12-30 13:45:12.345'::time with time zone);"));
 
     // select
     {
@@ -417,8 +418,9 @@ TEST_CASE_METHOD(postgresql_fixture, "test_time_with_time_zone", "[postgresql][t
     // insert
     execute(
         connection,
-        NANODBC_TEXT("insert into test_time_with_tz(t) values "
-                     "('2006-12-30 13:45:12.345-08:00'::time with time zone);"));
+        NANODBC_TEXT(
+            "insert into test_time_with_tz(t) values "
+            "('2006-12-30 13:45:12.345-08:00'::time with time zone);"));
 
     // select
     {
@@ -446,8 +448,9 @@ TEST_CASE_METHOD(
     // insert
     execute(
         connection,
-        NANODBC_TEXT("insert into test_timestamp_without_tz(t) values "
-                     "('2006-12-30 13:45:12.345'::timestamp with time zone);"));
+        NANODBC_TEXT(
+            "insert into test_timestamp_without_tz(t) values "
+            "('2006-12-30 13:45:12.345'::timestamp with time zone);"));
 
     // select
     {
@@ -478,8 +481,9 @@ TEST_CASE_METHOD(
     // insert
     execute(
         connection,
-        NANODBC_TEXT("insert into test_timestamp_with_tz(t) values "
-                     "('2006-12-30 13:45:12.345-08:00'::timestamp with time zone);"));
+        NANODBC_TEXT(
+            "insert into test_timestamp_with_tz(t) values "
+            "('2006-12-30 13:45:12.345-08:00'::timestamp with time zone);"));
 
     // select
     {

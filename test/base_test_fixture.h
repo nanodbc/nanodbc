@@ -275,6 +275,9 @@ struct base_test_fixture
     std::string data_path_;
 
     database_vendor vendor_ = database_vendor::unknown;
+    // MariaDB is reached through the same tests as MySQL, but its own driver answers some
+    // catalog questions differently, so the two are told apart where that matters.
+    bool mariadb_ = false;
 
     database_vendor get_vendor(nanodbc::string const& dbms)
     {
@@ -285,7 +288,9 @@ struct base_test_fixture
             return database_vendor::sqlite;
         else if (contains_string(dbms, NANODBC_TEXT("PostgreSQL")))
             return database_vendor::postgresql;
-        else if (contains_string(dbms, NANODBC_TEXT("MySQL")))
+        else if (
+            contains_string(dbms, NANODBC_TEXT("MySQL")) ||
+            contains_string(dbms, NANODBC_TEXT("MariaDB")))
             return database_vendor::mysql;
         else if (
             contains_string(dbms, NANODBC_TEXT("SQLServer")) ||
@@ -371,7 +376,12 @@ struct base_test_fixture
                 //
                 // - Windows 64-bit + nanodbc 64-bit build + psqlODBC 9.?.? x64 connected to
                 //   PostgreSQL 9.3 on Windows x64 (AppVeyor)
-                if (vendor_ == database_vendor::mysql)
+                if (mariadb_)
+                {
+                    // MariaDB's own driver reports the digits of a single precision float.
+                    REQUIRE(column_size >= 7);
+                }
+                else if (vendor_ == database_vendor::mysql)
                 {
                     // MySQL Connector 8.1 reports different value than MySQL Connector 5.3
                     REQUIRE(column_size >= 12);
@@ -412,6 +422,7 @@ struct base_test_fixture
         nanodbc::connection connection(connection_string_);
         REQUIRE(connection.connected());
         vendor_ = get_vendor(connection.dbms_name());
+        mariadb_ = contains_string(connection.dbms_name(), NANODBC_TEXT("MariaDB"));
         return connection;
     }
 

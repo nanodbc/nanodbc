@@ -15,9 +15,10 @@ int main()
         connection conn(NANODBC_TEXT("NorthWind"));
         result row = execute(
             conn,
-            NANODBC_TEXT("SELECT CustomerID, ContactName, Phone"
-                         "   FROM CUSTOMERS"
-                         "   ORDER BY 2, 1, 3"));
+            NANODBC_TEXT(
+                "SELECT CustomerID, ContactName, Phone"
+                "   FROM CUSTOMERS"
+                "   ORDER BY 2, 1, 3"));
 
         for (int i = 1; row.next(); ++i)
         {
