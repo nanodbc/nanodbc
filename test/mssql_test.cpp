@@ -1129,6 +1129,16 @@ TEST_CASE_METHOD(mssql_fixture, "test_bind_binary_null_sentry", "[mssql][binary]
     test_bind_binary_null_sentry();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_timeouts", "[mssql][statement]")
+{
+    test_timeouts();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_statement_parameter_description", "[mssql][statement]")
+{
+    test_statement_parameter_description();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_result_accessors", "[mssql][result][accessors]")
 {
     test_result_accessors();

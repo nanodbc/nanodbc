@@ -688,6 +688,58 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(counted.get<int>(0) == 1);
     }
 
+    // A login timeout is carried as a connection attribute, and a statement timeout as a
+    // statement attribute, each on a branch that a zero timeout skips.
+    void test_timeouts()
+    {
+        nanodbc::connection connection(connection_string_, 30);
+        REQUIRE(connection.connected());
+
+        create_table(connection, NANODBC_TEXT("test_timeouts"), NANODBC_TEXT("(i int)"));
+        execute(connection, NANODBC_TEXT("insert into test_timeouts(i) values (1);"), 1, 30);
+
+        nanodbc::statement statement(connection);
+        statement.timeout(30);
+        prepare(statement, NANODBC_TEXT("select i from test_timeouts;"), 30);
+        auto results = statement.execute(1, 30);
+        REQUIRE(results.next());
+        REQUIRE(results.get<int>(0) == 1);
+    }
+
+    // The description of a parameter is asked of the driver on first use and remembered,
+    // so the second ask takes a different path from the first.
+    void test_statement_parameter_description()
+    {
+        auto connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_statement_parameter_description"),
+            NANODBC_TEXT("(i int, s varchar(20))"));
+
+        nanodbc::statement statement(connection);
+        prepare(
+            statement,
+            NANODBC_TEXT("insert into test_statement_parameter_description(i, s) "
+                         "values (?, ?);"));
+        REQUIRE(statement.parameters() == 2);
+
+        // first ask reaches the driver, second is answered from what was remembered
+        for (int pass = 0; pass < 2; ++pass)
+        {
+            REQUIRE(statement.parameter_type(0) != 0);
+            REQUIRE(statement.parameter_size(1) > 0);
+            statement.parameter_scale(0);
+            statement.parameter_scale(1);
+        }
+
+        int i = 1;
+        statement.bind(0, &i);
+        statement.bind(1, NANODBC_TEXT("one"));
+        execute(statement);
+
+        statement.reset_parameters();
+    }
+
     void test_catalog_columns()
     {
         nanodbc::connection connection = connect();

@@ -298,6 +298,19 @@ TEST_CASE_METHOD(postgresql_fixture, "test_bind_binary_null_sentry", "[postgresq
     test_bind_binary_null_sentry();
 }
 
+TEST_CASE_METHOD(postgresql_fixture, "test_timeouts", "[postgresql][statement]")
+{
+    test_timeouts();
+}
+
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_statement_parameter_description",
+    "[postgresql][statement]")
+{
+    test_statement_parameter_description();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_result_accessors", "[postgresql][result][accessors]")
 {
     test_result_accessors();

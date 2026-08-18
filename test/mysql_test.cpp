@@ -357,6 +357,16 @@ TEST_CASE_METHOD(mysql_fixture, "test_bind_binary_null_sentry", "[mysql][binary]
     test_bind_binary_null_sentry();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_timeouts", "[mysql][statement]")
+{
+    test_timeouts();
+}
+
+TEST_CASE_METHOD(mysql_fixture, "test_statement_parameter_description", "[mysql][statement]")
+{
+    test_statement_parameter_description();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_result_accessors", "[mysql][result][accessors]")
 {
     test_result_accessors();
