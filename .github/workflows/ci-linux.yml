@@ -181,8 +181,6 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-      # Table valued parameters and datetimeoffset are SQL Server features, and account for
-      # most of the library that the other backends cannot reach.
       sqlserver:
         image: mcr.microsoft.com/mssql/server:2022-latest
         env:
