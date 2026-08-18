@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <string>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 // The UTF-8 codec replaced std::wstring_convert, so it is exercised directly here:
@@ -213,14 +214,15 @@ TEST_CASE("convert", "[string]")
     }
 }
 
-// Catch is compiled without its own main(), so that the one large translation unit is
-// built once for every test program rather than twice.
-// Default construction of these is declared to throw nothing, and a caller may rely on it.
-// A change that makes one of them allocate would still compile and would still pass the
-// suite, so it is asserted here rather than left to be noticed.
+// What a noexcept promises is not something a run can check. One that lies does not fail to
+// compile and does not fail a test: it calls std::terminate, and only along the path it
+// lied about, which is the path a suite is least likely to take. So the promises are made
+// here, where the compiler checks them.
+
+// Declared to throw nothing, and callers may rely on it.
 static_assert(
     std::is_nothrow_default_constructible<nanodbc::result>::value,
-    "result holds one shared_ptr and its default constructor cannot throw");
+    "result holds one shared_ptr, whose default constructor cannot throw");
 static_assert(
     std::is_nothrow_default_constructible<nanodbc::result_iterator>::value,
     "result_iterator follows result");
@@ -230,6 +232,36 @@ static_assert(
         std::is_nothrow_default_constructible<nanodbc::timestamp>::value,
     "the temporal types are aggregates of integers");
 
+// The handle accessors forward through a shared_ptr and reach no further.
+static_assert(
+    noexcept(std::declval<nanodbc::connection const&>().native_dbc_handle()) &&
+        noexcept(std::declval<nanodbc::connection const&>().native_env_handle()),
+    "the connection handles are read from a member");
+static_assert(
+    noexcept(std::declval<nanodbc::statement const&>().native_statement_handle()) &&
+        noexcept(std::declval<nanodbc::result const&>().native_statement_handle()),
+    "the statement handle is read from a member");
+static_assert(
+    noexcept(std::declval<nanodbc::result const&>().rowset_size()),
+    "the rowset size is read from a member");
+
+// And the other way about. These allocate, so they must not claim otherwise: saying
+// noexcept over an allocation turns running out of memory into a call to terminate. If one
+// of them stops allocating, say so here and take the noexcept with it.
+static_assert(
+    !std::is_nothrow_default_constructible<nanodbc::connection>::value,
+    "connection allocates its implementation");
+static_assert(
+    !std::is_nothrow_default_constructible<nanodbc::statement>::value,
+    "statement allocates its implementation");
+static_assert(
+    !std::is_nothrow_default_constructible<nanodbc::type_incompatible_error>::value &&
+        !std::is_nothrow_default_constructible<nanodbc::null_access_error>::value &&
+        !std::is_nothrow_default_constructible<nanodbc::index_range_error>::value,
+    "the error types hand a literal to std::runtime_error, which may allocate");
+
+// Catch is compiled without its own main(), so that the one large translation unit is
+// built once for every test program rather than twice.
 int main(int argc, char* argv[])
 {
     Catch::Session session;
