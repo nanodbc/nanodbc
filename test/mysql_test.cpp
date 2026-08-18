@@ -382,6 +382,11 @@ TEST_CASE_METHOD(mysql_fixture, "test_result_unbind", "[mysql][result][unbind]")
     test_result_unbind();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_is_null_binary", "[mysql][binary][null]")
+{
+    test_is_null_binary();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_result_accessors", "[mysql][result][accessors]")
 {
     test_result_accessors();

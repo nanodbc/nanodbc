@@ -455,6 +455,11 @@ TEST_CASE_METHOD(sqlite_fixture, "test_result_unbind", "[sqlite][result][unbind]
     test_result_unbind();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "test_is_null_binary", "[sqlite][binary][null]")
+{
+    test_is_null_binary();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_result_accessors", "[sqlite][result][accessors]")
 {
     test_result_accessors();

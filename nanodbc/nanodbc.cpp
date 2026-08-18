@@ -3866,6 +3866,38 @@ public:
         bound_column& col = bound_columns_[column];
         if (rowset_position_ >= rows())
             throw index_range_error();
+
+        // A column that is not bound is read with SQLGetData, and the fetch leaves no
+        // indicator behind for it, so whether it is null has to be asked of the driver.
+        // Binary is the one type that can be asked: a buffer length of zero reports the
+        // length, or that there is no value, and moves none of the data. A fixed size type
+        // ignores the buffer length and is handed over whole, and a character type is
+        // always given a terminator, which some drivers count as delivering the first of
+        // the data. Neither can be asked twice, so both are left to report what the fetch
+        // knew, which a read then settles.
+        if (!col.bound_ && col.ctype_ == SQL_C_BINARY)
+        {
+            SQLCHAR unused = 0;
+            SQLLEN const buffer_length = 0;
+            SQLLEN indicator = 0;
+            RETCODE rc;
+            NANODBC_CALL_RC(
+                SQLGetData,
+                rc,
+                stmt_.native_statement_handle(),       // StatementHandle
+                static_cast<SQLUSMALLINT>(column + 1), // Col_or_Param_Num
+                col.ctype_,                            // TargetType
+                &unused,                               // TargetValuePtr
+                buffer_length,                         // BufferLength
+                &indicator);                           // StrLen_or_IndPtr
+            // A driver that declines to answer, because the value has already been read or
+            // because it wants its columns in another order, leaves the question to
+            // whatever the fetch knew. Asking is not worth raising an error over.
+            if (rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO)
+                col.cbdata_[static_cast<size_t>(rowset_position_)] =
+                    static_cast<null_type>(indicator);
+        }
+
         return col.cbdata_[static_cast<size_t>(rowset_position_)] == SQL_NULL_DATA;
     }
 
