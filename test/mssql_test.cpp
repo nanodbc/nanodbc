@@ -1137,6 +1137,16 @@ TEST_CASE_METHOD(mssql_fixture, "test_statement_open_close", "[mssql][statement]
     test_statement_open_close();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_boolean_column", "[mssql][boolean]")
+{
+    test_boolean_column();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_bind_null_array", "[mssql][null]")
+{
+    test_bind_null_array();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_bind_null_sentry", "[mssql][statement]")
 {
     test_bind_null_sentry();

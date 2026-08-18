@@ -288,6 +288,16 @@ TEST_CASE_METHOD(postgresql_fixture, "test_statement_open_close", "[postgresql][
     test_statement_open_close();
 }
 
+TEST_CASE_METHOD(postgresql_fixture, "test_boolean_column", "[postgresql][boolean]")
+{
+    test_boolean_column();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "test_bind_null_array", "[postgresql][null]")
+{
+    test_bind_null_array();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_bind_null_sentry", "[postgresql][statement]")
 {
     test_bind_null_sentry();

@@ -420,6 +420,11 @@ TEST_CASE_METHOD(sqlite_fixture, "test_statement_open_close", "[sqlite][statemen
     test_statement_open_close();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "test_bind_null_array", "[sqlite][null]")
+{
+    test_bind_null_array();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_bind_null_sentry", "[sqlite][statement]")
 {
     test_bind_null_sentry();

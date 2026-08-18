@@ -980,7 +980,7 @@ public:
     const class connection& connection() const;
 
     /// \brief Returns the native ODBC statement handle.
-    void* native_statement_handle() const;
+    void* native_statement_handle() const noexcept;
 
     /// \brief Closes the statement and frees all associated resources.
     void close();
@@ -1748,10 +1748,10 @@ public:
     std::size_t transactions() const;
 
     /// \brief Returns the native ODBC database connection handle.
-    void* native_dbc_handle() const;
+    void* native_dbc_handle() const noexcept;
 
     /// \brief Returns the native ODBC environment handle.
-    void* native_env_handle() const;
+    void* native_env_handle() const noexcept;
 
     /// \brief Returns information from the ODBC connection as a string or fixed-size value.
     /// The general information about the driver and data source associated
@@ -1836,7 +1836,7 @@ public:
     void swap(result& rhs) noexcept;
 
     /// \brief Returns the native ODBC statement handle.
-    void* native_statement_handle() const;
+    void* native_statement_handle() const noexcept;
 
     /// \brief The rowset size for this result set.
     long rowset_size() const noexcept;
