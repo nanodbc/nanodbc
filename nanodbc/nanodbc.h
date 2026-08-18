@@ -2061,17 +2061,19 @@ public:
 
     /// \brief Returns true if and only if the given column of the current rowset is null.
     ///
-    /// A long column, such as a blob or (n)varchar(max), is not bound to a buffer, and most
-    /// drivers leave its length/indicator unwritten at fetch even where the ODBC
-    /// specification says binding the indicator alone is enough. For such a column this
-    /// asks the driver, which costs a call to SQLGetData and counts as visiting the column:
-    /// SQL Server, in particular, requires that unbound columns are visited in ascending
-    /// order, and refuses an earlier one afterwards with SQLSTATE 07009. Ask about such a
-    /// column in the order you intend to read it.
+    /// A long column is not bound to a buffer, and most drivers leave its length/indicator
+    /// unwritten at fetch even where the ODBC specification says binding the indicator
+    /// alone is enough. A binary one is asked of the driver instead, which costs a call to
+    /// SQLGetData asking for none of the data: the value is left where it is, so a get() or
+    /// get_ref() afterwards still returns the whole of it, but it counts as visiting the
+    /// column, and SQL Server requires unbound columns be visited in ascending order and
+    /// refuses an earlier one afterwards with SQLSTATE 07009. Ask in the order you intend
+    /// to read.
     ///
-    /// The value itself is left where it is, so a get() or get_ref() after this returns the
-    /// whole of it. Where the driver declines to say, this reports what the fetch knew
-    /// rather than raising, so a column already read has its answer from that read.
+    /// A character or fixed size column cannot be asked without spending the only read
+    /// there is, so for those this reports whatever the fetch knew until a get() or
+    /// get_ref() settles it. Where the driver declines to answer at all, the same applies
+    /// rather than raising.
     ///
     /// Columns are numbered from left to right and 0-indexed.
     /// \see get(), get_ref()

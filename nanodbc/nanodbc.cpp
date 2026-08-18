@@ -3869,22 +3869,16 @@ public:
 
         // A column that is not bound is read with SQLGetData, and the fetch leaves no
         // indicator behind for it, so whether it is null has to be asked of the driver.
-        // Asking for none of the data reports the length, or that there is no value, and
-        // leaves the data itself where it is. That only holds for the variable length
-        // types: for a fixed size one the buffer length is ignored, the driver hands over
-        // the value, and it will not hand it over twice, so those are left to report what
-        // the fetch knew.
-        bool const variable_length =
-            col.ctype_ == SQL_C_CHAR || col.ctype_ == SQL_C_WCHAR || col.ctype_ == SQL_C_BINARY;
-        if (!col.bound_ && variable_length)
+        // Binary is the one type that can be asked: a buffer length of zero reports the
+        // length, or that there is no value, and moves none of the data. A fixed size type
+        // ignores the buffer length and is handed over whole, and a character type is
+        // always given a terminator, which some drivers count as delivering the first of
+        // the data. Neither can be asked twice, so both are left to report what the fetch
+        // knew, which a read then settles.
+        if (!col.bound_ && col.ctype_ == SQL_C_BINARY)
         {
-            // Binary data takes a buffer length of zero, but character data has to be left
-            // room for the terminator it is always given, so ask for room for that alone.
-            SQLLEN const buffer_length =
-                col.ctype_ == SQL_C_BINARY
-                    ? 0
-                    : (col.ctype_ == SQL_C_WCHAR ? sizeof(SQLWCHAR) : sizeof(SQLCHAR));
-            SQLWCHAR unused = 0;
+            SQLCHAR unused = 0;
+            SQLLEN const buffer_length = 0;
             SQLLEN indicator = 0;
             RETCODE rc;
             NANODBC_CALL_RC(

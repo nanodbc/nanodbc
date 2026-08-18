@@ -2188,12 +2188,17 @@ TEST_CASE_METHOD(
 
         REQUIRE(p1_col2_[rcnt] == results.get<std::string>(3));
 
+        // A character column cannot be asked whether it is null without spending its only
+        // read, so the read settles it. The fallback keeps that from raising on the rows
+        // that are null.
+        auto const p1_col3_result = results.get<nanodbc::wide_string>(4, nanodbc::wide_string());
         REQUIRE(p1_col3_nulls._data[rcnt] == results.is_null(4));
         if (!p1_col3_nulls._data[rcnt])
         {
-            REQUIRE(p1_col3_[rcnt] == results.get<nanodbc::wide_string>(4));
+            REQUIRE(p1_col3_[rcnt] == p1_col3_result);
         }
 
+        // Binary can be asked without spending it.
         REQUIRE(results.is_null(5));
 
         REQUIRE(p2_ == results.get<nanodbc::string>(6));
