@@ -147,7 +147,7 @@ If you must use iODBC, consider _disabling_ unicode mode to avoid `wchar_t` issu
 
 ### Code Style
 
-[clang-format][clang-format] version 15 handles all C++ code formatting for nanodbc.
+[clang-format][clang-format] handles all C++ code formatting for nanodbc.
 See our [.clang-format](.clang-format) configuration file for details on the style and
 currently required version of `clang-format` specified in the comment at the top of the file
 The script [utility/style.sh](utility/style.sh) formats all code in the repository automatically.
