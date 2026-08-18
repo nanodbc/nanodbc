@@ -15,9 +15,10 @@ user information, example usage, propaganda, and detailed source level documenta
 | `main` | [![main](https://github.com/nanodbc/nanodbc/actions/workflows/ci-linux.yml/badge.svg?branch=main)](https://github.com/nanodbc/nanodbc/actions/workflows/ci-linux.yml) | [![main](https://github.com/nanodbc/nanodbc/actions/workflows/ci-windows.yml/badge.svg?branch=main)](https://github.com/nanodbc/nanodbc/actions/workflows/ci-windows.yml) | [![coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fnanodbc%2Fnanodbc%2Fbadges%2Fcoverage.json)](https://github.com/nanodbc/nanodbc/actions/workflows/ci-linux.yml?query=branch%3Amain) |
 
 Coverage is measured by the `coverage` job in [ci-linux.yml](.github/workflows/ci-linux.yml), which
-instruments the library with llvm-cov and runs the utility, SQLite and PostgreSQL suites. That job
-publishes the badge figure to the `badges` branch, and prints the full per-file report into its job
-summary, so the numbers are available there for every run.
+instruments the library with llvm-cov and runs the utility, SQLite and PostgreSQL suites. The job
+prints the full per-file report into its own summary, so the numbers are there for every run,
+including pull requests, and it publishes the figure the badge above reads to the `badges` branch.
+The lcov report is attached to each run as an artifact.
 
 ## Philosophy
 
