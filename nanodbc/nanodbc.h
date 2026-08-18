@@ -1788,8 +1788,8 @@ public:
 private:
     std::size_t ref_transaction();
     std::size_t unref_transaction();
-    bool rollback() const;
-    void rollback(bool onoff);
+    bool rollback() const noexcept;
+    void rollback(bool onoff) noexcept;
 
 private:
     std::shared_ptr<connection_impl> impl_;
