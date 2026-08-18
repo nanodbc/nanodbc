@@ -367,6 +367,21 @@ TEST_CASE_METHOD(mysql_fixture, "test_statement_parameter_description", "[mysql]
     test_statement_parameter_description();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_result_rowset_navigation", "[mysql][result][rowset]")
+{
+    test_result_rowset_navigation();
+}
+
+TEST_CASE_METHOD(mysql_fixture, "test_execute_direct_batch_ops", "[mysql][statement][batch]")
+{
+    test_execute_direct_batch_ops();
+}
+
+TEST_CASE_METHOD(mysql_fixture, "test_result_unbind", "[mysql][result][unbind]")
+{
+    test_result_unbind();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_result_accessors", "[mysql][result][accessors]")
 {
     test_result_accessors();

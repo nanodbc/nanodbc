@@ -311,6 +311,27 @@ TEST_CASE_METHOD(
     test_statement_parameter_description();
 }
 
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_result_rowset_navigation",
+    "[postgresql][result][rowset]")
+{
+    test_result_rowset_navigation();
+}
+
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_execute_direct_batch_ops",
+    "[postgresql][statement][batch]")
+{
+    test_execute_direct_batch_ops();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "test_result_unbind", "[postgresql][result][unbind]")
+{
+    test_result_unbind();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_result_accessors", "[postgresql][result][accessors]")
 {
     test_result_accessors();

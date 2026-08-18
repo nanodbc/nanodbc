@@ -440,6 +440,21 @@ TEST_CASE_METHOD(sqlite_fixture, "test_statement_parameter_description", "[sqlit
     test_statement_parameter_description();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "test_result_rowset_navigation", "[sqlite][result][rowset]")
+{
+    test_result_rowset_navigation();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_execute_direct_batch_ops", "[sqlite][statement][batch]")
+{
+    test_execute_direct_batch_ops();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_result_unbind", "[sqlite][result][unbind]")
+{
+    test_result_unbind();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_result_accessors", "[sqlite][result][accessors]")
 {
     test_result_accessors();

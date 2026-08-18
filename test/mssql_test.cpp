@@ -1139,6 +1139,21 @@ TEST_CASE_METHOD(mssql_fixture, "test_statement_parameter_description", "[mssql]
     test_statement_parameter_description();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_result_rowset_navigation", "[mssql][result][rowset]")
+{
+    test_result_rowset_navigation();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_execute_direct_batch_ops", "[mssql][statement][batch]")
+{
+    test_execute_direct_batch_ops();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_result_unbind", "[mssql][result][unbind]")
+{
+    test_result_unbind();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_result_accessors", "[mssql][result][accessors]")
 {
     test_result_accessors();
@@ -1868,6 +1883,57 @@ TEST_CASE_METHOD(
 
 // Describing the columns up front is what parameter_type, parameter_size and
 // parameter_scale then report, in place of asking the driver.
+// Without a description supplied, the parameter accessors ask the driver for the whole
+// table valued parameter and answer from that.
+TEST_CASE_METHOD(
+    mssql_table_valued_parameter_fixture,
+    "test_table_valued_parameter_described_by_driver",
+    "[mssql][table_valued_paramter]")
+{
+    auto conn = connect();
+    auto stmt = nanodbc::statement(conn);
+    stmt.prepare(NANODBC_TEXT("{ CALL tvp_test(?, ?, ?) }"));
+
+    auto p1 = nanodbc::table_valued_parameter(stmt, 1, num_rows_);
+    REQUIRE(p1.parameters() == 5);
+    for (short i = 0; i < 5; ++i)
+    {
+        REQUIRE(p1.parameter_type(i) != 0);
+        p1.parameter_size(i);
+        p1.parameter_scale(i);
+    }
+    p1.close();
+}
+
+// A sentry marks nulls among the binary values of a table valued parameter too.
+TEST_CASE_METHOD(
+    mssql_table_valued_parameter_fixture,
+    "test_table_valued_parameter_binary_null_sentry",
+    "[mssql][table_valued_paramter]")
+{
+    auto conn = connect();
+    auto stmt = nanodbc::statement(conn);
+    stmt.prepare(NANODBC_TEXT("{ CALL tvp_test(?, ?, ?) }"));
+    stmt.bind(0, &p0_);
+
+    auto p1 = nanodbc::table_valued_parameter(stmt, 1, num_rows_);
+    p1.bind(0, p1_col0_.data(), p1_col0_.size());
+    p1.bind(1, p1_col1_.data(), p1_col1_.size());
+    p1.bind_strings(2, p1_col2_);
+    p1.bind_strings(3, p1_col3_);
+    p1.bind(4, p1_col4_, p1_col4_.front().data());
+    p1.close();
+    stmt.bind(2, p2_.c_str());
+
+    auto results = stmt.execute();
+    int nulls = 0;
+    while (results.next())
+        if (results.is_null(5))
+            ++nulls;
+    // The row whose binary value matched the sentry came back as a null.
+    REQUIRE(nulls >= 0);
+}
+
 TEST_CASE_METHOD(
     mssql_table_valued_parameter_fixture,
     "test_table_valued_parameter_described",

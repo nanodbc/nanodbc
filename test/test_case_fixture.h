@@ -447,12 +447,14 @@ struct test_case_fixture : public base_test_fixture
         create_table(
             connection,
             NANODBC_TEXT("test_result_accessors"),
-            NANODBC_TEXT("(i int, s varchar(10))"));
+            NANODBC_TEXT("(i int, s varchar(10), f float, bg bigint)"));
         execute(
             connection,
-            NANODBC_TEXT("insert into test_result_accessors (i, s) values (42, 'forty two');"));
+            NANODBC_TEXT("insert into test_result_accessors (i, s, f, bg) "
+                         "values (42, 'forty two', 42.0, 42);"));
 
-        auto results = execute(connection, NANODBC_TEXT("select i, s from test_result_accessors;"));
+        auto results =
+            execute(connection, NANODBC_TEXT("select i, s, f, bg from test_result_accessors;"));
         REQUIRE(results.next());
 
         nanodbc::string const i_name = NANODBC_TEXT("i");
@@ -478,6 +480,20 @@ struct test_case_fixture : public base_test_fixture
         // its own rather than a narrowing of the string.
         REQUIRE(results.get<std::string::value_type>(1) == 'f');
         REQUIRE(results.get<nanodbc::wide_string::value_type>(1) == u'f');
+
+        // Each column type binds to a C type of its own, and every target type reaches it
+        // by a branch of its own, so the wider columns are read across types as well.
+        nanodbc::string const f_name = NANODBC_TEXT("f");
+        check_every_accessor<double>(results, 2, f_name, 42.0);
+        check_every_accessor<int>(results, 2, f_name, 42);
+        check_every_accessor<long long>(results, 2, f_name, 42LL);
+        check_every_accessor<short>(results, 2, f_name, 42);
+
+        nanodbc::string const bg_name = NANODBC_TEXT("bg");
+        check_every_accessor<long long>(results, 3, bg_name, 42LL);
+        check_every_accessor<int>(results, 3, bg_name, 42);
+        check_every_accessor<double>(results, 3, bg_name, 42.0);
+        check_every_accessor<float>(results, 3, bg_name, 42.0f);
 
         REQUIRE(!results.next());
     }
@@ -738,6 +754,131 @@ struct test_case_fixture : public base_test_fixture
         execute(statement);
 
         statement.reset_parameters();
+    }
+
+    // Fetching a rowset at a time gives the result a cursor to move within, which reading
+    // one row at a time never exercises.
+    void test_result_rowset_navigation()
+    {
+        auto connection = connect();
+        create_table(connection, NANODBC_TEXT("test_rowset_navigation"), NANODBC_TEXT("(i int)"));
+        for (int i = 1; i <= 6; ++i)
+        {
+            execute(
+                connection,
+                NANODBC_TEXT("insert into test_rowset_navigation(i) values (") +
+                    nanodbc::test::convert(std::to_string(i)) + NANODBC_TEXT(");"));
+        }
+
+        short const rowset = 3;
+        auto results = execute(
+            connection,
+            NANODBC_TEXT("select i from test_rowset_navigation order by i asc;"),
+            rowset);
+        REQUIRE(results.rowset_size() == rowset);
+
+        REQUIRE(results.next());
+        REQUIRE(results.get<int>(0) == 1);
+        REQUIRE(results.next());
+        REQUIRE(results.get<int>(0) == 2);
+
+        // The row number the driver reports, where it reports one at all.
+        results.position();
+
+        while (results.next())
+            ;
+        REQUIRE(results.at_end());
+
+        // Moving back within a rowset already in hand, on a result of its own because a
+        // driver holding a forward only cursor rejects the reposition outright.
+        {
+            auto backwards = execute(
+                connection,
+                NANODBC_TEXT("select i from test_rowset_navigation order by i asc;"),
+                rowset);
+            REQUIRE(backwards.next());
+            REQUIRE(backwards.next());
+            try
+            {
+                if (backwards.prior())
+                    REQUIRE(backwards.get<int>(0) == 1);
+                // Skipping is a relative fetch, which the same cursors refuse.
+                backwards.skip(2);
+            }
+            catch (nanodbc::database_error const&)
+            {
+            }
+        }
+    }
+
+    // batch_ops chooses the parameter array length and the rowset size separately, where
+    // the plain overloads use one number for both.
+    void test_execute_direct_batch_ops()
+    {
+        auto connection = connect();
+        create_table(
+            connection, NANODBC_TEXT("test_execute_direct_batch_ops"), NANODBC_TEXT("(i int)"));
+        for (int i = 1; i <= 4; ++i)
+        {
+            execute(
+                connection,
+                NANODBC_TEXT("insert into test_execute_direct_batch_ops(i) values (") +
+                    nanodbc::test::convert(std::to_string(i)) + NANODBC_TEXT(");"));
+        }
+
+        nanodbc::statement statement(connection);
+        nanodbc::batch_ops sizes;
+        sizes.parameter_array_length = 1;
+        sizes.rowset_size = 2;
+        auto results = statement.execute_direct(
+            connection,
+            NANODBC_TEXT("select i from test_execute_direct_batch_ops order by i asc;"),
+            sizes);
+        REQUIRE(results.rowset_size() == 2);
+
+        int rows = 0;
+        while (results.next())
+            ++rows;
+        REQUIRE(rows == 4);
+    }
+
+    // Unbinding releases the buffer a column was read into, after which it is read one
+    // value at a time instead.
+    void test_result_unbind()
+    {
+        auto connection = connect();
+        create_table(
+            connection, NANODBC_TEXT("test_result_unbind"), NANODBC_TEXT("(i int, j int)"));
+        execute(connection, NANODBC_TEXT("insert into test_result_unbind(i, j) values (1, 2);"));
+
+        {
+            auto results =
+                execute(connection, NANODBC_TEXT("select i, j from test_result_unbind;"));
+            REQUIRE(results.next());
+            REQUIRE(results.is_bound(0));
+            REQUIRE(results.is_bound(NANODBC_TEXT("j")));
+
+            results.unbind(short(0));
+            REQUIRE(!results.is_bound(0));
+            REQUIRE(results.get<int>(1) == 2);
+        }
+
+        {
+            auto results =
+                execute(connection, NANODBC_TEXT("select i, j from test_result_unbind;"));
+            REQUIRE(results.next());
+            results.unbind(NANODBC_TEXT("j"));
+            REQUIRE(!results.is_bound(NANODBC_TEXT("j")));
+        }
+
+        {
+            auto results =
+                execute(connection, NANODBC_TEXT("select i, j from test_result_unbind;"));
+            REQUIRE(results.next());
+            results.unbind();
+            REQUIRE(!results.is_bound(0));
+            REQUIRE(!results.is_bound(1));
+        }
     }
 
     void test_catalog_columns()
