@@ -266,13 +266,19 @@ static_assert(
 // for the operation that went missing, so the shape of each public type is stated here.
 
 // Copy and swap: constructible and assignable both ways, the assignment taking its
-// argument by value and serving either. Adding a move assignment alongside it would make
+// argument by value and serving either. Each holds nothing but a shared_ptr, so none of the
+// four can throw, which is what a container reads before deciding whether it may move on
+// reallocation rather than copy. Adding a move assignment alongside it would make
 // every assignment from an rvalue ambiguous, so the set stops at four on purpose.
 #define NANODBC_ASSERT_COPY_AND_SWAP(T)                                                            \
     static_assert(std::is_copy_constructible<T>::value, #T " is copy constructible");              \
     static_assert(std::is_move_constructible<T>::value, #T " is move constructible");              \
     static_assert(std::is_copy_assignable<T>::value, #T " is copy assignable");                    \
-    static_assert(std::is_move_assignable<T>::value, #T " is move assignable")
+    static_assert(std::is_move_assignable<T>::value, #T " is move assignable");                    \
+    static_assert(std::is_nothrow_copy_constructible<T>::value, #T " copies a shared_ptr");        \
+    static_assert(std::is_nothrow_move_constructible<T>::value, #T " moves a shared_ptr");         \
+    static_assert(std::is_nothrow_copy_assignable<T>::value, #T " copy assigns a shared_ptr");     \
+    static_assert(std::is_nothrow_move_assignable<T>::value, #T " move assigns a shared_ptr")
 
 NANODBC_ASSERT_COPY_AND_SWAP(nanodbc::result);
 NANODBC_ASSERT_COPY_AND_SWAP(nanodbc::statement);
@@ -290,6 +296,10 @@ static_assert(
     std::is_copy_constructible<nanodbc::table_valued_parameter>::value &&
         std::is_move_constructible<nanodbc::table_valued_parameter>::value,
     "table_valued_parameter can be built from another");
+static_assert(
+    std::is_nothrow_copy_constructible<nanodbc::table_valued_parameter>::value &&
+        std::is_nothrow_move_constructible<nanodbc::table_valued_parameter>::value,
+    "and doing so copies a shared_ptr, which cannot throw");
 static_assert(
     !std::is_copy_assignable<nanodbc::table_valued_parameter>::value &&
         !std::is_move_assignable<nanodbc::table_valued_parameter>::value,

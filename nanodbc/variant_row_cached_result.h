@@ -57,12 +57,15 @@ public:
     /// \brief Access to underlying result
     ///
     /// For example, in order to access to columns metadata.
-    nanodbc::result& result() { return static_cast<nanodbc::result&>(*this); }
+    nanodbc::result& result() noexcept { return static_cast<nanodbc::result&>(*this); }
 
     /// \brief Access to underlying result
     ///
     /// For example, in order to access to columns metadata.
-    nanodbc::result const& result() const { return static_cast<nanodbc::result const&>(*this); }
+    nanodbc::result const& result() const noexcept
+    {
+        return static_cast<nanodbc::result const&>(*this);
+    }
 
 private:
     /// \brief Clears cache of row values as result::next pre-condition.
