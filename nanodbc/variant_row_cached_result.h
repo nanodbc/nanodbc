@@ -31,6 +31,15 @@ public:
     /// \brief Move assignment operator.
     variant_row_cached_result& operator=(variant_row_cached_result&& rhs) noexcept;
 
+    /// \brief The cached row is not shared, so a copy is refused rather than made.
+    /// Declaring the move operations already withdrew these; saying so states the whole
+    /// set rather than half of it.
+    variant_row_cached_result(variant_row_cached_result const&) = delete;
+    variant_row_cached_result& operator=(variant_row_cached_result const&) = delete;
+
+    /// \brief Destructor.
+    ~variant_row_cached_result() = default;
+
     /// Member swap.
     void swap(variant_row_cached_result& rhs) noexcept;
 
