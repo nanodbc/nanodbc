@@ -919,6 +919,8 @@ class bound_column
 public:
     bound_column(bound_column const& rhs) = delete;
     bound_column& operator=(bound_column const& rhs) = delete;
+    bound_column(bound_column&&) = delete;
+    bound_column& operator=(bound_column&&) = delete;
 
     bound_column() noexcept
         : name_()
@@ -1191,6 +1193,9 @@ namespace nanodbc
 class connection::connection_impl
 {
 public:
+    connection_impl(connection_impl&&) = delete;
+    connection_impl& operator=(connection_impl&&) = delete;
+
     connection_impl(connection_impl const&) = delete;
     connection_impl& operator=(connection_impl const&) = delete;
 
@@ -1701,6 +1706,8 @@ class transaction::transaction_impl
 public:
     transaction_impl(transaction_impl const&) = delete;
     transaction_impl& operator=(transaction_impl const&) = delete;
+    transaction_impl(transaction_impl&&) = delete;
+    transaction_impl& operator=(transaction_impl&&) = delete;
 
     explicit transaction_impl(class connection conn)
         : conn_(std::move(conn))
@@ -1808,6 +1815,9 @@ namespace nanodbc
 class statement::statement_impl
 {
 public:
+    statement_impl(statement_impl&&) = delete;
+    statement_impl& operator=(statement_impl&&) = delete;
+
     statement_impl(statement_impl const&) = delete;
     statement_impl& operator=(statement_impl const&) = delete;
 
@@ -2925,6 +2935,9 @@ namespace nanodbc
 class table_valued_parameter::table_valued_parameter_impl
 {
 public:
+    table_valued_parameter_impl(table_valued_parameter_impl&&) = delete;
+    table_valued_parameter_impl& operator=(table_valued_parameter_impl&&) = delete;
+
     table_valued_parameter_impl()
         : row_count_(0)
         , param_index_(0)
@@ -3659,6 +3672,8 @@ class result::result_impl
 public:
     result_impl(result_impl const&) = delete;
     result_impl& operator=(result_impl const&) = delete;
+    result_impl(result_impl&&) = delete;
+    result_impl& operator=(result_impl&&) = delete;
 
     result_impl(statement stmt, long rowset_size)
         : stmt_(std::move(stmt))

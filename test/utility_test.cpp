@@ -260,6 +260,41 @@ static_assert(
         !std::is_nothrow_default_constructible<nanodbc::index_range_error>::value,
     "the error types hand a literal to std::runtime_error, which may allocate");
 
+// Which operations a type offers is decided by which ones it declares, and the deciding is
+// done quietly: declaring a move constructor withdraws both assignments, and declaring a
+// destructor withdraws the moves. Nothing about that fails to build until a caller reaches
+// for the operation that went missing, so the shape of each public type is stated here.
+
+// Copy and swap: constructible and assignable both ways, the assignment taking its
+// argument by value and serving either. Adding a move assignment alongside it would make
+// every assignment from an rvalue ambiguous, so the set stops at four on purpose.
+#define NANODBC_ASSERT_COPY_AND_SWAP(T)                                                            \
+    static_assert(std::is_copy_constructible<T>::value, #T " is copy constructible");              \
+    static_assert(std::is_move_constructible<T>::value, #T " is move constructible");              \
+    static_assert(std::is_copy_assignable<T>::value, #T " is copy assignable");                    \
+    static_assert(std::is_move_assignable<T>::value, #T " is move assignable")
+
+NANODBC_ASSERT_COPY_AND_SWAP(nanodbc::result);
+NANODBC_ASSERT_COPY_AND_SWAP(nanodbc::statement);
+NANODBC_ASSERT_COPY_AND_SWAP(nanodbc::connection);
+NANODBC_ASSERT_COPY_AND_SWAP(nanodbc::transaction);
+NANODBC_ASSERT_COPY_AND_SWAP(nanodbc::result_iterator);
+
+#undef NANODBC_ASSERT_COPY_AND_SWAP
+
+// table_valued_parameter is the odd one and not by design as far as anything says: it
+// declares a move constructor, which withdrew both of its assignments. It can be built
+// from another and never assigned from one. Stated so that restoring the assignments is a
+// decision someone takes rather than a side effect of editing a constructor.
+static_assert(
+    std::is_copy_constructible<nanodbc::table_valued_parameter>::value &&
+        std::is_move_constructible<nanodbc::table_valued_parameter>::value,
+    "table_valued_parameter can be built from another");
+static_assert(
+    !std::is_copy_assignable<nanodbc::table_valued_parameter>::value &&
+        !std::is_move_assignable<nanodbc::table_valued_parameter>::value,
+    "table_valued_parameter has no assignment: its move constructor withdrew both");
+
 // Catch is compiled without its own main(), so that the one large translation unit is
 // built once for every test program rather than twice.
 int main(int argc, char* argv[])
