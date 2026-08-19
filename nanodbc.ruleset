@@ -34,5 +34,11 @@
     <!-- type.7: prefer a variant to a naked union. The union objected to is the VARIANT
          of the Windows SDK, which the _variant_t support exists to speak to. -->
     <Rule Id="C26476" Action="None" />
+    <!-- type.4: no C style casts. These sit where nanodbc hands a buffer or a handle to
+         the driver manager, and a named cast does not remove the alert so much as move it:
+         the same ruleset objects to reinterpret_cast with C26490 and to const_cast with
+         C26492, and passing a string's data to an entry point that wants a non-const
+         pointer needs both. The cast is the C API showing through, not untidiness. -->
+    <Rule Id="C26493" Action="None" />
   </Rules>
 </RuleSet>
