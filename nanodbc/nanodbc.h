@@ -562,13 +562,13 @@ public:
     explicit transaction(const class connection& conn);
 
     /// Copy constructor.
-    transaction(const transaction& rhs);
+    transaction(const transaction& rhs) noexcept;
 
     /// Move constructor.
     transaction(transaction&& rhs) noexcept;
 
     /// Assignment.
-    transaction& operator=(transaction rhs);
+    transaction& operator=(transaction rhs) noexcept;
 
     /// Member swap.
     void swap(transaction& rhs) noexcept;
@@ -624,7 +624,7 @@ public:
     table_valued_parameter();
 
     /// \brief Copy constructor.
-    table_valued_parameter(const table_valued_parameter& rhs);
+    table_valued_parameter(const table_valued_parameter& rhs) noexcept;
 
     /// \brief Move constructor.
     table_valued_parameter(table_valued_parameter&& rhs) noexcept;
@@ -947,13 +947,13 @@ public:
     statement(class connection& conn, string const& query, long timeout = 0);
 
     /// \brief Copy constructor.
-    statement(const statement& rhs);
+    statement(const statement& rhs) noexcept;
 
     /// \brief Move constructor.
     statement(statement&& rhs) noexcept;
 
     /// \brief Assignment.
-    statement& operator=(statement rhs);
+    statement& operator=(statement rhs) noexcept;
 
     /// \brief Member swap.
     void swap(statement& rhs) noexcept;
@@ -1565,13 +1565,13 @@ public:
     connection();
 
     /// Copy constructor.
-    connection(const connection& rhs);
+    connection(const connection& rhs) noexcept;
 
     /// Move constructor.
     connection(connection&& rhs) noexcept;
 
     /// Assignment.
-    connection& operator=(connection rhs);
+    connection& operator=(connection rhs) noexcept;
 
     /// Member swap.
     void swap(connection&) noexcept;
@@ -1824,13 +1824,13 @@ public:
     ~result() noexcept;
 
     /// \brief Copy constructor.
-    result(const result& rhs);
+    result(const result& rhs) noexcept;
 
     /// \brief Move constructor.
     result(result&& rhs) noexcept;
 
     /// \brief Assignment.
-    result& operator=(result rhs);
+    result& operator=(result rhs) noexcept;
 
     /// \brief Member swap.
     void swap(result& rhs) noexcept;
@@ -2195,7 +2195,7 @@ public:
     bool next_result();
 
     /// \brief If and only if result object is valid, returns true.
-    explicit operator bool() const;
+    explicit operator bool() const noexcept;
 
 private:
     result(statement statement, long rowset_size);
@@ -2233,7 +2233,7 @@ public:
     }
 
     /// Dereference.
-    reference operator*() { return result_; }
+    reference operator*() noexcept { return result_; }
 
     /// Access through dereference.
     pointer operator->()
@@ -2294,7 +2294,7 @@ inline result_iterator begin(result& r)
 /// When a valid `nanodbc::result_iterator` reaches the end of the underlying result set,
 /// it becomes equal to the end-of-result iterator.
 /// Dereferencing or incrementing it further is undefined.
-inline result_iterator end(result& /*r*/)
+inline result_iterator end(result& /*r*/) noexcept
 {
     return {};
 }

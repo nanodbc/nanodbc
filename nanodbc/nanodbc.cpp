@@ -1533,7 +1533,7 @@ public:
         return rc;
     }
 
-    bool connected() const { return connected_; }
+    bool connected() const noexcept { return connected_; }
 
     void disconnect()
     {
@@ -1547,7 +1547,7 @@ public:
         connected_ = false;
     }
 
-    std::size_t transactions() const { return transactions_; }
+    std::size_t transactions() const noexcept { return transactions_; }
 
     void* native_dbc_handle() const noexcept { return dbc_; }
 
@@ -1586,9 +1586,9 @@ public:
         return {&name[0], &name[size(name)]};
     }
 
-    std::size_t ref_transaction() { return ++transactions_; }
+    std::size_t ref_transaction() noexcept { return ++transactions_; }
 
-    std::size_t unref_transaction()
+    std::size_t unref_transaction() noexcept
     {
         if (transactions_ > 0)
             --transactions_;
@@ -1783,9 +1783,9 @@ public:
         conn_.rollback(true);
     }
 
-    class connection& connection() { return conn_; }
+    class connection& connection() noexcept { return conn_; }
 
-    const class connection& connection() const { return conn_; }
+    const class connection& connection() const noexcept { return conn_; }
 
 private:
     class connection conn_;
@@ -1951,13 +1951,13 @@ public:
         }
     }
 
-    bool open() const { return open_; }
+    bool open() const noexcept { return open_; }
 
     bool connected() const { return conn_.connected(); }
 
-    const class connection& connection() const { return conn_; }
+    const class connection& connection() const noexcept { return conn_; }
 
-    class connection& connection() { return conn_; }
+    class connection& connection() noexcept { return conn_; }
 
     void* native_statement_handle() const noexcept { return stmt_; }
 
@@ -2731,6 +2731,15 @@ public:
         return lhs == rhs;
     }
 
+    // Overloads rather than specialisations of the above: a specialisation has to
+    // carry the same exception specification as its primary, and narrowing a wide
+    // string allocates where comparing the rest does not.
+    bool equals(std::string const& lhs, std::string const& rhs) noexcept;
+    bool equals(wide_string const& lhs, wide_string const& rhs);
+    bool equals(date const& lhs, date const& rhs) noexcept;
+    bool equals(time const& lhs, time const& rhs) noexcept;
+    bool equals(timestamp const& lhs, timestamp const& rhs) noexcept;
+
     template <class T>
     std::vector<T>& get_bound_string_data(short param_index);
 
@@ -2870,14 +2879,12 @@ void statement::statement_impl::bind_strings(
     bind_parameter(param, buffer);
 }
 
-template <>
-bool statement::statement_impl::equals(std::string const& lhs, std::string const& rhs)
+bool statement::statement_impl::equals(std::string const& lhs, std::string const& rhs) noexcept
 {
     return std::strncmp(lhs.c_str(), rhs.c_str(), lhs.size()) == 0;
 }
 
-template <>
-bool statement::statement_impl::equals(const wide_string& lhs, const wide_string& rhs)
+bool statement::statement_impl::equals(wide_string const& lhs, wide_string const& rhs)
 {
     // e6059ff3a79062f83256b9d1d3c9c8368798781e
     // Functions like `swprintf()`, `wcsftime()`, `wcsncmp()` can not be used
@@ -2892,20 +2899,17 @@ bool statement::statement_impl::equals(const wide_string& lhs, const wide_string
     return equals(narrow_lhs, narrow_rhs);
 }
 
-template <>
-bool statement::statement_impl::equals(const date& lhs, const date& rhs)
+bool statement::statement_impl::equals(const date& lhs, const date& rhs) noexcept
 {
     return lhs.year == rhs.year && lhs.month == rhs.month && lhs.day == rhs.day;
 }
 
-template <>
-bool statement::statement_impl::equals(const time& lhs, const time& rhs)
+bool statement::statement_impl::equals(const time& lhs, const time& rhs) noexcept
 {
     return lhs.hour == rhs.hour && lhs.min == rhs.min && lhs.sec == rhs.sec;
 }
 
-template <>
-bool statement::statement_impl::equals(const timestamp& lhs, const timestamp& rhs)
+bool statement::statement_impl::equals(const timestamp& lhs, const timestamp& rhs) noexcept
 {
     return lhs.year == rhs.year && lhs.month == rhs.month && lhs.day == rhs.day &&
            lhs.hour == rhs.hour && lhs.min == rhs.min && lhs.sec == rhs.sec &&
@@ -3398,7 +3402,7 @@ public:
         }
     }
 
-    short parameters() const { return param_descr_data_.size(); }
+    short parameters() const noexcept { return param_descr_data_.size(); }
 
     unsigned long parameter_size(short param_index)
     {
@@ -3446,6 +3450,15 @@ public:
     {
         return lhs == rhs;
     }
+
+    // Overloads rather than specialisations of the above: a specialisation has to
+    // carry the same exception specification as its primary, and narrowing a wide
+    // string allocates where comparing the rest does not.
+    bool equals(std::string const& lhs, std::string const& rhs) noexcept;
+    bool equals(wide_string const& lhs, wide_string const& rhs);
+    bool equals(date const& lhs, date const& rhs) noexcept;
+    bool equals(time const& lhs, time const& rhs) noexcept;
+    bool equals(timestamp const& lhs, timestamp const& rhs) noexcept;
 
     template <class T>
     std::vector<T>& get_bound_string_data(short param_index);
@@ -3583,18 +3596,16 @@ void table_valued_parameter::table_valued_parameter_impl::bind_strings(
     bind_parameter(param, buffer);
 }
 
-template <>
 bool table_valued_parameter::table_valued_parameter_impl::equals(
     std::string const& lhs,
-    std::string const& rhs)
+    std::string const& rhs) noexcept
 {
     return std::strncmp(lhs.c_str(), rhs.c_str(), lhs.size()) == 0;
 }
 
-template <>
 bool table_valued_parameter::table_valued_parameter_impl::equals(
-    const wide_string& lhs,
-    const wide_string& rhs)
+    wide_string const& lhs,
+    wide_string const& rhs)
 {
     // e6059ff3a79062f83256b9d1d3c9c8368798781e
     // Functions like `swprintf()`, `wcsftime()`, `wcsncmp()` can not be used
@@ -3609,22 +3620,23 @@ bool table_valued_parameter::table_valued_parameter_impl::equals(
     return equals(narrow_lhs, narrow_rhs);
 }
 
-template <>
-bool table_valued_parameter::table_valued_parameter_impl::equals(const date& lhs, const date& rhs)
+bool table_valued_parameter::table_valued_parameter_impl::equals(
+    const date& lhs,
+    const date& rhs) noexcept
 {
     return lhs.year == rhs.year && lhs.month == rhs.month && lhs.day == rhs.day;
 }
 
-template <>
-bool table_valued_parameter::table_valued_parameter_impl::equals(const time& lhs, const time& rhs)
+bool table_valued_parameter::table_valued_parameter_impl::equals(
+    const time& lhs,
+    const time& rhs) noexcept
 {
     return lhs.hour == rhs.hour && lhs.min == rhs.min && lhs.sec == rhs.sec;
 }
 
-template <>
 bool table_valued_parameter::table_valued_parameter_impl::equals(
     const timestamp& lhs,
-    const timestamp& rhs)
+    const timestamp& rhs) noexcept
 {
     return lhs.year == rhs.year && lhs.month == rhs.month && lhs.day == rhs.day &&
            lhs.hour == rhs.hour && lhs.min == rhs.min && lhs.sec == rhs.sec &&
@@ -5252,7 +5264,7 @@ auto from_string(std::string const& s, R)
 }
 
 #if defined(_MSC_VER)
-auto from_string(std::string const& s, _variant_t)
+auto from_string(std::string const& s, _variant_t) noexcept
 {
     return s.c_str();
 }
@@ -5306,7 +5318,7 @@ std::unique_ptr<T, std::function<void(T*)>> result::result_impl::ensure_pdata(sh
         // Return a unique_ptr with a no-op deleter as this memory allocation
         // is managed (allocated and released) elsewhere.
         return std::unique_ptr<T, std::function<void(T*)>>(
-            (T*)(col.pdata_ + rowset_position_ * col.clen_), [](T*) {});
+            (T*)(col.pdata_ + rowset_position_ * col.clen_), [](T*) noexcept {});
     }
 
     std::unique_ptr<T> buffer = std::make_unique<T>();
@@ -5586,7 +5598,7 @@ connection::connection()
 {
 }
 
-connection::connection(const connection& rhs)
+connection::connection(const connection& rhs) noexcept
     : impl_(rhs.impl_)
 {
 }
@@ -5596,7 +5608,7 @@ connection::connection(connection&& rhs) noexcept
 {
 }
 
-connection& connection::operator=(connection rhs)
+connection& connection::operator=(connection rhs) noexcept
 {
     swap(rhs);
     return *this;
@@ -5797,7 +5809,7 @@ transaction::transaction(const class connection& conn)
 {
 }
 
-transaction::transaction(const transaction& rhs)
+transaction::transaction(const transaction& rhs) noexcept
     : impl_(rhs.impl_)
 {
 }
@@ -5807,7 +5819,7 @@ transaction::transaction(transaction&& rhs) noexcept
 {
 }
 
-transaction& transaction::operator=(transaction rhs)
+transaction& transaction::operator=(transaction rhs) noexcept
 {
     swap(rhs);
     return *this;
@@ -5893,12 +5905,12 @@ statement::statement(class connection& conn, string const& query, long timeout)
 {
 }
 
-statement::statement(const statement& rhs)
+statement::statement(const statement& rhs) noexcept
     : impl_(rhs.impl_)
 {
 }
 
-statement& statement::operator=(statement rhs)
+statement& statement::operator=(statement rhs) noexcept
 {
     swap(rhs);
     return *this;
@@ -6668,7 +6680,7 @@ table_valued_parameter::table_valued_parameter()
 {
 }
 
-table_valued_parameter::table_valued_parameter(const table_valued_parameter& rhs)
+table_valued_parameter::table_valued_parameter(const table_valued_parameter& rhs) noexcept
     : impl_(rhs.impl_)
 {
 }
@@ -7637,12 +7649,12 @@ result::result(result&& rhs) noexcept
 {
 }
 
-result::result(const result& rhs)
+result::result(const result& rhs) noexcept
     : impl_(rhs.impl_)
 {
 }
 
-result& result::operator=(result rhs)
+result& result::operator=(result rhs) noexcept
 {
     swap(rhs);
     return *this;
@@ -7894,7 +7906,7 @@ T result::get(string const& column_name, T const& fallback) const
     return impl_->get<T>(column_name, fallback);
 }
 
-result::operator bool() const
+result::operator bool() const noexcept
 {
     return static_cast<bool>(impl_);
 }
