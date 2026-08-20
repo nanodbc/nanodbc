@@ -1,5 +1,11 @@
 # ChangeLog
 
+## v2.16.1
+
+### Changes
+
+- Automated the release process with GitHub Actions
+
 ## v2.16.0
 
 ### Changes
