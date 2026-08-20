@@ -26,7 +26,10 @@ package-lock.json
 .venv
 .pyvenv
 
-# VS2017 / VSCode
+# DOCtor-RST (for docs lint)
+.doctor-rst.cache
+
+# Visual Studio / VS Code
 /.vs*
 /CMakeUserPresets.json
 /CMakeSettings.json

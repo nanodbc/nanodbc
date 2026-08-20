@@ -30,6 +30,15 @@ jobs:
           args: --short --error-format=github
         env:
           DOCS_DIR: "doc/"
+      # DOCtor-RST checks style; rstcheck checks that the reStructuredText actually
+      # parses. The sphinx extra teaches it the roles and directives Sphinx adds, such
+      # as :ref: and toctree, which plain docutils does not know. Configured by
+      # .rstcheck.cfg. Pinned, because a later release may add checks the docs have
+      # never been held to.
+      - name: Install rstcheck
+        run: python3 -m pip install --disable-pip-version-check "rstcheck[sphinx]==6.3.0"
+      - name: Run rstcheck
+        run: rstcheck doc/*.rst
 
   docker:
     runs-on: ubuntu-latest

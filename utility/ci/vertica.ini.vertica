@@ -1,6 +1,0 @@
-[Driver]
-DriverManagerEncoding = UTF-16
-ErrorMessagesPath = /opt/vertica/lib64
-ODBCInstLib = /usr/lib/x86_64-linux-gnu/libodbcinst.so
-LogLevel = 4
-LogPath = /tmp

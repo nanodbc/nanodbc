@@ -19,8 +19,8 @@ indent_size = 2
 indent_style = space
 trim_trailing_whitespace = true
 
-# JSON and YAML files
-[*.{json,yml,yaml},Dockerfile,Vagrantfile}]
+# JSON and YAML files, and the container definitions
+[{*.json,*.yml,*.yaml,Dockerfile*}]
 indent_size = 2
 indent_style = space
 trim_trailing_whitespace = true
@@ -30,7 +30,7 @@ trim_trailing_whitespace = true
 indent_size = 2
 indent_style = space
 trim_trailing_whitespace = true
-max_line_length = 80
+max_line_length = off
 
 # Windows shell scripts
 [*.{cmd,bat,ps1}]
@@ -49,7 +49,7 @@ insert_final_newline = false
 trim_trailing_whitespace = true
 
 # Python scripts
-[*.{py}]
+[*.py]
 indent_size = 4
 indent_style = space
 
