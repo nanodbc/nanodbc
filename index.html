@@ -1,20 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nanodbc - C++ wrapper for ODBC API &mdash; nanodbc 2.14.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <title>nanodbc - C++ wrapper for ODBC API &mdash; nanodbc 2.16.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=981cb1a1"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -26,14 +27,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="#" class="icon icon-home"> nanodbc
+
+          
+          
+          <a href="#" class="icon icon-home">
+            nanodbc
           </a>
-              <div class="version">
-                2.14.0
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -59,8 +61,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
-      <li>nanodbc - C++ wrapper for ODBC API</li>
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">nanodbc - C++ wrapper for ODBC API</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -71,9 +73,9 @@
            <div itemprop="articleBody">
              
   <section id="nanodbc-c-wrapper-for-odbc-api">
-<span id="index"></span><h1>nanodbc - C++ wrapper for ODBC API<a class="headerlink" href="#nanodbc-c-wrapper-for-odbc-api" title="Permalink to this headline"></a></h1>
+<span id="index"></span><h1>nanodbc - C++ wrapper for ODBC API<a class="headerlink" href="#nanodbc-c-wrapper-for-odbc-api" title="Link to this heading"></a></h1>
 <p>nanodbc is a small library that makes ODBC API programming easy and fun again.</p>
-<p>Documentation for the latest version <a class="reference external" href="https://github.com/nanodbc/nanodbc/releases/tag/v2.14.0">v2.14.0</a>.</p>
+<p>Documentation for the latest version <a class="reference external" href="https://github.com/nanodbc/nanodbc/releases/tag/v2.16.0">v2.16.0</a>.</p>
 <dl class="simple">
 <dt>Documentation for previous versions:</dt><dd><ul class="simple">
 <li><p><a class="reference external" href="https://github.com/nanodbc/nanodbc/releases/tag/v2.13.0">v2.13.0</a> is <a class="reference external" href="https://nanodbc.github.io/nanodbc/v2.13.0">here</a>.</p></li>
@@ -82,7 +84,7 @@
 </dd>
 </dl>
 <section id="motivation">
-<h2>Motivation<a class="headerlink" href="#motivation" title="Permalink to this headline"></a></h2>
+<h2>Motivation<a class="headerlink" href="#motivation" title="Link to this heading"></a></h2>
 <p>Here’s a before and after look at straight ODBC C API code and its equivalent nanodbc code.</p>
 <p><a class="reference internal" href="_images/before.png"><img alt="before" src="_images/before.png" style="width: 45%;" /></a> <a class="reference internal" href="_images/after.png"><img alt="after" src="_images/after.png" style="width: 45%;" /></a></p>
 <p>The native C API for working with ODBC is exorbitantly verbose, ridiculously
@@ -97,7 +99,7 @@ incorporated to make the library as future-proof as possible.</p>
 and/or standards for particular versions.</p>
 </section>
 <section id="history">
-<h2>History<a class="headerlink" href="#history" title="Permalink to this headline"></a></h2>
+<h2>History<a class="headerlink" href="#history" title="Link to this heading"></a></h2>
 <p>Originally nanodbc began as a simple fork of <a class="reference external" href="https://code.google.com/archive/p/tiodbc/">TinyODBC</a> with additional
 features. Eventually it grew to the point where it made sense to break with
 many of the basic underlaying design decisions of TinyODBC and completely
@@ -106,7 +108,7 @@ nanodbc include <a class="reference external" href="http://simpledb.sourceforge.
 and <a class="reference external" href="http://www.codeguru.com/cpp/data/mfc_database/odbc/article.php/c4337/A-Simple-and-Smart-ODBC-Wrapper-Library.htm">GSODBC</a>.</p>
 </section>
 <section id="features">
-<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline"></a></h2>
+<h2>Features<a class="headerlink" href="#features" title="Link to this heading"></a></h2>
 <p>Why should you use nanodbc?</p>
 <ul class="simple">
 <li><p>Small! Same as TinyODBC, nanodbc is small. A header and an implementation file.</p></li>
@@ -119,7 +121,7 @@ and <a class="reference external" href="http://www.codeguru.com/cpp/data/mfc_dat
 </ul>
 </section>
 <section id="design">
-<h2>Design<a class="headerlink" href="#design" title="Permalink to this headline"></a></h2>
+<h2>Design<a class="headerlink" href="#design" title="Link to this heading"></a></h2>
 <p>All complex objects in nanodbc follow the <a class="reference external" href="http://wiki.c2.com/?PimplIdiom">pimpl</a> (Pointer to IMPLementation) idiom to provide separation between interface and implementation, value semantics, and a clean nanodbc.h header file that includes nothing but standard C++ headers.</p>
 <p>nanodbc wraps ODBC code, providing a simpler way to do the same thing. We try to be as featureful as possible, but I can’t guarantee you’ll never have to write supporting ODBC code. Personally, I have never had to do so.</p>
 <p>Major features beyond what’s already supported by ODBC are not within the scope of nanodbc. This is where the nano part of nanodbc becomes relevant: This library is as minimal as possible. That means no dependencies beyond standard C++ and typical ODBC headers. No features unsupported by existing ODBC API calls.</p>
@@ -138,7 +140,7 @@ and <a class="reference external" href="http://www.codeguru.com/cpp/data/mfc_dat
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2016-2012, Amy Troschinetz and others..</p>
+    <p>&#169; Copyright Amy Troschinetz and others..</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

@@ -1,20 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Develop &mdash; nanodbc 2.14.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <title>Develop &mdash; nanodbc 2.16.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=981cb1a1"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -27,14 +28,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> nanodbc
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            nanodbc
           </a>
-              <div class="version">
-                2.14.0
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -78,8 +80,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Develop</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Develop</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/develop.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -90,10 +92,10 @@
            <div itemprop="articleBody">
              
   <section id="develop">
-<h1>Develop<a class="headerlink" href="#develop" title="Permalink to this headline"></a></h1>
+<h1>Develop<a class="headerlink" href="#develop" title="Link to this heading"></a></h1>
 <p>Notes about development process of nanodbc.</p>
 <section id="contributing">
-<h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline"></a></h2>
+<h2>Contributing<a class="headerlink" href="#contributing" title="Link to this heading"></a></h2>
 <p>nanodbc is an Open Source Software and very accepting of bug fixes
 and new features.</p>
 <p>Please consider contributing any changes you make via
@@ -103,18 +105,25 @@ or reporting any
 <p>Cheers!</p>
 </section>
 <section id="guidelines">
-<h2>Guidelines<a class="headerlink" href="#guidelines" title="Permalink to this headline"></a></h2>
+<h2>Guidelines<a class="headerlink" href="#guidelines" title="Link to this heading"></a></h2>
 <section id="style">
-<h3>Style<a class="headerlink" href="#style" title="Permalink to this headline"></a></h3>
+<h3>Style<a class="headerlink" href="#style" title="Link to this heading"></a></h3>
 <p><a class="reference external" href="http://clang.llvm.org/docs/ClangFormat.html">clang-format</a>
 handles all C++ code formatting for nanodbc.</p>
-<p>This utility is <a class="reference external" href="https://brew.sh/">brew-installable</a> on OS X
-(<code class="docutils literal notranslate"><span class="pre">brew</span> <span class="pre">install</span> <span class="pre">clang-format</span></code>) and is available on all major platforms.</p>
-<p>See our <a class="reference external" href="https://github.com/nanodbc/nanodbc/blob/v2.14.0/.clang-format">.clang-format</a>
-configuration file for details on the style.</p>
-<p>The script <a class="reference external" href="https://github.com/nanodbc/nanodbc/blob/v2.14.0/utility/style.sh">utility/style.sh</a>
-formats all code in the repository automatically.
-To run <code class="docutils literal notranslate"><span class="pre">clang-format</span></code> on a single file use the following.</p>
+<p>See our <a class="reference external" href="https://github.com/nanodbc/nanodbc/blob/main/.clang-format">.clang-format</a>
+configuration file for the style, and for the major version of <code class="docutils literal notranslate"><span class="pre">clang-format</span></code> it is
+written against, which is named in the comment at the top of the file. A different major
+version will reformat code that is already correct, so match the one named there. The
+development container carries it, and <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">clang-format==&lt;major&gt;.*</span></code> supplies it
+on a host.</p>
+<p>To run <code class="docutils literal notranslate"><span class="pre">clang-format</span></code> against the whole nanodbc codebase:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">clang-format -i $(git ls-files &#39;*.h&#39; &#39;*.cpp&#39;)</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="https://github.com/nanodbc/nanodbc/blob/main/.clang-format-ignore">.clang-format-ignore</a>
+lists what to leave alone, so vendored code is skipped even when it is named on the
+command line.</p>
+<p>To run <code class="docutils literal notranslate"><span class="pre">clang-format</span></code> on a single file use the following.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">clang-format -i /path/to/file</span>
 </pre></div>
 </div>
@@ -129,51 +138,51 @@ plain text files.</p>
 </section>
 </section>
 <section id="environments">
-<h2>Environments<a class="headerlink" href="#environments" title="Permalink to this headline"></a></h2>
+<h2>Environments<a class="headerlink" href="#environments" title="Link to this heading"></a></h2>
 <p>To get up and running with nanodbc as fast as possible consider
 using the provided Dockerfile or Vagrantfile with pre-configured
 development environmnets.</p>
 <section id="docker">
-<h3>Docker<a class="headerlink" href="#docker" title="Permalink to this headline"></a></h3>
+<h3>Docker<a class="headerlink" href="#docker" title="Link to this heading"></a></h3>
 <p>Spin up a docker container suitable for testing and development of nanodbc:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span> /path/to/nanodbc
-<span class="gp">$ </span>docker build -t nanodbc .
-<span class="gp">$ </span>docker run -v <span class="s2">&quot;</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">&quot;</span>:<span class="s2">&quot;/opt/</span><span class="k">$(</span>basename <span class="k">$(</span><span class="nb">pwd</span><span class="k">))</span><span class="s2">&quot;</span> -it nanodbc /bin/bash
-<span class="gp">root@hash:/# </span>mkdir -p /opt/nanodbc/build <span class="o">&amp;&amp;</span> <span class="nb">cd</span> /opt/nanodbc/build
-<span class="gp">root@hash:/opt/nanodbc/build# </span>cmake ..
-<span class="gp">root@hash:/opt/nanodbc/build# </span>make nanodbc
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>/path/to/nanodbc
+<span class="gp">$ </span>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>nanodbc<span class="w"> </span>.
+<span class="gp">$ </span>docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">&quot;</span>:<span class="s2">&quot;/opt/</span><span class="k">$(</span>basename<span class="w"> </span><span class="k">$(</span><span class="nb">pwd</span><span class="k">))</span><span class="s2">&quot;</span><span class="w"> </span>-it<span class="w"> </span>nanodbc<span class="w"> </span>/bin/bash
+<span class="gp">root@hash:/# </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/opt/nanodbc/build<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>/opt/nanodbc/build
+<span class="gp">root@hash:/opt/nanodbc/build# </span>cmake<span class="w"> </span>..
+<span class="gp">root@hash:/opt/nanodbc/build# </span>make<span class="w"> </span>nanodbc
 </pre></div>
 </div>
 </section>
 <section id="vagrant">
-<h3>Vagrant<a class="headerlink" href="#vagrant" title="Permalink to this headline"></a></h3>
+<h3>Vagrant<a class="headerlink" href="#vagrant" title="Link to this heading"></a></h3>
 <p>Launch vagrant VM (using VirtualBox provider for example),
 <code class="docutils literal notranslate"><span class="pre">ssh</span></code> into it and build nanodbc:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span> /path/to/nanodbc
-<span class="gp">$ </span>vagrant up
-<span class="gp">$ </span>vagrant ssh
-<span class="gp">vagrant@vagrant-ubuntu-precise-64:~$ </span>git clone https://github.com/nanodbc/nanodbc.git
-<span class="gp">vagrant@vagrant-ubuntu-precise-64:~$ </span>mkdir -p nanodbc/build <span class="o">&amp;&amp;</span> <span class="nb">cd</span> nanodbc/build
-<span class="gp">vagrant@vagrant-ubuntu-precise-64:~$ </span><span class="nv">CXX</span><span class="o">=</span>g++-5 cmake ..
-<span class="gp">vagrant@vagrant-ubuntu-precise-64:~$ </span>make nanodbc
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>/path/to/nanodbc
+<span class="gp">$ </span>vagrant<span class="w"> </span>up
+<span class="gp">$ </span>vagrant<span class="w"> </span>ssh
+<span class="gp">vagrant@vagrant-ubuntu-precise-64:~$ </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/nanodbc/nanodbc.git
+<span class="gp">vagrant@vagrant-ubuntu-precise-64:~$ </span>mkdir<span class="w"> </span>-p<span class="w"> </span>nanodbc/build<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>nanodbc/build
+<span class="gp">vagrant@vagrant-ubuntu-precise-64:~$ </span><span class="nv">CXX</span><span class="o">=</span>g++-5<span class="w"> </span>cmake<span class="w"> </span>..
+<span class="gp">vagrant@vagrant-ubuntu-precise-64:~$ </span>make<span class="w"> </span>nanodbc
 </pre></div>
 </div>
 </section>
 </section>
 <section id="test">
-<h2>Test<a class="headerlink" href="#test" title="Permalink to this headline"></a></h2>
+<h2>Test<a class="headerlink" href="#test" title="Link to this heading"></a></h2>
 <p>See <a class="reference external" href="https://github.com/nanodbc/nanodbc/blob/v2.14.0/README.md">README.md</a>.</p>
 </section>
 <section id="release">
-<h2>Release<a class="headerlink" href="#release" title="Permalink to this headline"></a></h2>
+<h2>Release<a class="headerlink" href="#release" title="Link to this heading"></a></h2>
 <p>See <a class="reference external" href="https://github.com/nanodbc/nanodbc/blob/v2.14.0/README.md">README.md</a>.</p>
 <section id="documentation">
-<h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline"></a></h3>
+<h3>Documentation<a class="headerlink" href="#documentation" title="Link to this heading"></a></h3>
 <p>See <a class="reference external" href="https://github.com/nanodbc/nanodbc/blob/v2.14.0/doc/README.md">doc/README.md</a>.</p>
 </section>
 </section>
 <section id="future">
-<h2>Future<a class="headerlink" href="#future" title="Permalink to this headline"></a></h2>
+<h2>Future<a class="headerlink" href="#future" title="Link to this heading"></a></h2>
 <p>Good to Have / Want Someday</p>
 <ul class="simple">
 <li><p>Refactor tests to follow BDD pattern.</p></li>
@@ -200,7 +209,7 @@ development environmnets.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2016-2012, Amy Troschinetz and others..</p>
+    <p>&#169; Copyright Amy Troschinetz and others..</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

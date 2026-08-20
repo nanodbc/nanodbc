@@ -1,20 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Install &mdash; nanodbc 2.14.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <title>Install &mdash; nanodbc 2.16.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=981cb1a1"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -27,14 +28,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> nanodbc
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            nanodbc
           </a>
-              <div class="version">
-                2.14.0
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -43,6 +45,7 @@
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Install</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#source">Source</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#c-standard">C++ Standard</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#requirements">Requirements</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#build">Build</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#test">Test</a></li>
@@ -72,8 +75,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Install</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Install</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/install.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -84,14 +87,14 @@
            <div itemprop="articleBody">
              
   <section id="install">
-<span id="id1"></span><h1>Install<a class="headerlink" href="#install" title="Permalink to this headline"></a></h1>
+<span id="id1"></span><h1>Install<a class="headerlink" href="#install" title="Link to this heading"></a></h1>
 <p>nanodbc is distributed in form of source code package.</p>
 <p>nanodbc is intentionally small enough that you can drag and drop the header
 and implementation files into your project and run with it.</p>
 <p>Binary packages, if available, are provided and supported by third-parties,
 developers and maintainers of numerous package managers.</p>
 <section id="source">
-<h2>Source<a class="headerlink" href="#source" title="Permalink to this headline"></a></h2>
+<h2>Source<a class="headerlink" href="#source" title="Link to this heading"></a></h2>
 <p>You can build nanodbc library, build and run tests using <a class="reference external" href="https://cmake.org">CMake</a>.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">git clone https://github.com/nanodbc/nanodbc.git</span>
 <span class="go">cd nanodbc</span>
@@ -102,11 +105,35 @@ developers and maintainers of numerous package managers.</p>
 <span class="go">ctest -V --output-on-failure</span>
 </pre></div>
 </div>
+<section id="c-standard">
+<h3>C++ Standard<a class="headerlink" href="#c-standard" title="Link to this heading"></a></h3>
+<p>Each release line targets one C++ standard. Pick the nanodbc version that matches
+the standard your project compiles with.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50.0%" />
+<col style="width: 50.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>nanodbc version</p></th>
+<th class="head"><p>C++ standard</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;</span> <span class="pre">2.12</span></code></p></td>
+<td><p>C++11</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&gt;=</span> <span class="pre">2.12</span></code></p></td>
+<td><p>C++14</p></td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="requirements">
-<h3>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline"></a></h3>
+<h3>Requirements<a class="headerlink" href="#requirements" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p>C++ compiler with C++11/C++14 support</p></li>
-<li><p><a class="reference external" href="https://cmake.org">CMake</a> 3.0.0 or later</p></li>
+<li><p>C++ compiler with support for the standard the nanodbc version targets, see above</p></li>
+<li><p><a class="reference external" href="https://cmake.org">CMake</a> 3.21.0 or later</p></li>
 <li><p>ODBC SDK (<a class="reference external" href="http://www.unixodbc.org">unixODBC</a>, <a class="reference external" href="http://www.iodbc.org">iODBC</a>, Windows SDK)</p></li>
 </ul>
 <p>Optionally, you will also need:</p>
@@ -117,7 +144,7 @@ developers and maintainers of numerous package managers.</p>
 </ul>
 </section>
 <section id="build">
-<span id="id2"></span><h3>Build<a class="headerlink" href="#build" title="Permalink to this headline"></a></h3>
+<span id="id2"></span><h3>Build<a class="headerlink" href="#build" title="Link to this heading"></a></h3>
 <p>Although detailed build process depends on CMake generator used,
 number of common targets are always available.</p>
 <p>For example, CMake configuration using Makefiles generator:</p>
@@ -140,7 +167,9 @@ with <code class="docutils literal notranslate"><span class="pre">-D</span></cod
 if no initial value is provided, <cite>OFF</cite> is used.</p>
 <p>List of CMake options specific to nanodbc, in alphabetical order:</p>
 <dl>
-<dt>NANODBC_DISABLE_ASYNC<span class="classifier"><em>boolean</em></span></dt><dd><p>Disable all async features. May resolve build issues in older ODBC versions.</p>
+<dt>NANODBC_DISABLE_ASYNC<span class="classifier"><em>boolean</em></span></dt><dd><p>Disable all async features. The async API is ODBC 3.8, and it is switched off
+automatically when the ODBC headers found at configure time do not declare it, so this
+is only needed to turn it off against headers that do.</p>
 </dd>
 <dt>NANODBC_DISABLE_EXAMPLES<span class="classifier"><em>boolean</em></span></dt><dd><p>Do not build examples.</p>
 </dd>
@@ -171,7 +200,7 @@ Default value is OFF.</p>
 using the corresponding names, as preprocessor defines yourself.</p>
 </section>
 <section id="test">
-<h3>Test<a class="headerlink" href="#test" title="Permalink to this headline"></a></h3>
+<h3>Test<a class="headerlink" href="#test" title="Link to this heading"></a></h3>
 <p>Tests use the <a class="reference external" href="https://github.com/philsquared/Catch">Catch</a> test framework.
 CMake automatically fetches the latest version of Catch for you at build time.</p>
 <p>Once nanodbc build is ready, use <a class="reference external" href="https://cmake.org/cmake/help/latest/manual/ctest.1.html">ctest</a> to run tests in
@@ -183,13 +212,13 @@ CMake generator-agnostic way:</p>
 </section>
 </section>
 <section id="binaries">
-<h2>Binaries<a class="headerlink" href="#binaries" title="Permalink to this headline"></a></h2>
+<h2>Binaries<a class="headerlink" href="#binaries" title="Link to this heading"></a></h2>
 <p>This section aim to list all known binary packages of nanodbc.</p>
 <p>If you maintain binary package of nanodbc and you’d like to list it here,
 please submit new entry via pull request or
 <a class="reference external" href="https://github.com/nanodbc/nanodbc/issues/new">open an issue</a></p>
 <section id="windows">
-<h3>Windows<a class="headerlink" href="#windows" title="Permalink to this headline"></a></h3>
+<h3>Windows<a class="headerlink" href="#windows" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>vcpkg <a class="reference external" href="https://github.com/Microsoft/vcpkg/tree/master/ports/nanodbc">port of nanodbc</a></p></li>
 </ul>
@@ -208,7 +237,7 @@ please submit new entry via pull request or
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2016-2012, Amy Troschinetz and others..</p>
+    <p>&#169; Copyright Amy Troschinetz and others..</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

@@ -28,11 +28,28 @@ You can build nanodbc library, build and run tests using `CMake`_.
   cmake --build .
   ctest -V --output-on-failure
 
+C++ Standard
+==============================================================================
+
+Each release line targets one C++ standard. Pick the nanodbc version that matches
+the standard your project compiles with.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 30
+
+   * - nanodbc version
+     - C++ standard
+   * - ``< 2.12``
+     - C++11
+   * - ``>= 2.12``
+     - C++14
+
 Requirements
 ==============================================================================
 
-* C++ compiler with C++11/C++14 support
-* `CMake`_ 3.0.0 or later
+* C++ compiler with support for the standard the nanodbc version targets, see above
+* `CMake`_ 3.21.0 or later
 * ODBC SDK (`unixODBC`_, `iODBC`_, Windows SDK)
 
 Optionally, you will also need:
@@ -74,7 +91,9 @@ if no initial value is provided, `OFF` is used.
 List of CMake options specific to nanodbc, in alphabetical order:
 
 NANODBC_DISABLE_ASYNC : *boolean*
-    Disable all async features. May resolve build issues in older ODBC versions.
+    Disable all async features. The async API is ODBC 3.8, and it is switched off
+    automatically when the ODBC headers found at configure time do not declare it, so this
+    is only needed to turn it off against headers that do.
 
 NANODBC_DISABLE_EXAMPLES : *boolean*
     Do not build examples.
