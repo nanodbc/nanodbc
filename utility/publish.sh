@@ -53,8 +53,8 @@ esac
 version="${major}.${minor}.${patch}"
 tag="v${version}"
 
-head -n 1 CHANGELOG.md | grep -qx "# ${tag}" ||
-    abort "Please update CHANGELOG.md! The file should start with '# ${tag}'."
+head -n3 CHANGELOG.md | tail -n1 | grep -qx "## ${tag}" ||
+    abort "Please update CHANGELOG.md! The top version should be '${tag}'."
 
 echo "Publishing nanodbc version: ${version}"
 echo "${version}" > VERSION.txt
