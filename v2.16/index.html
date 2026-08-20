@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nanodbc - C++ wrapper for ODBC API &mdash; nanodbc 2.16.2 documentation</title>
+  <title>nanodbc - C++ wrapper for ODBC API &mdash; nanodbc 2.16.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=0b9cbfd2"></script>
+      <script src="_static/documentation_options.js?v=afe43bcb"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
@@ -76,30 +76,19 @@
   <section id="nanodbc-c-wrapper-for-odbc-api">
 <span id="index"></span><h1>nanodbc - C++ wrapper for ODBC API<a class="headerlink" href="#nanodbc-c-wrapper-for-odbc-api" title="Link to this heading"></a></h1>
 <p>nanodbc is a small library that makes ODBC API programming easy and fun again.</p>
-<p>This documentation is for version v2.16.2. Earlier versions are listed under <a class="reference internal" href="versions.html#versions"><span class="std std-ref">Older Versions</span></a>.</p>
+<p>This documentation is for version v2.16.3. Earlier versions are listed under <a class="reference internal" href="versions.html#versions"><span class="std std-ref">Older Versions</span></a>.</p>
 <section id="motivation">
 <h2>Motivation<a class="headerlink" href="#motivation" title="Link to this heading"></a></h2>
 <p>Here’s a before and after look at straight ODBC C API code and its equivalent nanodbc code.</p>
 <p><a class="reference internal" href="_images/before.png"><img alt="before" src="_images/before.png" style="width: 45%;" /></a> <a class="reference internal" href="_images/after.png"><img alt="after" src="_images/after.png" style="width: 45%;" /></a></p>
-<p>The native C API for working with ODBC is exorbitantly verbose, ridiculously
-complicated, and fantastically brittle. nanodbc addresses these frustrations!
-The goal for nanodbc is to make developers happy.</p>
-<p>The nanodbc philosophy states: common database programming tasks
-should be easy, requiring concise and simple code.</p>
-<p>The latest <a class="reference external" href="https://isocpp.org/std/status">C++ standard</a> and <a class="reference external" href="https://github.com/isocpp/CppCoreGuidelines">C++ best practices</a> are enthusiastically
-incorporated to make the library as future-proof as possible.</p>
-<p>To accommodate users who can not use the latest and greatest,
-<a class="reference external" href="http://semver.org">semantic versioning</a> and release notes will clarify required C++ features
-and/or standards for particular versions.</p>
+<p>The native C API for working with ODBC is exorbitantly verbose, ridiculously complicated, and fantastically brittle. nanodbc addresses these frustrations! The goal for nanodbc is to make developers happy.</p>
+<p>The nanodbc philosophy states: common database programming tasks should be easy, requiring concise and simple code.</p>
+<p>The latest <a class="reference external" href="https://isocpp.org/std/status">C++ standard</a> and <a class="reference external" href="https://github.com/isocpp/CppCoreGuidelines">C++ best practices</a> are enthusiastically incorporated to make the library as future-proof as possible.</p>
+<p>To accommodate users who can not use the latest and greatest, <a class="reference external" href="http://semver.org">semantic versioning</a> and release notes will clarify required C++ features and/or standards for particular versions.</p>
 </section>
 <section id="history">
 <h2>History<a class="headerlink" href="#history" title="Link to this heading"></a></h2>
-<p>Originally nanodbc began as a simple fork of <a class="reference external" href="https://code.google.com/archive/p/tiodbc/">TinyODBC</a> with additional
-features. Eventually it grew to the point where it made sense to break with
-many of the basic underlaying design decisions of TinyODBC and completely
-refactor much of the codebase. Other projects that have had influence on
-nanodbc include <a class="reference external" href="http://simpledb.sourceforge.net">SimpleDB</a>, <a class="reference external" href="https://github.com/mkleehammer/pyodbc">pyodbc</a>, <a class="reference external" href="http://dtemplatelib.sourceforge.net">Database Template Library</a>,
-and <a class="reference external" href="http://www.codeguru.com/cpp/data/mfc_database/odbc/article.php/c4337/A-Simple-and-Smart-ODBC-Wrapper-Library.htm">GSODBC</a>.</p>
+<p>Originally nanodbc began as a simple fork of <a class="reference external" href="https://code.google.com/archive/p/tiodbc/">TinyODBC</a> with additional features. Eventually it grew to the point where it made sense to break with many of the basic underlaying design decisions of TinyODBC and completely refactor much of the codebase. Other projects that have had influence on nanodbc include <a class="reference external" href="http://simpledb.sourceforge.net">SimpleDB</a>, <a class="reference external" href="https://github.com/mkleehammer/pyodbc">pyodbc</a>, <a class="reference external" href="http://dtemplatelib.sourceforge.net">Database Template Library</a>, and <a class="reference external" href="http://www.codeguru.com/cpp/data/mfc_database/odbc/article.php/c4337/A-Simple-and-Smart-ODBC-Wrapper-Library.htm">GSODBC</a>.</p>
 </section>
 <section id="features">
 <h2>Features<a class="headerlink" href="#features" title="Link to this heading"></a></h2>

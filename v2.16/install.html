@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Install &mdash; nanodbc 2.16.2 documentation</title>
+  <title>Install &mdash; nanodbc 2.16.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=0b9cbfd2"></script>
+      <script src="_static/documentation_options.js?v=afe43bcb"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
@@ -90,10 +90,8 @@
   <section id="install">
 <span id="id1"></span><h1>Install<a class="headerlink" href="#install" title="Link to this heading"></a></h1>
 <p>nanodbc is distributed in form of source code package.</p>
-<p>nanodbc is intentionally small enough that you can drag and drop the header
-and implementation files into your project and run with it.</p>
-<p>Binary packages, if available, are provided and supported by third-parties,
-developers and maintainers of numerous package managers.</p>
+<p>nanodbc is intentionally small enough that you can drag and drop the header and implementation files into your project and run with it.</p>
+<p>Binary packages, if available, are provided and supported by third-parties, developers and maintainers of numerous package managers.</p>
 <section id="source">
 <h2>Source<a class="headerlink" href="#source" title="Link to this heading"></a></h2>
 <p>You can build nanodbc library, build and run tests using <a class="reference external" href="https://cmake.org">CMake</a>.</p>
@@ -108,8 +106,7 @@ developers and maintainers of numerous package managers.</p>
 </div>
 <section id="c-standard">
 <h3>C++ Standard<a class="headerlink" href="#c-standard" title="Link to this heading"></a></h3>
-<p>Each release line targets one C++ standard. Pick the nanodbc version that matches
-the standard your project compiles with.</p>
+<p>Each release line sets a minimum C++ standard. Pick the nanodbc version whose minimum your project can meet; anything newer than the minimum also works.</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 50.0%" />
@@ -117,7 +114,7 @@ the standard your project compiles with.</p>
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>nanodbc version</p></th>
-<th class="head"><p>C++ standard</p></th>
+<th class="head"><p>Minimum C++ standard</p></th>
 </tr>
 </thead>
 <tbody>
@@ -129,6 +126,7 @@ the standard your project compiles with.</p>
 </tr>
 </tbody>
 </table>
+<p>CI builds every supported compiler against C++14, C++17 and C++20, so all three are exercised on each change.</p>
 </section>
 <section id="requirements">
 <h3>Requirements<a class="headerlink" href="#requirements" title="Link to this heading"></a></h3>
@@ -146,66 +144,63 @@ the standard your project compiles with.</p>
 </section>
 <section id="build">
 <span id="id2"></span><h3>Build<a class="headerlink" href="#build" title="Link to this heading"></a></h3>
-<p>Although detailed build process depends on CMake generator used,
-number of common targets are always available.</p>
+<p>Although detailed build process depends on CMake generator used, number of common targets are always available.</p>
 <p>For example, CMake configuration using Makefiles generator:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd nanodbc</span>
 <span class="go">mkdir build</span>
 <span class="go">cd build</span>
 <span class="go">cmake -G &quot;Unix Makefiles&quot; [options] ..</span>
-<span class="go">make          # creates shared library</span>
-<span class="go">make nanodbc  # creates shared library</span>
+<span class="go">make          # builds the library, the tests and the examples</span>
+<span class="go">make nanodbc  # builds the library alone</span>
 <span class="go">make tests    # builds the tests</span>
 <span class="go">make test     # runs the tests</span>
-<span class="go">make check    # builds and then runs tests</span>
 <span class="go">make examples # builds all the example programs</span>
-<span class="go">make install  # installs nanodbc.h and shared library</span>
+<span class="go">make install  # installs nanodbc.h and the library</span>
 </pre></div>
 </div>
-<p><a class="reference external" href="https://cmake.org/cmake/help/latest/command/option.html">CMake OPTION</a> and cache entry variables are available to specify
-with <code class="docutils literal notranslate"><span class="pre">-D</span></code> switch to enable or disable nanodbc built-in features.</p>
-<p>All boolean options follow the <a class="reference external" href="https://cmake.org/cmake/help/latest/command/option.html">CMake OPTION</a> default value convention:
-if no initial value is provided, <cite>OFF</cite> is used.</p>
+<p>The library is static unless <code class="docutils literal notranslate"><span class="pre">BUILD_SHARED_LIBS</span></code> is <code class="docutils literal notranslate"><span class="pre">ON</span></code>. Tests and examples are built by default only when nanodbc is the top level project.</p>
+<p><a class="reference external" href="https://cmake.org/cmake/help/latest/command/option.html">CMake OPTION</a> and cache entry variables are available to specify with <code class="docutils literal notranslate"><span class="pre">-D</span></code> switch to enable or disable nanodbc built-in features.</p>
+<p>All boolean options follow the <a class="reference external" href="https://cmake.org/cmake/help/latest/command/option.html">CMake OPTION</a> default value convention: if no initial value is provided, <cite>OFF</cite> is used.</p>
 <p>List of CMake options specific to nanodbc, in alphabetical order:</p>
 <dl>
-<dt>NANODBC_DISABLE_ASYNC<span class="classifier"><em>boolean</em></span></dt><dd><p>Disable all async features. The async API is ODBC 3.8, and it is switched off
-automatically when the ODBC headers found at configure time do not declare it, so this
-is only needed to turn it off against headers that do.</p>
+<dt>NANODBC_BUILD_EXAMPLES<span class="classifier"><em>boolean</em></span></dt><dd><p>Build examples. On by default when nanodbc is the top level project.</p>
 </dd>
-<dt>NANODBC_DISABLE_EXAMPLES<span class="classifier"><em>boolean</em></span></dt><dd><p>Do not build examples.</p>
+<dt>NANODBC_BUILD_TESTS<span class="classifier"><em>boolean</em></span></dt><dd><p>Build tests. On by default when nanodbc is the top level project.</p>
 </dd>
-<dt>NANODBC_DISABLE_INSTALL<span class="classifier"><em>boolean</em></span></dt><dd><p>Do not generate install target.</p>
+<dt>NANODBC_DISABLE_ASYNC<span class="classifier"><em>boolean</em></span></dt><dd><p>Disable all async features. The ODBC 3.8 async API is switched off automatically when the ODBC headers found at configure time do not declare it, so this is only needed to turn it off against headers that do.</p>
 </dd>
-<dt>NANODBC_DISABLE_LIBCXX<span class="classifier"><em>boolean</em></span></dt><dd><p>Do not use libc++, if available on the system.</p>
+<dt>NANODBC_DISABLE_MSSQL_TVP<span class="classifier"><em>boolean</em></span></dt><dd><p>Do not use MSSQL table-valued parameters.</p>
 </dd>
-<dt>NANODBC_DISABLE_TESTS<span class="classifier"><em>boolean</em></span></dt><dd><p>Do not build tests. Do not generate <code class="docutils literal notranslate"><span class="pre">test</span></code> and <code class="docutils literal notranslate"><span class="pre">check</span></code> targets.</p>
+<dt>NANODBC_ENABLE_BOOST<span class="classifier"><em>boolean</em></span></dt><dd><p>Use Boost for Unicode string conversions (requires <a class="reference external" href="https://www.boost.org/doc/libs/release/libs/locale/">Boost.Locale</a> and <code class="docutils literal notranslate"><span class="pre">NANODBC_ENABLE_UNICODE=ON</span></code>). Workaround to issue <a class="reference external" href="https://github.com/nanodbc/nanodbc/issues/24">#24</a>.</p>
 </dd>
-<dt>NANODBC_ENABLE_BOOST<span class="classifier"><em>boolean</em></span></dt><dd><p>Use Boost for Unicode string convertions (requires <a class="reference external" href="https://www.boost.org/doc/libs/release/libs/locale/">Boost.Locale</a>). Workaround to issue <a class="reference external" href="https://github.com/nanodbc/nanodbc/issues/24">#44</a>.</p>
+<dt>NANODBC_ENABLE_COVERAGE<span class="classifier"><em>boolean</em></span></dt><dd><p>Enable code coverage analysis. Requires tests to be built.</p>
 </dd>
 <dt>NANODBC_ENABLE_UNICODE<span class="classifier"><em>boolean</em></span></dt><dd><p>Enable Unicode support. <code class="docutils literal notranslate"><span class="pre">nanodbc::string</span></code> becomes <code class="docutils literal notranslate"><span class="pre">std::u16string</span></code> or <code class="docutils literal notranslate"><span class="pre">std::u32string</span></code>.</p>
 </dd>
-<dt>NANODBC_ENABLE_WORKAROUND_NODATA<span class="classifier"><em>boolean</em></span></dt><dd><p>Enable <code class="docutils literal notranslate"><span class="pre">SQL_NO_DATA</span></code> workaround <a class="reference external" href="https://github.com/nanodbc/nanodbc/issues/60">#33</a>.</p>
+<dt>NANODBC_ENABLE_WORKAROUND_NODATA<span class="classifier"><em>boolean</em></span></dt><dd><p>Enable <code class="docutils literal notranslate"><span class="pre">SQL_NO_DATA</span></code> workaround <a class="reference external" href="https://github.com/nanodbc/nanodbc/issues/43">#43</a>.</p>
 </dd>
-<dt>NANODBC_ODBC_VERSION<span class="classifier"><em>string</em></span></dt><dd><p>Force ODBC version to use.
-Possible values are <code class="docutils literal notranslate"><span class="pre">SQL_OV_ODBC3</span></code> or <code class="docutils literal notranslate"><span class="pre">SQL_OV_ODBC3_80</span></code>.
-Default value is <code class="docutils literal notranslate"><span class="pre">SQL_OV_ODBC3_80</span></code>, if available.</p>
+<dt>NANODBC_FORCE_LIBCXX<span class="classifier"><em>boolean</em></span></dt><dd><p>Force the use of libc++. On by default if the compiler supports it.</p>
+</dd>
+<dt>NANODBC_FORCE_WARNINGS_AS_ERROR<span class="classifier"><em>boolean</em></span></dt><dd><p>Treat compiler warnings as errors when building nanodbc.</p>
+</dd>
+<dt>NANODBC_GENERATE_INSTALL<span class="classifier"><em>boolean</em></span></dt><dd><p>Generate the install target. On by default when nanodbc is the top level project.</p>
+</dd>
+<dt>NANODBC_ODBC_VERSION<span class="classifier"><em>string</em></span></dt><dd><p>Forces ODBC version to use. Default is <code class="docutils literal notranslate"><span class="pre">SQL_OV_ODBC3_80</span></code> if available, otherwise <code class="docutils literal notranslate"><span class="pre">SQL_OV_ODBC3</span></code>.</p>
+</dd>
+<dt>NANODBC_OVERALLOCATE_CHAR<span class="classifier"><em>boolean</em></span></dt><dd><p>Overallocate auto-bound n/var/char buffers to accommodate retrieving Unicode data in VARCHAR columns (requires <code class="docutils literal notranslate"><span class="pre">NANODBC_ENABLE_UNICODE=ON</span></code>) <a class="reference external" href="https://github.com/nanodbc/nanodbc/issues/219">#219</a>.</p>
 </dd>
 </dl>
 <p>Standard <a class="reference external" href="https://cmake.org">CMake</a> options are also available, for example:</p>
-<dl class="simple">
-<dt>BUILD_SHARED_LIBS<span class="classifier">boolean</span></dt><dd><p>Build nanodbc as A shared library.
-Default value is OFF.</p>
+<dl>
+<dt>BUILD_SHARED_LIBS<span class="classifier"><em>boolean</em></span></dt><dd><p>Build nanodbc as a shared library. Default value is <code class="docutils literal notranslate"><span class="pre">OFF</span></code>.</p>
 </dd>
 </dl>
-<p>If you are not using CMake to build nanodbc, you will need to set the options,
-using the corresponding names, as preprocessor defines yourself.</p>
+<p>If you are not using CMake to build nanodbc, you will need to set the options, using the corresponding names, as preprocessor defines yourself.</p>
 </section>
 <section id="test">
 <h3>Test<a class="headerlink" href="#test" title="Link to this heading"></a></h3>
-<p>Tests use the <a class="reference external" href="https://github.com/philsquared/Catch">Catch</a> test framework.
-CMake automatically fetches the latest version of Catch for you at build time.</p>
-<p>Once nanodbc build is ready, use <a class="reference external" href="https://cmake.org/cmake/help/latest/manual/ctest.1.html">ctest</a> to run tests in
-CMake generator-agnostic way:</p>
+<p>Tests use the <a class="reference external" href="https://github.com/catchorg/Catch2">Catch2</a> test framework, vendored under <code class="docutils literal notranslate"><span class="pre">test/catch</span></code> as its amalgamated distribution, so the tests build without network access.</p>
+<p>Once nanodbc build is ready, use <a class="reference external" href="https://cmake.org/cmake/help/latest/manual/ctest.1.html">ctest</a> to run tests in CMake generator-agnostic way:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">ctest -V --output-on-failure</span>
 </pre></div>
 </div>
@@ -215,9 +210,7 @@ CMake generator-agnostic way:</p>
 <section id="binaries">
 <h2>Binaries<a class="headerlink" href="#binaries" title="Link to this heading"></a></h2>
 <p>This section aim to list all known binary packages of nanodbc.</p>
-<p>If you maintain binary package of nanodbc and you’d like to list it here,
-please submit new entry via pull request or
-<a class="reference external" href="https://github.com/nanodbc/nanodbc/issues/new">open an issue</a></p>
+<p>If you maintain binary package of nanodbc and you’d like to list it here, please submit new entry via pull request or <a class="reference external" href="https://github.com/nanodbc/nanodbc/issues/new">open an issue</a></p>
 <section id="windows">
 <h3>Windows<a class="headerlink" href="#windows" title="Link to this heading"></a></h3>
 <ul class="simple">

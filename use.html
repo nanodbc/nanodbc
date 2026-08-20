@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Use &mdash; nanodbc 2.16.2 documentation</title>
+  <title>Use &mdash; nanodbc 2.16.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=0b9cbfd2"></script>
+      <script src="_static/documentation_options.js?v=afe43bcb"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
@@ -81,12 +81,9 @@
              
   <section id="use">
 <span id="id1"></span><h1>Use<a class="headerlink" href="#use" title="Link to this heading"></a></h1>
-<p>In order to use the nanodbc library, add <code class="docutils literal notranslate"><span class="pre">nanodbc/nanodbc.h</span></code>
-and <code class="docutils literal notranslate"><span class="pre">nanodbc/nanodbc.cpp</span></code> source files to your project.</p>
-<p>Alternatively, you can build the library with CMake as static or shared
-library and add it to your project as linker input.</p>
-<p>Add <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;nanodbc/nanodbc.h&gt;</span></code> in source files where you wish to use
-nanodbc functions and classes.</p>
+<p>In order to use the nanodbc library, add <code class="docutils literal notranslate"><span class="pre">nanodbc/nanodbc.h</span></code> and <code class="docutils literal notranslate"><span class="pre">nanodbc/nanodbc.cpp</span></code> source files to your project.</p>
+<p>Alternatively, you can build the library with CMake as static or shared library and add it to your project as linker input.</p>
+<p>Add <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&lt;nanodbc/nanodbc.h&gt;</span></code> in source files where you wish to use nanodbc functions and classes.</p>
 <p>The entirety of nanodbc can be found within the single <cite>nanodbc</cite> namespace.</p>
 <section id="quickstart">
 <h2>Quickstart<a class="headerlink" href="#quickstart" title="Link to this heading"></a></h2>
@@ -119,20 +116,12 @@ nanodbc functions and classes.</p>
 <section id="iodbc-and-unixodbc">
 <h2>iODBC and unixODBC<a class="headerlink" href="#iodbc-and-unixodbc" title="Link to this heading"></a></h2>
 <p>Notes about using nanodbc with <a class="reference external" href="http://www.iodbc.org">iODBC</a> and <a class="reference external" href="http://www.unixodbc.org">unixODBC</a> in Unix systems.</p>
-<p>On Windows, <code class="docutils literal notranslate"><span class="pre">sizeof(wchar_t)</span> <span class="pre">==</span> <span class="pre">sizeof(SQLWCHAR)</span> <span class="pre">==</span> <span class="pre">2</span></code>.
-On Unix, <code class="docutils literal notranslate"><span class="pre">sizeof(wchar_t)</span> <span class="pre">==</span> <span class="pre">4</span></code>.</p>
-<p>On unixODBC, <code class="docutils literal notranslate"><span class="pre">sizeof(SQLWCHAR)</span> <span class="pre">==</span> <span class="pre">2</span></code>.
-On iODBC, <code class="docutils literal notranslate"><span class="pre">sizeof(SQLWCHAR)</span> <span class="pre">==</span> <span class="pre">sizeof(wchar_t)</span> <span class="pre">==</span> <span class="pre">4</span></code>.</p>
-<p>This leads to incompatible ABIs between applications and drivers.
-If building against iODBC and the build option <code class="docutils literal notranslate"><span class="pre">NANODBC_USE_UNICODE</span></code>
-is <code class="docutils literal notranslate"><span class="pre">ON</span></code>, then <code class="docutils literal notranslate"><span class="pre">nanodbc::string_type</span></code> will be <code class="docutils literal notranslate"><span class="pre">std::u32string</span></code>.</p>
+<p>On Windows, <code class="docutils literal notranslate"><span class="pre">sizeof(wchar_t)</span> <span class="pre">==</span> <span class="pre">sizeof(SQLWCHAR)</span> <span class="pre">==</span> <span class="pre">2</span></code>. On Unix, <code class="docutils literal notranslate"><span class="pre">sizeof(wchar_t)</span> <span class="pre">==</span> <span class="pre">4</span></code>.</p>
+<p>On unixODBC, <code class="docutils literal notranslate"><span class="pre">sizeof(SQLWCHAR)</span> <span class="pre">==</span> <span class="pre">2</span></code>. On iODBC, <code class="docutils literal notranslate"><span class="pre">sizeof(SQLWCHAR)</span> <span class="pre">==</span> <span class="pre">sizeof(wchar_t)</span> <span class="pre">==</span> <span class="pre">4</span></code>.</p>
+<p>This leads to incompatible ABIs between applications and drivers. If building against iODBC and the build option <code class="docutils literal notranslate"><span class="pre">NANODBC_USE_UNICODE</span></code> is <code class="docutils literal notranslate"><span class="pre">ON</span></code>, then <code class="docutils literal notranslate"><span class="pre">nanodbc::string_type</span></code> will be <code class="docutils literal notranslate"><span class="pre">std::u32string</span></code>.</p>
 <p>In ALL other cases it will be <code class="docutils literal notranslate"><span class="pre">std::u16string</span></code>.</p>
-<p>The nanodbc continuous integration tests run with <a class="reference external" href="https://github.com/nanodbc/nanodbc/actions">GitHub Actions</a>.
-The build platform does not make available a Unicode-enabled iODBC driver.
-As such there is no guarantee that tests will pass in entirety on a system using iODBC.
-Our recommendation is to use unixODBC.</p>
-<p>If you must use iODBC, consider disabling Unicode mode in nanodbc build
-configuration to avoid <code class="docutils literal notranslate"><span class="pre">wchar_t</span></code> issues, see <a class="reference internal" href="install.html#build"><span class="std std-ref">Build</span></a>.</p>
+<p>The nanodbc continuous integration tests run with <a class="reference external" href="https://github.com/nanodbc/nanodbc/actions">GitHub Actions</a>. The build platform does not make available a Unicode-enabled iODBC driver. As such there is no guarantee that tests will pass in entirety on a system using iODBC. Our recommendation is to use unixODBC.</p>
+<p>If you must use iODBC, consider disabling Unicode mode in nanodbc build configuration to avoid <code class="docutils literal notranslate"><span class="pre">wchar_t</span></code> issues, see <a class="reference internal" href="install.html#build"><span class="std std-ref">Build</span></a>.</p>
 </section>
 <section id="example">
 <h2>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h2>
