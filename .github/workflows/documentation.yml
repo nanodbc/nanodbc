@@ -9,10 +9,13 @@ on:
     paths:
       - "doc/**"
       - "nanodbc/**"
+      # use.rst includes example/usage.cpp verbatim.
+      - "example/**"
   pull_request:
     paths:
       - "doc/**"
       - "nanodbc/**"
+      - "example/**"
   # release.yml calls this for a version tag. Only this path deploys: the published site
   # is the documentation of the latest release, not of whatever is currently on main.
   workflow_call:

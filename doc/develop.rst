@@ -1,3 +1,5 @@
+.. _develop:
+
 ##############################################################################
 Develop
 ##############################################################################
@@ -76,34 +78,38 @@ To build the development image on its own, without the database services, pass t
 Test
 ******************************************************************************
 
-See `README.md`_.
+Keeping nanodbc covered with tests is one of the important objectives, so new contributions submitted via pull requests must include corresponding tests.
+
+The tests are built with the ``tests`` target and run with `ctest`_. They are laid out as:
+
+* ``test/base_test_fixture.h`` provides the helpers the fixtures share, such as connecting, creating and dropping tables, and reporting which backend is under test.
+* ``test/test_case_fixture.h`` holds the test cases that run against every backend.
+* ``test/<database>_test.cpp`` is the source for an independent test program that includes both the common and the database-specific test cases. ``test/main.cpp`` supplies the ``main()`` each of them links against, and ``test/CMakeLists.txt`` lists the databases a program is built for.
+
+To add a new test case, add a method to ``test_case_fixture`` in ``test/test_case_fixture.h``, then copy the ``TEST_CASE_METHOD`` boilerplate into each ``test/<database>_test.cpp``, updating name and tags. A test that only makes sense for one database goes straight into that database's source file instead.
+
+The SQLite and utility tests need no server, so they are the quickest way to check a change. The Vertica tests need Vertica's own ODBC driver, which the development image does not carry, so a full run excludes them:
+
+.. code-block:: console
+
+  $ ctest --test-dir build --output-on-failure -E vertica_tests
+  $ ctest --test-dir build --output-on-failure -R sqlite_tests
+
+See `README.md`_ for the rest, under Tests.
 
 ******************************************************************************
 Release
 ******************************************************************************
 
-See `README.md`_.
+``utility/publish.sh`` bumps the version in ``VERSION.txt``, commits it and pushes the matching ``vX.Y.Z`` tag; pushing the tag is what drives the release and the documentation deployment. Update ``CHANGELOG.md`` first, since the section for the version being released becomes the release notes and the publish script checks that it is there.
+
+See `README.md`_ for the whole process, under Publish and Release Process.
 
 Documentation
 ==============================================================================
 
 See `doc/README.md`_.
 
-******************************************************************************
-Future
-******************************************************************************
-
-Good to Have / Want Someday
-
-* Refactor tests to follow BDD pattern.
-* Update codebase to use more C++14 idioms and patterns.
-* Write more tests with the goal to have much higher code coverage.
-* More tests for a large variety of drivers. Include performance tests.
-* Clean up ``bind_*`` family of functions, reduce any duplication.
-* Improve documentation: The main website and API docs should be more responsive.
-* Provide more examples in documentation, more details, and point out any gotchas.
-* Versioned generated source level API documentation for release and latest. For each major and minor published versions too?
-* Add "HOWTO Build" documentation for Windows, OS X, and Linux.
-
+.. _`ctest`: https://cmake.org/cmake/help/latest/manual/ctest.1.html
 .. _`README.md`: https://github.com/nanodbc/nanodbc/blob/main/README.md
 .. _`doc/README.md`: https://github.com/nanodbc/nanodbc/blob/main/doc/README.md

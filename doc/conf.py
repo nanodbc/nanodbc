@@ -26,8 +26,9 @@ import subprocess
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-#
-needs_sphinx = "1.4"
+# requirements.txt pins nothing, so this is the floor the extensions themselves set:
+# Breathe requires 7.2 or later, sphinx_rtd_theme 6 or later.
+needs_sphinx = "7.2"
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -240,7 +241,7 @@ html_theme = "sphinx_rtd_theme"
 # The name for this set of Sphinx documents.
 # "<project> v<release> documentation" by default.
 #
-# html_title = 'nanodbc v2.15.0'
+# html_title = 'nanodbc vX.Y.Z'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #
@@ -422,7 +423,7 @@ texinfo_documents = [
         "nanodbc Documentation",
         author,
         "nanodbc",
-        "One line description of project.",
+        "A small C++ wrapper for the native C ODBC API.",
         "Miscellaneous",
     ),
 ]

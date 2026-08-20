@@ -1,5 +1,9 @@
 # ChangeLog
 
+## v2.16.4
+
+- Updating the usage, development, and contributing sections of generated docs to be in sync with the README and current codebase.
+
 ## v2.16.3
 
 - Updated the README badges and links.
