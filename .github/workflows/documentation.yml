@@ -39,6 +39,12 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.ref || github.ref }}
+      - name: Fetch the published versions
+        # conf.py lists the archived versions on the Older Versions page by reading the
+        # directories on this branch, so that the page can only name a version whose pages
+        # are really there. Without the branch it says so and moves on, which is what a
+        # working copy that has never fetched it does too.
+        run: git fetch --depth 1 origin gh-pages:refs/remotes/origin/gh-pages
       - name: Install Doxygen
         run: sudo apt-get update -y && sudo apt-get install -y doxygen
       - name: Install Python

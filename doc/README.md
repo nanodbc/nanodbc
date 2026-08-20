@@ -45,6 +45,12 @@ rstcheck -r doc
 pushd doc && make clean && make html && popd
 ```
 
+The Older Versions page lists the versions the website carries, which `conf.py` reads from the `gh-pages` branch. Fetch it first to build that list locally; without it the page says so instead.
+
+```console
+git fetch origin gh-pages:refs/remotes/origin/gh-pages
+```
+
 ## Deploy
 
 Nothing to do by hand. Releasing deploys these pages: the [Documentation workflow](../.github/workflows/documentation.yml) commits them to the `gh-pages` branch, at the site root and under `vX.Y.Z/` as a permanent archive of that release. Nothing else writes the branch, so the published site is the documentation of the latest release. See [Publish and Release Process](../README.md#publish-and-release-process).
