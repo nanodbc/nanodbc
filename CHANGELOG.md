@@ -1,5 +1,22 @@
 # ChangeLog
 
+## v2.16.0
+
+### Changes
+
+- Updated to use Catch2 for testing
+- Increased test coverage to 80%
+- Fixed CI/CD integrations
+- Updated CMake build system
+- Fix for is_null() returning false for unbound columns when using SQLGetData()
+- Fixed issue with nanodbc::time and nanodbc::timestamp not being able to be used as a parameter in a prepared statement when using SQL Server ODBC driver
+- Declare noexcept where a function really cannot throw
+- Updated code to follow the rule of five for classes that manage resources
+- Added dependabot configuration to automatically update dependencies
+- Updated clang-format version to the latest
+- Migrated test coverage to llvm-cov
+- Resolved many TODOs and FIXMEs in the codebase (most were out of date)
+
 ## v2.15.1
 
 Added support for C++17 type std::optional with backward compatibility in C++14 via std::experimental::optional.
