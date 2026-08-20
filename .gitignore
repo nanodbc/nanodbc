@@ -56,6 +56,6 @@ website/
 *.csv
 *.db
 
-# Python bytecode, e.g. from doc/build.py
+# Python bytecode
 __pycache__/
 *.py[cod]

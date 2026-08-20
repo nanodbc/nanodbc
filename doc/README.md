@@ -3,21 +3,20 @@
 ## Prerequisites
 
 1. Python 3
-2. Sphinx
-3. Breathe
-4. Doxygen
-5. Node and markdownlint-cli (optional)
+2. Doxygen, which Breathe runs to read the API out of `nanodbc/nanodbc.h`
+3. Node and markdownlint-cli (optional)
+
+Doxygen is the one that does not come from pip: `brew install doxygen` on macOS, `apt-get install doxygen` on Debian and Ubuntu.
 
 ## Install
 
+Sphinx, Breathe and the theme are listed in `requirements.txt`, which is also what the workflow installs, so a local build matches the published one.
+
 ```console
-python -m venv .pyvenv
-. .pyvenv/bin/activate
+python3 -m venv doc/.venv
+. doc/.venv/bin/activate
 python -m pip install --upgrade pip
-python -m pip install rstcheck
-python -m pip install sphinx
-python -m pip install sphinx_rtd_theme
-python -m pip install breathe
+python -m pip install -r doc/requirements.txt
 ```
 
 Optionally, install markdownlint-cli
@@ -31,8 +30,10 @@ npm install markdownlint-cli
 
 ## Lint
 
+The reStructuredText is checked by [DOCtor-RST](https://github.com/OskarStark/doctor-rst), configured by `doc/.doctor-rst.yaml`. This is what CI runs, and it needs nothing installed here:
+
 ```console
-rstcheck -r doc
+docker run --rm -v "$PWD":/project -w /project -e DOCS_DIR=doc/ oskarstark/doctor-rst --short
 ```
 
 ```console
@@ -41,15 +42,20 @@ rstcheck -r doc
 
 ## Build
 
-```console
-pushd doc && make clean && make html && popd
-```
-
-The Older Versions page lists the versions the website carries, which `conf.py` reads from the `gh-pages` branch. Fetch it first to build that list locally; without it the page says so instead.
+The Older Versions page lists the versions the website carries, which `conf.py` reads from the `gh-pages` branch. Fetch it once so that the list can be built here; without it the page says as much instead.
 
 ```console
 git fetch origin gh-pages:refs/remotes/origin/gh-pages
 ```
+
+Then, with the virtualenv activated:
+
+```console
+make -C doc clean html
+open doc/build/html/index.html
+```
+
+A clean build reports three warnings, all of them Breathe failing to parse the same declaration in `api.rst`. Doxygen may add warnings of its own about `@return` on functions that return nothing, depending on its version.
 
 ## Deploy
 

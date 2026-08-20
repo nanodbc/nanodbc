@@ -183,9 +183,20 @@ clang-format -i /path/to/file
 
 ### Source Level Documentation
 
-Source level documentation provided via [GitHub's gh-pages][gh-pages] is available
-at [nanodbc.io][nanodbc]. To re-build and update it, preform the following steps
-from the [doc/README.md](doc/README.md) file.
+Source level documentation provided via [GitHub's gh-pages][gh-pages] is available at [nanodbc.io][nanodbc]. Publishing it is automatic; see [Publish and Release Process](#publish-and-release-process).
+
+To build it locally and read it before it goes anywhere, install Doxygen — `brew install doxygen`, or `apt-get install doxygen` — and then:
+
+```console
+git fetch origin gh-pages:refs/remotes/origin/gh-pages   # once, for the Older Versions list
+python3 -m venv doc/.venv
+. doc/.venv/bin/activate
+python -m pip install -r doc/requirements.txt
+make -C doc html
+open doc/build/html/index.html
+```
+
+A clean build reports three warnings, all of them Breathe failing to parse one declaration in `doc/api.rst`. [doc/README.md](doc/README.md) covers the rest, including how the Older Versions page is generated.
 
 ### Quick Setup for Testing or Development Environments
 

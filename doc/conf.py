@@ -177,7 +177,9 @@ language = "en"
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = []
+# doc/README.md has the reader build in a virtualenv here, and its site-packages carry
+# enough .rst of their own to bury the warnings that belong to nanodbc.
+exclude_patterns = [".venv", ".pyvenv"]
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
