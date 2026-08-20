@@ -99,6 +99,10 @@ site_url = "https://nanodbc.github.io/nanodbc"
 generated_dir = os.path.join(doc_dir, "_generated")
 version_list_path = os.path.join(generated_dir, "versions.rst.inc")
 
+# Stands in for the patch component of a series directory when ordering the list, a series
+# being whatever patch was released from it most recently.
+LATEST_IN_SERIES = float("inf")
+
 
 def published_versions():
     """Versions whose documentation is on the website, newest first.
@@ -121,19 +125,23 @@ def published_versions():
     except (OSError, subprocess.SubprocessError):
         return None
 
-    current = f"v{release}"
+    # This build writes the root and the directory for its own minor series, so neither is
+    # an older version: listing the series would have the page linking to itself. The full
+    # version is excluded too, for the releases archived under one before the series
+    # directories came in.
+    series = ".".join(release.split(".")[:2])
+    being_written = {f"v{release}", f"v{series}"}
+
     found = []
     for name in listing.split():
-        # The patch component is optional because the branch has carried a directory
-        # without one before now.
+        # The patch component is optional: the series directories have none.
         matched = re.fullmatch(r"v(\d+)\.(\d+)(?:\.(\d+))?", name)
-        # The version being built has no archive of its own yet, and would not belong in a
-        # list of the older ones even once it has.
-        if not matched or name == current:
+        if not matched or name in being_written:
             continue
         major, minor, patch = matched.groups()
-        # A directory naming no patch sorts below the .0 release it stands in for.
-        order = (int(major), int(minor), int(patch) if patch else -1)
+        # A series directory carries the newest patch released from it, so it sorts above
+        # any single release archived from the same minor.
+        order = (int(major), int(minor), int(patch) if patch else LATEST_IN_SERIES)
         found.append((order, name))
     return [name for _, name in sorted(found, reverse=True)]
 

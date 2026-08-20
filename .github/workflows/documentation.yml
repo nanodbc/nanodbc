@@ -22,7 +22,7 @@ on:
         type: string
         required: true
       archive-as:
-        description: "Version to also keep the build under, e.g. 2.16.0, as vX.Y.Z/"
+        description: "Minor series to also keep the build under, e.g. 2.16, as vX.Y/"
         type: string
         required: true
 # One run per workflow per ref. A new push cancels the run it superseded, except on main,
@@ -93,7 +93,7 @@ jobs:
         run: |
           html="${GITHUB_WORKSPACE}/html"
           work="$(mktemp -d)"
-          # The branch holds released versions under their own directories as well as the
+          # The branch holds the archived series under their own directories as well as the
           # current documentation at its root, so its history is kept and only the paths
           # this run produces are written.
           git clone -q --depth 1 --branch gh-pages \
@@ -116,7 +116,8 @@ jobs:
               cp -R "${html}/." "${dest}/"
           }
 
-          # The root is the latest release; the version directory is its permanent archive.
+          # The root is the latest release; the series directory is the archive for the
+          # minor it came from, which a later patch refreshes rather than replaces.
           deploy .
           deploy "v${ARCHIVE_AS}"
 
@@ -128,6 +129,6 @@ jobs:
           fi
           git -c user.name='github-actions[bot]' \
               -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
-              commit -qm "Documentation for v${ARCHIVE_AS}"
+              commit -qm "Documentation for v${ARCHIVE_AS} series"
           git push -q origin gh-pages
           echo "Deployed to https://nanodbc.github.io/nanodbc/" >> "${GITHUB_STEP_SUMMARY}"

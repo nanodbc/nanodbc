@@ -29,6 +29,7 @@ jobs:
       contents: write
     outputs:
       version: ${{ steps.notes.outputs.version }}
+      series: ${{ steps.notes.outputs.series }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -47,8 +48,14 @@ jobs:
             exit 1
           fi
           ./utility/changelog.sh "${TAG}" > "${RUNNER_TEMP}/notes.md"
-          echo "version=${version}" >> "${GITHUB_OUTPUT}"
-          echo "tag=${TAG}" >> "${GITHUB_OUTPUT}"
+          {
+            echo "version=${version}"
+            echo "tag=${TAG}"
+            # The documentation is archived per minor series rather than per release, so a
+            # patch refreshes the series it belongs to instead of standing up a site of
+            # its own. See the archive-as input in documentation.yml.
+            echo "series=${version%.*}"
+          } >> "${GITHUB_OUTPUT}"
           {
             echo "## Release notes for ${TAG}"
             echo
@@ -69,8 +76,8 @@ jobs:
               --notes-file "${RUNNER_TEMP}/notes.md" --verify-tag
           fi
 
-  # The documentation for the tag becomes both the site root and a permanent archive under
-  # its own version, the way the earlier releases are laid out on gh-pages.
+  # The documentation for the tag becomes both the site root and the archive for its minor
+  # series, so that the series URL always carries the newest patch released from it.
   documentation:
     needs: release
     permissions:
@@ -78,4 +85,4 @@ jobs:
     uses: ./.github/workflows/documentation.yml
     with:
       ref: v${{ needs.release.outputs.version }}
-      archive-as: ${{ needs.release.outputs.version }}
+      archive-as: ${{ needs.release.outputs.series }}

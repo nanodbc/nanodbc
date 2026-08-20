@@ -292,9 +292,9 @@ Pushing the tag is all it takes: [release.yml](.github/workflows/release.yml) do
 
 1. It checks that the tag agrees with `VERSION.txt` at that commit, so a release cannot be labelled with a version the sources do not claim.
 2. It publishes a GitHub release for the tag, with the notes taken from that version's section of `CHANGELOG.md` by `utility/changelog.sh`. Running the workflow again for a tag that already has a release rewrites its notes rather than failing.
-3. It calls [documentation.yml](.github/workflows/documentation.yml) to build the documentation from the tag and deploy it to the `gh-pages` branch, both at the site root and under `vX.Y.Z/` as a permanent archive of that release.
+3. It calls [documentation.yml](.github/workflows/documentation.yml) to build the documentation from the tag and deploy it to the `gh-pages` branch, both at the site root and under `vX.Y/` as the archive for that minor series. A patch release refreshes the series it belongs to rather than standing up a site of its own, so the number of archived sites grows once per minor, not once per release.
 
-The version the documentation shows comes from `VERSION.txt` by way of `doc/conf.py`, so there is no separate number to bump. The list of previous versions on the documentation front page is hand-maintained, though, so add the version that just moved into the archive to `doc/index.rst`.
+The version the documentation shows comes from `VERSION.txt` by way of `doc/conf.py`, and the Older Versions page is generated from the directories on `gh-pages`, so neither is a number to remember to bump.
 
 Only a release moves the published site, so it always shows the latest release rather than whatever is currently on `main`. Pushes and pull requests that touch `doc/` or `nanodbc/` build the documentation as a check and attach it as an artifact, without deploying it.
 
