@@ -36,13 +36,14 @@ Features
 
 Why should you use nanodbc?
 
-* Small! Same as TinyODBC, nanodbc is small. A header and an implementation file.
+* Small! Same as TinyODBC, nanodbc is small: a header and an implementation file.
 * Simple! There are only a handful of significant classes to learn.
 * Portable! nanodbc uses only standard C++ headers in addition to the ODBC API headers.
 * Robust! Where it makes sense, error handling is done with exceptions instead of return codes.
-* Features! nanodbc supports ODBC 3, SQLDriverConnect(), Transactions, Bound Parameters, Bulk Operations, and much more.
-* Documented! I have tried to provide very clean and useful documentation with example usage.
-* Active! I am currently actively using and developing nanodbc so I hope to add more and more features all the time.
+* Features! nanodbc supports ODBC 3, SQLDriverConnect(), transactions, bound parameters, bulk operations, and much more.
+* Tested! The suites cover SQLite, PostgreSQL, MySQL, MariaDB, SQL Server and Vertica, each of which runs as a container so that none of them has to be installed to work on nanodbc.
+* Documented! These pages cover :ref:`installation <install>` and :ref:`usage <use>`, and the :ref:`API reference <api>` is generated from the source.
+* Active! nanodbc is maintained and open to contributions, see :ref:`Develop <develop>`.
 
 ******************************************************************************
 Design
@@ -52,7 +53,7 @@ All complex objects in nanodbc follow the `pimpl`_ (Pointer to IMPLementation) i
 
 nanodbc wraps ODBC code, providing a simpler way to do the same thing. We try to be as featureful as possible, but I can't guarantee you'll never have to write supporting ODBC code. Personally, I have never had to do so.
 
-Major features beyond what's already supported by ODBC are not within the scope of nanodbc. This is where the nano part of nanodbc becomes relevant: This library is as minimal as possible. That means no dependencies beyond standard C++ and typical ODBC headers. No features unsupported by existing ODBC API calls.
+Major features beyond what's already supported by ODBC are not within the scope of nanodbc. This is where the nano part of nanodbc becomes relevant: This library is as minimal as possible. That means no dependencies beyond standard C++ and typical ODBC headers and libraries to link against. No features unsupported by existing ODBC API calls.
 
 
 .. toctree::

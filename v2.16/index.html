@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nanodbc - C++ wrapper for ODBC API &mdash; nanodbc 2.16.3 documentation</title>
+  <title>nanodbc - C++ wrapper for ODBC API &mdash; nanodbc 2.16.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=afe43bcb"></script>
+      <script src="_static/documentation_options.js?v=646dab06"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
@@ -76,7 +76,7 @@
   <section id="nanodbc-c-wrapper-for-odbc-api">
 <span id="index"></span><h1>nanodbc - C++ wrapper for ODBC API<a class="headerlink" href="#nanodbc-c-wrapper-for-odbc-api" title="Link to this heading"></a></h1>
 <p>nanodbc is a small library that makes ODBC API programming easy and fun again.</p>
-<p>This documentation is for version v2.16.3. Earlier versions are listed under <a class="reference internal" href="versions.html#versions"><span class="std std-ref">Older Versions</span></a>.</p>
+<p>This documentation is for version v2.16.4. Earlier versions are listed under <a class="reference internal" href="versions.html#versions"><span class="std std-ref">Older Versions</span></a>.</p>
 <section id="motivation">
 <h2>Motivation<a class="headerlink" href="#motivation" title="Link to this heading"></a></h2>
 <p>Here’s a before and after look at straight ODBC C API code and its equivalent nanodbc code.</p>
@@ -94,20 +94,21 @@
 <h2>Features<a class="headerlink" href="#features" title="Link to this heading"></a></h2>
 <p>Why should you use nanodbc?</p>
 <ul class="simple">
-<li><p>Small! Same as TinyODBC, nanodbc is small. A header and an implementation file.</p></li>
+<li><p>Small! Same as TinyODBC, nanodbc is small: a header and an implementation file.</p></li>
 <li><p>Simple! There are only a handful of significant classes to learn.</p></li>
 <li><p>Portable! nanodbc uses only standard C++ headers in addition to the ODBC API headers.</p></li>
 <li><p>Robust! Where it makes sense, error handling is done with exceptions instead of return codes.</p></li>
-<li><p>Features! nanodbc supports ODBC 3, SQLDriverConnect(), Transactions, Bound Parameters, Bulk Operations, and much more.</p></li>
-<li><p>Documented! I have tried to provide very clean and useful documentation with example usage.</p></li>
-<li><p>Active! I am currently actively using and developing nanodbc so I hope to add more and more features all the time.</p></li>
+<li><p>Features! nanodbc supports ODBC 3, SQLDriverConnect(), transactions, bound parameters, bulk operations, and much more.</p></li>
+<li><p>Tested! The suites cover SQLite, PostgreSQL, MySQL, MariaDB, SQL Server and Vertica, each of which runs as a container so that none of them has to be installed to work on nanodbc.</p></li>
+<li><p>Documented! These pages cover <a class="reference internal" href="install.html#install"><span class="std std-ref">installation</span></a> and <a class="reference internal" href="use.html#use"><span class="std std-ref">usage</span></a>, and the <a class="reference internal" href="api.html#api"><span class="std std-ref">API reference</span></a> is generated from the source.</p></li>
+<li><p>Active! nanodbc is maintained and open to contributions, see <a class="reference internal" href="develop.html#develop"><span class="std std-ref">Develop</span></a>.</p></li>
 </ul>
 </section>
 <section id="design">
 <h2>Design<a class="headerlink" href="#design" title="Link to this heading"></a></h2>
 <p>All complex objects in nanodbc follow the <a class="reference external" href="http://wiki.c2.com/?PimplIdiom">pimpl</a> (Pointer to IMPLementation) idiom to provide separation between interface and implementation, value semantics, and a clean nanodbc.h header file that includes nothing but standard C++ headers.</p>
 <p>nanodbc wraps ODBC code, providing a simpler way to do the same thing. We try to be as featureful as possible, but I can’t guarantee you’ll never have to write supporting ODBC code. Personally, I have never had to do so.</p>
-<p>Major features beyond what’s already supported by ODBC are not within the scope of nanodbc. This is where the nano part of nanodbc becomes relevant: This library is as minimal as possible. That means no dependencies beyond standard C++ and typical ODBC headers. No features unsupported by existing ODBC API calls.</p>
+<p>Major features beyond what’s already supported by ODBC are not within the scope of nanodbc. This is where the nano part of nanodbc becomes relevant: This library is as minimal as possible. That means no dependencies beyond standard C++ and typical ODBC headers and libraries to link against. No features unsupported by existing ODBC API calls.</p>
 <div class="toctree-wrapper compound">
 </div>
 </section>

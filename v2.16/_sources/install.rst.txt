@@ -20,11 +20,11 @@ You can build nanodbc library, build and run tests using `CMake`_.
 
   git clone https://github.com/nanodbc/nanodbc.git
   cd nanodbc
-  mkdir build
-  cd build
-  cmake ..
-  cmake --build .
-  ctest -V --output-on-failure
+  cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+  cmake --build build --parallel
+  ctest --test-dir build --output-on-failure -E vertica_tests
+
+The tests connect to real databases, so see :ref:`Test <test>` below for what each of them needs.
 
 C++ Standard
 ==============================================================================
@@ -55,7 +55,7 @@ Optionally, you will also need:
 
 * ODBC drivers, depending on DBMS you want to target (eg. running tests).
 * `Boost.Locale`_, alternative for Unicode conversion routines.
-* `libc++`_, alternative C++11 and later implementation.
+* `libc++`_, alternative C++ standard library implementation.
 
 .. _build:
 
@@ -134,18 +134,30 @@ BUILD_SHARED_LIBS : *boolean*
 
 If you are not using CMake to build nanodbc, you will need to set the options, using the corresponding names, as preprocessor defines yourself.
 
+.. _test:
+
 Test
 ==============================================================================
 
-Tests use the `Catch2 <https://github.com/catchorg/Catch2>`_ test framework, vendored under ``test/catch`` as its amalgamated distribution, so the tests build without network access.
+Tests use the `Catch2`_ test framework, vendored under ``test/catch`` as its amalgamated distribution, so the tests build without network access.
 
 Once nanodbc build is ready, use `ctest`_ to run tests in CMake generator-agnostic way:
 
 .. code-block:: console
 
-  ctest -V --output-on-failure
+  ctest --test-dir build --output-on-failure -E vertica_tests
 
-Alternatively, build `test` target (eg. `make test`).
+Alternatively, build the ``test`` target (eg. ``make test``).
+
+There is one test program per database, so a single suite can be run on its own:
+
+.. code-block:: console
+
+  ctest --test-dir build --output-on-failure -R sqlite_tests
+
+The utility tests need no database at all, and the SQLite tests need only a SQLite ODBC driver, registered as ``SQLite3`` on \*nix systems and as ``SQLite3 ODBC Driver`` on Windows, since the tests name the driver rather than a data source. Those two are the quickest way to check a build. The remaining suites need a running server, and the Vertica tests additionally need Vertica's own ODBC driver, which is why a full run excludes them.
+
+Each suite reads its own ``NANODBC_TEST_CONNSTR_<DB>`` environment variable for the connection string, falling back to ``NANODBC_TEST_CONNSTR``. Rather than installing the servers, use the containers the repository provides, which preset those variables; see :ref:`Develop <develop>`.
 
 ******************************************************************************
 Binaries
@@ -162,6 +174,7 @@ Windows
 
 .. _`CMake`: https://cmake.org
 .. _`CMake OPTION`: https://cmake.org/cmake/help/latest/command/option.html
+.. _`Catch2`: https://github.com/catchorg/Catch2
 .. _`ctest`: https://cmake.org/cmake/help/latest/manual/ctest.1.html
 .. _`iODBC`: http://www.iodbc.org
 .. _`unixODBC`: http://www.unixodbc.org
