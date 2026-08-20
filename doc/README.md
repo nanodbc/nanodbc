@@ -19,14 +19,7 @@ python -m pip install --upgrade pip
 python -m pip install -r doc/requirements.txt
 ```
 
-Optionally, install markdownlint-cli
-
-```console
-curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
-sudo apt-get install -y nodejs
-npm install markdownlint-cli
-./node_modules/.bin/markdownlint --version
-```
+Optionally, install [markdownlint-cli](https://github.com/igorshubovych/markdownlint-cli).
 
 ## Lint
 
@@ -36,8 +29,10 @@ The reStructuredText is checked by [DOCtor-RST](https://github.com/OskarStark/do
 docker run --rm -v "$PWD":/project -w /project -e DOCS_DIR=doc/ oskarstark/doctor-rst --short
 ```
 
+The Markdown is checked by [markdownlint-cli](https://github.com/igorshubovych/markdownlint-cli), configured by `.markdownlint.json`, over every file rather than the README alone. Pin the version CI pins, which the `markdown-lint` action in `lint.yml` builds in: later releases added rules that the repository has never been held to, and reporting those locally would be reporting failures CI does not have.
+
 ```console
-./node_modules/.bin/markdownlint --config .markdownlint.json README.md
+npx markdownlint-cli@0.26.0 "**/*.md"
 ```
 
 ## Build
@@ -48,7 +43,7 @@ The Older Versions page lists the versions the website carries, which `conf.py` 
 git fetch origin gh-pages:refs/remotes/origin/gh-pages
 ```
 
-Then, with the virtualenv activated:
+Then, with the virtualenv activated, and from the root of the repository:
 
 ```console
 make -C doc clean html

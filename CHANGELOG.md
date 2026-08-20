@@ -1,5 +1,11 @@
 # ChangeLog
 
+## v2.16.2
+
+### Changes
+
+- Small updates to README and documentation
+
 ## v2.16.1
 
 ### Changes
