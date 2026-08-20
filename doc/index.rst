@@ -16,30 +16,19 @@ Here's a before and after look at straight ODBC C API code and its equivalent na
 
 |before| |after|
 
-The native C API for working with ODBC is exorbitantly verbose, ridiculously
-complicated, and fantastically brittle. nanodbc addresses these frustrations!
-The goal for nanodbc is to make developers happy.
+The native C API for working with ODBC is exorbitantly verbose, ridiculously complicated, and fantastically brittle. nanodbc addresses these frustrations! The goal for nanodbc is to make developers happy.
 
-The nanodbc philosophy states: common database programming tasks
-should be easy, requiring concise and simple code.
+The nanodbc philosophy states: common database programming tasks should be easy, requiring concise and simple code.
 
-The latest `C++ standard`_ and `C++ best practices`_ are enthusiastically
-incorporated to make the library as future-proof as possible.
+The latest `C++ standard`_ and `C++ best practices`_ are enthusiastically incorporated to make the library as future-proof as possible.
 
-To accommodate users who can not use the latest and greatest,
-`semantic versioning`_ and release notes will clarify required C++ features
-and/or standards for particular versions.
+To accommodate users who can not use the latest and greatest, `semantic versioning`_ and release notes will clarify required C++ features and/or standards for particular versions.
 
 ******************************************************************************
 History
 ******************************************************************************
 
-Originally nanodbc began as a simple fork of `TinyODBC`_ with additional
-features. Eventually it grew to the point where it made sense to break with
-many of the basic underlaying design decisions of TinyODBC and completely
-refactor much of the codebase. Other projects that have had influence on
-nanodbc include `SimpleDB`_, `pyodbc`_, `Database Template Library`_,
-and `GSODBC`_.
+Originally nanodbc began as a simple fork of `TinyODBC`_ with additional features. Eventually it grew to the point where it made sense to break with many of the basic underlaying design decisions of TinyODBC and completely refactor much of the codebase. Other projects that have had influence on nanodbc include `SimpleDB`_, `pyodbc`_, `Database Template Library`_, and `GSODBC`_.
 
 ******************************************************************************
 Features

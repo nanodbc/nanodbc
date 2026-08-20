@@ -4,14 +4,11 @@
 Use
 ##############################################################################
 
-In order to use the nanodbc library, add ``nanodbc/nanodbc.h``
-and ``nanodbc/nanodbc.cpp`` source files to your project.
+In order to use the nanodbc library, add ``nanodbc/nanodbc.h`` and ``nanodbc/nanodbc.cpp`` source files to your project.
 
-Alternatively, you can build the library with CMake as static or shared
-library and add it to your project as linker input.
+Alternatively, you can build the library with CMake as static or shared library and add it to your project as linker input.
 
-Add ``#include <nanodbc/nanodbc.h>`` in source files where you wish to use
-nanodbc functions and classes.
+Add ``#include <nanodbc/nanodbc.h>`` in source files where you wish to use nanodbc functions and classes.
 
 The entirety of nanodbc can be found within the single `nanodbc` namespace.
 
@@ -51,25 +48,17 @@ iODBC and unixODBC
 
 Notes about using nanodbc with `iODBC`_ and `unixODBC`_ in Unix systems.
 
-On Windows, ``sizeof(wchar_t) == sizeof(SQLWCHAR) == 2``.
-On Unix, ``sizeof(wchar_t) == 4``.
+On Windows, ``sizeof(wchar_t) == sizeof(SQLWCHAR) == 2``. On Unix, ``sizeof(wchar_t) == 4``.
 
-On unixODBC, ``sizeof(SQLWCHAR) == 2``.
-On iODBC, ``sizeof(SQLWCHAR) == sizeof(wchar_t) == 4``.
+On unixODBC, ``sizeof(SQLWCHAR) == 2``. On iODBC, ``sizeof(SQLWCHAR) == sizeof(wchar_t) == 4``.
 
-This leads to incompatible ABIs between applications and drivers.
-If building against iODBC and the build option ``NANODBC_USE_UNICODE``
-is ``ON``, then ``nanodbc::string_type`` will be ``std::u32string``.
+This leads to incompatible ABIs between applications and drivers. If building against iODBC and the build option ``NANODBC_USE_UNICODE`` is ``ON``, then ``nanodbc::string_type`` will be ``std::u32string``.
 
 In ALL other cases it will be ``std::u16string``.
 
-The nanodbc continuous integration tests run with `GitHub Actions`_.
-The build platform does not make available a Unicode-enabled iODBC driver.
-As such there is no guarantee that tests will pass in entirety on a system using iODBC.
-Our recommendation is to use unixODBC.
+The nanodbc continuous integration tests run with `GitHub Actions`_. The build platform does not make available a Unicode-enabled iODBC driver. As such there is no guarantee that tests will pass in entirety on a system using iODBC. Our recommendation is to use unixODBC.
 
-If you must use iODBC, consider disabling Unicode mode in nanodbc build
-configuration to avoid ``wchar_t`` issues, see :ref:`build`.
+If you must use iODBC, consider disabling Unicode mode in nanodbc build configuration to avoid ``wchar_t`` issues, see :ref:`build`.
 
 ******************************************************************************
 Example
