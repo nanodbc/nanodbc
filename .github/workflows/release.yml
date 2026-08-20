@@ -1,0 +1,81 @@
+---
+# GHA workflow to publish a GitHub release for a version tag and archive its documentation
+name: "Release"
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+  # A release that failed part way through can be driven again from the Actions tab
+  # without moving the tag.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Version tag to release, e.g. v2.16.0"
+        type: string
+        required: true
+
+# Releasing the same tag twice concurrently would race on the release itself, so a run
+# waits rather than being cancelled: whichever push arrived first should finish.
+concurrency:
+  group: ${{ github.workflow }}-${{ inputs.tag || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    outputs:
+      version: ${{ steps.notes.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+      - name: Read the release notes
+        id: notes
+        env:
+          TAG: ${{ inputs.tag || github.ref_name }}
+        run: |
+          version="${TAG#v}"
+          # VERSION.txt is what consumers of the tarball see, so a tag that disagrees with
+          # it would ship a release labelled with a version the sources do not claim.
+          recorded="$(cat VERSION.txt)"
+          if [ "${recorded}" != "${version}" ]; then
+            echo "error: ${TAG} does not match VERSION.txt, which reads '${recorded}'." >&2
+            exit 1
+          fi
+          ./utility/changelog.sh "${TAG}" > "${RUNNER_TEMP}/notes.md"
+          echo "version=${version}" >> "${GITHUB_OUTPUT}"
+          echo "tag=${TAG}" >> "${GITHUB_OUTPUT}"
+          {
+            echo "## Release notes for ${TAG}"
+            echo
+            cat "${RUNNER_TEMP}/notes.md"
+          } >> "${GITHUB_STEP_SUMMARY}"
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.notes.outputs.tag }}
+        run: |
+          # Re-running the workflow for a tag should bring the notes up to date rather
+          # than failing on the release that already exists.
+          if gh release view "${TAG}" > /dev/null 2>&1; then
+            gh release edit "${TAG}" --title "${TAG}" \
+              --notes-file "${RUNNER_TEMP}/notes.md"
+          else
+            gh release create "${TAG}" --title "${TAG}" \
+              --notes-file "${RUNNER_TEMP}/notes.md" --verify-tag
+          fi
+
+  # The documentation for the tag becomes both the site root and a permanent archive under
+  # its own version, the way the earlier releases are laid out on gh-pages.
+  documentation:
+    needs: release
+    permissions:
+      contents: write
+    uses: ./.github/workflows/documentation.yml
+    with:
+      ref: v${{ needs.release.outputs.version }}
+      archive-as: ${{ needs.release.outputs.version }}

@@ -47,15 +47,6 @@ pushd doc && make clean && make html && popd
 
 ## Deploy
 
-Push content of `doc/build/html` to `gh-pages` branch:
+Nothing to do by hand. The [Documentation workflow](../.github/workflows/documentation.yml) builds these pages and commits them to the `gh-pages` branch: a merge to `main` refreshes the site root, and a release also keeps a copy under `vX.Y.Z/`. See [Publish and Release Process](../README.md#publish-and-release-process).
 
-```console
-git clone -b gh-pages https://github.com/nanodbc/nanodbc.git website
-cp -a doc/build/html/* website/
-cp -a doc/build/html/.buildinfo website/
-cp -a doc/build/html/.nojekyl website/
-cd website
-git add -A
-git commit -m "docs: Update build"
-git push origin gh-pages
-```
+A pull request builds the pages as a check and attaches them as the `documentation` artifact, so a change can be reviewed as rendered HTML before it is published.

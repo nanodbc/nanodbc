@@ -273,30 +273,21 @@ locally. `docker-compose.yml` brings up the database servers for the rest, all a
 
 ## Publish and Release Process
 
-Once your local `main` branch is ready for publishing
-(i.e. [semantic versioning][semver]), use the `utility/publish.sh` script. This script
-bumps the major, minor, or patch version, then updates the repository's `VERSION.txt` file, adds a
-"Preparing" commit, and creates git tags appropriately. For example to make a minor update you
-would run `./utility/publish.sh minor`.
-Review files of CMake configuration, documentation and Sphinx configuration,
-and update version number wherever necessary.
+Once your local `main` branch is ready for publishing (i.e. [semantic versioning][semver]), use the `utility/publish.sh` script. It bumps the major, minor, or patch version in `VERSION.txt`, adds a "Preparing" commit, and pushes that commit and the matching `vX.Y.Z` tag. For example, to make a minor update you would run `./utility/publish.sh minor`.
 
-> **Important:** Always update [`CHANGELOG.md`](CHANGELOG.md) with information about new changes,
-> bug fixes, and features when making a new release.
-> `git log "v$(cat VERSION.txt)"..HEAD` lists what has landed since the last release, which is a
-> good starting point for it.
-> The publish script itself will attempt to verify that the changelog file has been properly updated.
+> **Important:** Always update [`CHANGELOG.md`](CHANGELOG.md) with information about new changes, bug fixes, and features when making a new release. `git log "v$(cat VERSION.txt)"..HEAD` lists what has landed since the last release, which is a good starting point for it. The publish script verifies that the top section of the changelog names the version being released, because that section becomes the release notes.
 
-To do this manually instead, use the following steps &mdash; for example a minor update from
-`2.9.x` to `2.10.0`:
+Pushing the tag is all it takes: [release.yml](.github/workflows/release.yml) does the rest.
 
-1. `echo "2.10.0" > VERSION.txt`
-2. `git add VERSION.txt`
-3. `git commit -m "Preparing 2.10.0 release."`
-4. `git tag -f "v2.10.0"`
-5. `git push -f origin "v2.10.0"`
+1. It checks that the tag agrees with `VERSION.txt` at that commit, so a release cannot be labelled with a version the sources do not claim.
+2. It publishes a GitHub release for the tag, with the notes taken from that version's section of `CHANGELOG.md` by `utility/changelog.sh`. Running the workflow again for a tag that already has a release rewrites its notes rather than failing.
+3. It calls [documentation.yml](.github/workflows/documentation.yml) to build the documentation from the tag and deploy it to the `gh-pages` branch, both at the site root and under `vX.Y.Z/` as a permanent archive of that release.
 
-Next, switch to `gh-pages` branch, build latest documentation, commit and push.
+The version the documentation shows comes from `VERSION.txt` by way of `doc/conf.py`, so there is no separate number to bump. The list of previous versions on the documentation front page is hand-maintained, though, so add the version that just moved into the archive to `doc/index.rst`.
+
+Merges to `main` that touch `doc/`, `nanodbc/` or `VERSION.txt` redeploy the site root the same way, so the published documentation tracks `main` between releases. Pull requests build the documentation as a check without deploying it.
+
+If a release needs to be driven again — the workflow failed part way through, or the notes were wrong — run it from the Actions tab with **Run workflow**, giving it the tag. That path does not move the tag.
 
 Finally, announce the new release to the public.
 
