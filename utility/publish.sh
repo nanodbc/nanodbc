@@ -19,12 +19,6 @@ abort()
     exit 1
 }
 
-run()
-{
-    echo "\$ $*"
-    "$@"
-}
-
 case "${1-}" in
     major | minor | patch) part="$1" ;;
     *) usage ;;
@@ -58,7 +52,7 @@ head -n3 CHANGELOG.md | tail -n1 | grep -qx "## ${tag}" ||
 
 echo "Publishing nanodbc version: ${version}"
 echo "${version}" > VERSION.txt
-run git add VERSION.txt
-run git commit -m "Preparing ${version} release."
-run git tag -f "${tag}"
-run git push -f origin "${tag}"
+git add VERSION.txt
+git commit -m "Preparing ${version} release."
+git tag -f "${tag}"
+git push -f origin "${tag}"
