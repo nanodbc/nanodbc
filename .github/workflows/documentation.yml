@@ -9,14 +9,12 @@ on:
     paths:
       - "doc/**"
       - "nanodbc/**"
-      - "VERSION.txt"
   pull_request:
     paths:
       - "doc/**"
       - "nanodbc/**"
-      - "VERSION.txt"
-  # release.yml calls this for a version tag, so that the documentation published with a
-  # release is built from the sources that release was cut from.
+  # release.yml calls this for a version tag. Only this path deploys: the published site
+  # is the documentation of the latest release, not of whatever is currently on main.
   workflow_call:
     inputs:
       ref:
@@ -26,8 +24,7 @@ on:
       archive-as:
         description: "Version to also keep the build under, e.g. 2.16.0, as vX.Y.Z/"
         type: string
-        required: false
-        default: ""
+        required: true
 # One run per workflow per ref. A new push cancels the run it superseded, except on main,
 # where each merge should be allowed to finish reporting.
 concurrency:
@@ -61,19 +58,19 @@ jobs:
           include-hidden-files: true
           retention-days: 7
 
-  # A pull request gets the build as a check and nothing more; the site is only rewritten
-  # from main and from the tags release.yml publishes.
+  # Pushes and pull requests get the build as a check and nothing more. Only release.yml
+  # passes a ref, so only a release reaches this job and rewrites the site.
   deploy:
     needs: build
-    if: github.event_name != 'pull_request'
+    if: inputs.ref != ''
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
       # Deploying means committing the build to gh-pages.
       contents: write
-    # Every run that writes gh-pages shares this group, so a release and a merge to main
-    # landing together are serialised instead of racing to push the branch. Neither may be
-    # cancelled: whichever is queued still has a site to publish.
+    # Every run that writes gh-pages shares this group, so two releases landing together
+    # are serialised instead of racing to push the branch. Neither may be cancelled:
+    # whichever is queued still has a site to publish.
     concurrency:
       group: gh-pages
       cancel-in-progress: false
@@ -113,10 +110,9 @@ jobs:
               cp -R "${html}/." "${dest}/"
           }
 
+          # The root is the latest release; the version directory is its permanent archive.
           deploy .
-          if [ -n "${ARCHIVE_AS}" ]; then
-            deploy "v${ARCHIVE_AS}"
-          fi
+          deploy "v${ARCHIVE_AS}"
 
           # The site is generated, so an unchanged build should leave no commit behind.
           git add --all
@@ -124,13 +120,8 @@ jobs:
             echo "Documentation is unchanged; nothing to deploy." >> "${GITHUB_STEP_SUMMARY}"
             exit 0
           fi
-          if [ -n "${ARCHIVE_AS}" ]; then
-            message="Documentation for v${ARCHIVE_AS}"
-          else
-            message="Documentation for ${GITHUB_SHA}"
-          fi
           git -c user.name='github-actions[bot]' \
               -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
-              commit -qm "${message}"
+              commit -qm "Documentation for v${ARCHIVE_AS}"
           git push -q origin gh-pages
           echo "Deployed to https://nanodbc.github.io/nanodbc/" >> "${GITHUB_STEP_SUMMARY}"

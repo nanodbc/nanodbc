@@ -285,7 +285,7 @@ Pushing the tag is all it takes: [release.yml](.github/workflows/release.yml) do
 
 The version the documentation shows comes from `VERSION.txt` by way of `doc/conf.py`, so there is no separate number to bump. The list of previous versions on the documentation front page is hand-maintained, though, so add the version that just moved into the archive to `doc/index.rst`.
 
-Merges to `main` that touch `doc/`, `nanodbc/` or `VERSION.txt` redeploy the site root the same way, so the published documentation tracks `main` between releases. Pull requests build the documentation as a check without deploying it.
+Only a release moves the published site, so it always shows the latest release rather than whatever is currently on `main`. Pushes and pull requests that touch `doc/` or `nanodbc/` build the documentation as a check and attach it as an artifact, without deploying it.
 
 If a release needs to be driven again — the workflow failed part way through, or the notes were wrong — run it from the Actions tab with **Run workflow**, giving it the tag. That path does not move the tag.
 
