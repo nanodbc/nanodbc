@@ -871,6 +871,123 @@ struct test_case_fixture : public base_test_fixture
         }
     }
 
+    // get_ref_impl dispatches on the C type the driver bound the column as, which follows
+    // from the column's SQL type rather than from the type asked for. Reading each width
+    // back as several types walks both sides of that.
+    // Setting a query timeout, which some drivers decline. A request for the default is
+    // allowed to fail quietly; anything else is passed on.
+    void test_statement_timeout()
+    {
+        nanodbc::connection connection = connect();
+        nanodbc::statement statement(connection);
+        prepare(statement, NANODBC_TEXT("select 1;"));
+        statement.timeout(0);
+        try
+        {
+            statement.timeout(10);
+        }
+        catch (nanodbc::database_error const&)
+        {
+        }
+        auto results = statement.execute();
+        REQUIRE(results.next());
+    }
+
+    // The sentry form for wide strings, which compares by narrowing both sides. Not wired
+    // to PostgreSQL: its ANSI driver rejects SQL_C_WCHAR outright.
+    void test_bind_wide_strings_with_sentry()
+    {
+        nanodbc::connection connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_bind_wide_strings_with_sentry"),
+            NANODBC_TEXT("(id int, s varchar(10))"));
+
+        int const ids[3] = {0, 1, 2};
+        std::vector<nanodbc::wide_string> const values{u"alpha", u"skip", u"gamma"};
+        nanodbc::wide_string const sentry = u"skip";
+
+        {
+            nanodbc::statement statement(connection);
+            prepare(
+                statement,
+                NANODBC_TEXT(
+                    "insert into test_bind_wide_strings_with_sentry (id, s) "
+                    "values (?, ?);"));
+            statement.bind(0, ids, 3);
+            statement.bind_strings(1, values, sentry.c_str());
+            nanodbc::transact(statement, 3);
+        }
+
+        auto results = execute(
+            connection,
+            NANODBC_TEXT("select count(*), count(s) from test_bind_wide_strings_with_sentry;"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<int>(0) == 3);
+        REQUIRE(results.get<int>(1) == 2);
+    }
+
+    void test_get_every_ctype()
+    {
+        nanodbc::connection connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_get_every_ctype"),
+            NANODBC_TEXT(
+                "(ti smallint, si smallint, i int, bi bigint, f float, d float, "
+                "s varchar(10), b ") +
+                get_bool_type_name() + NANODBC_TEXT(")"));
+        // PostgreSQL will not take an integer for a boolean column.
+        nanodbc::string const yes =
+            vendor_ == database_vendor::postgresql ? NANODBC_TEXT("true") : NANODBC_TEXT("1");
+        execute(
+            connection,
+            NANODBC_TEXT(
+                "insert into test_get_every_ctype (ti, si, i, bi, f, d, s, b) "
+                "values (7, 300, 70000, 5000000000, 1.5, 2.5, '9', ") +
+                yes + NANODBC_TEXT(");"));
+
+        auto results = execute(
+            connection,
+            NANODBC_TEXT("select ti, si, i, bi, f, d, s, b from test_get_every_ctype;"));
+        REQUIRE(results.next());
+
+        // Each column read as a type wide enough to hold it, and as a double.
+        REQUIRE(results.get<short>(0) == 7);
+        REQUIRE(results.get<int>(0) == 7);
+        REQUIRE(results.get<long long>(0) == 7);
+        REQUIRE(results.get<double>(0) == 7.0);
+
+        REQUIRE(results.get<int>(1) == 300);
+        REQUIRE(results.get<long>(1) == 300);
+        REQUIRE(results.get<long long>(1) == 300);
+
+        REQUIRE(results.get<int>(2) == 70000);
+        REQUIRE(results.get<long long>(2) == 70000);
+        REQUIRE(results.get<double>(2) == 70000.0);
+
+        REQUIRE(results.get<long long>(3) == 5000000000LL);
+        REQUIRE(results.get<double>(3) == 5000000000.0);
+
+        REQUIRE(results.get<float>(4) == 1.5f);
+        REQUIRE(results.get<double>(4) == 1.5);
+        REQUIRE(results.get<int>(4) == 1);
+
+        REQUIRE(results.get<double>(5) == 2.5);
+        REQUIRE(results.get<float>(5) == 2.5f);
+
+        // A bound character column read as a character goes through the string column path;
+        // a long one would be unbound and read with SQLGetData instead.
+        REQUIRE(results.get<char>(6) == '9');
+        REQUIRE(results.get<nanodbc::string>(6) == NANODBC_TEXT("9"));
+
+        REQUIRE(results.get<bool>(7) == true);
+        REQUIRE(results.get<int>(7) == 1);
+
+        // A type the column cannot become is an error rather than a wrong answer.
+        REQUIRE_THROWS_AS(results.get<nanodbc::date>(2), nanodbc::type_incompatible_error);
+    }
+
     void test_bind_every_form()
     {
         // char is absent: it binds as a C string, not as a tiny integer, and is covered

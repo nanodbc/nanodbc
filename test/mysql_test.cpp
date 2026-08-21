@@ -516,3 +516,47 @@ TEST_CASE_METHOD(mysql_fixture, "test_bind_every_form", "[mysql][bind][batch]")
 {
     test_bind_every_form();
 }
+
+TEST_CASE_METHOD(mysql_fixture, "test_get_every_ctype", "[mysql][result][types]")
+{
+    test_get_every_ctype();
+}
+
+// The unsigned C types the bind switch dispatches on. MySQL is the only backend here whose
+// integer columns can be UNSIGNED, so it is the only one that binds these.
+TEST_CASE_METHOD(mysql_fixture, "test_get_unsigned_ctypes", "[mysql][result][types]")
+{
+    nanodbc::connection connection = connect();
+    create_table(
+        connection,
+        NANODBC_TEXT("test_get_unsigned_ctypes"),
+        NANODBC_TEXT(
+            "(ti tinyint unsigned, si smallint unsigned, i int unsigned, "
+            "bi bigint unsigned)"));
+    execute(
+        connection,
+        NANODBC_TEXT(
+            "insert into test_get_unsigned_ctypes (ti, si, i, bi) "
+            "values (200, 60000, 4000000000, 9000000000000000000);"));
+
+    auto results =
+        execute(connection, NANODBC_TEXT("select ti, si, i, bi from test_get_unsigned_ctypes;"));
+    REQUIRE(results.next());
+    REQUIRE(results.get<unsigned short>(0) == 200);
+    REQUIRE(results.get<int>(0) == 200);
+    REQUIRE(results.get<unsigned int>(1) == 60000);
+    REQUIRE(results.get<long>(1) == 60000);
+    REQUIRE(results.get<unsigned long long>(2) == 4000000000ULL);
+    REQUIRE(results.get<double>(2) == 4000000000.0);
+    REQUIRE(results.get<unsigned long long>(3) == 9000000000000000000ULL);
+}
+
+TEST_CASE_METHOD(mysql_fixture, "test_statement_timeout", "[mysql][statement]")
+{
+    test_statement_timeout();
+}
+
+TEST_CASE_METHOD(mysql_fixture, "test_bind_wide_strings_with_sentry", "[mysql][bind][unicode]")
+{
+    test_bind_wide_strings_with_sentry();
+}

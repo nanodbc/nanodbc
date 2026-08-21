@@ -2365,3 +2365,18 @@ TEST_CASE_METHOD(mssql_fixture, "test_bind_every_form", "[mssql][bind][batch]")
 {
     test_bind_every_form();
 }
+
+TEST_CASE_METHOD(mssql_fixture, "test_get_every_ctype", "[mssql][result][types]")
+{
+    test_get_every_ctype();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_statement_timeout", "[mssql][statement]")
+{
+    test_statement_timeout();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_bind_wide_strings_with_sentry", "[mssql][bind][unicode]")
+{
+    test_bind_wide_strings_with_sentry();
+}

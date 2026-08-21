@@ -592,3 +592,18 @@ TEST_CASE_METHOD(sqlite_fixture, "test_connect_by_datasource_name", "[sqlite][co
 {
     test_connect_by_datasource_name();
 }
+
+TEST_CASE_METHOD(sqlite_fixture, "test_get_every_ctype", "[sqlite][result][types]")
+{
+    test_get_every_ctype();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_statement_timeout", "[sqlite][statement]")
+{
+    test_statement_timeout();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_bind_wide_strings_with_sentry", "[sqlite][bind][unicode]")
+{
+    test_bind_wide_strings_with_sentry();
+}

@@ -605,3 +605,13 @@ TEST_CASE_METHOD(postgresql_fixture, "test_bind_every_form", "[postgresql][bind]
 {
     test_bind_every_form();
 }
+
+TEST_CASE_METHOD(postgresql_fixture, "test_get_every_ctype", "[postgresql][result][types]")
+{
+    test_get_every_ctype();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "test_statement_timeout", "[postgresql][statement]")
+{
+    test_statement_timeout();
+}
