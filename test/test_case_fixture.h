@@ -769,13 +769,10 @@ struct test_case_fixture : public base_test_fixture
 
     // Fetching a rowset at a time gives the result a cursor to move within, which reading
     // one row at a time never exercises.
-    // result answers the same six questions about a column by position and by name, and
-    // only the position forms of a couple of them were ever asked. The pair have to agree:
-    // the by-name form looks the index up and forwards, so a disagreement is a lookup that
-    // found the wrong column.
-    // Each of these types is a handle over a shared implementation, and the copy-and-swap
-    // set that says so was never exercised. What a copy means here is that both names refer
-    // to the same statement or the same transaction, which the handles make checkable.
+    // The by-name accessors look the index up and forward, so the two spellings must agree.
+    // A disagreement is a lookup that found the wrong column.
+    // statement and transaction are handles: a copy refers to the same statement or
+    // transaction, which the native handles make checkable.
     // How many rows the bind-forms table holds, and how many of them are null.
     std::pair<int, int> bind_forms_rows_and_nulls(nanodbc::connection& connection)
     {
@@ -787,13 +784,9 @@ struct test_case_fixture : public base_test_fixture
         return {rows, rows - present};
     }
 
-    // statement::bind is instantiated four ways for every type it accepts: one value, a
-    // batch, a batch with a sentry value naming which entries are null, and a batch with a
-    // flag per entry. Each is a separate mapping onto an ODBC C type, so a type bound only
-    // one of the four ways leaves the other three never run against a driver.
-    //
-    // The three values must differ from one another: the sentry form marks the entry equal
-    // to the sentry, and counts the result.
+    // The four bind forms: one value, a batch, a batch with a sentry naming the nulls, and
+    // a batch with a flag per entry. The three values must differ, since the sentry form
+    // marks the entry equal to the sentry and the counts below say how many.
     template <class T>
     void check_bind_forms(nanodbc::string const& column_type, T a, T b, T c)
     {
@@ -846,10 +839,8 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(bind_forms_rows_and_nulls(connection) == std::make_pair(3, 2));
     }
 
-    // The overloads that take a data source name rather than a connection string, and
-    // list_datasources(), whose body has nothing to run when the machine has registered
-    // none. The dev container registers nanodbc_dsn against SQLite for this; anywhere it is
-    // absent there is nothing to test rather than something to fail.
+    // The overloads that take a data source name rather than a connection string. The dev
+    // container registers nanodbc_dsn; elsewhere there is nothing to test.
     void test_connect_by_datasource_name()
     {
         auto const name = NANODBC_TEXT("nanodbc_dsn");
@@ -864,8 +855,7 @@ struct test_case_fixture : public base_test_fixture
 
         REQUIRE(!found->driver.empty());
 
-        // Named at construction, and named after the fact on a connection that starts out
-        // holding nothing. Both reach connect() by way of the DSN rather than the string.
+        // Named at construction, and named on a connection that starts out holding nothing.
         {
             nanodbc::connection connection(name, NANODBC_TEXT(""), NANODBC_TEXT(""), 0);
             REQUIRE(connection.connected());
@@ -883,10 +873,8 @@ struct test_case_fixture : public base_test_fixture
 
     void test_bind_every_form()
     {
-        // The 8 bit integers map onto ODBC's tiny integers, so a small numeric column takes
-        // them. char is not among them: it is a character, and bind is instantiated for it
-        // so that a caller can pass a C string, which the character overload of
-        // bind_parameter hands to the driver with no length. It is covered below instead.
+        // char is absent: it binds as a C string, not as a tiny integer, and is covered
+        // below.
         auto const small = NANODBC_TEXT("smallint");
         check_bind_forms<signed char>(small, 1, 2, 3);
         check_bind_forms<unsigned char>(small, 1, 2, 3);
@@ -906,9 +894,8 @@ struct test_case_fixture : public base_test_fixture
         check_bind_forms<float>(real, 1.5f, 2.5f, 3.5f);
         check_bind_forms<double>(real, 1.5, 2.5, 3.5);
 
-        // And the character instantiation, whose point is that a caller can hand bind the
-        // result of c_str(). The terminator is what tells the driver where the value ends,
-        // so this form takes one value and not a batch.
+        // The character instantiation: bind takes c_str() and the driver reads to the
+        // terminator, so it takes one value rather than a batch.
         {
             nanodbc::connection connection = connect();
             create_table(
@@ -959,9 +946,8 @@ struct test_case_fixture : public base_test_fixture
         }
 
         {
-            // All of these share one implementation, so one transaction is begun and one
-            // rollback happens when the last of them goes; taking a second from the
-            // connection would nest instead.
+            // These share one implementation, so the connection holds one transaction
+            // however many names there are; a second from the connection would nest.
             nanodbc::transaction original(connection);
             REQUIRE(connection.transactions() == 1);
 
@@ -983,13 +969,12 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(readonly.connection().native_dbc_handle() == connection.native_dbc_handle());
         }
 
-        // The transaction is gone, so the connection is counting none and is back to
-        // committing each statement on its own.
+        // The transaction is gone, so the connection is counting none.
         REQUIRE(connection.transactions() == 0);
     }
 
-    // The forms that run a statement and build no result. Nothing was calling any of them,
-    // so what is checked is that each one reaches the database: four inserts, four rows.
+    // The forms that run a statement and build no result. Each must reach the database, so
+    // the row count is what says they did.
     void test_just_execute_forms()
     {
         nanodbc::connection connection = connect();
@@ -1030,7 +1015,7 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(results.next());
         REQUIRE(results.get<int>(0) == 5);
 
-        // And the member that does build one, which was equally unused.
+        // And the member that does build one.
         {
             nanodbc::statement statement(connection);
             auto direct = statement.execute_direct(
@@ -1071,15 +1056,12 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(results.column_c_datatype(i) == results.column_c_datatype(name));
             REQUIRE(results.column_unsigned(i) == results.column_unsigned(name));
 
-            // A type of zero would mean the driver described nothing. The name of the type
-            // is not required to hold anything: it is documented as empty where the type is
-            // unknown, and the MariaDB driver answers nothing for SQL_DESC_TYPE_NAME. What
-            // is checked above is that both spellings agree on whatever it does say.
+            // Not the name of the type: it is documented as empty where the type is
+            // unknown, and the MariaDB driver never fills it in.
             REQUIRE(results.column_datatype(i) != 0);
         }
 
-        // The integer column is wider than nothing and the text column is 60 characters, so
-        // the sizes are the driver's and not a default.
+        // The width the driver reports is the one the table asked for.
         REQUIRE(results.column_size(NANODBC_TEXT("s")) == 60);
 
         // A name no column carries is an error rather than a position.
@@ -1131,8 +1113,7 @@ struct test_case_fixture : public base_test_fixture
             {
                 if (backwards.prior())
                     REQUIRE(backwards.get<int>(0) == 1);
-                // Skipping is a relative fetch, which the same cursors refuse, and the
-                // absolute ones go the same way.
+                // Relative and absolute fetches alike, which such cursors refuse.
                 backwards.skip(2);
                 backwards.first();
                 backwards.last();
@@ -1786,10 +1767,9 @@ struct test_case_fixture : public base_test_fixture
                     {
                         REQUIRE(columns.column_type() == SQL_PARAM_INPUT);
 
-                        // Every remaining accessor, so that a wrong column index in one of
-                        // them is a failure here rather than a surprise for a caller. The
-                        // ones SQLProcedureColumns documents as never null are required to
-                        // hold something; the rest are read for the index and the type.
+                        // Every remaining accessor, so a wrong column index fails here.
+                        // The never-null ones must hold something; the rest are read for
+                        // the index and the type.
                         REQUIRE(!columns.procedure_name().empty());
                         REQUIRE(!columns.type_name().empty());
                         REQUIRE(columns.data_type() != 0);
@@ -1879,8 +1859,7 @@ struct test_case_fixture : public base_test_fixture
                     if (table_name == tables.table_name())
                     {
                         REQUIRE(tables.table_type() == NANODBC_TEXT("TABLE"));
-                        // REMARKS is nullable, so it is read for the index rather than the
-                        // value: a table created without a comment has none to report.
+                        // REMARKS is nullable, so read for the index rather than a value.
                         tables.table_remarks();
                         found = true;
                         break;
@@ -2473,16 +2452,14 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(results.get<int>(0) == 42);
     }
 
-    // Public calls that no suite had a reason to make. Each reaches the driver, so what
-    // they answer is the driver's business; what is checked here is that the call arrives
-    // and comes back with something the caller can use.
+    // Calls whose answer is the driver's business, checked for arriving and coming back
+    // with something usable.
     void test_connection_catalog_name()
     {
         nanodbc::connection connection = connect();
 
-        // SQL_ATTR_CURRENT_CATALOG is optional, and a driver that does not keep one says so
-        // by raising rather than by answering empty. Both are answers; a crash or a hang is
-        // not, and neither is a value that changes when nothing has.
+        // SQL_ATTR_CURRENT_CATALOG is optional; a driver without one raises rather than
+        // answering empty. Either way it must answer the same twice.
         try
         {
             auto const name = connection.catalog_name();
@@ -2494,10 +2471,7 @@ struct test_case_fixture : public base_test_fixture
         }
     }
 
-    // get_info is instantiated for each fundamental unsigned type so that a caller can name
-    // whichever one their platform spells SQLUINTEGER or SQLULEN. The narrower ones are
-    // covered by test_get_info; this reaches the widest, which is a distinct instantiation
-    // and was the point of the work that added it.
+    // The widest get_info instantiation; test_get_info covers the narrower ones.
     void test_get_info_widest()
     {
         nanodbc::connection connection = connect();
@@ -2506,8 +2480,7 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(widest == narrow);
     }
 
-    // Cancelling a statement that is not executing is defined to succeed, which makes it
-    // the one way to reach cancel() without a race.
+    // Cancelling a statement that is not executing is defined to succeed.
     void test_statement_cancel()
     {
         nanodbc::connection connection = connect();
@@ -2522,9 +2495,8 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(results.get<int>(0) == 1);
     }
 
-    // result_iterator has both increments, and only the prefix one was ever taken. The
-    // postfix one returns nothing, so what there is to check is that it advances by one and
-    // arrives at the end; *it++ is a compile error and has no behaviour to pin.
+    // The postfix increment returns nothing, so what there is to check is that it advances
+    // by one and arrives at the end.
     void test_result_iterator_post_increment()
     {
         nanodbc::connection connection = connect();

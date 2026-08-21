@@ -1,21 +1,12 @@
 # Ubuntu 24.04 is the newest release for which Microsoft publishes the SQL Server ODBC
-# driver, and it packages the clang-format-20 the format check pins.
-#
-# Raising it is a question of whether the drivers in the newer release still work, which
-# the dev-container job in ci-linux.yml answers by building this image and running the
-# suites against it. 25.10 does not: its libsqlite3odbc frees the result table a second
-# time when a statement opened by SQLTables with a table type of "%" is freed, which takes
-# the process with it. Thirty lines of C reproduce it with no nanodbc in the picture, and
-# no argument shape avoids it, so it is the driver's to fix and not a caller's.
-# test_catalog_list_table_types is what finds it here.
+# driver, and it packages the clang-format-20 the format check pins. Not 25.10: its
+# libsqlite3odbc crashes freeing a statement opened by SQLTables.
 FROM ubuntu:24.04
 
 ENV CXX="g++"
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# The last line of the block below registers a data source named nanodbc_dsn, so that the
-# suites can reach the calls that take a DSN name rather than a connection string.
-# list_datasources() has nothing to report without one. SQLite backs it, needing no server.
+# Ends by registering nanodbc_dsn, for the calls that take a DSN name.
 RUN apt-get -qy update \
     && apt-get -qy install --no-upgrade --no-install-recommends \
     apt-transport-https \

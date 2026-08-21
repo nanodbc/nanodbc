@@ -214,10 +214,8 @@ TEST_CASE("convert", "[string]")
     }
 }
 
-// The exception types are thin, and every one of them was reached only by the paths that
-// raise it, which no suite had a reason to take. Each what() is an override that forwards
-// to std::runtime_error, so what is worth checking is that the message survives the
-// forwarding rather than that the string is any particular one.
+// Each what() is an override forwarding to std::runtime_error, so what is worth checking
+// is that the message survives the forwarding.
 TEST_CASE("exception_types", "[exception]")
 {
     SECTION("the fixed messages")
@@ -254,9 +252,8 @@ TEST_CASE("exception_types", "[exception]")
 
     SECTION("database_error over a handle the driver manager will not describe")
     {
-        // SQLGetDiagRec answers SQL_INVALID_HANDLE for a null handle, which is the one way
-        // to build a database_error without a live connection. The driver contributes
-        // nothing, so what is left is the message the caller supplied and the defaults.
+        // A null handle answers SQL_INVALID_HANDLE, so the driver contributes nothing and
+        // the message and defaults are all that is left.
         nanodbc::database_error const error(nullptr, SQL_HANDLE_DBC, "while connecting");
         REQUIRE(std::string(error.what()) == "while connecting");
         REQUIRE(error.native() == 0);
@@ -344,8 +341,8 @@ static_assert(
         std::declval<nanodbc::result_iterator const&>()),
     "comparing two iterators compares two statement handles");
 
-// catalog copies a connection, which copies a shared_ptr. Its result wrappers do the same
-// with a result, but their constructors are private and out of the trait's reach.
+// Its result wrappers do the same with a result, but their constructors are private and
+// out of the trait's reach.
 static_assert(
     std::is_nothrow_constructible<nanodbc::catalog, nanodbc::connection&>::value,
     "catalog copies a connection");

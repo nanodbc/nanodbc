@@ -1,5 +1,4 @@
 ---
-# GHA workflow to run Static Analysis and submit results to GitHub Code Scanning Alerts
 name: "Analysis"
 
 on:
@@ -20,8 +19,6 @@ env:
   build: "${{ github.workspace }}/build"
   config: "Debug"
 
-# One run per workflow per ref. A new push cancels the run it superseded, except on main,
-# where each merge should be allowed to finish reporting.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
@@ -41,28 +38,19 @@ jobs:
 
       - name: Run MSVC Code Analysis
         uses: microsoft/msvc-code-analysis-action@24c285ab36952c9e9182f4b78dfafbac38a7e5ee # v0.1.1
-        # Provide a unique ID to access the sarif output path
         id: run-core-analysis
         with:
           cmakeBuildDirectory: ${{ env.build }}
           buildConfiguration: ${{ env.config }}
-          # Ruleset file that will determine what checks will be run
           ruleset: ${{ github.workspace }}/nanodbc.ruleset
-          # Paths to ignore analysis of CMake targets and includes. Neither the tests nor
-          # the examples are shipped to anyone, and their findings drown out the library's.
-          # The list is ";" separated.
           ignoredPaths: ${{ github.workspace }}/test;${{ github.workspace }}/example
 
-      # Upload SARIF file to GitHub Code Scanning Alerts
       - name: Upload SARIF to GitHub
         uses: github/codeql-action/upload-sarif@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4
         with:
           sarif_file: ${{ steps.run-core-analysis.outputs.sarif }}
-          # Each tool needs a category of its own, or the three uploads for a commit
-          # overwrite each other and the losers' alerts are never superseded.
           category: msvc-core-guidelines
 
-      # Upload SARIF file as an Artifact to download and view
       - name: Upload SARIF as an Artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -84,26 +72,19 @@ jobs:
 
       - name: Run MSVC Code Analysis
         uses: microsoft/msvc-code-analysis-action@24c285ab36952c9e9182f4b78dfafbac38a7e5ee # v0.1.1
-        # Provide a unique ID to access the sarif output path
         id: run-native-analysis
         with:
           cmakeBuildDirectory: ${{ env.build }}
           buildConfiguration: ${{ env.config }}
-          # Ruleset file that will determine what checks will be run
           ruleset: NativeRecommendedRules.ruleset
-          # Paths to ignore analysis of CMake targets and includes. Neither the tests nor
-          # the examples are shipped to anyone, and their findings drown out the library's.
-          # The list is ";" separated.
           ignoredPaths: ${{ github.workspace }}/test;${{ github.workspace }}/example
 
-      # Upload SARIF file to GitHub Code Scanning Alerts
       - name: Upload SARIF to GitHub
         uses: github/codeql-action/upload-sarif@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4
         with:
           sarif_file: ${{ steps.run-native-analysis.outputs.sarif }}
           category: msvc-native-recommended
 
-      # Upload SARIF file as an Artifact to download and view
       - name: Upload SARIF as an Artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -131,23 +112,6 @@ jobs:
           flawfinder --sarif --exclude './test/*' --exclude './example/*' ./
           > flawfinder_raw.sarif
 
-      # Flawfinder matches on names, with no types and no call graph. --minlevel is no help,
-      # since it reaches the text report and not the SARIF writer, so the rules whose every
-      # hit in this library is the C API showing through are dropped by id:
-      #
-      #   FF1040 misc/open      nanodbc opens no files. It wraps ODBC, the driver manager
-      #                         owns every resource it touches, and there is no <fstream>,
-      #                         fopen or CreateFile in it. The rule matches the token, so
-      #                         what it finds is nanodbc's own open() members.
-      #   FF1013 buffer/char    the SQLGetData buffers, whose size is passed to the call
-      #                         that fills them
-      #   FF1022 buffer/strlen  inputs the overload documents as NUL terminated
-      #   FF1071 buffer/equal   the null sentry, whose length the binding contract fixes
-      #   FF1004 buffer/memcpy  a SAFEARRAY allocated at exactly the length copied into it
-      #
-      # A rule not on this list is a finding to answer rather than an id to add. The ones
-      # whose answer is not "read the call" - gets, strcpy, sprintf, system - are all still
-      # reported, and nanodbc uses none of them.
       - name: Drop the rules nanodbc has no answer to
         run: |
           jq '.runs[0].results |= map(
@@ -164,7 +128,6 @@ jobs:
           sarif_file: ${{github.workspace}}/flawfinder_results.sarif
           category: flawfinder
 
-      # The unfiltered report, so what the step above dropped stays inspectable.
       - name: Upload the unfiltered SARIF as an Artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
