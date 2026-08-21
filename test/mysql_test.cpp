@@ -560,3 +560,8 @@ TEST_CASE_METHOD(mysql_fixture, "test_bind_wide_strings_with_sentry", "[mysql][b
 {
     test_bind_wide_strings_with_sentry();
 }
+
+TEST_CASE_METHOD(mysql_fixture, "test_parameter_metadata_before_description", "[mysql][statement]")
+{
+    test_parameter_metadata_before_description();
+}

@@ -2380,3 +2380,73 @@ TEST_CASE_METHOD(mssql_fixture, "test_bind_wide_strings_with_sentry", "[mssql][b
 {
     test_bind_wide_strings_with_sentry();
 }
+
+TEST_CASE_METHOD(mssql_fixture, "test_parameter_metadata_before_description", "[mssql][statement]")
+{
+    test_parameter_metadata_before_description();
+}
+
+// Each accessor asked first on a table valued parameter of its own, so the description is
+// fetched rather than looked up. parameters() populates it, so a single one per fixture.
+TEST_CASE_METHOD(
+    mssql_table_valued_parameter_fixture,
+    "test_table_valued_parameter_metadata_before_description",
+    "[mssql][table_valued_paramter]")
+{
+    auto conn = connect();
+    {
+        auto stmt = nanodbc::statement(conn);
+        stmt.prepare(NANODBC_TEXT("{ CALL tvp_test(?, ?, ?) }"));
+        auto p1 = nanodbc::table_valued_parameter(stmt, 1, num_rows_);
+        REQUIRE(p1.parameter_size(0) > 0);
+        p1.close();
+    }
+    {
+        auto stmt = nanodbc::statement(conn);
+        stmt.prepare(NANODBC_TEXT("{ CALL tvp_test(?, ?, ?) }"));
+        auto p1 = nanodbc::table_valued_parameter(stmt, 1, num_rows_);
+        p1.parameter_scale(0);
+        p1.close();
+    }
+    {
+        auto stmt = nanodbc::statement(conn);
+        stmt.prepare(NANODBC_TEXT("{ CALL tvp_test(?, ?, ?) }"));
+        auto p1 = nanodbc::table_valued_parameter(stmt, 1, num_rows_);
+        REQUIRE(p1.parameter_type(0) != 0);
+        p1.close();
+    }
+}
+
+// statement::procedure_columns, which asks the driver about one procedure's parameters
+// rather than going through the catalog.
+TEST_CASE_METHOD(mssql_fixture, "test_statement_procedure_columns", "[mssql][statement][catalog]")
+{
+    auto connection = connect();
+    nanodbc::string const name = NANODBC_TEXT("test_statement_procedure_columns_proc");
+    try
+    {
+        execute(connection, NANODBC_TEXT("DROP PROCEDURE ") + name);
+    }
+    catch (...)
+    {
+    }
+    execute(
+        connection,
+        NANODBC_TEXT("CREATE PROCEDURE ") + name +
+            NANODBC_TEXT(
+                " @arg_int INT, @arg_text VARCHAR(20) AS BEGIN SELECT @arg_int AS A END;"));
+
+    nanodbc::statement statement(connection);
+    auto results =
+        statement.procedure_columns(NANODBC_TEXT(""), NANODBC_TEXT(""), name, NANODBC_TEXT("%"));
+
+    int found = 0;
+    while (results.next())
+    {
+        auto const column = results.get<nanodbc::string>(3, NANODBC_TEXT(""));
+        if (column.find(NANODBC_TEXT("arg_int")) != nanodbc::string::npos ||
+            column.find(NANODBC_TEXT("arg_text")) != nanodbc::string::npos)
+            ++found;
+    }
+    REQUIRE(found == 2);
+}

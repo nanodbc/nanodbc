@@ -615,3 +615,11 @@ TEST_CASE_METHOD(postgresql_fixture, "test_statement_timeout", "[postgresql][sta
 {
     test_statement_timeout();
 }
+
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_parameter_metadata_before_description",
+    "[postgresql][statement]")
+{
+    test_parameter_metadata_before_description();
+}

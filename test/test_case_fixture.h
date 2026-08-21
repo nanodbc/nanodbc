@@ -876,6 +876,43 @@ struct test_case_fixture : public base_test_fixture
     // back as several types walks both sides of that.
     // Setting a query timeout, which some drivers decline. A request for the default is
     // allowed to fail quietly; anything else is passed on.
+    // Parameter metadata is answered from a description the statement keeps, and described
+    // on demand when it has none. Asking before anything else has populated it takes the
+    // second path.
+    void test_parameter_metadata_before_description()
+    {
+        nanodbc::connection connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_parameter_metadata"),
+            NANODBC_TEXT("(i int, s varchar(60))"));
+
+        {
+            nanodbc::statement statement(connection);
+            prepare(
+                statement,
+                NANODBC_TEXT("insert into test_parameter_metadata (i, s) values (?, ?);"));
+            // Size first, so the description has to be fetched rather than looked up.
+            statement.parameter_size(1);
+            statement.parameter_type(1);
+            statement.parameter_scale(1);
+        }
+        {
+            nanodbc::statement statement(connection);
+            prepare(
+                statement,
+                NANODBC_TEXT("insert into test_parameter_metadata (i, s) values (?, ?);"));
+            statement.parameter_scale(0);
+        }
+        {
+            nanodbc::statement statement(connection);
+            prepare(
+                statement,
+                NANODBC_TEXT("insert into test_parameter_metadata (i, s) values (?, ?);"));
+            statement.parameter_type(0);
+        }
+    }
+
     void test_statement_timeout()
     {
         nanodbc::connection connection = connect();
