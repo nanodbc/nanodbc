@@ -1,12 +1,8 @@
-# Ubuntu 24.04 is the newest release for which Microsoft publishes the SQL Server ODBC
-# driver, and it packages the clang-format-20 the format check pins. Not 25.10: its
-# libsqlite3odbc crashes freeing a statement opened by SQLTables.
 FROM ubuntu:24.04
 
 ENV CXX="g++"
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# Ends by registering nanodbc_dsn, for the calls that take a DSN name.
 RUN apt-get -qy update \
     && apt-get -qy install --no-upgrade --no-install-recommends \
     apt-transport-https \
@@ -42,10 +38,6 @@ RUN apt-get -qy update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# NOTE: To install ODBC 18 on Ubuntu, see: https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
-#       Keep in mind that only certain releases of Ubuntu are supported.
-#       The .deb carries both the apt source and the key it is signed with, which the
-#       source refers to by path.
 RUN curl -sSL -o /tmp/packages-microsoft-prod.deb "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb" \
     && dpkg -i /tmp/packages-microsoft-prod.deb \
     && rm /tmp/packages-microsoft-prod.deb \
@@ -62,8 +54,6 @@ RUN curl -sSL -o /tmp/packages-microsoft-prod.deb "https://packages.microsoft.co
     && odbcinst -i -d -f /usr/share/sqliteodbc/unixodbc.ini \
     && printf '[nanodbc_dsn]\nDriver=SQLite3\nDatabase=/tmp/nanodbc_dsn.db\n' > /etc/odbc.ini
 
-# NOTE: To install mysql-connector-odbc on Ubuntu, see: https://dev.mysql.com/downloads/connector/odbc/
-#       Keep in mind that only certain architectures are supported.
 RUN curl -SL "https://downloads.mysql.com/archives/get/p/10/file/mysql-connector-odbc-8.4.0-linux-glibc2.28-$(uname -m).tar.gz" -o mysql-connector-odbc.tar.gz \
     && tar -xzf mysql-connector-odbc.tar.gz \
     && rm mysql-connector-odbc.tar.gz \
@@ -71,5 +61,4 @@ RUN curl -SL "https://downloads.mysql.com/archives/get/p/10/file/mysql-connector
     && /opt/mysql-connector-odbc/bin/myodbc-installer -d -a -n "MySQL ODBC 8.4 ANSI Driver" -t "DRIVER=/opt/mysql-connector-odbc/lib/libmyodbc8a.so;" \
     && /opt/mysql-connector-odbc/bin/myodbc-installer -d -a -n "MySQL ODBC 8.4 Unicode Driver" -t "DRIVER=/opt/mysql-connector-odbc/lib/libmyodbc8w.so;"
 
-# docker-compose.yml mounts the working tree here.
 WORKDIR /opt/nanodbc

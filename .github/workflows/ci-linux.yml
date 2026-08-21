@@ -187,10 +187,6 @@ jobs:
       - name: Install
         run: |
           sudo apt-get -o DPkg::Lock::Timeout=120 update
-          # libclang-rt-dev carries the profiling runtime, without which the instrumented
-          # build does not link. libc++ is installed because NANODBC_FORCE_LIBCXX turns
-          # itself on wherever clang accepts -stdlib=libc++, whether or not its headers
-          # are actually present.
           sudo apt-get -o DPkg::Lock::Timeout=120 install -y ccache clang libclang-rt-dev libc++-dev libc++abi-dev llvm \
             unixodbc-dev odbc-postgresql libsqliteodbc
           curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
@@ -199,7 +195,6 @@ jobs:
           sudo apt-get -o DPkg::Lock::Timeout=120 update
           sudo ACCEPT_EULA=Y apt-get -o DPkg::Lock::Timeout=120 install -y msodbcsql17
           sudo odbcinst -i -d -f /usr/share/sqliteodbc/unixodbc.ini
-          # A data source for the calls that take a DSN name.
           printf '[nanodbc_dsn]\nDriver=SQLite3\nDatabase=/tmp/nanodbc_dsn.db\n' \
             | sudo tee /etc/odbc.ini
       - name: Restore compiled objects
@@ -231,7 +226,6 @@ jobs:
         run: |
           llvm-profdata merge -sparse ${GITHUB_WORKSPACE}/profraw/*.profraw \
             -o ${GITHUB_WORKSPACE}/coverage.profdata
-          # llvm-cov takes the first binary positionally and the rest after -object.
           binaries=("${GITHUB_WORKSPACE}/build/test/utility_tests"
                     -object "${GITHUB_WORKSPACE}/build/test/sqlite_tests"
                     -object "${GITHUB_WORKSPACE}/build/test/postgresql_tests"
@@ -245,8 +239,6 @@ jobs:
           llvm-cov export -summary-only "${binaries[@]}" \
             -instr-profile="${GITHUB_WORKSPACE}/coverage.profdata" \
             "${GITHUB_WORKSPACE}/nanodbc/" > "${GITHUB_WORKSPACE}/coverage-summary.json"
-          # One markdown body for the job summary and the pull request comment, and the
-          # shields document the badge reads off the branch a later step writes.
           python3 - "${GITHUB_WORKSPACE}" <<'PYTHON'
           import json, os, sys
 
@@ -310,7 +302,6 @@ jobs:
           NUMBER: ${{ github.event.pull_request.number }}
           REPO: ${{ github.repository }}
         run: |
-          # Rewrite the comment this job made before rather than adding one per run.
           existing="$(gh api "repos/${REPO}/issues/${NUMBER}/comments" --paginate \
             --jq 'map(select(.body | startswith("<!-- nanodbc-coverage -->"))) | .[0].id // empty')"
           if [ -n "${existing}" ]; then
@@ -325,8 +316,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # The branch carries the one file and no history, so it is rewritten each time
-          # rather than accumulating a commit per run.
           work="$(mktemp -d)"
           cp "${GITHUB_WORKSPACE}/coverage.json" "${work}/"
           cd "${work}"
@@ -437,7 +426,6 @@ jobs:
           EOF
           sudo odbcinst -i -d -f ${GITHUB_WORKSPACE}/.odbcinst.ini
           cat /etc/odbcinst.ini
-          # A data source for the calls that take a DSN name.
           printf '[nanodbc_dsn]\nDriver=SQLite3\nDatabase=/tmp/nanodbc_dsn.db\n' \
             | sudo tee /etc/odbc.ini
         shell: sudo bash {0}
