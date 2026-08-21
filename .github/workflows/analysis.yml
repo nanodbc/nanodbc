@@ -123,14 +123,51 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: flawfinder_scan
-        uses: david-a-wheeler/flawfinder@c4216b74cf2639ffa98503768bd6e4299b5440c9 # master, the action has no tagged releases
-        with:
-          arguments: "--sarif --exclude './test/*' --exclude './example/*' ./"
-          output: "flawfinder_results.sarif"
+      - name: Install Flawfinder
+        run: pipx install flawfinder==2.0.20
+
+      - name: Run Flawfinder
+        run: >
+          flawfinder --sarif --exclude './test/*' --exclude './example/*' ./
+          > flawfinder_raw.sarif
+
+      # Flawfinder matches on names, with no types and no call graph. --minlevel is no help,
+      # since it reaches the text report and not the SARIF writer, so the rules whose every
+      # hit in this library is the C API showing through are dropped by id:
+      #
+      #   FF1040 misc/open      nanodbc opens no files. It wraps ODBC, the driver manager
+      #                         owns every resource it touches, and there is no <fstream>,
+      #                         fopen or CreateFile in it. The rule matches the token, so
+      #                         what it finds is nanodbc's own open() members.
+      #   FF1013 buffer/char    the SQLGetData buffers, whose size is passed to the call
+      #                         that fills them
+      #   FF1022 buffer/strlen  inputs the overload documents as NUL terminated
+      #   FF1071 buffer/equal   the null sentry, whose length the binding contract fixes
+      #   FF1004 buffer/memcpy  a SAFEARRAY allocated at exactly the length copied into it
+      #
+      # A rule not on this list is a finding to answer rather than an id to add. The ones
+      # whose answer is not "read the call" - gets, strcpy, sprintf, system - are all still
+      # reported, and nanodbc uses none of them.
+      - name: Drop the rules nanodbc has no answer to
+        run: |
+          jq '.runs[0].results |= map(
+                select(.ruleId as $r
+                  | ["FF1040", "FF1013", "FF1022", "FF1071", "FF1004"]
+                  | index($r) | not))' \
+            flawfinder_raw.sarif > flawfinder_results.sarif
+          echo "kept $(jq '.runs[0].results | length' flawfinder_results.sarif) of \
+            $(jq '.runs[0].results | length' flawfinder_raw.sarif) findings" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload analysis results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4
         with:
           sarif_file: ${{github.workspace}}/flawfinder_results.sarif
           category: flawfinder
+
+      # The unfiltered report, so what the step above dropped stays inspectable.
+      - name: Upload the unfiltered SARIF as an Artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: sarif-flawfinder-unfiltered
+          path: flawfinder_raw.sarif
+          overwrite: true
