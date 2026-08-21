@@ -776,6 +776,124 @@ struct test_case_fixture : public base_test_fixture
     // Each of these types is a handle over a shared implementation, and the copy-and-swap
     // set that says so was never exercised. What a copy means here is that both names refer
     // to the same statement or the same transaction, which the handles make checkable.
+    // How many rows the bind-forms table holds, and how many of them are null.
+    std::pair<int, int> bind_forms_rows_and_nulls(nanodbc::connection& connection)
+    {
+        auto results =
+            execute(connection, NANODBC_TEXT("select count(*), count(v) from test_bind_forms;"));
+        REQUIRE(results.next());
+        auto const rows = results.get<int>(0);
+        auto const present = results.get<int>(1);
+        return {rows, rows - present};
+    }
+
+    // statement::bind is instantiated four ways for every type it accepts: one value, a
+    // batch, a batch with a sentry value naming which entries are null, and a batch with a
+    // flag per entry. Each is a separate mapping onto an ODBC C type, so a type bound only
+    // one of the four ways leaves the other three never run against a driver.
+    //
+    // The three values must differ from one another: the sentry form marks the entry equal
+    // to the sentry, and counts the result.
+    template <class T>
+    void check_bind_forms(nanodbc::string const& column_type, T a, T b, T c)
+    {
+        nanodbc::connection connection = connect();
+        nanodbc::string const columns =
+            NANODBC_TEXT("(id int, v ") + column_type + NANODBC_TEXT(")");
+        auto const insert = NANODBC_TEXT("insert into test_bind_forms (id, v) values (?, ?);");
+        int const ids[3] = {0, 1, 2};
+        T const values[3] = {a, b, c};
+
+        create_table(connection, NANODBC_TEXT("test_bind_forms"), columns);
+        {
+            nanodbc::statement statement(connection);
+            prepare(statement, insert);
+            statement.bind(0, &ids[0]);
+            statement.bind(1, &values[0]);
+            nanodbc::execute(statement);
+        }
+        REQUIRE(bind_forms_rows_and_nulls(connection) == std::make_pair(1, 0));
+
+        create_table(connection, NANODBC_TEXT("test_bind_forms"), columns);
+        {
+            nanodbc::statement statement(connection);
+            prepare(statement, insert);
+            statement.bind(0, ids, 3);
+            statement.bind(1, values, 3);
+            nanodbc::transact(statement, 3);
+        }
+        REQUIRE(bind_forms_rows_and_nulls(connection) == std::make_pair(3, 0));
+
+        create_table(connection, NANODBC_TEXT("test_bind_forms"), columns);
+        {
+            nanodbc::statement statement(connection);
+            prepare(statement, insert);
+            statement.bind(0, ids, 3);
+            statement.bind(1, values, 3, &values[1]);
+            nanodbc::transact(statement, 3);
+        }
+        REQUIRE(bind_forms_rows_and_nulls(connection) == std::make_pair(3, 1));
+
+        create_table(connection, NANODBC_TEXT("test_bind_forms"), columns);
+        {
+            bool const nulls[3] = {false, true, true};
+            nanodbc::statement statement(connection);
+            prepare(statement, insert);
+            statement.bind(0, ids, 3);
+            statement.bind(1, values, 3, nulls);
+            nanodbc::transact(statement, 3);
+        }
+        REQUIRE(bind_forms_rows_and_nulls(connection) == std::make_pair(3, 2));
+    }
+
+    void test_bind_every_form()
+    {
+        // The 8 bit integers map onto ODBC's tiny integers, so a small numeric column takes
+        // them. char is not among them: it is a character, and bind is instantiated for it
+        // so that a caller can pass a C string, which the character overload of
+        // bind_parameter hands to the driver with no length. It is covered below instead.
+        auto const small = NANODBC_TEXT("smallint");
+        check_bind_forms<signed char>(small, 1, 2, 3);
+        check_bind_forms<unsigned char>(small, 1, 2, 3);
+        check_bind_forms<short>(small, 10, 20, 30);
+        check_bind_forms<unsigned short>(small, 10, 20, 30);
+
+        auto const wide = NANODBC_TEXT("bigint");
+        check_bind_forms<int>(wide, 100, 200, 300);
+        check_bind_forms<unsigned int>(wide, 100, 200, 300);
+        check_bind_forms<long>(wide, 1000, 2000, 3000);
+        check_bind_forms<unsigned long>(wide, 1000, 2000, 3000);
+        check_bind_forms<long long>(wide, 10000, 20000, 30000);
+        check_bind_forms<unsigned long long>(wide, 10000, 20000, 30000);
+
+        // Values a float holds exactly, so that the sentry compares equal.
+        auto const real = NANODBC_TEXT("float");
+        check_bind_forms<float>(real, 1.5f, 2.5f, 3.5f);
+        check_bind_forms<double>(real, 1.5, 2.5, 3.5);
+
+        // And the character instantiation, whose point is that a caller can hand bind the
+        // result of c_str(). The terminator is what tells the driver where the value ends,
+        // so this form takes one value and not a batch.
+        {
+            nanodbc::connection connection = connect();
+            create_table(
+                connection,
+                NANODBC_TEXT("test_bind_forms"),
+                NANODBC_TEXT("(id int, v ") + get_text_type_name() + NANODBC_TEXT(")"));
+            nanodbc::string const text = NANODBC_TEXT("bound as a C string");
+            nanodbc::statement statement(connection);
+            prepare(statement, NANODBC_TEXT("insert into test_bind_forms (id, v) values (?, ?);"));
+            int const id = 0;
+            statement.bind(0, &id);
+            statement.bind(1, text.c_str());
+            nanodbc::execute(statement);
+
+            auto results = execute(connection, NANODBC_TEXT("select v from test_bind_forms;"));
+            REQUIRE(results.next());
+            REQUIRE(results.get<nanodbc::string>(0) == text);
+        }
+    }
+
     void test_handle_copy_move_and_swap()
     {
         nanodbc::connection connection = connect();

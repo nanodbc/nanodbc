@@ -511,3 +511,8 @@ TEST_CASE_METHOD(mysql_fixture, "test_just_execute_forms", "[mysql][execute]")
 {
     test_just_execute_forms();
 }
+
+TEST_CASE_METHOD(mysql_fixture, "test_bind_every_form", "[mysql][bind][batch]")
+{
+    test_bind_every_form();
+}

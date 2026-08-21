@@ -600,3 +600,8 @@ TEST_CASE_METHOD(postgresql_fixture, "test_just_execute_forms", "[postgresql][ex
 {
     test_just_execute_forms();
 }
+
+TEST_CASE_METHOD(postgresql_fixture, "test_bind_every_form", "[postgresql][bind][batch]")
+{
+    test_bind_every_form();
+}

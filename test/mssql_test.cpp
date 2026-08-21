@@ -2360,3 +2360,8 @@ TEST_CASE_METHOD(mssql_fixture, "test_just_execute_forms", "[mssql][execute]")
 {
     test_just_execute_forms();
 }
+
+TEST_CASE_METHOD(mssql_fixture, "test_bind_every_form", "[mssql][bind][batch]")
+{
+    test_bind_every_form();
+}
