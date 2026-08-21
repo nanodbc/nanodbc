@@ -8,8 +8,9 @@ set -euo pipefail
 usage()
 {
     (
-        echo "usage: ${0##*/} <section>"
-        echo "Print the CHANGELOG.md section for the given heading, e.g. v2.16.0 or Unreleased."
+        echo "usage: ${0##*/} [section]"
+        echo "Print the CHANGELOG.md section for the given heading, e.g. v2.16.0."
+        echo "Defaults to Unreleased, the section a release has not yet named."
     ) >&2
     exit 1
 }
@@ -20,8 +21,12 @@ abort()
     exit 1
 }
 
-section="${1-}"
-[[ -n "${section}" ]] || usage
+case "${1-}" in
+    -h | --help) usage ;;
+esac
+
+# Until a release names it, what is worth reading is whatever has landed since the last one.
+section="${1-Unreleased}"
 
 cd "$(git rev-parse --show-toplevel)"
 
