@@ -226,7 +226,7 @@ The SQLite and utility tests need no server, so they are the quickest way to che
 
 ## Publish and Release Process
 
-Once your local `main` branch is ready for publishing (i.e. [semantic versioning][semver]), use the `utility/publish.sh` script. It bumps the major, minor, or patch version in `VERSION.txt`, adds a "Preparing" commit, and pushes that commit and the matching `vX.Y.Z` tag. For example, to make a minor update you would run `./utility/publish.sh minor`.
+Once your local `main` branch is ready for publishing (i.e. [semantic versioning][semver]), use the `utility/publish.sh` script. It bumps the major, minor, or patch version in `VERSION.txt`, renames the changelog's `## Unreleased` heading to the new version, adds a "Preparing" commit for both, and pushes that commit and the matching `vX.Y.Z` tag. For example, to make a minor update you would run `./utility/publish.sh minor`.
 
 > **Important:** Record changes, bug fixes, and features in [`CHANGELOG.md`](CHANGELOG.md) under a `## Unreleased` heading at the top of the file, as they land rather than at release time. The publish script renames that heading to the version being released, and refuses to run without it, because the section becomes the release notes. `git log "v$(cat VERSION.txt)"..HEAD` lists what has landed since the last release, if the section needs catching up.
 
