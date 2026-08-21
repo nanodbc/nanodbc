@@ -1,5 +1,9 @@
 # ChangeLog
 
+## v2.16.5
+
+- handle SQL_NO_TOTAL when retrieving binary data in chunks [`#475`](https://github.com/nanodbc/nanodbc/pull/475), thanks [Jeroen Ooms](https://github.com/jeroen).
+
 ## v2.16.4
 
 - Updating the usage, development, and contributing sections of generated docs to be in sync with the README and current codebase.
