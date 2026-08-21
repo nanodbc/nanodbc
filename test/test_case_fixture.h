@@ -2154,14 +2154,9 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(results.get<int>(0) == 1);
     }
 
-    // result_iterator has both increments, and only the prefix one was ever taken.
-    //
-    // What the postfix one hands back is not the position it held. result is a handle, so
-    // the copy it makes of itself shares the driver-side cursor, and advancing one advances
-    // both: *it++ is the row after, where an input iterator promises the row before. That
-    // is a defect rather than behaviour to depend on, so this pins only that the increment
-    // advances and terminates, and leaves what the returned iterator dereferences to
-    // unasserted until the defect is settled one way or the other.
+    // result_iterator has both increments, and only the prefix one was ever taken. The
+    // postfix one returns nothing, so what there is to check is that it advances by one and
+    // arrives at the end; *it++ is a compile error and has no behaviour to pin.
     void test_result_iterator_post_increment()
     {
         nanodbc::connection connection = connect();

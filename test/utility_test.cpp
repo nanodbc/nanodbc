@@ -264,6 +264,30 @@ TEST_CASE("exception_types", "[exception]")
     }
 }
 
+// result_iterator's postfix increment returns void, so that *it++ names a row the cursor
+// has already left and is refused at the point it is written rather than answered wrongly.
+// Nothing about that fails to build until someone writes the expression, so it is written
+// here, where the compiler is the one being asked.
+template <class T, class = void>
+struct post_increment_is_dereferenceable : std::false_type
+{
+};
+
+template <class T>
+struct post_increment_is_dereferenceable<T, decltype(void(*std::declval<T&>()++))> : std::true_type
+{
+};
+
+static_assert(
+    !post_increment_is_dereferenceable<nanodbc::result_iterator>::value,
+    "*it++ would name the row after the one it reads, so it does not compile");
+static_assert(
+    post_increment_is_dereferenceable<std::vector<int>::iterator>::value,
+    "and the trait says yes for an iterator that can do it, so the check above means something");
+static_assert(
+    std::is_void<decltype(std::declval<nanodbc::result_iterator&>()++)>::value,
+    "post-increment advances and returns nothing");
+
 // What a noexcept promises is not something a run can check. One that lies does not fail to
 // compile and does not fail a test: it calls std::terminate, and only along the path it
 // lied about, which is the path a suite is least likely to take. So the promises are made

@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- `result_iterator`'s postfix increment returns `void`, so `*it++` is a compile error rather than the row after the one it names; `it++` and `++it` are unaffected.
 - Cleared the remaining code scanning alerts. [`#476`](https://github.com/nanodbc/nanodbc/pull/476)
 - Column buffers are owned by `std::unique_ptr`, and the implementation types are allocated with `std::make_shared`.
 - The handle accessors that only read a member are now `noexcept`; in C++17 that is part of the function type, so a pointer to one needs it spelled out.
