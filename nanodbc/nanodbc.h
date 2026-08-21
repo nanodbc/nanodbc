@@ -584,16 +584,16 @@ public:
     void rollback() noexcept;
 
     /// Returns the connection object.
-    class connection& connection();
+    class connection& connection() noexcept;
 
     /// Returns the connection object.
-    const class connection& connection() const;
+    const class connection& connection() const noexcept;
 
     /// Returns the connection object.
-    operator class connection &();
+    operator class connection &() noexcept;
 
     /// Returns the connection object.
-    operator const class connection &() const;
+    operator const class connection &() const noexcept;
 
 private:
     class transaction_impl;
@@ -839,8 +839,7 @@ public:
         const std::vector<short>& scale);
 
     /// \brief Returns the number of columns in the table valued parameter.
-    /// \throws database_error
-    short parameters() const;
+    short parameters() const noexcept;
 
     /// \brief Returns parameter size for indicated column in the TVP.
     unsigned long parameter_size(short param_index) const;
@@ -968,16 +967,16 @@ public:
     void open(class connection& conn);
 
     /// \brief Returns true if connection is open.
-    bool open() const;
+    bool open() const noexcept;
 
     /// \brief Returns true if connected to the database.
-    bool connected() const;
+    bool connected() const noexcept;
 
     /// \brief Returns the associated connection object if any.
-    class connection& connection();
+    class connection& connection() noexcept;
 
     /// \brief Returns the associated connection object if any.
-    const class connection& connection() const;
+    const class connection& connection() const noexcept;
 
     /// \brief Returns the native ODBC statement handle.
     void* native_statement_handle() const noexcept;
@@ -1739,13 +1738,13 @@ public:
 #endif
 
     /// \brief Returns true if connected to the database.
-    bool connected() const;
+    bool connected() const noexcept;
 
     /// \brief Disconnects from the database, but maintains environment and handle resources.
     void disconnect();
 
     /// \brief Returns the number of transactions currently held for this connection.
-    std::size_t transactions() const;
+    std::size_t transactions() const noexcept;
 
     /// \brief Returns the native ODBC database connection handle.
     void* native_dbc_handle() const noexcept;
@@ -1786,8 +1785,8 @@ public:
     string catalog_name() const;
 
 private:
-    std::size_t ref_transaction();
-    std::size_t unref_transaction();
+    std::size_t ref_transaction() noexcept;
+    std::size_t unref_transaction() noexcept;
     bool rollback() const noexcept;
     void rollback(bool onoff) noexcept;
 
@@ -2267,7 +2266,7 @@ public:
     }
 
     /// Iterators are equal if they a tied to the same native statemnt handle, or both empty.
-    bool operator==(result_iterator const& rhs) const
+    bool operator==(result_iterator const& rhs) const noexcept
     {
         if (result_ && rhs.result_)
             return result_.native_statement_handle() == rhs.result_.native_statement_handle();
@@ -2276,7 +2275,7 @@ public:
     }
 
     /// Iterators are not equal if they have different native statemnt handles.
-    bool operator!=(result_iterator const& rhs) const { return !(*this == rhs); }
+    bool operator!=(result_iterator const& rhs) const noexcept { return !(*this == rhs); }
 
 private:
     result result_;
@@ -2496,7 +2495,7 @@ public:
 
     private:
         friend class nanodbc::catalog;
-        explicit tables(result& find_result);
+        explicit tables(result& find_result) noexcept;
         result result_;
     };
 
@@ -2536,7 +2535,7 @@ public:
 
     private:
         friend class nanodbc::catalog;
-        explicit columns(result& find_result);
+        explicit columns(result& find_result) noexcept;
         result result_;
     };
 
@@ -2561,7 +2560,7 @@ public:
 
     private:
         friend class nanodbc::catalog;
-        explicit primary_keys(result& find_result);
+        explicit primary_keys(result& find_result) noexcept;
         result result_;
     };
 
@@ -2581,7 +2580,7 @@ public:
 
     private:
         friend class nanodbc::catalog;
-        explicit table_privileges(result& find_result);
+        explicit table_privileges(result& find_result) noexcept;
         result result_;
     };
 
@@ -2598,7 +2597,7 @@ public:
 
     private:
         friend class nanodbc::catalog;
-        explicit procedures(result& find_result);
+        explicit procedures(result& find_result) noexcept;
         result result_;
     };
 
@@ -2639,12 +2638,12 @@ public:
 
     private:
         friend class nanodbc::catalog;
-        explicit procedure_columns(result& find_result);
+        explicit procedure_columns(result& find_result) noexcept;
         result result_;
     };
 
     /// \brief Creates catalog operating on database accessible through the specified connection.
-    explicit catalog(connection& conn);
+    explicit catalog(connection& conn) noexcept;
 
     /// \brief Creates result set with catalogs, schemas, tables, or table types.
     ///

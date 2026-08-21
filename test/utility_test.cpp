@@ -245,6 +245,40 @@ static_assert(
     noexcept(std::declval<nanodbc::result const&>().rowset_size()),
     "the rowset size is read from a member");
 
+// The accessors that forward to one of those, and reach no further. Each is a member read
+// through impl_, so the promise is the same one a handle read makes.
+static_assert(
+    noexcept(std::declval<nanodbc::connection const&>().connected()) &&
+        noexcept(std::declval<nanodbc::connection const&>().transactions()),
+    "the connection state is read from a member");
+static_assert(
+    noexcept(std::declval<nanodbc::statement const&>().open()) &&
+        noexcept(std::declval<nanodbc::statement const&>().connected()),
+    "the statement state is read from a member");
+static_assert(
+    noexcept(std::declval<nanodbc::statement&>().connection()) &&
+        noexcept(std::declval<nanodbc::statement const&>().connection()),
+    "the statement's connection is a member");
+static_assert(
+    noexcept(std::declval<nanodbc::transaction&>().connection()) &&
+        noexcept(std::declval<nanodbc::transaction const&>().connection()),
+    "the transaction's connection is a member");
+static_assert(
+    noexcept(std::declval<nanodbc::table_valued_parameter const&>().parameters()),
+    "the parameter count is the size of a member");
+static_assert(
+    noexcept(
+        std::declval<nanodbc::result_iterator const&>() ==
+        std::declval<nanodbc::result_iterator const&>()),
+    "comparing two iterators compares two statement handles");
+
+// catalog copies a connection, which copies a shared_ptr. Its six result wrappers copy a
+// result and do the same, but each of their constructors is private to catalog, so the
+// trait cannot reach them from here and the promise is stated in the header instead.
+static_assert(
+    std::is_nothrow_constructible<nanodbc::catalog, nanodbc::connection&>::value,
+    "catalog copies a connection");
+
 // And the other way about. These allocate, so they must not claim otherwise: saying
 // noexcept over an allocation turns running out of memory into a call to terminate. If one
 // of them stops allocating, say so here and take the noexcept with it.

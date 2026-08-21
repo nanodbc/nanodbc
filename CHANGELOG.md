@@ -1,5 +1,9 @@
 # ChangeLog
 
+## Unreleased
+
+- Cleared the remaining code scanning alerts. The column buffers are owned by `std::unique_ptr` rather than by matching `new[]` and `delete[]`, and the five implementation types are allocated with `std::make_shared`. The handle accessors that only read a member now say `noexcept`, which includes `connection::connected`, `connection::transactions`, `statement::open`, `statement::connected`, both `connection` accessors on `statement` and `transaction`, `table_valued_parameter::parameters`, the `result_iterator` comparisons, and the catalog constructors. Note that in C++17 `noexcept` is part of a function's type, so a pointer to one of these members needs the specification spelled out. `nanodbc.ruleset` and the Flawfinder invocation carry the rules that have no answer here, each with the reason beside it.
+
 ## v2.16.5
 
 - handle SQL_NO_TOTAL when retrieving binary data in chunks [`#475`](https://github.com/nanodbc/nanodbc/pull/475), thanks [Jeroen Ooms](https://github.com/jeroen).

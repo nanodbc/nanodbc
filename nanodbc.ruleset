@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  The C++ Core Guidelines checks, less the ones whose only remedy is the Guidelines Support
-  Library. nanodbc is distributed as a header and an implementation file that can be dropped
-  into a project, so taking on a dependency to satisfy an analyser is not a trade it can make.
-  Each rule below is turned off for that reason alone, and anything answerable with the
-  standard library or by restructuring is left switched on.
+  The C++ Core Guidelines checks, less the ones nanodbc has no answer to. Anything a rule
+  asks for that the standard library can supply, or that restructuring can reach, is left
+  switched on and has been taken; what remains below is switched off with the reason given
+  beside it. There are three reasons, and no others:
+
+    - the only remedy is the Guidelines Support Library, and nanodbc is distributed as a
+      header and an implementation file to be dropped into a project, so taking on a
+      dependency to satisfy an analyser is not a trade it can make;
+    - the finding is ODBC showing through, where the shape of the call is the driver
+      manager's to decide and not nanodbc's;
+    - the remedy is worse than the finding, and saying why is the point of the comment.
 -->
-<RuleSet Name="nanodbc" Description="C++ Core Guidelines checks that do not require the GSL" ToolsVersion="17.0">
+<RuleSet Name="nanodbc" Description="C++ Core Guidelines checks nanodbc can answer" ToolsVersion="17.0">
   <Include Path="cppcorecheckrules.ruleset" Action="Default" />
   <Rules AnalyzerId="Microsoft.Analyzers.NativeCodeAnalysis" RuleNamespace="Microsoft.Rules.Native">
     <!-- bounds.4: prefer gsl::at() to the subscript operator. -->
@@ -40,5 +46,50 @@
          C26492, and passing a string's data to an entry point that wants a non-const
          pointer needs both. The cast is the C API showing through, not untidiness. -->
     <Rule Id="C26493" Action="None" />
+    <!-- type.1: no reinterpret_cast. Every one of these is nanodbc handing a buffer to an
+         ODBC entry point, or reading one back: SQLDescribeCol writes NANODBC_SQLCHAR where
+         the column name is kept as string::value_type, and a bound character column is a
+         char array that a wide fetch reads as SQLWCHAR. The C API decides the shape. -->
+    <Rule Id="C26490" Action="None" />
+    <!-- type.1 again, for a cast whose source and target are the same type. Both are casts
+         that only exist because the pair differs on another platform or toolchain:
+         wide_char_t is SQLWCHAR under MSVC and char16_t elsewhere, and LPCOLESTR is what
+         MinGW and MSVC disagree about. Removing the cast would need an #ifdef in its place. -->
+    <Rule Id="C26473" Action="None" />
+    <!-- es.47: use nullptr rather than 0 or NULL. All four are ODBC's own macros reaching
+         the analyser through nanodbc's call sites: SQL_NULL_HANDLE, SQL_AUTOCOMMIT_OFF,
+         SQL_ASYNC_ENABLE_OFF and SQL_ASYNC_DBC_ENABLE_OFF are integer constants defined by
+         the driver manager headers, and the last three are attribute values rather than
+         pointers at all. -->
+    <Rule Id="C26477" Action="None" />
+    <!-- con.3: a reference parameter that is never written through can be const. The ones
+         reported are connection, statement and table_valued_parameter, which are handles:
+         a copy of one refers to the same driver-side object, so const on the handle says
+         nothing about what the call does to the database. Taking them by non-const
+         reference is how the interface says the argument is about to be used, and marking
+         them const would make the signature claim something the library does not mean. -->
+    <Rule Id="C26460" Action="None" />
+    <!-- f.6: a default constructor should not throw. The seven reported allocate, and the
+         remedy on offer is to promise otherwise: connection, statement and
+         table_valued_parameter allocate their implementation, and the three error types
+         hand a literal to std::runtime_error. A noexcept over an allocation turns running
+         out of memory into a call to std::terminate, and nothing about that would fail to
+         build or fail a test. The promises that can be made are made instead, in both
+         directions, by the static_asserts in test/utility_test.cpp. -->
+    <Rule Id="C26455" Action="None" />
+    <!-- c.128: a method hides a non-virtual method of its base. Reported for the nested
+         connection::attribute and statement::attribute, whose constructors are said to hide
+         nanodbc::attribute's. Constructors are not inherited unless a using declaration says
+         so, so there is nothing there to hide. -->
+    <Rule Id="C26434" Action="None" />
+    <!-- c.128 again, for an operator. variant_row_cached_result derives from result
+         privately and declares its own move assignment; hiding the base's is the point of
+         doing so, since the cached row is not part of what result knows how to move. -->
+    <Rule Id="C26456" Action="None" />
+    <!-- Enum.3: prefer enum class. statement::param_direction is public API, and its
+         enumerators are named unqualified in every caller that binds an output parameter.
+         Scoping it is a source break, which is a decision for a major release and not for
+         an analyser. -->
+    <Rule Id="C26812" Action="None" />
   </Rules>
 </RuleSet>
