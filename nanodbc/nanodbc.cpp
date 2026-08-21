@@ -3867,10 +3867,9 @@ public:
         if (rowset_position_ >= rows())
             throw index_range_error();
 
-        // An unbound column carries no indicator from the fetch, so the driver has to be
-        // asked. Only binary can be: a zero buffer length reports the length and moves no
-        // data. A fixed size type is handed over whole and a character type is given a
-        // terminator, and neither can be asked twice, so both report what the fetch knew.
+        // An unbound column carries no indicator from the fetch, so ask the driver. Only
+        // binary can be asked: a zero buffer length reports the length and moves no data.
+        // The others cannot, and report what the fetch knew.
         if (!col.bound_ && col.ctype_ == SQL_C_BINARY)
         {
             SQLCHAR unused = 0;
@@ -7475,10 +7474,8 @@ catalog::find_primary_keys(string const& table, string const& schema, string con
 
 std::list<string> catalog::list_catalogs()
 {
-    // Special case for list of catalogs only:
-    // all the other arguments must match empty string (""),
-    // otherwise pattern-based lookup is performed returning
-    // Cartesian product of catalogs, tables and schemas.
+    // Listing catalogs needs every other argument to be the empty string, or the lookup is
+    // pattern based and returns the product of catalogs, tables and schemas.
     statement stmt(conn_);
     RETCODE rc = SQL_SUCCESS;
     NANODBC_CALL_RC(
@@ -7507,10 +7504,8 @@ std::list<string> catalog::list_catalogs()
 
 std::list<string> catalog::list_schemas()
 {
-    // Special case for list of schemas:
-    // all the other arguments must match empty string (""),
-    // otherwise pattern-based lookup is performed returning
-    // Cartesian product of catalogs, tables and schemas.
+    // Listing schemas needs every other argument to be the empty string, or the lookup is
+    // pattern based and returns the product of catalogs, tables and schemas.
     statement stmt(conn_);
     RETCODE rc = SQL_SUCCESS;
     NANODBC_CALL_RC(
