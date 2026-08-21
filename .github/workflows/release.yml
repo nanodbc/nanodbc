@@ -1,13 +1,9 @@
----
-# GHA workflow to publish a GitHub release for a version tag and archive its documentation
 name: "Release"
 
 on:
   push:
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
-  # A release that failed part way through can be driven again from the Actions tab
-  # without moving the tag.
   workflow_dispatch:
     inputs:
       tag:
@@ -15,8 +11,6 @@ on:
         type: string
         required: true
 
-# Releasing the same tag twice concurrently would race on the release itself, so a run
-# waits rather than being cancelled: whichever push arrived first should finish.
 concurrency:
   group: ${{ github.workflow }}-${{ inputs.tag || github.ref }}
   cancel-in-progress: false
@@ -40,8 +34,6 @@ jobs:
           TAG: ${{ inputs.tag || github.ref_name }}
         run: |
           version="${TAG#v}"
-          # VERSION.txt is what consumers of the tarball see, so a tag that disagrees with
-          # it would ship a release labelled with a version the sources do not claim.
           recorded="$(cat VERSION.txt)"
           if [ "${recorded}" != "${version}" ]; then
             echo "error: ${TAG} does not match VERSION.txt, which reads '${recorded}'." >&2
@@ -51,9 +43,6 @@ jobs:
           {
             echo "version=${version}"
             echo "tag=${TAG}"
-            # The documentation is archived per minor series rather than per release, so a
-            # patch refreshes the series it belongs to instead of standing up a site of
-            # its own. See the archive-as input in documentation.yml.
             echo "series=${version%.*}"
           } >> "${GITHUB_OUTPUT}"
           {
@@ -66,8 +55,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ steps.notes.outputs.tag }}
         run: |
-          # Re-running the workflow for a tag should bring the notes up to date rather
-          # than failing on the release that already exists.
           if gh release view "${TAG}" > /dev/null 2>&1; then
             gh release edit "${TAG}" --title "${TAG}" \
               --notes-file "${RUNNER_TEMP}/notes.md"
@@ -76,8 +63,6 @@ jobs:
               --notes-file "${RUNNER_TEMP}/notes.md" --verify-tag
           fi
 
-  # The documentation for the tag becomes both the site root and the archive for its minor
-  # series, so that the series URL always carries the newest patch released from it.
   documentation:
     needs: release
     permissions:

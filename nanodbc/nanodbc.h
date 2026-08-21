@@ -2258,12 +2258,11 @@ public:
     }
 
     /// Iteration.
-    result_iterator operator++(int)
-    {
-        result_iterator tmp(*this);
-        ++(*this);
-        return tmp;
-    }
+    ///
+    /// \note Returns nothing, so `*it++` does not compile: copies of a result_iterator
+    ///       share one cursor, so none can name a row the iterator has moved past. Read
+    ///       through `*it` before advancing.
+    void operator++(int) { ++(*this); }
 
     /// Iterators are equal if they a tied to the same native statemnt handle, or both empty.
     bool operator==(result_iterator const& rhs) const noexcept

@@ -769,6 +769,307 @@ struct test_case_fixture : public base_test_fixture
 
     // Fetching a rowset at a time gives the result a cursor to move within, which reading
     // one row at a time never exercises.
+    // The by-name accessors look the index up and forward, so the two spellings must agree.
+    // A disagreement is a lookup that found the wrong column.
+    // statement and transaction are handles: a copy refers to the same statement or
+    // transaction, which the native handles make checkable.
+    // How many rows the bind-forms table holds, and how many of them are null.
+    std::pair<int, int> bind_forms_rows_and_nulls(nanodbc::connection& connection)
+    {
+        auto results =
+            execute(connection, NANODBC_TEXT("select count(*), count(v) from test_bind_forms;"));
+        REQUIRE(results.next());
+        auto const rows = results.get<int>(0);
+        auto const present = results.get<int>(1);
+        return {rows, rows - present};
+    }
+
+    // The four bind forms: one value, a batch, a batch with a sentry naming the nulls, and
+    // a batch with a flag per entry. The three values must differ, since the sentry form
+    // marks the entry equal to the sentry and the counts below say how many.
+    template <class T>
+    void check_bind_forms(nanodbc::string const& column_type, T a, T b, T c)
+    {
+        nanodbc::connection connection = connect();
+        nanodbc::string const columns =
+            NANODBC_TEXT("(id int, v ") + column_type + NANODBC_TEXT(")");
+        auto const insert = NANODBC_TEXT("insert into test_bind_forms (id, v) values (?, ?);");
+        int const ids[3] = {0, 1, 2};
+        T const values[3] = {a, b, c};
+
+        create_table(connection, NANODBC_TEXT("test_bind_forms"), columns);
+        {
+            nanodbc::statement statement(connection);
+            prepare(statement, insert);
+            statement.bind(0, &ids[0]);
+            statement.bind(1, &values[0]);
+            nanodbc::execute(statement);
+        }
+        REQUIRE(bind_forms_rows_and_nulls(connection) == std::make_pair(1, 0));
+
+        create_table(connection, NANODBC_TEXT("test_bind_forms"), columns);
+        {
+            nanodbc::statement statement(connection);
+            prepare(statement, insert);
+            statement.bind(0, ids, 3);
+            statement.bind(1, values, 3);
+            nanodbc::transact(statement, 3);
+        }
+        REQUIRE(bind_forms_rows_and_nulls(connection) == std::make_pair(3, 0));
+
+        create_table(connection, NANODBC_TEXT("test_bind_forms"), columns);
+        {
+            nanodbc::statement statement(connection);
+            prepare(statement, insert);
+            statement.bind(0, ids, 3);
+            statement.bind(1, values, 3, &values[1]);
+            nanodbc::transact(statement, 3);
+        }
+        REQUIRE(bind_forms_rows_and_nulls(connection) == std::make_pair(3, 1));
+
+        create_table(connection, NANODBC_TEXT("test_bind_forms"), columns);
+        {
+            bool const nulls[3] = {false, true, true};
+            nanodbc::statement statement(connection);
+            prepare(statement, insert);
+            statement.bind(0, ids, 3);
+            statement.bind(1, values, 3, nulls);
+            nanodbc::transact(statement, 3);
+        }
+        REQUIRE(bind_forms_rows_and_nulls(connection) == std::make_pair(3, 2));
+    }
+
+    // The overloads that take a data source name rather than a connection string. The dev
+    // container registers nanodbc_dsn; elsewhere there is nothing to test.
+    void test_connect_by_datasource_name()
+    {
+        auto const name = NANODBC_TEXT("nanodbc_dsn");
+
+        auto const sources = nanodbc::list_datasources();
+        auto const found = std::find_if(
+            sources.cbegin(),
+            sources.cend(),
+            [&name](nanodbc::datasource const& source) { return source.name == name; });
+        if (found == sources.cend())
+            SKIP("no nanodbc_dsn data source is registered on this machine");
+
+        REQUIRE(!found->driver.empty());
+
+        // Named at construction, and named on a connection that starts out holding nothing.
+        {
+            nanodbc::connection connection(name, NANODBC_TEXT(""), NANODBC_TEXT(""), 0);
+            REQUIRE(connection.connected());
+            REQUIRE(!connection.dbms_name().empty());
+        }
+        {
+            nanodbc::connection connection;
+            REQUIRE(!connection.connected());
+            connection.connect(name, NANODBC_TEXT(""), NANODBC_TEXT(""), 0);
+            REQUIRE(connection.connected());
+            connection.disconnect();
+            REQUIRE(!connection.connected());
+        }
+    }
+
+    void test_bind_every_form()
+    {
+        // char is absent: it binds as a C string, not as a tiny integer, and is covered
+        // below.
+        // Not named `small`: the Windows SDK defines that as a macro for char.
+        auto const narrow_column = NANODBC_TEXT("smallint");
+        check_bind_forms<signed char>(narrow_column, 1, 2, 3);
+        check_bind_forms<unsigned char>(narrow_column, 1, 2, 3);
+        check_bind_forms<short>(narrow_column, 10, 20, 30);
+        check_bind_forms<unsigned short>(narrow_column, 10, 20, 30);
+
+        auto const wide_column = NANODBC_TEXT("bigint");
+        check_bind_forms<int>(wide_column, 100, 200, 300);
+        check_bind_forms<unsigned int>(wide_column, 100, 200, 300);
+        check_bind_forms<long>(wide_column, 1000, 2000, 3000);
+        check_bind_forms<unsigned long>(wide_column, 1000, 2000, 3000);
+        check_bind_forms<long long>(wide_column, 10000, 20000, 30000);
+        check_bind_forms<unsigned long long>(wide_column, 10000, 20000, 30000);
+
+        // Values a float holds exactly, so that the sentry compares equal.
+        auto const real_column = NANODBC_TEXT("float");
+        check_bind_forms<float>(real_column, 1.5f, 2.5f, 3.5f);
+        check_bind_forms<double>(real_column, 1.5, 2.5, 3.5);
+
+        // The character instantiation: bind takes c_str() and the driver reads to the
+        // terminator, so it takes one value rather than a batch.
+        {
+            nanodbc::connection connection = connect();
+            create_table(
+                connection,
+                NANODBC_TEXT("test_bind_forms"),
+                NANODBC_TEXT("(id int, v ") + get_text_type_name() + NANODBC_TEXT(")"));
+            nanodbc::string const text = NANODBC_TEXT("bound as a C string");
+            nanodbc::statement statement(connection);
+            prepare(statement, NANODBC_TEXT("insert into test_bind_forms (id, v) values (?, ?);"));
+            int const id = 0;
+            statement.bind(0, &id);
+            statement.bind(1, text.c_str());
+            nanodbc::execute(statement);
+
+            auto results = execute(connection, NANODBC_TEXT("select v from test_bind_forms;"));
+            REQUIRE(results.next());
+            REQUIRE(results.get<nanodbc::string>(0) == text);
+        }
+    }
+
+    void test_handle_copy_move_and_swap()
+    {
+        nanodbc::connection connection = connect();
+
+        {
+            nanodbc::statement original(connection);
+            auto const handle = original.native_statement_handle();
+
+            nanodbc::statement copied(original);
+            REQUIRE(copied.native_statement_handle() == handle);
+
+            nanodbc::statement moved(std::move(copied));
+            REQUIRE(moved.native_statement_handle() == handle);
+
+            nanodbc::statement assigned;
+            assigned = original;
+            REQUIRE(assigned.native_statement_handle() == handle);
+            REQUIRE(assigned.connected());
+            REQUIRE(assigned.connection().native_dbc_handle() == connection.native_dbc_handle());
+
+            // Swapping exchanges which statement each name refers to.
+            nanodbc::statement other(connection);
+            auto const other_handle = other.native_statement_handle();
+            REQUIRE(other_handle != handle);
+            original.swap(other);
+            REQUIRE(original.native_statement_handle() == other_handle);
+            REQUIRE(other.native_statement_handle() == handle);
+        }
+
+        {
+            // These share one implementation, so the connection holds one transaction
+            // however many names there are; a second from the connection would nest.
+            nanodbc::transaction original(connection);
+            REQUIRE(connection.transactions() == 1);
+
+            nanodbc::transaction copied(original);
+            nanodbc::transaction moved(std::move(copied));
+            nanodbc::transaction assigned(original);
+            assigned = original;
+            assigned.swap(moved);
+            REQUIRE(connection.transactions() == 1);
+
+            // The connection it holds, reached four ways: named and converted, const and not.
+            class nanodbc::connection& by_conversion = original;
+            REQUIRE(by_conversion.native_dbc_handle() == connection.native_dbc_handle());
+            REQUIRE(original.connection().native_dbc_handle() == connection.native_dbc_handle());
+
+            nanodbc::transaction const& readonly = original;
+            class nanodbc::connection const& by_const_conversion = readonly;
+            REQUIRE(by_const_conversion.native_dbc_handle() == connection.native_dbc_handle());
+            REQUIRE(readonly.connection().native_dbc_handle() == connection.native_dbc_handle());
+        }
+
+        // The transaction is gone, so the connection is counting none.
+        REQUIRE(connection.transactions() == 0);
+    }
+
+    // The forms that run a statement and build no result. Each must reach the database, so
+    // the row count is what says they did.
+    void test_just_execute_forms()
+    {
+        nanodbc::connection connection = connect();
+        create_table(connection, NANODBC_TEXT("test_just_execute_forms"), NANODBC_TEXT("(i int)"));
+        auto const insert = NANODBC_TEXT("insert into test_just_execute_forms (i) values (?);");
+
+        {
+            nanodbc::statement statement(connection);
+            prepare(statement, insert);
+            int value = 1;
+            statement.bind(0, &value);
+            nanodbc::just_execute(statement);
+        }
+        {
+            nanodbc::statement statement(connection);
+            prepare(statement, insert);
+            int value = 2;
+            statement.bind(0, &value);
+            nanodbc::just_transact(statement, 1);
+        }
+        {
+            nanodbc::statement statement(connection);
+            prepare(statement, insert);
+            int value = 3;
+            statement.bind(0, &value);
+            statement.just_execute();
+        }
+        {
+            nanodbc::statement statement(connection);
+            statement.just_execute_direct(
+                connection, NANODBC_TEXT("insert into test_just_execute_forms (i) values (4);"));
+        }
+        nanodbc::just_execute(
+            connection, NANODBC_TEXT("insert into test_just_execute_forms (i) values (5);"));
+
+        auto results =
+            execute(connection, NANODBC_TEXT("select count(*) from test_just_execute_forms;"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<int>(0) == 5);
+
+        // And the member that does build one.
+        {
+            nanodbc::statement statement(connection);
+            auto direct = statement.execute_direct(
+                connection, NANODBC_TEXT("select i from test_just_execute_forms order by i asc;"));
+            REQUIRE(direct.next());
+            REQUIRE(direct.get<int>(0) == 1);
+        }
+    }
+
+    void test_result_column_metadata()
+    {
+        nanodbc::connection connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_result_column_metadata"),
+            NANODBC_TEXT("(i int, s varchar(60))"));
+        execute(
+            connection,
+            NANODBC_TEXT("insert into test_result_column_metadata (i, s) values (1, 'x');"));
+
+        auto results =
+            execute(connection, NANODBC_TEXT("select i, s from test_result_column_metadata;"));
+        REQUIRE(results.columns() == 2);
+
+        // Position and name name the same two columns, in the same order.
+        REQUIRE(results.column_name(0) == NANODBC_TEXT("i"));
+        REQUIRE(results.column_name(1) == NANODBC_TEXT("s"));
+        REQUIRE(results.column(NANODBC_TEXT("i")) == 0);
+        REQUIRE(results.column(NANODBC_TEXT("s")) == 1);
+
+        for (short i = 0; i < results.columns(); ++i)
+        {
+            auto const name = results.column_name(i);
+            REQUIRE(results.column_size(i) == results.column_size(name));
+            REQUIRE(results.column_decimal_digits(i) == results.column_decimal_digits(name));
+            REQUIRE(results.column_datatype(i) == results.column_datatype(name));
+            REQUIRE(results.column_datatype_name(i) == results.column_datatype_name(name));
+            REQUIRE(results.column_c_datatype(i) == results.column_c_datatype(name));
+            REQUIRE(results.column_unsigned(i) == results.column_unsigned(name));
+
+            // Not the name of the type: it is documented as empty where the type is
+            // unknown, and the MariaDB driver never fills it in.
+            REQUIRE(results.column_datatype(i) != 0);
+        }
+
+        // The width the driver reports is the one the table asked for.
+        REQUIRE(results.column_size(NANODBC_TEXT("s")) == 60);
+
+        // A name no column carries is an error rather than a position.
+        REQUIRE_THROWS_AS(
+            results.column(NANODBC_TEXT("no_such_column")), nanodbc::index_range_error);
+    }
+
     void test_result_rowset_navigation()
     {
         auto connection = connect();
@@ -813,8 +1114,11 @@ struct test_case_fixture : public base_test_fixture
             {
                 if (backwards.prior())
                     REQUIRE(backwards.get<int>(0) == 1);
-                // Skipping is a relative fetch, which the same cursors refuse.
+                // Relative and absolute fetches alike, which such cursors refuse.
                 backwards.skip(2);
+                backwards.first();
+                backwards.last();
+                backwards.move(1);
             }
             catch (nanodbc::database_error const&)
             {
@@ -1050,6 +1354,15 @@ struct test_case_fixture : public base_test_fixture
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c0"));
+            REQUIRE(!columns.table_name().empty());
+            REQUIRE(columns.data_type() != 0);
+            REQUIRE(columns.ordinal_position() > 0);
+            columns.table_catalog();
+            columns.table_schema();
+            columns.buffer_length();
+            columns.remarks();
+            columns.sql_datetime_subtype();
+            columns.char_octet_length();
             if (vendor_ == database_vendor::sqlite)
             {
                 // NOTE: SQLite ODBC reports values inconsistent with table definition
@@ -1311,6 +1624,8 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(keys.table_name() == table_name);
             REQUIRE(keys.column_name() == NANODBC_TEXT("i"));
             REQUIRE(keys.column_number() == 1);
+            keys.table_catalog();
+            keys.table_schema();
             auto const pk_simple = get_primary_key_name(NANODBC_TEXT("test_pk_simple"));
             if (!pk_simple.empty()) // constraint relevant
                 REQUIRE(keys.primary_key_name() == pk_simple);
@@ -1414,6 +1729,10 @@ struct test_case_fixture : public base_test_fixture
                 // expect single record with the wanted procedure
                 REQUIRE(procedures.next());
                 REQUIRE(procedures.procedure_name().find(procedure_name) != std::string::npos);
+                procedures.procedure_catalog();
+                procedures.procedure_schema();
+                procedures.procedure_remarks();
+                procedures.procedure_type();
                 // expect no more records
                 REQUIRE(!procedures.next());
             }
@@ -1448,6 +1767,28 @@ struct test_case_fixture : public base_test_fixture
                             std::string::npos)
                     {
                         REQUIRE(columns.column_type() == SQL_PARAM_INPUT);
+
+                        // Every remaining accessor, so a wrong column index fails here.
+                        // The never-null ones must hold something; the rest are read for
+                        // the index and the type.
+                        REQUIRE(!columns.procedure_name().empty());
+                        REQUIRE(!columns.type_name().empty());
+                        REQUIRE(columns.data_type() != 0);
+                        REQUIRE(columns.ordinal_position() > 0);
+                        columns.procedure_catalog();
+                        columns.procedure_schema();
+                        columns.column_size();
+                        columns.buffer_length();
+                        columns.decimal_digits();
+                        columns.numeric_precision_radix();
+                        columns.nullable();
+                        columns.remarks();
+                        columns.column_default();
+                        columns.sql_data_type();
+                        columns.sql_datetime_subtype();
+                        columns.char_octet_length();
+                        columns.is_nullable();
+
                         count++;
                     }
                 }
@@ -1519,6 +1860,8 @@ struct test_case_fixture : public base_test_fixture
                     if (table_name == tables.table_name())
                     {
                         REQUIRE(tables.table_type() == NANODBC_TEXT("TABLE"));
+                        // REMARKS is nullable, so read for the index rather than a value.
+                        tables.table_remarks();
                         found = true;
                         break;
                     }
@@ -1641,6 +1984,11 @@ struct test_case_fixture : public base_test_fixture
             {
                 // These two values must not be NULL (returned as empty string)
                 REQUIRE(tables.table_name() == NANODBC_TEXT("test_catalog_table_privileges"));
+                tables.table_catalog();
+                tables.table_schema();
+                tables.grantor();
+                tables.grantee();
+                tables.is_grantable();
                 privileges.insert(tables.privilege());
                 count++;
             }
@@ -2103,6 +2451,81 @@ struct test_case_fixture : public base_test_fixture
         results = statement.execute();
         results.next();
         REQUIRE(results.get<int>(0) == 42);
+    }
+
+    // Calls whose answer is the driver's business, checked for arriving and coming back
+    // with something usable.
+    void test_connection_catalog_name()
+    {
+        nanodbc::connection connection = connect();
+
+        // SQL_ATTR_CURRENT_CATALOG is optional; a driver without one raises rather than
+        // answering empty. Either way it must answer the same twice.
+        try
+        {
+            auto const name = connection.catalog_name();
+            REQUIRE(name == connection.catalog_name());
+        }
+        catch (nanodbc::database_error const& e)
+        {
+            REQUIRE(std::string(e.what()).size() > 0);
+        }
+    }
+
+    // The widest get_info instantiation; test_get_info covers the narrower ones.
+    void test_get_info_widest()
+    {
+        nanodbc::connection connection = connect();
+        auto const narrow = connection.get_info<SQLUINTEGER>(SQL_ODBC_INTERFACE_CONFORMANCE);
+        auto const widest = connection.get_info<unsigned long long>(SQL_ODBC_INTERFACE_CONFORMANCE);
+        REQUIRE(widest == narrow);
+    }
+
+    // Cancelling a statement that is not executing is defined to succeed.
+    void test_statement_cancel()
+    {
+        nanodbc::connection connection = connect();
+        nanodbc::statement statement(connection);
+        prepare(statement, NANODBC_TEXT("select 1;"));
+        statement.cancel();
+
+        // The statement is still usable afterwards, which is what makes cancel safe to call
+        // when the caller does not know whether anything was running.
+        auto results = statement.execute();
+        REQUIRE(results.next());
+        REQUIRE(results.get<int>(0) == 1);
+    }
+
+    // The postfix increment returns nothing, so what there is to check is that it advances
+    // by one and arrives at the end.
+    void test_result_iterator_post_increment()
+    {
+        nanodbc::connection connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_result_iterator_post_increment"),
+            NANODBC_TEXT("(i int)"));
+        execute(
+            connection,
+            NANODBC_TEXT("insert into test_result_iterator_post_increment (i) values (1);"));
+        execute(
+            connection,
+            NANODBC_TEXT("insert into test_result_iterator_post_increment (i) values (2);"));
+
+        auto results = execute(
+            connection,
+            NANODBC_TEXT("select i from test_result_iterator_post_increment order by i asc;"));
+
+        auto it = nanodbc::begin(results);
+        REQUIRE(it->get<int>(0) == 1);
+        REQUIRE(it != nanodbc::end(results));
+
+        it++;
+        REQUIRE(it->get<int>(0) == 2);
+        REQUIRE(it != nanodbc::end(results));
+
+        it++;
+        REQUIRE(it == nanodbc::end(results));
     }
 
     void test_get_info()

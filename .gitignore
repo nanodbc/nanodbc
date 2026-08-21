@@ -62,3 +62,8 @@ website/
 # Python bytecode
 __pycache__/
 *.py[cod]
+
+# Coverage reports, written by llvm-cov into the working tree.
+coverage.lcov
+coverage.profdata
+*.profraw

@@ -559,3 +559,49 @@ TEST_CASE_METHOD(postgresql_fixture, "test_statement_prepare_reuse", "[postgresq
 {
     test_statement_prepare_reuse();
 }
+
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_connection_catalog_name",
+    "[postgresql][connection][metadata]")
+{
+    test_connection_catalog_name();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "test_get_info_widest", "[postgresql][metadata][info]")
+{
+    test_get_info_widest();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "test_statement_cancel", "[postgresql][statement]")
+{
+    test_statement_cancel();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "test_result_iterator_post_increment", "[postgresql][looping]")
+{
+    test_result_iterator_post_increment();
+}
+
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_result_column_metadata",
+    "[postgresql][result][metadata]")
+{
+    test_result_column_metadata();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "test_handle_copy_move_and_swap", "[postgresql][handle]")
+{
+    test_handle_copy_move_and_swap();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "test_just_execute_forms", "[postgresql][execute]")
+{
+    test_just_execute_forms();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "test_bind_every_form", "[postgresql][bind][batch]")
+{
+    test_bind_every_form();
+}

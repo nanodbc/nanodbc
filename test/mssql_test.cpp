@@ -2325,3 +2325,43 @@ TEST_CASE_METHOD(mssql_fixture, "test_overallocate", "[mssql][overallocate]")
 }
 #endif
 #endif
+
+TEST_CASE_METHOD(mssql_fixture, "test_connection_catalog_name", "[mssql][connection][metadata]")
+{
+    test_connection_catalog_name();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_get_info_widest", "[mssql][metadata][info]")
+{
+    test_get_info_widest();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_statement_cancel", "[mssql][statement]")
+{
+    test_statement_cancel();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_result_iterator_post_increment", "[mssql][looping]")
+{
+    test_result_iterator_post_increment();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_result_column_metadata", "[mssql][result][metadata]")
+{
+    test_result_column_metadata();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_handle_copy_move_and_swap", "[mssql][handle]")
+{
+    test_handle_copy_move_and_swap();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_just_execute_forms", "[mssql][execute]")
+{
+    test_just_execute_forms();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_bind_every_form", "[mssql][bind][batch]")
+{
+    test_bind_every_form();
+}

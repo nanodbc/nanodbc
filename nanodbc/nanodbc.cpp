@@ -356,16 +356,9 @@ inline std::size_t size(NANODBC_SQLCHAR const (&array)[N]) noexcept
     return n < N ? n : N - 1;
 }
 
-// Conversion between UTF-8 and the wide encoding the driver manager expects.
-//
-// std::wstring_convert and the std::codecvt facets are deprecated in C++17 and removed in
-// C++26, so the conversion is done here. The encoding follows from the width of
-// wide_char_t: four bytes is UTF-32, which is what iODBC takes, and two bytes is UTF-16,
-// which is what every other driver manager takes.
-//
-// Malformed input throws std::range_error rather than being silently replaced. A driver
-// handing back text that does not decode is worth hearing about instead of quietly turning
-// into replacement characters.
+// Conversion between UTF-8 and the wide encoding the driver manager expects. The width of
+// wide_char_t decides it: four bytes is UTF-32, which iODBC takes, two is UTF-16, which the
+// rest take. Malformed input throws std::range_error.
 
 inline void throw_invalid_encoding()
 {
@@ -435,9 +428,8 @@ inline char32_t next_utf8_code_point(char const*& beg, char const* end)
     if (lead < 0x80)
         return lead;
 
-    // How many continuation bytes follow, and what the code point starts out as. Lead
-    // bytes of 0xC0 and 0xC1 only ever encode an overlong form, so they are rejected here
-    // along with the continuation bytes and the values above 0xF4.
+    // How many continuation bytes follow, and the code point they start from. 0xC0 and 0xC1
+    // encode only overlong forms, so they are rejected along with 0xF5 and above.
     int extra = 0;
     char32_t cp = 0;
     if (lead >= 0xC2 && lead <= 0xDF)
@@ -988,13 +980,9 @@ inline std::string zero_padded(long value, std::size_t width)
     return sign + digits;
 }
 
-// Renders a timestampoffset the way a backend renders a datetimeoffset value, for example
-// "2006-12-30 13:45:12.3450000 -08:00".
-//
-// A SQL_SS_TIMESTAMPOFFSET column is bound as a binary buffer holding the struct rather
-// than as text, so reading one as a string has to format it here. The struct counts
-// fractional seconds in billionths, while the column reports how many decimal digits it
-// actually carries, so scale decides how many of those digits are rendered.
+// Renders a timestampoffset as a backend renders datetimeoffset, for example
+// "2006-12-30 13:45:12.3450000 -08:00". The struct counts fractional seconds in billionths;
+// scale says how many of those digits the column carries.
 inline std::string
 timestampoffset_as_string(nanodbc::timestampoffset const& value, SQLSMALLINT scale)
 {
@@ -1073,9 +1061,8 @@ struct bound_buffer
     T const* values_ = nullptr;  // Pointer to buffer for parameter's data
     std::size_t size_ = 0;       // Number of values (1 or length of array)
     std::size_t value_size_ = 0; // Size of single value (max size). Zero, if ignored.
-    // ODBC C type of the values. Defaults to the mapping for T, but buffers of raw binary
-    // data override it with SQL_C_BINARY, since std::uint8_t itself maps to the numeric
-    // SQL_C_UTINYINT.
+    // ODBC C type of the values. Binary buffers override it with SQL_C_BINARY, std::uint8_t
+    // mapping to SQL_C_UTINYINT on its own.
     SQLSMALLINT ctype_ = sql_ctype<T>::value;
 };
 
@@ -1686,12 +1673,9 @@ string connection::connection_impl::database_name() const
 
 template string connection::get_info(short info_type) const;
 
-// SQLUSMALLINT, SQLUINTEGER and SQLULEN are spelled with different underlying types from
-// one platform to the next, and the fixed width names callers reach for do not always
-// agree with them: here SQLULEN is unsigned long while uint64_t is unsigned long long, so
-// naming one leaves the other undefined at link time. The four fundamental unsigned types
-// are always distinct from each other and between them cover every spelling of these three
-// on every platform, so every correct way of asking links.
+// SQLUSMALLINT, SQLUINTEGER and SQLULEN name different underlying types per platform, and
+// the fixed width spellings a caller reaches for need not agree. The four fundamental
+// unsigned types are distinct and cover every spelling, so every way of asking links.
 template unsigned short connection::get_info(short info_type) const;
 template unsigned int connection::get_info(short info_type) const;
 template unsigned long connection::get_info(short info_type) const;
@@ -2297,14 +2281,9 @@ public:
 
         if (open())
         {
-            // The ODBC cursor must be closed before subsequent executions, as described
-            // here
+            // The cursor must be closed before a subsequent execution. SQLFreeStmt rather
+            // than SQLCloseCursor, which reports an invalid cursor state when none is open.
             // http://msdn.microsoft.com/en-us/library/windows/desktop/ms713584%28v=vs.85%29.aspx
-            //
-            // However, we don't necessarily want to call SQLCloseCursor() because that
-            // will cause an invalid cursor state in the case that no cursor is currently open.
-            // A better solution is to use SQLFreeStmt() with the SQL_CLOSE option, which has
-            // the same effect without the undesired limitations.
             NANODBC_CALL_RC(SQLFreeStmt, rc, stmt_, SQL_CLOSE);
             if (!success(rc))
                 NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
@@ -2531,14 +2510,9 @@ public:
         auto param_size{param.size_};
         if (value_size > param_size)
         {
-            // Parameter size reported by SQLDescribeParam for Large Objects:
-            // - For SQL VARBINARY(MAX), it is Zero which actually means SQL_SS_LENGTH_UNLIMITED.
-            // - For SQL UDT (eg. GEOMETRY), it may be driver-specific max limit (eg. SQL Server is
-            // DBMAXCHAR=8000 bytes).
-            // See MSDN for details
-            // https://docs.microsoft.com/en-us/sql/relational-databases/native-client/odbc/large-clr-user-defined-types-odbc
-            //
-            // If bound value is larger than parameter size, we force SQL_SS_LENGTH_UNLIMITED.
+            // SQLDescribeParam reports zero for VARBINARY(MAX), meaning
+            // SQL_SS_LENGTH_UNLIMITED, and a driver limit for a UDT. A value larger than the
+            // reported size is bound as unlimited.
             param_size = SQL_SS_LENGTH_UNLIMITED;
         }
 
@@ -2747,9 +2721,8 @@ public:
         return lhs == rhs;
     }
 
-    // Overloads rather than specialisations of the above: a specialisation has to
-    // carry the same exception specification as its primary, and narrowing a wide
-    // string allocates where comparing the rest does not.
+    // Overloads, not specialisations: a specialisation carries its primary's exception
+    // specification, and narrowing a wide string allocates where the rest do not.
     bool equals(std::string const& lhs, std::string const& rhs) noexcept;
     bool equals(wide_string const& lhs, wide_string const& rhs);
     bool equals(date const& lhs, date const& rhs) noexcept;
@@ -2902,10 +2875,8 @@ bool statement::statement_impl::equals(std::string const& lhs, std::string const
 
 bool statement::statement_impl::equals(wide_string const& lhs, wide_string const& rhs)
 {
-    // e6059ff3a79062f83256b9d1d3c9c8368798781e
-    // Functions like `swprintf()`, `wcsftime()`, `wcsncmp()` can not be used
-    // with `u16string` types. Instead, prefers to narrow unicode string to
-    // work with them, and then widen them after work has been completed.
+    // swprintf(), wcsftime() and wcsncmp() do not take u16string, so narrow, compare and
+    // widen back.
     std::string narrow_lhs;
     narrow_lhs.reserve(lhs.size());
     convert(lhs, narrow_lhs);
@@ -3234,14 +3205,9 @@ public:
         auto param_size{param.size_};
         if (value_size > param_size)
         {
-            // Parameter size reported by SQLDescribeParam for Large Objects:
-            // - For SQL VARBINARY(MAX), it is Zero which actually means SQL_SS_LENGTH_UNLIMITED.
-            // - For SQL UDT (eg. GEOMETRY), it may be driver-specific max limit (eg. SQL Server is
-            // DBMAXCHAR=8000 bytes).
-            // See MSDN for details
-            // https://docs.microsoft.com/en-us/sql/relational-databases/native-client/odbc/large-clr-user-defined-types-odbc
-            //
-            // If bound value is larger than parameter size, we force SQL_SS_LENGTH_UNLIMITED.
+            // SQLDescribeParam reports zero for VARBINARY(MAX), meaning
+            // SQL_SS_LENGTH_UNLIMITED, and a driver limit for a UDT. A value larger than the
+            // reported size is bound as unlimited.
             param_size = SQL_SS_LENGTH_UNLIMITED;
         }
 
@@ -3469,9 +3435,8 @@ public:
         return lhs == rhs;
     }
 
-    // Overloads rather than specialisations of the above: a specialisation has to
-    // carry the same exception specification as its primary, and narrowing a wide
-    // string allocates where comparing the rest does not.
+    // Overloads, not specialisations: a specialisation carries its primary's exception
+    // specification, and narrowing a wide string allocates where the rest do not.
     bool equals(std::string const& lhs, std::string const& rhs) noexcept;
     bool equals(wide_string const& lhs, wide_string const& rhs);
     bool equals(date const& lhs, date const& rhs) noexcept;
@@ -3625,10 +3590,8 @@ bool table_valued_parameter::table_valued_parameter_impl::equals(
     wide_string const& lhs,
     wide_string const& rhs)
 {
-    // e6059ff3a79062f83256b9d1d3c9c8368798781e
-    // Functions like `swprintf()`, `wcsftime()`, `wcsncmp()` can not be used
-    // with `u16string` types. Instead, prefers to narrow unicode string to
-    // work with them, and then widen them after work has been completed.
+    // swprintf(), wcsftime() and wcsncmp() do not take u16string, so narrow, compare and
+    // widen back.
     std::string narrow_lhs;
     narrow_lhs.reserve(lhs.size());
     convert(lhs, narrow_lhs);
@@ -3862,13 +3825,9 @@ public:
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
 
-        // MSDN (https://msdn.microsoft.com/en-us/library/ms712631.aspx):
-        // If the number of the current row cannot be determined or
-        // there is no current row, the driver returns 0.
-        // Otherwise, valid row number is returned, starting at 1.
-        //
-        // NOTE: We try to address incorrect implementation in some drivers (e.g. SQLite ODBC)
-        // which instead of 0 return SQL_ROW_NUMBER_UNKNOWN(-2) .
+        // Row numbers start at 1, and 0 means the driver cannot tell or there is no current
+        // row. Some drivers answer SQL_ROW_NUMBER_UNKNOWN(-2) where the spec says 0.
+        // https://msdn.microsoft.com/en-us/library/ms712631.aspx
         if (pos == 0 || pos == static_cast<SQLULEN>(SQL_ROW_NUMBER_UNKNOWN))
             return 0;
 
@@ -3891,13 +3850,9 @@ public:
             SQL_IS_UINTEGER,
             nullptr);
 
-        // MSDN (https://msdn.microsoft.com/en-us/library/ms712631.aspx):
-        // If the number of the current row cannot be determined or
-        // there is no current row, the driver returns 0.
-        // Otherwise, valid row number is returned, starting at 1.
-        //
-        // NOTE: We try to address incorrect implementation in some drivers (e.g. SQLite ODBC)
-        // which instead of 0 return SQL_ROW_NUMBER_UNKNOWN(-2) .
+        // Row numbers start at 1, and 0 means the driver cannot tell or there is no current
+        // row. Some drivers answer SQL_ROW_NUMBER_UNKNOWN(-2) where the spec says 0.
+        // https://msdn.microsoft.com/en-us/library/ms712631.aspx
         if (pos == 0 || pos == static_cast<SQLULEN>(SQL_ROW_NUMBER_UNKNOWN))
             return true;
 
@@ -3912,14 +3867,9 @@ public:
         if (rowset_position_ >= rows())
             throw index_range_error();
 
-        // A column that is not bound is read with SQLGetData, and the fetch leaves no
-        // indicator behind for it, so whether it is null has to be asked of the driver.
-        // Binary is the one type that can be asked: a buffer length of zero reports the
-        // length, or that there is no value, and moves none of the data. A fixed size type
-        // ignores the buffer length and is handed over whole, and a character type is
-        // always given a terminator, which some drivers count as delivering the first of
-        // the data. Neither can be asked twice, so both are left to report what the fetch
-        // knew, which a read then settles.
+        // An unbound column carries no indicator from the fetch, so ask the driver. Only
+        // binary can be asked: a zero buffer length reports the length and moves no data.
+        // The others cannot, and report what the fetch knew.
         if (!col.bound_ && col.ctype_ == SQL_C_BINARY)
         {
             SQLCHAR unused = 0;
@@ -3935,9 +3885,7 @@ public:
                 &unused,                               // TargetValuePtr
                 buffer_length,                         // BufferLength
                 &indicator);                           // StrLen_or_IndPtr
-            // A driver that declines to answer, because the value has already been read or
-            // because it wants its columns in another order, leaves the question to
-            // whatever the fetch knew. Asking is not worth raising an error over.
+            // A driver that declines leaves the question to what the fetch knew.
             if (rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO)
                 col.cbdata_[static_cast<size_t>(rowset_position_)] =
                     static_cast<null_type>(indicator);
@@ -4458,10 +4406,8 @@ private:
             case SQL_DECIMAL:
             case SQL_NUMERIC:
                 col.ctype_ = SQL_C_CHAR;
-                // SQL column size defines number of digits without the decimal mark
-                // and without minus sign which may also occur.
-                // We need to adjust buffer length allow space for null-termination character
-                // as well as the fractional part separator and the minus sign.
+                // SQL column size counts digits only, so the buffer also needs room for the
+                // terminator, the decimal mark and the sign.
                 col.clen_ = (col.sqlsize_ + 1 + 1 + 1) * sizeof(SQLCHAR);
                 break;
             case SQL_DATE:
@@ -4772,9 +4718,8 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
         {
             // Input is always std::string, while output may be std::string or wide_string
             std::string out;
-            // The length of the data available to return, decreasing with subsequent SQLGetData
-            // calls.
-            // But, NOT the length of data returned into the buffer (apart from the final call).
+            // Data still available, which shrinks with each SQLGetData; not the amount
+            // written into the buffer, except on the final call.
             SQLLEN ValueLenOrInd = 0;
             SQLRETURN rc = SQL_SUCCESS;
 
@@ -4829,9 +4774,8 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
             // Input is always wide_string, output might be std::string or wide_string.
             // Use a string builder to build the output string.
             wide_string out;
-            // The length of the data available to return, decreasing with subsequent SQLGetData
-            // calls.
-            // But, NOT the length of data returned into the buffer (apart from the final call).
+            // Data still available, which shrinks with each SQLGetData; not the amount
+            // written into the buffer, except on the final call.
             SQLLEN ValueLenOrInd = 0;
             SQLRETURN rc = SQL_SUCCESS;
 
@@ -4885,9 +4829,8 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
         return;
     }
 
-    // std::to_string renders each of these the way the SQL type demands: "%d" and "%lld"
-    // for the integers, "%f" for the floating point types, whose scale is undefined for a
-    // column and so is left to run to as many digits as it takes.
+    // std::to_string renders each as the SQL type demands: "%d" and "%lld" for integers,
+    // "%f" for floating point, whose column scale is undefined.
     case SQL_C_LONG:
     case SQL_C_SLONG:
         convert(std::to_string(*ensure_pdata<int32_t>(column)), result);
@@ -4997,9 +4940,8 @@ inline void result::result_impl::get_ref_impl<std::vector<std::uint8_t>>(
             std::vector<std::uint8_t> out;
             std::uint8_t buffer[1024] = {0};
             constexpr std::size_t buffer_size = sizeof(buffer);
-            // The length of the data available to return, decreasing with subsequent SQLGetData
-            // calls.
-            // But, NOT the length of data returned into the buffer (apart from the final call).
+            // Data still available, which shrinks with each SQLGetData; not the amount
+            // written into the buffer, except on the final call.
             SQLLEN ValueLenOrInd = 0;
             SQLRETURN rc = SQL_SUCCESS;
 
@@ -6172,11 +6114,9 @@ NANODBC_INSTANTIATE_BINDS(date);
 NANODBC_INSTANTIATE_BINDS(time);
 NANODBC_INSTANTIATE_BINDS(timestamp);
 
-// bool is bound as SQL_C_BIT, and only the forms that take no null information can be
-// instantiated for it. The null_sentry form takes `type const*` and the null flags form
-// takes `bool const*`, so for type=bool the two collapse into the same signature and
-// neither an explicit instantiation nor a call could choose between them. Bind nullable
-// booleans as a wider integral type instead.
+// bool takes only the forms carrying no null information: the sentry form takes
+// `type const*` and the flags form `bool const*`, which collapse into one signature for
+// bool. Bind nullable booleans as a wider integral type.
 template void statement::bind(short, const bool*, param_direction);              // 1-ary
 template void statement::bind(short, const bool*, std::size_t, param_direction); // n-ary
 
@@ -7376,12 +7316,8 @@ catalog::tables catalog::find_tables(
     string const& schema,
     string const& catalog)
 {
-    // Passing a null pointer to a search pattern argument does not
-    // constrain the search for that argument; that is, a null pointer and
-    // the search pattern % (any characters) are equivalent.
-    // However, a zero-length search pattern - that is, a valid pointer to
-    // a string of length zero - matches only the empty string ("").
-    // See https://msdn.microsoft.com/en-us/library/ms710171.aspx
+    // A null search pattern does not constrain the search, as % does. A zero-length one
+    // matches only the empty string. https://msdn.microsoft.com/en-us/library/ms710171.aspx
 
     statement stmt(conn_);
     RETCODE rc = SQL_SUCCESS;
@@ -7408,12 +7344,8 @@ catalog::tables catalog::find_tables(
 catalog::procedures
 catalog::find_procedures(string const& procedure, string const& schema, string const& catalog)
 {
-    // Passing a null pointer to a search pattern argument does not
-    // constrain the search for that argument; that is, a null pointer and
-    // the search pattern % (any characters) are equivalent.
-    // However, a zero-length search pattern - that is, a valid pointer to
-    // a string of length zero - matches only the empty string ("").
-    // See https://msdn.microsoft.com/en-us/library/ms710171.aspx
+    // A null search pattern does not constrain the search, as % does. A zero-length one
+    // matches only the empty string. https://msdn.microsoft.com/en-us/library/ms710171.aspx
 
     statement stmt(conn_);
     RETCODE rc = SQL_SUCCESS;
@@ -7466,12 +7398,8 @@ catalog::procedure_columns catalog::find_procedure_columns(
 catalog::table_privileges
 catalog::find_table_privileges(string const& catalog, string const& table, string const& schema)
 {
-    // Passing a null pointer to a search pattern argument does not
-    // constrain the search for that argument; that is, a null pointer and
-    // the search pattern % (any characters) are equivalent.
-    // However, a zero-length search pattern - that is, a valid pointer to
-    // a string of length zero - matches only the empty string ("").
-    // See https://msdn.microsoft.com/en-us/library/ms710171.aspx
+    // A null search pattern does not constrain the search, as % does. A zero-length one
+    // matches only the empty string. https://msdn.microsoft.com/en-us/library/ms710171.aspx
 
     statement stmt(conn_);
     RETCODE rc = SQL_SUCCESS;
@@ -7546,10 +7474,8 @@ catalog::find_primary_keys(string const& table, string const& schema, string con
 
 std::list<string> catalog::list_catalogs()
 {
-    // Special case for list of catalogs only:
-    // all the other arguments must match empty string (""),
-    // otherwise pattern-based lookup is performed returning
-    // Cartesian product of catalogs, tables and schemas.
+    // Listing catalogs needs every other argument to be the empty string, or the lookup is
+    // pattern based and returns the product of catalogs, tables and schemas.
     statement stmt(conn_);
     RETCODE rc = SQL_SUCCESS;
     NANODBC_CALL_RC(
@@ -7578,10 +7504,8 @@ std::list<string> catalog::list_catalogs()
 
 std::list<string> catalog::list_schemas()
 {
-    // Special case for list of schemas:
-    // all the other arguments must match empty string (""),
-    // otherwise pattern-based lookup is performed returning
-    // Cartesian product of catalogs, tables and schemas.
+    // Listing schemas needs every other argument to be the empty string, or the lookup is
+    // pattern based and returns the product of catalogs, tables and schemas.
     statement stmt(conn_);
     RETCODE rc = SQL_SUCCESS;
     NANODBC_CALL_RC(

@@ -36,9 +36,7 @@ option( NANODBC_ENABLE_WORKAROUND_NODATA "Enable SQL_NO_DATA workaround (see Iss
 include( CheckCXXCompilerFlag )
 check_cxx_compiler_flag( "-stdlib=libc++" CXX_COMPILER_SUPPORTS_LIBCXX )
 check_cxx_compiler_flag( "-Werror" CXX_COMPILER_SUPPORTS_WERROR )
-# Coverage is instrumented differently by each compiler, so ask about the flags that will
-# actually be used. They have to reach the link line as well, or the check fails on the
-# profiling runtime being missing rather than on the flag being unsupported.
+
 if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
   set( NANODBC_COVERAGE_COMPILE_OPTIONS -fprofile-instr-generate -fcoverage-mapping -O0 -g )
   set( NANODBC_COVERAGE_LINK_OPTIONS -fprofile-instr-generate )
@@ -135,8 +133,6 @@ if( CMAKE_CXX_COMPILER_ID MATCHES "Intel" )
   )
 endif()
 
-# AppleClang complains of unused `-I/path/` arguments.
-# These are harmless and can be safely ignored.
 target_compile_options( nanodbc PRIVATE
   "$<$<CXX_COMPILER_ID:MSVC,Intel>:/W4>"
   "$<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-unused-command-line-argument>"
@@ -177,9 +173,6 @@ endif()
 message( STATUS "nanodbc feature: Allocate buffers of sufficient length such that Unicode can be stored in VAR/CHAR columns - ${NANODBC_OVERALLOCATE_CHAR}" )
 message( STATUS "nanodbc feature: Enable SQL_NO_DATA bug workaround - ${NANODBC_ENABLE_WORKAROUND_NODATA}" )
 
-# The async API is ODBC 3.8. nanodbc.h declares it without consulting the ODBC headers,
-# which it does not include, so whether the driver manager can back those declarations is
-# settled here and answered for every consumer of the target.
 if( NOT NANODBC_DISABLE_ASYNC )
   include( CheckCXXSourceCompiles )
   set( CMAKE_REQUIRED_INCLUDES ${ODBC_INCLUDE_DIRS} )
@@ -252,9 +245,6 @@ endif()
 message( STATUS "nanodbc build: Enable test coverage - ${NANODBC_ENABLE_COVERAGE}" )
 
 if( NANODBC_ENABLE_COVERAGE )
-  # Clang instruments source based coverage, recording which regions of an expression ran
-  # rather than only which lines were reached; llvm-cov reads the result out of the binary.
-  # GCC instruments gcov.
   target_compile_options( nanodbc PUBLIC ${NANODBC_COVERAGE_COMPILE_OPTIONS} )
   target_link_options( nanodbc PUBLIC ${NANODBC_COVERAGE_LINK_OPTIONS} )
 endif()

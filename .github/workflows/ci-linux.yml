@@ -1,7 +1,3 @@
----
-# GitHub Actions multi-job workflow for Linux to:
-# - build using matrix of GCC and clang versions
-# - build using latest defaults and run tests against number of databases
 name: "CI Linux"
 
 on:
@@ -20,8 +16,6 @@ on:
       - "**/CMakeLists.txt"
       - ".github/workflows/ci-linux.yml"
 
-# One run per workflow per ref. A new push cancels the run it superseded, except on main,
-# where each merge should be allowed to finish reporting.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
@@ -35,11 +29,8 @@ jobs:
       - uses: jidicula/clang-format-action@654a770daa28443dd111d133e4083e21c1075674 # v4.18.0
         with:
           clang-format-version: "20"
-          check-path: "." 
+          check-path: "."
 
-  # GCC 13 through 16, the current release and the three before it. Ubuntu 26.04 is the
-  # only image carrying that range, and its runner is still a preview, so it is used as a
-  # container on a stable runner instead.
   build-gcc:
     needs: [check-format]
     strategy:
@@ -80,7 +71,6 @@ jobs:
         run: |
           cmake --build ${GITHUB_WORKSPACE}/build --parallel
 
-  # Clang 19 through 22, on the same basis as the GCC matrix above.
   build-clang:
     needs: [check-format]
     strategy:
@@ -122,6 +112,24 @@ jobs:
         run: |
           cmake --build ${GITHUB_WORKSPACE}/build --parallel
 
+  dev-container:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Build the development image
+        run: docker compose build nanodbc
+      - name: Run the suites that need no server
+        run: |
+          docker compose run --rm --no-deps nanodbc bash -lc '
+            set -e
+            cd /opt/nanodbc
+            cmake -S . -B /tmp/build -DCMAKE_BUILD_TYPE=Debug -DNANODBC_BUILD_EXAMPLES=OFF
+            cmake --build /tmp/build --parallel
+            /tmp/build/test/utility_tests
+            /tmp/build/test/sqlite_tests
+          '
+
   test-utility:
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -147,9 +155,6 @@ jobs:
         run: |
           ctest --test-dir ${GITHUB_WORKSPACE}/build --output-on-failure --no-tests=error -R utility_tests
 
-  # Coverage of the library, driven by the suites that can run here: the utility tests, the
-  # SQLite tests and the PostgreSQL tests. Clang records which regions of an expression ran,
-  # not merely which lines were reached, so the percentages are stricter than gcov's.
   coverage:
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -182,10 +187,6 @@ jobs:
       - name: Install
         run: |
           sudo apt-get -o DPkg::Lock::Timeout=120 update
-          # libclang-rt-dev carries the profiling runtime, without which the instrumented
-          # build does not link. libc++ is installed because NANODBC_FORCE_LIBCXX turns
-          # itself on wherever clang accepts -stdlib=libc++, whether or not its headers
-          # are actually present.
           sudo apt-get -o DPkg::Lock::Timeout=120 install -y ccache clang libclang-rt-dev libc++-dev libc++abi-dev llvm \
             unixodbc-dev odbc-postgresql libsqliteodbc
           curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
@@ -194,6 +195,8 @@ jobs:
           sudo apt-get -o DPkg::Lock::Timeout=120 update
           sudo ACCEPT_EULA=Y apt-get -o DPkg::Lock::Timeout=120 install -y msodbcsql17
           sudo odbcinst -i -d -f /usr/share/sqliteodbc/unixodbc.ini
+          printf '[nanodbc_dsn]\nDriver=SQLite3\nDatabase=/tmp/nanodbc_dsn.db\n' \
+            | sudo tee /etc/odbc.ini
       - name: Restore compiled objects
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
@@ -223,7 +226,6 @@ jobs:
         run: |
           llvm-profdata merge -sparse ${GITHUB_WORKSPACE}/profraw/*.profraw \
             -o ${GITHUB_WORKSPACE}/coverage.profdata
-          # llvm-cov takes the first binary positionally and the rest after -object.
           binaries=("${GITHUB_WORKSPACE}/build/test/utility_tests"
                     -object "${GITHUB_WORKSPACE}/build/test/sqlite_tests"
                     -object "${GITHUB_WORKSPACE}/build/test/postgresql_tests"
@@ -237,8 +239,6 @@ jobs:
           llvm-cov export -summary-only "${binaries[@]}" \
             -instr-profile="${GITHUB_WORKSPACE}/coverage.profdata" \
             "${GITHUB_WORKSPACE}/nanodbc/" > "${GITHUB_WORKSPACE}/coverage-summary.json"
-          # One markdown body for the job summary and the pull request comment, and the
-          # shields document the badge reads off the branch a later step writes.
           python3 - "${GITHUB_WORKSPACE}" <<'PYTHON'
           import json, os, sys
 
@@ -293,8 +293,6 @@ jobs:
           name: coverage-lcov
           path: coverage.lcov
           overwrite: true
-      # A pull request from a fork gets a read only token, so the comment is only attempted
-      # for branches of this repository. Those runs still carry the report in their summary.
       - name: Comment the coverage on the pull request
         if: >-
           github.event_name == 'pull_request' &&
@@ -304,7 +302,6 @@ jobs:
           NUMBER: ${{ github.event.pull_request.number }}
           REPO: ${{ github.repository }}
         run: |
-          # Rewrite the comment this job made before rather than adding one per run.
           existing="$(gh api "repos/${REPO}/issues/${NUMBER}/comments" --paginate \
             --jq 'map(select(.body | startswith("<!-- nanodbc-coverage -->"))) | .[0].id // empty')"
           if [ -n "${existing}" ]; then
@@ -319,8 +316,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # The branch carries the one file and no history, so it is rewritten each time
-          # rather than accumulating a commit per run.
           work="$(mktemp -d)"
           cp "${GITHUB_WORKSPACE}/coverage.json" "${work}/"
           cd "${work}"
@@ -339,8 +334,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Every PostgreSQL release still under support, oldest to newest. Windows runs
-        # against 14 only, because that is all ankane/setup-postgres offers there.
         postgres: [14, 15, 16, 17, 18]
     name: test-postgresql (${{ matrix.postgres }})
     services:
@@ -433,6 +426,8 @@ jobs:
           EOF
           sudo odbcinst -i -d -f ${GITHUB_WORKSPACE}/.odbcinst.ini
           cat /etc/odbcinst.ini
+          printf '[nanodbc_dsn]\nDriver=SQLite3\nDatabase=/tmp/nanodbc_dsn.db\n' \
+            | sudo tee /etc/odbc.ini
         shell: sudo bash {0}
       - name: Restore compiled objects
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0

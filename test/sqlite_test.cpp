@@ -547,3 +547,48 @@ TEST_CASE_METHOD(sqlite_fixture, "test_while_next_iteration", "[sqlite][looping]
 {
     test_while_next_iteration();
 }
+
+TEST_CASE_METHOD(sqlite_fixture, "test_connection_catalog_name", "[sqlite][connection][metadata]")
+{
+    test_connection_catalog_name();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_get_info_widest", "[sqlite][metadata][info]")
+{
+    test_get_info_widest();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_statement_cancel", "[sqlite][statement]")
+{
+    test_statement_cancel();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_result_iterator_post_increment", "[sqlite][looping]")
+{
+    test_result_iterator_post_increment();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_result_column_metadata", "[sqlite][result][metadata]")
+{
+    test_result_column_metadata();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_handle_copy_move_and_swap", "[sqlite][handle]")
+{
+    test_handle_copy_move_and_swap();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_just_execute_forms", "[sqlite][execute]")
+{
+    test_just_execute_forms();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_bind_every_form", "[sqlite][bind][batch]")
+{
+    test_bind_every_form();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_connect_by_datasource_name", "[sqlite][connection][dsn]")
+{
+    test_connect_by_datasource_name();
+}

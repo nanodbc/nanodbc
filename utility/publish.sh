@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
-# Publish a new version of nanodbc: bump VERSION.txt, name the changelog's Unreleased
-# section after the new version, commit both, and push the tag.
+# Publish a new version of nanodbc.
 
 set -euo pipefail
 
@@ -48,13 +47,9 @@ esac
 version="${major}.${minor}.${patch}"
 tag="v${version}"
 
-# Work in progress accumulates under a heading that does not yet know its version, and the
-# release is what names it.
 head -n3 CHANGELOG.md | tail -n1 | grep -qx "## Unreleased" ||
     abort "CHANGELOG.md must open with an '## Unreleased' section for ${tag} to be named after."
 
-# The release notes are taken from this section by the Release workflow, so a section that
-# is only a heading would publish an empty release.
 ./utility/changelog.sh Unreleased > /dev/null
 
 branch="$(git rev-parse --abbrev-ref HEAD)"
@@ -64,8 +59,6 @@ branch="$(git rev-parse --abbrev-ref HEAD)"
 echo "Publishing nanodbc version: ${version}"
 echo "${version}" > VERSION.txt
 
-# The Release workflow reads the notes out of the tagged commit, so the heading has to name
-# the version before the tag exists rather than after.
 awk -v heading="## ${tag}" '
     !renamed && $0 == "## Unreleased" { print heading; renamed = 1; next }
     { print }
@@ -76,8 +69,6 @@ git add VERSION.txt CHANGELOG.md
 git commit -m "Preparing ${version} release."
 git tag "${tag}"
 
-# The branch goes first: a tag whose commit is not on main is reachable from nothing, and
-# the release built from it would document a state of the sources main never had.
 git push origin main
 git push origin "${tag}"
 

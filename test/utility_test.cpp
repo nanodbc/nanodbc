@@ -214,6 +214,75 @@ TEST_CASE("convert", "[string]")
     }
 }
 
+// Each what() is an override forwarding to std::runtime_error, so what is worth checking
+// is that the message survives the forwarding.
+TEST_CASE("exception_types", "[exception]")
+{
+    SECTION("the fixed messages")
+    {
+        REQUIRE(std::string(nanodbc::type_incompatible_error().what()) == "type incompatible");
+        REQUIRE(std::string(nanodbc::null_access_error().what()) == "null access");
+        REQUIRE(std::string(nanodbc::index_range_error().what()) == "index out of range");
+    }
+
+    SECTION("programming_error carries the message it was given")
+    {
+        REQUIRE(std::string(nanodbc::programming_error("no statement").what()) == "no statement");
+        REQUIRE(std::string(nanodbc::programming_error("").what()).empty());
+    }
+
+    SECTION("each is catchable as the standard type it derives from")
+    {
+        auto const raises = [](auto e)
+        {
+            try
+            {
+                throw e;
+            }
+            catch (std::runtime_error const& caught)
+            {
+                return std::string(caught.what());
+            }
+        };
+        REQUIRE(raises(nanodbc::type_incompatible_error()) == "type incompatible");
+        REQUIRE(raises(nanodbc::null_access_error()) == "null access");
+        REQUIRE(raises(nanodbc::index_range_error()) == "index out of range");
+        REQUIRE(raises(nanodbc::programming_error("bad call")) == "bad call");
+    }
+
+    SECTION("database_error over a handle the driver manager will not describe")
+    {
+        // A null handle answers SQL_INVALID_HANDLE, so the driver contributes nothing and
+        // the message and defaults are all that is left.
+        nanodbc::database_error const error(nullptr, SQL_HANDLE_DBC, "while connecting");
+        REQUIRE(std::string(error.what()) == "while connecting");
+        REQUIRE(error.native() == 0);
+        REQUIRE(error.state() == "00000");
+    }
+}
+
+// result_iterator's postfix increment returns void, so *it++ does not compile. Nothing
+// about that fails to build until someone writes the expression, so it is written here.
+template <class T, class = void>
+struct post_increment_is_dereferenceable : std::false_type
+{
+};
+
+template <class T>
+struct post_increment_is_dereferenceable<T, decltype(void(*std::declval<T&>()++))> : std::true_type
+{
+};
+
+static_assert(
+    !post_increment_is_dereferenceable<nanodbc::result_iterator>::value,
+    "*it++ would name the row after the one it reads, so it does not compile");
+static_assert(
+    post_increment_is_dereferenceable<std::vector<int>::iterator>::value,
+    "and the trait says yes for an iterator that can do it, so the check above means something");
+static_assert(
+    std::is_void<decltype(std::declval<nanodbc::result_iterator&>()++)>::value,
+    "post-increment advances and returns nothing");
+
 // What a noexcept promises is not something a run can check. One that lies does not fail to
 // compile and does not fail a test: it calls std::terminate, and only along the path it
 // lied about, which is the path a suite is least likely to take. So the promises are made
@@ -272,8 +341,8 @@ static_assert(
         std::declval<nanodbc::result_iterator const&>()),
     "comparing two iterators compares two statement handles");
 
-// catalog copies a connection, which copies a shared_ptr. Its result wrappers do the same
-// with a result, but their constructors are private and out of the trait's reach.
+// Its result wrappers do the same with a result, but their constructors are private and
+// out of the trait's reach.
 static_assert(
     std::is_nothrow_constructible<nanodbc::catalog, nanodbc::connection&>::value,
     "catalog copies a connection");
