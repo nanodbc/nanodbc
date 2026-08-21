@@ -997,9 +997,20 @@ struct test_case_fixture : public base_test_fixture
             NANODBC_TEXT("test_bind_wide_strings_with_sentry"),
             NANODBC_TEXT("(id int, s varchar(10))"));
 
+        // wide_string is wstring under MSVC, u16string elsewhere and u32string under iODBC,
+        // so the values are widened from ASCII rather than written as literals.
+        auto const widen = [](char const* text)
+        {
+            nanodbc::wide_string out;
+            for (auto p = text; *p != '\0'; ++p)
+                out.push_back(static_cast<nanodbc::wide_char_t>(*p));
+            return out;
+        };
+
         int const ids[3] = {0, 1, 2};
-        std::vector<nanodbc::wide_string> const values{u"alpha", u"skip", u"gamma"};
-        nanodbc::wide_string const sentry = u"skip";
+        std::vector<nanodbc::wide_string> const values{
+            widen("alpha"), widen("skip"), widen("gamma")};
+        nanodbc::wide_string const sentry = widen("skip");
 
         {
             nanodbc::statement statement(connection);
