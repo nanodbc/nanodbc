@@ -264,10 +264,8 @@ TEST_CASE("exception_types", "[exception]")
     }
 }
 
-// result_iterator's postfix increment returns void, so that *it++ names a row the cursor
-// has already left and is refused at the point it is written rather than answered wrongly.
-// Nothing about that fails to build until someone writes the expression, so it is written
-// here, where the compiler is the one being asked.
+// result_iterator's postfix increment returns void, so *it++ does not compile. Nothing
+// about that fails to build until someone writes the expression, so it is written here.
 template <class T, class = void>
 struct post_increment_is_dereferenceable : std::false_type
 {

@@ -2259,13 +2259,9 @@ public:
 
     /// Iteration.
     ///
-    /// \note Returns nothing, where an iterator is usually expected to return the position
-    ///       it held. It cannot: result is a handle, so every copy of one refers to the
-    ///       same driver-side cursor, and a row that has been read past is gone unless
-    ///       something kept its values. Returning a copy made `*it++` yield the row after
-    ///       the one it names, silently and only on that spelling. So the copy is not made
-    ///       and `*it++` does not compile, which is the same mistake reported at the point
-    ///       it is written. `it++` on its own is unaffected, as is `++it`.
+    /// \note Returns nothing, so `*it++` does not compile: copies of a result_iterator
+    ///       share one cursor, so none can name a row the iterator has moved past. Read
+    ///       through `*it` before advancing.
     void operator++(int) { ++(*this); }
 
     /// Iterators are equal if they a tied to the same native statemnt handle, or both empty.
