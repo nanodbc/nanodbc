@@ -1050,6 +1050,15 @@ struct test_case_fixture : public base_test_fixture
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c0"));
+            REQUIRE(!columns.table_name().empty());
+            REQUIRE(columns.data_type() != 0);
+            REQUIRE(columns.ordinal_position() > 0);
+            columns.table_catalog();
+            columns.table_schema();
+            columns.buffer_length();
+            columns.remarks();
+            columns.sql_datetime_subtype();
+            columns.char_octet_length();
             if (vendor_ == database_vendor::sqlite)
             {
                 // NOTE: SQLite ODBC reports values inconsistent with table definition
@@ -1311,6 +1320,8 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(keys.table_name() == table_name);
             REQUIRE(keys.column_name() == NANODBC_TEXT("i"));
             REQUIRE(keys.column_number() == 1);
+            keys.table_catalog();
+            keys.table_schema();
             auto const pk_simple = get_primary_key_name(NANODBC_TEXT("test_pk_simple"));
             if (!pk_simple.empty()) // constraint relevant
                 REQUIRE(keys.primary_key_name() == pk_simple);
@@ -1414,6 +1425,10 @@ struct test_case_fixture : public base_test_fixture
                 // expect single record with the wanted procedure
                 REQUIRE(procedures.next());
                 REQUIRE(procedures.procedure_name().find(procedure_name) != std::string::npos);
+                procedures.procedure_catalog();
+                procedures.procedure_schema();
+                procedures.procedure_remarks();
+                procedures.procedure_type();
                 // expect no more records
                 REQUIRE(!procedures.next());
             }
@@ -1448,6 +1463,29 @@ struct test_case_fixture : public base_test_fixture
                             std::string::npos)
                     {
                         REQUIRE(columns.column_type() == SQL_PARAM_INPUT);
+
+                        // Every remaining accessor, so that a wrong column index in one of
+                        // them is a failure here rather than a surprise for a caller. The
+                        // ones SQLProcedureColumns documents as never null are required to
+                        // hold something; the rest are read for the index and the type.
+                        REQUIRE(!columns.procedure_name().empty());
+                        REQUIRE(!columns.type_name().empty());
+                        REQUIRE(columns.data_type() != 0);
+                        REQUIRE(columns.ordinal_position() > 0);
+                        columns.procedure_catalog();
+                        columns.procedure_schema();
+                        columns.column_size();
+                        columns.buffer_length();
+                        columns.decimal_digits();
+                        columns.numeric_precision_radix();
+                        columns.nullable();
+                        columns.remarks();
+                        columns.column_default();
+                        columns.sql_data_type();
+                        columns.sql_datetime_subtype();
+                        columns.char_octet_length();
+                        columns.is_nullable();
+
                         count++;
                     }
                 }
@@ -1519,6 +1557,9 @@ struct test_case_fixture : public base_test_fixture
                     if (table_name == tables.table_name())
                     {
                         REQUIRE(tables.table_type() == NANODBC_TEXT("TABLE"));
+                        // REMARKS is nullable, so it is read for the index rather than the
+                        // value: a table created without a comment has none to report.
+                        tables.table_remarks();
                         found = true;
                         break;
                     }
@@ -1641,6 +1682,11 @@ struct test_case_fixture : public base_test_fixture
             {
                 // These two values must not be NULL (returned as empty string)
                 REQUIRE(tables.table_name() == NANODBC_TEXT("test_catalog_table_privileges"));
+                tables.table_catalog();
+                tables.table_schema();
+                tables.grantor();
+                tables.grantee();
+                tables.is_grantable();
                 privileges.insert(tables.privilege());
                 count++;
             }
