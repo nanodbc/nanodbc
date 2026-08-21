@@ -123,23 +123,52 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: flawfinder_scan
-        uses: david-a-wheeler/flawfinder@c4216b74cf2639ffa98503768bd6e4299b5440c9 # master, the action has no tagged releases
-        with:
-          # Flawfinder matches on names, without types or call graph, so in a library that
-          # exists to hand fixed buffers to a C API its lower two levels say nothing. Of the
-          # 30 hits below level 3, 21 are nanodbc's own open() member functions colliding
-          # with POSIX open(2); the rest are the SQLGetData buffers, whose size is passed to
-          # the call that fills them, one memcpy into a SAFEARRAY allocated at exactly that
-          # length, and strlen over inputs the overload documents as NUL terminated. Levels
-          # 3 and up are the ones with an answer that is not "read the call" - gets, strcpy,
-          # sprintf, system - and nanodbc uses none of them. The MSVC core guidelines jobs
-          # cover the same ground with the types in hand.
-          arguments: "--sarif --minlevel=3 --exclude './test/*' --exclude './example/*' ./"
-          output: "flawfinder_results.sarif"
+      - name: Install Flawfinder
+        run: pipx install flawfinder==2.0.20
+
+      # --minlevel would be the obvious lever and it does not work: flawfinder honours it in
+      # the text report and ignores it in the SARIF writer, so everything it knows is in the
+      # file whatever is asked for. The filtering therefore happens below, by rule, which is
+      # the same shape as nanodbc.ruleset and keeps the reason beside the id.
+      - name: Run Flawfinder
+        run: >
+          flawfinder --sarif --exclude './test/*' --exclude './example/*' ./
+          > flawfinder_raw.sarif
+
+      # Flawfinder matches on names, with no types and no call graph, so in a library whose
+      # job is handing fixed buffers to a C API its lower levels say nothing. Each rule below
+      # is one where every hit in this library is the C API showing through:
+      #
+      #   FF1040 misc/open     21 hits, every one nanodbc's own open() meeting POSIX open(2)
+      #   FF1013 buffer/char    4 hits, the SQLGetData buffers, whose size is passed to the
+      #                         call that fills them
+      #   FF1022 buffer/strlen  2 hits, over inputs the overload documents as NUL terminated
+      #   FF1071 buffer/equal   2 hits, the null sentry, whose length the binding contract fixes
+      #   FF1004 buffer/memcpy  1 hit, into a SAFEARRAY allocated at exactly that length
+      #
+      # Anything flawfinder reports that is not on this list is a finding to answer rather
+      # than an id to add here. The levels with an answer that is not "read the call" - gets,
+      # strcpy, sprintf, system - are all still reported, and nanodbc uses none of them.
+      - name: Drop the rules nanodbc has no answer to
+        run: |
+          jq '.runs[0].results |= map(
+                select(.ruleId as $r
+                  | ["FF1040", "FF1013", "FF1022", "FF1071", "FF1004"]
+                  | index($r) | not))' \
+            flawfinder_raw.sarif > flawfinder_results.sarif
+          echo "kept $(jq '.runs[0].results | length' flawfinder_results.sarif) of \
+            $(jq '.runs[0].results | length' flawfinder_raw.sarif) findings" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload analysis results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4
         with:
           sarif_file: ${{github.workspace}}/flawfinder_results.sarif
           category: flawfinder
+
+      # The unfiltered report, so what the step above dropped stays inspectable.
+      - name: Upload the unfiltered SARIF as an Artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: sarif-flawfinder-unfiltered
+          path: flawfinder_raw.sarif
+          overwrite: true
