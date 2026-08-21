@@ -587,3 +587,8 @@ TEST_CASE_METHOD(sqlite_fixture, "test_bind_every_form", "[sqlite][bind][batch]"
 {
     test_bind_every_form();
 }
+
+TEST_CASE_METHOD(sqlite_fixture, "test_connect_by_datasource_name", "[sqlite][connection][dsn]")
+{
+    test_connect_by_datasource_name();
+}

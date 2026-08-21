@@ -1,10 +1,21 @@
 # Ubuntu 24.04 is the newest release for which Microsoft publishes the SQL Server ODBC
-# driver, and it packages the clang-format version .clang-format pins.
-FROM ubuntu:25.10
+# driver, and it packages the clang-format-20 the format check pins.
+#
+# Raising it is a question of whether the drivers in the newer release still work, which
+# the dev-container job in ci-linux.yml answers by building this image and running the
+# suites against it. 25.10 does not: its libsqlite3odbc frees the result table a second
+# time when a statement opened by SQLTables with a table type of "%" is freed, which takes
+# the process with it. Thirty lines of C reproduce it with no nanodbc in the picture, and
+# no argument shape avoids it, so it is the driver's to fix and not a caller's.
+# test_catalog_list_table_types is what finds it here.
+FROM ubuntu:24.04
 
 ENV CXX="g++"
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
+# The last line of the block below registers a data source named nanodbc_dsn, so that the
+# suites can reach the calls that take a DSN name rather than a connection string.
+# list_datasources() has nothing to report without one. SQLite backs it, needing no server.
 RUN apt-get -qy update \
     && apt-get -qy install --no-upgrade --no-install-recommends \
     apt-transport-https \
@@ -57,7 +68,8 @@ RUN curl -sSL -o /tmp/packages-microsoft-prod.deb "https://packages.microsoft.co
     && echo "export PATH=$PATH:/opt/mssql-tools18/bin" >> ~/.bashrc \
     && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
     && locale-gen \
-    && odbcinst -i -d -f /usr/share/sqliteodbc/unixodbc.ini
+    && odbcinst -i -d -f /usr/share/sqliteodbc/unixodbc.ini \
+    && printf '[nanodbc_dsn]\nDriver=SQLite3\nDatabase=/tmp/nanodbc_dsn.db\n' > /etc/odbc.ini
 
 # NOTE: To install mysql-connector-odbc on Ubuntu, see: https://dev.mysql.com/downloads/connector/odbc/
 #       Keep in mind that only certain architectures are supported.

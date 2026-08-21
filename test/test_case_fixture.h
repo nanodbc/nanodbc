@@ -846,6 +846,41 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(bind_forms_rows_and_nulls(connection) == std::make_pair(3, 2));
     }
 
+    // The overloads that take a data source name rather than a connection string, and
+    // list_datasources(), whose body has nothing to run when the machine has registered
+    // none. The dev container registers nanodbc_dsn against SQLite for this; anywhere it is
+    // absent there is nothing to test rather than something to fail.
+    void test_connect_by_datasource_name()
+    {
+        auto const name = NANODBC_TEXT("nanodbc_dsn");
+
+        auto const sources = nanodbc::list_datasources();
+        auto const found = std::find_if(
+            sources.cbegin(),
+            sources.cend(),
+            [&name](nanodbc::datasource const& source) { return source.name == name; });
+        if (found == sources.cend())
+            SKIP("no nanodbc_dsn data source is registered on this machine");
+
+        REQUIRE(!found->driver.empty());
+
+        // Named at construction, and named after the fact on a connection that starts out
+        // holding nothing. Both reach connect() by way of the DSN rather than the string.
+        {
+            nanodbc::connection connection(name, NANODBC_TEXT(""), NANODBC_TEXT(""), 0);
+            REQUIRE(connection.connected());
+            REQUIRE(!connection.dbms_name().empty());
+        }
+        {
+            nanodbc::connection connection;
+            REQUIRE(!connection.connected());
+            connection.connect(name, NANODBC_TEXT(""), NANODBC_TEXT(""), 0);
+            REQUIRE(connection.connected());
+            connection.disconnect();
+            REQUIRE(!connection.connected());
+        }
+    }
+
     void test_bind_every_form()
     {
         // The 8 bit integers map onto ODBC's tiny integers, so a small numeric column takes

@@ -122,6 +122,32 @@ jobs:
         run: |
           cmake --build ${GITHUB_WORKSPACE}/build --parallel
 
+  # Nothing else builds Dockerfile.dev. A base image bump used to arrive with a green run
+  # behind it because the only job that read the file was a linter that never ran it, and
+  # the 24.04 to 25.10 bump merged that way while breaking the SQLite driver outright. This
+  # builds the image and runs the two suites that need no server, which is what a driver
+  # that has stopped working looks like.
+  dev-container:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Build the development image
+        run: docker compose build nanodbc
+      - name: Run the suites that need no server
+        # --no-deps keeps the database containers out of it: utility and sqlite reach
+        # neither, and starting four servers to learn whether the image builds is a wait
+        # for nothing. The suites that do need them run in the jobs below.
+        run: |
+          docker compose run --rm --no-deps nanodbc bash -lc '
+            set -e
+            cd /opt/nanodbc
+            cmake -S . -B /tmp/build -DCMAKE_BUILD_TYPE=Debug -DNANODBC_BUILD_EXAMPLES=OFF
+            cmake --build /tmp/build --parallel
+            /tmp/build/test/utility_tests
+            /tmp/build/test/sqlite_tests
+          '
+
   test-utility:
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -194,6 +220,9 @@ jobs:
           sudo apt-get -o DPkg::Lock::Timeout=120 update
           sudo ACCEPT_EULA=Y apt-get -o DPkg::Lock::Timeout=120 install -y msodbcsql17
           sudo odbcinst -i -d -f /usr/share/sqliteodbc/unixodbc.ini
+          # See the sqlite job: a DSN for the overloads that take one.
+          printf '[nanodbc_dsn]\nDriver=SQLite3\nDatabase=/tmp/nanodbc_dsn.db\n' \
+            | sudo tee /etc/odbc.ini
       - name: Restore compiled objects
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
@@ -433,6 +462,11 @@ jobs:
           EOF
           sudo odbcinst -i -d -f ${GITHUB_WORKSPACE}/.odbcinst.ini
           cat /etc/odbcinst.ini
+          # A data source of its own, so the calls that take a DSN name rather than a
+          # connection string have one to take. list_datasources() has nothing to report
+          # without it, and the tests that need it skip where it is absent.
+          printf '[nanodbc_dsn]\nDriver=SQLite3\nDatabase=/tmp/nanodbc_dsn.db\n' \
+            | sudo tee /etc/odbc.ini
         shell: sudo bash {0}
       - name: Restore compiled objects
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
