@@ -228,7 +228,7 @@ The SQLite and utility tests need no server, so they are the quickest way to che
 
 Once your local `main` branch is ready for publishing (i.e. [semantic versioning][semver]), use the `utility/publish.sh` script. It bumps the major, minor, or patch version in `VERSION.txt`, adds a "Preparing" commit, and pushes that commit and the matching `vX.Y.Z` tag. For example, to make a minor update you would run `./utility/publish.sh minor`.
 
-> **Important:** Always update [`CHANGELOG.md`](CHANGELOG.md) with information about new changes, bug fixes, and features when making a new release. `git log "v$(cat VERSION.txt)"..HEAD` lists what has landed since the last release, which is a good starting point for it. The publish script verifies that the top section of the changelog names the version being released, because that section becomes the release notes.
+> **Important:** Record changes, bug fixes, and features in [`CHANGELOG.md`](CHANGELOG.md) under a `## Unreleased` heading at the top of the file, as they land rather than at release time. The publish script renames that heading to the version being released, and refuses to run without it, because the section becomes the release notes. `git log "v$(cat VERSION.txt)"..HEAD` lists what has landed since the last release, if the section needs catching up.
 
 Pushing the tag is all it takes: [release.yml](.github/workflows/release.yml) does the rest.
 

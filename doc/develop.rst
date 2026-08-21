@@ -101,7 +101,7 @@ See `README.md`_ for the rest, under Tests.
 Release
 ******************************************************************************
 
-``utility/publish.sh`` bumps the version in ``VERSION.txt``, commits it and pushes the matching ``vX.Y.Z`` tag; pushing the tag is what drives the release and the documentation deployment. Update ``CHANGELOG.md`` first, since the section for the version being released becomes the release notes and the publish script checks that it is there.
+``utility/publish.sh`` bumps the version in ``VERSION.txt``, renames the changelog's ``## Unreleased`` heading to the new version, commits both and pushes the matching ``vX.Y.Z`` tag; pushing the tag is what drives the release and the documentation deployment. Changes are recorded under ``## Unreleased`` as they land, and the script refuses to run without it, since that section becomes the release notes.
 
 See `README.md`_ for the whole process, under Publish and Release Process.
 
