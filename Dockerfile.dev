@@ -1,6 +1,6 @@
 # Ubuntu 24.04 is the newest release for which Microsoft publishes the SQL Server ODBC
 # driver, and it packages the clang-format version .clang-format pins.
-FROM ubuntu:24.04
+FROM ubuntu:25.10
 
 ENV CXX="g++"
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
