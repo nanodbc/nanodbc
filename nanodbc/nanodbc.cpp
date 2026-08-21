@@ -320,8 +320,8 @@ inline bool success(RETCODE rc) noexcept
     }
     catch (...)
     {
-        // A diagnostic that cannot be written is not worth an exception, and every caller
-        // of success() is on a path that promises not to throw.
+        // Callers are on paths that promise not to throw, and a diagnostic that cannot be
+        // written is not worth breaking that.
     }
     return rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO;
 }
@@ -952,11 +952,7 @@ public:
 
     ~bound_column() noexcept = default;
 
-    // Clears the indicator buffer. A member rather than a loop at the call site: cbdata_ is
-    // a unique_ptr, so writing through it does not need a non-const bound_column, and a
-    // caller that means to clear the column should not have to hold one const to say so.
-    // Written out rather than with std::fill_n, which is not noexcept and would carry that
-    // up to every caller.
+    // Written out rather than with std::fill_n, which is not noexcept.
     void clear_indicators(std::size_t count) noexcept
     {
         for (std::size_t i = 0; i < count; ++i)

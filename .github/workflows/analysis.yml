@@ -126,36 +126,28 @@ jobs:
       - name: Install Flawfinder
         run: pipx install flawfinder==2.0.20
 
-      # --minlevel would be the obvious lever and it does not work: flawfinder honours it in
-      # the text report and ignores it in the SARIF writer, so everything it knows is in the
-      # file whatever is asked for. The filtering therefore happens below, by rule, which is
-      # the same shape as nanodbc.ruleset and keeps the reason beside the id.
       - name: Run Flawfinder
         run: >
           flawfinder --sarif --exclude './test/*' --exclude './example/*' ./
           > flawfinder_raw.sarif
 
-      # Flawfinder matches on names, with no types and no call graph, so in a library whose
-      # job is handing fixed buffers to a C API its lower levels say nothing. Each rule below
-      # is one where every hit in this library is the C API showing through:
+      # Flawfinder matches on names, with no types and no call graph. --minlevel is no help,
+      # since it reaches the text report and not the SARIF writer, so the rules whose every
+      # hit in this library is the C API showing through are dropped by id:
       #
-      #   FF1040 misc/open      nanodbc does not open files and has no reason to start: it
-      #                         is a wrapper over ODBC, and the driver manager owns every
-      #                         resource it touches. There is no <fstream>, no fopen and no
-      #                         CreateFile anywhere in the library. The rule fires on the
-      #                         token, so all 21 hits are its own open() members - on
-      #                         statement and on table_valued_parameter - together with
-      #                         their declarations and internal calls. This one is off for
-      #                         good rather than counted again each round.
-      #   FF1013 buffer/char    4 hits, the SQLGetData buffers, whose size is passed to the
-      #                         call that fills them
-      #   FF1022 buffer/strlen  2 hits, over inputs the overload documents as NUL terminated
-      #   FF1071 buffer/equal   2 hits, the null sentry, whose length the binding contract fixes
-      #   FF1004 buffer/memcpy  1 hit, into a SAFEARRAY allocated at exactly that length
+      #   FF1040 misc/open      nanodbc opens no files. It wraps ODBC, the driver manager
+      #                         owns every resource it touches, and there is no <fstream>,
+      #                         fopen or CreateFile in it. The rule matches the token, so
+      #                         what it finds is nanodbc's own open() members.
+      #   FF1013 buffer/char    the SQLGetData buffers, whose size is passed to the call
+      #                         that fills them
+      #   FF1022 buffer/strlen  inputs the overload documents as NUL terminated
+      #   FF1071 buffer/equal   the null sentry, whose length the binding contract fixes
+      #   FF1004 buffer/memcpy  a SAFEARRAY allocated at exactly the length copied into it
       #
-      # Anything flawfinder reports that is not on this list is a finding to answer rather
-      # than an id to add here. The levels with an answer that is not "read the call" - gets,
-      # strcpy, sprintf, system - are all still reported, and nanodbc uses none of them.
+      # A rule not on this list is a finding to answer rather than an id to add. The ones
+      # whose answer is not "read the call" - gets, strcpy, sprintf, system - are all still
+      # reported, and nanodbc uses none of them.
       - name: Drop the rules nanodbc has no answer to
         run: |
           jq '.runs[0].results |= map(

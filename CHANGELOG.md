@@ -2,7 +2,10 @@
 
 ## Unreleased
 
-- Cleared the remaining code scanning alerts. The column buffers are owned by `std::unique_ptr` rather than by matching `new[]` and `delete[]`, and the five implementation types are allocated with `std::make_shared`. The handle accessors that only read a member now say `noexcept`, which includes `connection::connected`, `connection::transactions`, `statement::open`, `statement::connected`, both `connection` accessors on `statement` and `transaction`, `table_valued_parameter::parameters`, the `result_iterator` comparisons, and the catalog constructors. Note that in C++17 `noexcept` is part of a function's type, so a pointer to one of these members needs the specification spelled out. `nanodbc.ruleset` carries the rules that have no answer here, each with the reason beside it. Flawfinder now runs directly rather than through an action, and its report is filtered by rule: `--minlevel` cannot do the job because flawfinder honours it in the text report and ignores it in the SARIF writer. Its `misc/open` rule is off for good, since nanodbc opens no files and every hit is one of its own `open()` members.
+- Cleared the remaining code scanning alerts. [`#476`](https://github.com/nanodbc/nanodbc/pull/476)
+- Column buffers are owned by `std::unique_ptr`, and the implementation types are allocated with `std::make_shared`.
+- The handle accessors that only read a member are now `noexcept`; in C++17 that is part of the function type, so a pointer to one needs it spelled out.
+- `nanodbc.ruleset` and the Flawfinder job carry the analyser rules that have no answer here, each with its reason.
 
 ## v2.16.5
 

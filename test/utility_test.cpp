@@ -245,8 +245,8 @@ static_assert(
     noexcept(std::declval<nanodbc::result const&>().rowset_size()),
     "the rowset size is read from a member");
 
-// The accessors that forward to one of those, and reach no further. Each is a member read
-// through impl_, so the promise is the same one a handle read makes.
+// The accessors that forward to one of those and reach no further: each is a member read
+// through impl_.
 static_assert(
     noexcept(std::declval<nanodbc::connection const&>().connected()) &&
         noexcept(std::declval<nanodbc::connection const&>().transactions()),
@@ -272,9 +272,8 @@ static_assert(
         std::declval<nanodbc::result_iterator const&>()),
     "comparing two iterators compares two statement handles");
 
-// catalog copies a connection, which copies a shared_ptr. Its six result wrappers copy a
-// result and do the same, but each of their constructors is private to catalog, so the
-// trait cannot reach them from here and the promise is stated in the header instead.
+// catalog copies a connection, which copies a shared_ptr. Its result wrappers do the same
+// with a result, but their constructors are private and out of the trait's reach.
 static_assert(
     std::is_nothrow_constructible<nanodbc::catalog, nanodbc::connection&>::value,
     "catalog copies a connection");
