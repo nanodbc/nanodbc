@@ -139,7 +139,14 @@ jobs:
       # job is handing fixed buffers to a C API its lower levels say nothing. Each rule below
       # is one where every hit in this library is the C API showing through:
       #
-      #   FF1040 misc/open     21 hits, every one nanodbc's own open() meeting POSIX open(2)
+      #   FF1040 misc/open      nanodbc does not open files and has no reason to start: it
+      #                         is a wrapper over ODBC, and the driver manager owns every
+      #                         resource it touches. There is no <fstream>, no fopen and no
+      #                         CreateFile anywhere in the library. The rule fires on the
+      #                         token, so all 21 hits are its own open() members - on
+      #                         statement and on table_valued_parameter - together with
+      #                         their declarations and internal calls. This one is off for
+      #                         good rather than counted again each round.
       #   FF1013 buffer/char    4 hits, the SQLGetData buffers, whose size is passed to the
       #                         call that fills them
       #   FF1022 buffer/strlen  2 hits, over inputs the overload documents as NUL terminated
