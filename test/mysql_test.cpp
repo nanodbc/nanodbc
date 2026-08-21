@@ -496,3 +496,8 @@ TEST_CASE_METHOD(mysql_fixture, "test_result_iterator_post_increment", "[mysql][
 {
     test_result_iterator_post_increment();
 }
+
+TEST_CASE_METHOD(mysql_fixture, "test_result_column_metadata", "[mysql][result][metadata]")
+{
+    test_result_column_metadata();
+}

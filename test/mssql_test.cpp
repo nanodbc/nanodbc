@@ -2345,3 +2345,8 @@ TEST_CASE_METHOD(mssql_fixture, "test_result_iterator_post_increment", "[mssql][
 {
     test_result_iterator_post_increment();
 }
+
+TEST_CASE_METHOD(mssql_fixture, "test_result_column_metadata", "[mssql][result][metadata]")
+{
+    test_result_column_metadata();
+}

@@ -582,3 +582,11 @@ TEST_CASE_METHOD(postgresql_fixture, "test_result_iterator_post_increment", "[po
 {
     test_result_iterator_post_increment();
 }
+
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_result_column_metadata",
+    "[postgresql][result][metadata]")
+{
+    test_result_column_metadata();
+}

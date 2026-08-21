@@ -769,6 +769,57 @@ struct test_case_fixture : public base_test_fixture
 
     // Fetching a rowset at a time gives the result a cursor to move within, which reading
     // one row at a time never exercises.
+    // result answers the same six questions about a column by position and by name, and
+    // only the position forms of a couple of them were ever asked. The pair have to agree:
+    // the by-name form looks the index up and forwards, so a disagreement is a lookup that
+    // found the wrong column.
+    void test_result_column_metadata()
+    {
+        nanodbc::connection connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_result_column_metadata"),
+            NANODBC_TEXT("(i int, s varchar(60))"));
+        execute(
+            connection,
+            NANODBC_TEXT("insert into test_result_column_metadata (i, s) values (1, 'x');"));
+
+        auto results =
+            execute(connection, NANODBC_TEXT("select i, s from test_result_column_metadata;"));
+        REQUIRE(results.columns() == 2);
+
+        // Position and name name the same two columns, in the same order.
+        REQUIRE(results.column_name(0) == NANODBC_TEXT("i"));
+        REQUIRE(results.column_name(1) == NANODBC_TEXT("s"));
+        REQUIRE(results.column(NANODBC_TEXT("i")) == 0);
+        REQUIRE(results.column(NANODBC_TEXT("s")) == 1);
+
+        for (short i = 0; i < results.columns(); ++i)
+        {
+            auto const name = results.column_name(i);
+            REQUIRE(results.column_size(i) == results.column_size(name));
+            REQUIRE(results.column_decimal_digits(i) == results.column_decimal_digits(name));
+            REQUIRE(results.column_datatype(i) == results.column_datatype(name));
+            REQUIRE(results.column_datatype_name(i) == results.column_datatype_name(name));
+            REQUIRE(results.column_c_datatype(i) == results.column_c_datatype(name));
+            REQUIRE(results.column_unsigned(i) == results.column_unsigned(name));
+
+            // A type of zero would mean the driver described nothing. The name of the type
+            // is not required to hold anything: it is documented as empty where the type is
+            // unknown, and the MariaDB driver answers nothing for SQL_DESC_TYPE_NAME. What
+            // is checked above is that both spellings agree on whatever it does say.
+            REQUIRE(results.column_datatype(i) != 0);
+        }
+
+        // The integer column is wider than nothing and the text column is 60 characters, so
+        // the sizes are the driver's and not a default.
+        REQUIRE(results.column_size(NANODBC_TEXT("s")) == 60);
+
+        // A name no column carries is an error rather than a position.
+        REQUIRE_THROWS_AS(
+            results.column(NANODBC_TEXT("no_such_column")), nanodbc::index_range_error);
+    }
+
     void test_result_rowset_navigation()
     {
         auto connection = connect();
@@ -813,8 +864,12 @@ struct test_case_fixture : public base_test_fixture
             {
                 if (backwards.prior())
                     REQUIRE(backwards.get<int>(0) == 1);
-                // Skipping is a relative fetch, which the same cursors refuse.
+                // Skipping is a relative fetch, which the same cursors refuse, and the
+                // absolute ones go the same way.
                 backwards.skip(2);
+                backwards.first();
+                backwards.last();
+                backwards.move(1);
             }
             catch (nanodbc::database_error const&)
             {
