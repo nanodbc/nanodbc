@@ -615,3 +615,8 @@ TEST_CASE_METHOD(
 {
     test_parameter_metadata_before_description();
 }
+
+TEST_CASE_METHOD(sqlite_fixture, "test_binary_read_shapes", "[sqlite][result][binary]")
+{
+    test_binary_read_shapes();
+}

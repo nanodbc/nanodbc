@@ -623,3 +623,8 @@ TEST_CASE_METHOD(
 {
     test_parameter_metadata_before_description();
 }
+
+TEST_CASE_METHOD(postgresql_fixture, "test_binary_read_shapes", "[postgresql][result][binary]")
+{
+    test_binary_read_shapes();
+}

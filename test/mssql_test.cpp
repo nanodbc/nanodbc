@@ -2450,3 +2450,8 @@ TEST_CASE_METHOD(mssql_fixture, "test_statement_procedure_columns", "[mssql][sta
     }
     REQUIRE(found == 2);
 }
+
+TEST_CASE_METHOD(mssql_fixture, "test_binary_read_shapes", "[mssql][result][binary]")
+{
+    test_binary_read_shapes();
+}

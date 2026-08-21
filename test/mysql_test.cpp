@@ -565,3 +565,8 @@ TEST_CASE_METHOD(mysql_fixture, "test_parameter_metadata_before_description", "[
 {
     test_parameter_metadata_before_description();
 }
+
+TEST_CASE_METHOD(mysql_fixture, "test_binary_read_shapes", "[mysql][result][binary]")
+{
+    test_binary_read_shapes();
+}

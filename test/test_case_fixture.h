@@ -913,6 +913,63 @@ struct test_case_fixture : public base_test_fixture
         }
     }
 
+    // Binary reads take a different path per shape: a short column is bound and copied out
+    // of the row buffer, a long one is fetched in chunks, and a null one reports itself.
+    void test_binary_read_shapes()
+    {
+        nanodbc::connection connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_binary_read_shapes"),
+            NANODBC_TEXT("(id int, small_b ") + get_binary_type_name(4) +
+                NANODBC_TEXT(", long_b ") +
+                (vendor_ == database_vendor::postgresql ? get_binary_type_name()
+                                                        : get_binary_type_name(5000)) +
+                NANODBC_TEXT(")"));
+
+        std::vector<std::uint8_t> const small_value{1, 2, 3, 4};
+        std::vector<std::uint8_t> long_value(5000);
+        for (std::size_t i = 0; i < long_value.size(); ++i)
+            long_value[i] = static_cast<std::uint8_t>(i % 256);
+
+        {
+            nanodbc::statement statement(connection);
+            prepare(
+                statement,
+                NANODBC_TEXT(
+                    "insert into test_binary_read_shapes (id, small_b, long_b) values (?, ?, ?);"));
+            int const id = 0;
+            statement.bind(0, &id);
+            std::vector<std::vector<std::uint8_t>> const smalls{small_value};
+            std::vector<std::vector<std::uint8_t>> const longs{long_value};
+            statement.bind(1, smalls);
+            statement.bind(2, longs);
+            nanodbc::execute(statement);
+        }
+        execute(
+            connection,
+            NANODBC_TEXT(
+                "insert into test_binary_read_shapes (id, small_b, long_b) "
+                "values (1, null, null);"));
+
+        auto results = execute(
+            connection,
+            NANODBC_TEXT("select id, small_b, long_b from test_binary_read_shapes order by id;"));
+
+        REQUIRE(results.next());
+        REQUIRE(results.get<std::vector<std::uint8_t>>(1) == small_value);
+        REQUIRE(results.get<std::vector<std::uint8_t>>(2) == long_value);
+
+        // The null row, read the same two ways.
+        REQUIRE(results.next());
+        REQUIRE(results.is_null(1));
+        REQUIRE(results.is_null(2));
+        REQUIRE(results.get<std::vector<std::uint8_t>>(1, std::vector<std::uint8_t>{}).empty());
+        REQUIRE(results.get<std::vector<std::uint8_t>>(2, std::vector<std::uint8_t>{}).empty());
+
+        REQUIRE(!results.next());
+    }
+
     void test_statement_timeout()
     {
         nanodbc::connection connection = connect();
@@ -1021,8 +1078,30 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(results.get<bool>(7) == true);
         REQUIRE(results.get<int>(7) == 1);
 
-        // A type the column cannot become is an error rather than a wrong answer.
+        // A type the column cannot become is an error rather than a wrong answer, in both
+        // directions: a number read as a date, and a date read as a number.
         REQUIRE_THROWS_AS(results.get<nanodbc::date>(2), nanodbc::type_incompatible_error);
+        REQUIRE_THROWS_AS(
+            results.get<std::vector<std::uint8_t>>(2), nanodbc::type_incompatible_error);
+
+        create_table(
+            connection, NANODBC_TEXT("test_get_every_ctype_date"), NANODBC_TEXT("(d date)"));
+        execute(
+            connection,
+            NANODBC_TEXT("insert into test_get_every_ctype_date (d) values ('2006-12-30');"));
+        auto dates = execute(connection, NANODBC_TEXT("select d from test_get_every_ctype_date;"));
+        REQUIRE(dates.next());
+        REQUIRE_THROWS_AS(dates.get<int>(0), nanodbc::type_incompatible_error);
+
+        // A real column binds narrower than a float one, which is a case of its own.
+        create_table(
+            connection, NANODBC_TEXT("test_get_every_ctype_real"), NANODBC_TEXT("(r real)"));
+        execute(
+            connection, NANODBC_TEXT("insert into test_get_every_ctype_real (r) values (1.5);"));
+        auto reals = execute(connection, NANODBC_TEXT("select r from test_get_every_ctype_real;"));
+        REQUIRE(reals.next());
+        REQUIRE(reals.get<float>(0) == 1.5f);
+        REQUIRE(reals.get<double>(0) == 1.5);
     }
 
     void test_bind_every_form()
