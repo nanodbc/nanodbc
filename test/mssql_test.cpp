@@ -2455,3 +2455,38 @@ TEST_CASE_METHOD(mssql_fixture, "test_binary_read_shapes", "[mssql][result][bina
 {
     test_binary_read_shapes();
 }
+
+// Binding a parameter in a direction other than PARAM_IN, which is what maps onto
+// SQL_PARAM_OUTPUT and SQL_PARAM_INPUT_OUTPUT.
+TEST_CASE_METHOD(mssql_fixture, "test_output_parameters", "[mssql][statement][bind]")
+{
+    auto connection = connect();
+    nanodbc::string const name = NANODBC_TEXT("test_output_parameters_proc");
+    try
+    {
+        execute(connection, NANODBC_TEXT("DROP PROCEDURE ") + name);
+    }
+    catch (...)
+    {
+    }
+    execute(
+        connection,
+        NANODBC_TEXT("CREATE PROCEDURE ") + name +
+            NANODBC_TEXT(
+                " @in INT, @out INT OUTPUT, @inout INT OUTPUT AS "
+                "BEGIN SET @out = @in * 2; SET @inout = @inout + 1; END;"));
+
+    nanodbc::statement statement(connection);
+    statement.prepare(NANODBC_TEXT("{ CALL ") + name + NANODBC_TEXT("(?, ?, ?) }"));
+
+    int const in = 21;
+    int out = 0;
+    int inout = 100;
+    statement.bind(0, &in);
+    statement.bind(1, &out, nanodbc::statement::PARAM_OUT);
+    statement.bind(2, &inout, nanodbc::statement::PARAM_INOUT);
+    statement.just_execute();
+
+    REQUIRE(out == 42);
+    REQUIRE(inout == 101);
+}

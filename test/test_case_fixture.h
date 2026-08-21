@@ -1139,6 +1139,18 @@ struct test_case_fixture : public base_test_fixture
         check_bind_forms<float>(real_column, 1.5f, 2.5f, 3.5f);
         check_bind_forms<double>(real_column, 1.5, 2.5, 3.5);
 
+        // The temporal types compare field by field rather than with ==.
+        check_bind_forms<nanodbc::date>(
+            NANODBC_TEXT("date"),
+            nanodbc::date{2020, 1, 1},
+            nanodbc::date{2021, 2, 2},
+            nanodbc::date{2022, 3, 3});
+        check_bind_forms<nanodbc::timestamp>(
+            get_timestamp_type_name(),
+            nanodbc::timestamp{2020, 1, 1, 1, 1, 1, 0},
+            nanodbc::timestamp{2021, 2, 2, 2, 2, 2, 0},
+            nanodbc::timestamp{2022, 3, 3, 3, 3, 3, 0});
+
         // The character instantiation: bind takes c_str() and the driver reads to the
         // terminator, so it takes one value rather than a batch.
         {
