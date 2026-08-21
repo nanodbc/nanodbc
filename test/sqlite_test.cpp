@@ -572,3 +572,13 @@ TEST_CASE_METHOD(sqlite_fixture, "test_result_column_metadata", "[sqlite][result
 {
     test_result_column_metadata();
 }
+
+TEST_CASE_METHOD(sqlite_fixture, "test_handle_copy_move_and_swap", "[sqlite][handle]")
+{
+    test_handle_copy_move_and_swap();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_just_execute_forms", "[sqlite][execute]")
+{
+    test_just_execute_forms();
+}

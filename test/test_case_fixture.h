@@ -773,6 +773,120 @@ struct test_case_fixture : public base_test_fixture
     // only the position forms of a couple of them were ever asked. The pair have to agree:
     // the by-name form looks the index up and forwards, so a disagreement is a lookup that
     // found the wrong column.
+    // Each of these types is a handle over a shared implementation, and the copy-and-swap
+    // set that says so was never exercised. What a copy means here is that both names refer
+    // to the same statement or the same transaction, which the handles make checkable.
+    void test_handle_copy_move_and_swap()
+    {
+        nanodbc::connection connection = connect();
+
+        {
+            nanodbc::statement original(connection);
+            auto const handle = original.native_statement_handle();
+
+            nanodbc::statement copied(original);
+            REQUIRE(copied.native_statement_handle() == handle);
+
+            nanodbc::statement moved(std::move(copied));
+            REQUIRE(moved.native_statement_handle() == handle);
+
+            nanodbc::statement assigned;
+            assigned = original;
+            REQUIRE(assigned.native_statement_handle() == handle);
+            REQUIRE(assigned.connected());
+            REQUIRE(assigned.connection().native_dbc_handle() == connection.native_dbc_handle());
+
+            // Swapping exchanges which statement each name refers to.
+            nanodbc::statement other(connection);
+            auto const other_handle = other.native_statement_handle();
+            REQUIRE(other_handle != handle);
+            original.swap(other);
+            REQUIRE(original.native_statement_handle() == other_handle);
+            REQUIRE(other.native_statement_handle() == handle);
+        }
+
+        {
+            // All of these share one implementation, so one transaction is begun and one
+            // rollback happens when the last of them goes; taking a second from the
+            // connection would nest instead.
+            nanodbc::transaction original(connection);
+            REQUIRE(connection.transactions() == 1);
+
+            nanodbc::transaction copied(original);
+            nanodbc::transaction moved(std::move(copied));
+            nanodbc::transaction assigned(original);
+            assigned = original;
+            assigned.swap(moved);
+            REQUIRE(connection.transactions() == 1);
+
+            // The connection it holds, reached four ways: named and converted, const and not.
+            class nanodbc::connection& by_conversion = original;
+            REQUIRE(by_conversion.native_dbc_handle() == connection.native_dbc_handle());
+            REQUIRE(original.connection().native_dbc_handle() == connection.native_dbc_handle());
+
+            nanodbc::transaction const& readonly = original;
+            class nanodbc::connection const& by_const_conversion = readonly;
+            REQUIRE(by_const_conversion.native_dbc_handle() == connection.native_dbc_handle());
+            REQUIRE(readonly.connection().native_dbc_handle() == connection.native_dbc_handle());
+        }
+
+        // The transaction is gone, so the connection is counting none and is back to
+        // committing each statement on its own.
+        REQUIRE(connection.transactions() == 0);
+    }
+
+    // The forms that run a statement and build no result. Nothing was calling any of them,
+    // so what is checked is that each one reaches the database: four inserts, four rows.
+    void test_just_execute_forms()
+    {
+        nanodbc::connection connection = connect();
+        create_table(connection, NANODBC_TEXT("test_just_execute_forms"), NANODBC_TEXT("(i int)"));
+        auto const insert = NANODBC_TEXT("insert into test_just_execute_forms (i) values (?);");
+
+        {
+            nanodbc::statement statement(connection);
+            prepare(statement, insert);
+            int value = 1;
+            statement.bind(0, &value);
+            nanodbc::just_execute(statement);
+        }
+        {
+            nanodbc::statement statement(connection);
+            prepare(statement, insert);
+            int value = 2;
+            statement.bind(0, &value);
+            nanodbc::just_transact(statement, 1);
+        }
+        {
+            nanodbc::statement statement(connection);
+            prepare(statement, insert);
+            int value = 3;
+            statement.bind(0, &value);
+            statement.just_execute();
+        }
+        {
+            nanodbc::statement statement(connection);
+            statement.just_execute_direct(
+                connection, NANODBC_TEXT("insert into test_just_execute_forms (i) values (4);"));
+        }
+        nanodbc::just_execute(
+            connection, NANODBC_TEXT("insert into test_just_execute_forms (i) values (5);"));
+
+        auto results =
+            execute(connection, NANODBC_TEXT("select count(*) from test_just_execute_forms;"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<int>(0) == 5);
+
+        // And the member that does build one, which was equally unused.
+        {
+            nanodbc::statement statement(connection);
+            auto direct = statement.execute_direct(
+                connection, NANODBC_TEXT("select i from test_just_execute_forms order by i asc;"));
+            REQUIRE(direct.next());
+            REQUIRE(direct.get<int>(0) == 1);
+        }
+    }
+
     void test_result_column_metadata()
     {
         nanodbc::connection connection = connect();

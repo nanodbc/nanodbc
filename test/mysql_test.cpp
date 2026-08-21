@@ -501,3 +501,13 @@ TEST_CASE_METHOD(mysql_fixture, "test_result_column_metadata", "[mysql][result][
 {
     test_result_column_metadata();
 }
+
+TEST_CASE_METHOD(mysql_fixture, "test_handle_copy_move_and_swap", "[mysql][handle]")
+{
+    test_handle_copy_move_and_swap();
+}
+
+TEST_CASE_METHOD(mysql_fixture, "test_just_execute_forms", "[mysql][execute]")
+{
+    test_just_execute_forms();
+}

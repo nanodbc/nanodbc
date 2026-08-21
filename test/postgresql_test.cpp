@@ -590,3 +590,13 @@ TEST_CASE_METHOD(
 {
     test_result_column_metadata();
 }
+
+TEST_CASE_METHOD(postgresql_fixture, "test_handle_copy_move_and_swap", "[postgresql][handle]")
+{
+    test_handle_copy_move_and_swap();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "test_just_execute_forms", "[postgresql][execute]")
+{
+    test_just_execute_forms();
+}

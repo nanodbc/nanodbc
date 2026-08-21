@@ -2350,3 +2350,13 @@ TEST_CASE_METHOD(mssql_fixture, "test_result_column_metadata", "[mssql][result][
 {
     test_result_column_metadata();
 }
+
+TEST_CASE_METHOD(mssql_fixture, "test_handle_copy_move_and_swap", "[mssql][handle]")
+{
+    test_handle_copy_move_and_swap();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_just_execute_forms", "[mssql][execute]")
+{
+    test_just_execute_forms();
+}
