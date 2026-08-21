@@ -562,7 +562,7 @@ inline void convert(wchar_t const* beg, std::basic_string<T>& out)
 template <class T>
 inline void convert(std::basic_string<T>&& in, std::basic_string<T>& out)
 {
-    out = std::move(in);
+    out.assign(in);
 }
 
 template <class T, class U>
@@ -955,7 +955,13 @@ public:
     // Clears the indicator buffer. A member rather than a loop at the call site: cbdata_ is
     // a unique_ptr, so writing through it does not need a non-const bound_column, and a
     // caller that means to clear the column should not have to hold one const to say so.
-    void clear_indicators(std::size_t count) noexcept { std::fill_n(cbdata_.get(), count, 0); }
+    // Written out rather than with std::fill_n, which is not noexcept and would carry that
+    // up to every caller.
+    void clear_indicators(std::size_t count) noexcept
+    {
+        for (std::size_t i = 0; i < count; ++i)
+            cbdata_[i] = 0;
+    }
 
 public:
     nanodbc::string name_;
