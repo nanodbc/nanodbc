@@ -476,3 +476,23 @@ TEST_CASE_METHOD(mysql_fixture, "test_while_next_iteration", "[mysql][looping]")
 {
     test_while_next_iteration();
 }
+
+TEST_CASE_METHOD(mysql_fixture, "test_connection_catalog_name", "[mysql][connection][metadata]")
+{
+    test_connection_catalog_name();
+}
+
+TEST_CASE_METHOD(mysql_fixture, "test_get_info_widest", "[mysql][metadata][info]")
+{
+    test_get_info_widest();
+}
+
+TEST_CASE_METHOD(mysql_fixture, "test_statement_cancel", "[mysql][statement]")
+{
+    test_statement_cancel();
+}
+
+TEST_CASE_METHOD(mysql_fixture, "test_result_iterator_post_increment", "[mysql][looping]")
+{
+    test_result_iterator_post_increment();
+}

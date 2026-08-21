@@ -2105,6 +2105,93 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(results.get<int>(0) == 42);
     }
 
+    // Public calls that no suite had a reason to make. Each reaches the driver, so what
+    // they answer is the driver's business; what is checked here is that the call arrives
+    // and comes back with something the caller can use.
+    void test_connection_catalog_name()
+    {
+        nanodbc::connection connection = connect();
+
+        // SQL_ATTR_CURRENT_CATALOG is optional, and a driver that does not keep one says so
+        // by raising rather than by answering empty. Both are answers; a crash or a hang is
+        // not, and neither is a value that changes when nothing has.
+        try
+        {
+            auto const name = connection.catalog_name();
+            REQUIRE(name == connection.catalog_name());
+        }
+        catch (nanodbc::database_error const& e)
+        {
+            REQUIRE(std::string(e.what()).size() > 0);
+        }
+    }
+
+    // get_info is instantiated for each fundamental unsigned type so that a caller can name
+    // whichever one their platform spells SQLUINTEGER or SQLULEN. The narrower ones are
+    // covered by test_get_info; this reaches the widest, which is a distinct instantiation
+    // and was the point of the work that added it.
+    void test_get_info_widest()
+    {
+        nanodbc::connection connection = connect();
+        auto const narrow = connection.get_info<SQLUINTEGER>(SQL_ODBC_INTERFACE_CONFORMANCE);
+        auto const widest = connection.get_info<unsigned long long>(SQL_ODBC_INTERFACE_CONFORMANCE);
+        REQUIRE(widest == narrow);
+    }
+
+    // Cancelling a statement that is not executing is defined to succeed, which makes it
+    // the one way to reach cancel() without a race.
+    void test_statement_cancel()
+    {
+        nanodbc::connection connection = connect();
+        nanodbc::statement statement(connection);
+        prepare(statement, NANODBC_TEXT("select 1;"));
+        statement.cancel();
+
+        // The statement is still usable afterwards, which is what makes cancel safe to call
+        // when the caller does not know whether anything was running.
+        auto results = statement.execute();
+        REQUIRE(results.next());
+        REQUIRE(results.get<int>(0) == 1);
+    }
+
+    // result_iterator has both increments, and only the prefix one was ever taken.
+    //
+    // What the postfix one hands back is not the position it held. result is a handle, so
+    // the copy it makes of itself shares the driver-side cursor, and advancing one advances
+    // both: *it++ is the row after, where an input iterator promises the row before. That
+    // is a defect rather than behaviour to depend on, so this pins only that the increment
+    // advances and terminates, and leaves what the returned iterator dereferences to
+    // unasserted until the defect is settled one way or the other.
+    void test_result_iterator_post_increment()
+    {
+        nanodbc::connection connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_result_iterator_post_increment"),
+            NANODBC_TEXT("(i int)"));
+        execute(
+            connection,
+            NANODBC_TEXT("insert into test_result_iterator_post_increment (i) values (1);"));
+        execute(
+            connection,
+            NANODBC_TEXT("insert into test_result_iterator_post_increment (i) values (2);"));
+
+        auto results = execute(
+            connection,
+            NANODBC_TEXT("select i from test_result_iterator_post_increment order by i asc;"));
+
+        auto it = nanodbc::begin(results);
+        REQUIRE(it->get<int>(0) == 1);
+        REQUIRE(it != nanodbc::end(results));
+
+        it++;
+        REQUIRE(it->get<int>(0) == 2);
+        REQUIRE(it != nanodbc::end(results));
+
+        it++;
+        REQUIRE(it == nanodbc::end(results));
+    }
+
     void test_get_info()
     {
         // A generic test to exercise the DBMS info API is callable.

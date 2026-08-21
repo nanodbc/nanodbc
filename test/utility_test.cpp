@@ -214,6 +214,56 @@ TEST_CASE("convert", "[string]")
     }
 }
 
+// The exception types are thin, and every one of them was reached only by the paths that
+// raise it, which no suite had a reason to take. Each what() is an override that forwards
+// to std::runtime_error, so what is worth checking is that the message survives the
+// forwarding rather than that the string is any particular one.
+TEST_CASE("exception_types", "[exception]")
+{
+    SECTION("the fixed messages")
+    {
+        REQUIRE(std::string(nanodbc::type_incompatible_error().what()) == "type incompatible");
+        REQUIRE(std::string(nanodbc::null_access_error().what()) == "null access");
+        REQUIRE(std::string(nanodbc::index_range_error().what()) == "index out of range");
+    }
+
+    SECTION("programming_error carries the message it was given")
+    {
+        REQUIRE(std::string(nanodbc::programming_error("no statement").what()) == "no statement");
+        REQUIRE(std::string(nanodbc::programming_error("").what()).empty());
+    }
+
+    SECTION("each is catchable as the standard type it derives from")
+    {
+        auto const raises = [](auto e)
+        {
+            try
+            {
+                throw e;
+            }
+            catch (std::runtime_error const& caught)
+            {
+                return std::string(caught.what());
+            }
+        };
+        REQUIRE(raises(nanodbc::type_incompatible_error()) == "type incompatible");
+        REQUIRE(raises(nanodbc::null_access_error()) == "null access");
+        REQUIRE(raises(nanodbc::index_range_error()) == "index out of range");
+        REQUIRE(raises(nanodbc::programming_error("bad call")) == "bad call");
+    }
+
+    SECTION("database_error over a handle the driver manager will not describe")
+    {
+        // SQLGetDiagRec answers SQL_INVALID_HANDLE for a null handle, which is the one way
+        // to build a database_error without a live connection. The driver contributes
+        // nothing, so what is left is the message the caller supplied and the defaults.
+        nanodbc::database_error const error(nullptr, SQL_HANDLE_DBC, "while connecting");
+        REQUIRE(std::string(error.what()) == "while connecting");
+        REQUIRE(error.native() == 0);
+        REQUIRE(error.state() == "00000");
+    }
+}
+
 // What a noexcept promises is not something a run can check. One that lies does not fail to
 // compile and does not fail a test: it calls std::terminate, and only along the path it
 // lied about, which is the path a suite is least likely to take. So the promises are made
