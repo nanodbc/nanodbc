@@ -875,24 +875,25 @@ struct test_case_fixture : public base_test_fixture
     {
         // char is absent: it binds as a C string, not as a tiny integer, and is covered
         // below.
-        auto const small = NANODBC_TEXT("smallint");
-        check_bind_forms<signed char>(small, 1, 2, 3);
-        check_bind_forms<unsigned char>(small, 1, 2, 3);
-        check_bind_forms<short>(small, 10, 20, 30);
-        check_bind_forms<unsigned short>(small, 10, 20, 30);
+        // Not named `small`: the Windows SDK defines that as a macro for char.
+        auto const narrow_column = NANODBC_TEXT("smallint");
+        check_bind_forms<signed char>(narrow_column, 1, 2, 3);
+        check_bind_forms<unsigned char>(narrow_column, 1, 2, 3);
+        check_bind_forms<short>(narrow_column, 10, 20, 30);
+        check_bind_forms<unsigned short>(narrow_column, 10, 20, 30);
 
-        auto const wide = NANODBC_TEXT("bigint");
-        check_bind_forms<int>(wide, 100, 200, 300);
-        check_bind_forms<unsigned int>(wide, 100, 200, 300);
-        check_bind_forms<long>(wide, 1000, 2000, 3000);
-        check_bind_forms<unsigned long>(wide, 1000, 2000, 3000);
-        check_bind_forms<long long>(wide, 10000, 20000, 30000);
-        check_bind_forms<unsigned long long>(wide, 10000, 20000, 30000);
+        auto const wide_column = NANODBC_TEXT("bigint");
+        check_bind_forms<int>(wide_column, 100, 200, 300);
+        check_bind_forms<unsigned int>(wide_column, 100, 200, 300);
+        check_bind_forms<long>(wide_column, 1000, 2000, 3000);
+        check_bind_forms<unsigned long>(wide_column, 1000, 2000, 3000);
+        check_bind_forms<long long>(wide_column, 10000, 20000, 30000);
+        check_bind_forms<unsigned long long>(wide_column, 10000, 20000, 30000);
 
         // Values a float holds exactly, so that the sentry compares equal.
-        auto const real = NANODBC_TEXT("float");
-        check_bind_forms<float>(real, 1.5f, 2.5f, 3.5f);
-        check_bind_forms<double>(real, 1.5, 2.5, 3.5);
+        auto const real_column = NANODBC_TEXT("float");
+        check_bind_forms<float>(real_column, 1.5f, 2.5f, 3.5f);
+        check_bind_forms<double>(real_column, 1.5, 2.5, 3.5);
 
         // The character instantiation: bind takes c_str() and the driver reads to the
         // terminator, so it takes one value rather than a batch.

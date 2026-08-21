@@ -54,7 +54,10 @@ RUN curl -sSL -o /tmp/packages-microsoft-prod.deb "https://packages.microsoft.co
     && odbcinst -i -d -f /usr/share/sqliteodbc/unixodbc.ini \
     && printf '[nanodbc_dsn]\nDriver=SQLite3\nDatabase=/tmp/nanodbc_dsn.db\n' > /etc/odbc.ini
 
-RUN curl -SL "https://downloads.mysql.com/archives/get/p/10/file/mysql-connector-odbc-8.4.0-linux-glibc2.28-$(uname -m).tar.gz" -o mysql-connector-odbc.tar.gz \
+# MySQL names the x86_64 build x86-64bit and the arm64 one aarch64.
+RUN arch="$(uname -m)" \
+    && if [ "${arch}" = "x86_64" ]; then arch="x86-64bit"; fi \
+    && curl -fSL "https://downloads.mysql.com/archives/get/p/10/file/mysql-connector-odbc-8.4.0-linux-glibc2.28-${arch}.tar.gz" -o mysql-connector-odbc.tar.gz \
     && tar -xzf mysql-connector-odbc.tar.gz \
     && rm mysql-connector-odbc.tar.gz \
     && mv mysql-connector-odbc* /opt/mysql-connector-odbc \
