@@ -592,3 +592,31 @@ TEST_CASE_METHOD(sqlite_fixture, "test_connect_by_datasource_name", "[sqlite][co
 {
     test_connect_by_datasource_name();
 }
+
+TEST_CASE_METHOD(sqlite_fixture, "test_get_every_ctype", "[sqlite][result][types]")
+{
+    test_get_every_ctype();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_statement_timeout", "[sqlite][statement]")
+{
+    test_statement_timeout();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_bind_wide_strings_with_sentry", "[sqlite][bind][unicode]")
+{
+    test_bind_wide_strings_with_sentry();
+}
+
+TEST_CASE_METHOD(
+    sqlite_fixture,
+    "test_parameter_metadata_before_description",
+    "[sqlite][statement]")
+{
+    test_parameter_metadata_before_description();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_binary_read_shapes", "[sqlite][result][binary]")
+{
+    test_binary_read_shapes();
+}

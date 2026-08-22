@@ -1,0 +1,44 @@
+name: "Dev container"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "Dockerfile.dev"
+      - "docker-compose.yml"
+      - "**.cpp"
+      - "**.h"
+      - "**/CMakeLists.txt"
+      - ".github/workflows/dev-container.yml"
+  pull_request:
+    paths:
+      - "Dockerfile.dev"
+      - "docker-compose.yml"
+      - "**.cpp"
+      - "**.h"
+      - "**/CMakeLists.txt"
+      - ".github/workflows/dev-container.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Build the development image
+        run: docker compose build nanodbc
+      - name: Run the suites that need no server
+        run: |
+          docker compose run --rm --no-deps nanodbc bash -lc '
+            set -e
+            cd /opt/nanodbc
+            cmake -S . -B /tmp/build -DCMAKE_BUILD_TYPE=Debug -DNANODBC_BUILD_EXAMPLES=OFF
+            cmake --build /tmp/build --parallel
+            /tmp/build/test/utility_tests
+            /tmp/build/test/sqlite_tests
+          '
