@@ -4361,7 +4361,7 @@ private:
                 NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
 
             bound_column& col = bound_columns_[i];
-            col.name_ = reinterpret_cast<string::value_type*>(column_name);
+            col.name_ = static_cast<string::value_type*>(static_cast<void*>(column_name));
             col.column_ = i;
             col.sqltype_ = sqltype;
             col.sqlsize_ = sqlsize;
@@ -4846,12 +4846,12 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
         }
         else
         { // bound and not blob
-            SQLWCHAR const* s =
-                reinterpret_cast<SQLWCHAR*>(col.pdata_.get() + rowset_position_ * col.clen_);
+            void* const data = col.pdata_.get() + rowset_position_ * col.clen_;
+            SQLWCHAR const* s = static_cast<SQLWCHAR*>(data);
             string::size_type const str_size =
                 col.cbdata_[static_cast<size_t>(rowset_position_)] / sizeof(SQLWCHAR);
-            auto const us = reinterpret_cast<wide_char_t const*>(
-                s); // no-op or unsigned short to signed char16_t
+            // No-op, or unsigned short to signed char16_t.
+            auto const us = static_cast<wide_char_t const*>(static_cast<void const*>(s));
             convert(us, str_size, result);
         }
         return;
@@ -5335,8 +5335,9 @@ std::unique_ptr<T, std::function<void(T*)>> result::result_impl::ensure_pdata(sh
     {
         // Return a unique_ptr with a no-op deleter as this memory allocation
         // is managed (allocated and released) elsewhere.
+        void* const data = col.pdata_.get() + rowset_position_ * col.clen_;
         return std::unique_ptr<T, std::function<void(T*)>>(
-            (T*)(col.pdata_.get() + rowset_position_ * col.clen_), [](T*) noexcept {});
+            static_cast<T*>(data), [](T*) noexcept {});
     }
 
     std::unique_ptr<T> buffer = std::make_unique<T>();

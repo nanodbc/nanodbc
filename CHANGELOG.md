@@ -1,5 +1,9 @@
 # ChangeLog
 
+## Unreleased
+
+- Column buffer casts go through `void*` rather than `reinterpret_cast` and a C-style cast, which analysers report as unsafe. [`#420`](https://github.com/nanodbc/nanodbc/issues/420)
+
 ## v2.17.0
 
 - A batch of one can bind NULL. The null indicator was withheld from the driver whenever the batch held a single value. [`#220`](https://github.com/nanodbc/nanodbc/issues/220) [`#347`](https://github.com/nanodbc/nanodbc/issues/347)
