@@ -869,6 +869,11 @@ struct test_case_fixture : public base_test_fixture
             connection.disconnect();
             REQUIRE(!connection.connected());
         }
+        {
+            // A login timeout is passed to the driver as an attribute, where zero is not.
+            nanodbc::connection connection(name, NANODBC_TEXT(""), NANODBC_TEXT(""), 5);
+            REQUIRE(connection.connected());
+        }
     }
 
     // get_ref_impl dispatches on the C type the driver bound the column as, which follows
@@ -1081,6 +1086,14 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(results.get<double>(5) == 2.5);
         REQUIRE(results.get<float>(5) == 2.5f);
 
+        // Rendering as text is a conversion per type, and only the widths from 32 bits up
+        // have one: a smallint read as a string is refused rather than rendered.
+        REQUIRE(results.get<nanodbc::string>(2) == NANODBC_TEXT("70000"));
+        REQUIRE(results.get<nanodbc::string>(3) == NANODBC_TEXT("5000000000"));
+        REQUIRE(!results.get<nanodbc::string>(4).empty());
+        REQUIRE(!results.get<nanodbc::string>(5).empty());
+        REQUIRE_THROWS_AS(results.get<nanodbc::string>(0), nanodbc::type_incompatible_error);
+
         // A bound character column read as a character goes through the string column path;
         // a long one would be unbound and read with SQLGetData instead.
         REQUIRE(results.get<char>(6) == '9');
@@ -1113,6 +1126,7 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(reals.next());
         REQUIRE(reals.get<float>(0) == 1.5f);
         REQUIRE(reals.get<double>(0) == 1.5);
+        REQUIRE(!reals.get<nanodbc::string>(0).empty());
     }
 
     void test_bind_every_form()
@@ -2852,6 +2866,16 @@ PRIMARY KEY(t2_fid)
             nanodbc::implementation_row_descriptor ird(s);
             REQUIRE(ird.count() == 3);
             REQUIRE(ird.count() == ird.count());
+
+            // The descriptor can also be taken from a result, and reports how it was
+            // allocated. Both describe the same statement, so both count the same columns.
+            {
+                auto r = nanodbc::execute(c, sql);
+                nanodbc::implementation_row_descriptor from_result(r);
+                REQUIRE(from_result.count() == ird.count());
+                REQUIRE(from_result.alloc_type() != 0);
+            }
+            REQUIRE(ird.alloc_type() != 0);
             for (short i = 0; i < ird.count(); i++)
             {
                 if (vendor_ == database_vendor::mysql)
