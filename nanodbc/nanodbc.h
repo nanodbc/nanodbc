@@ -239,19 +239,8 @@ typedef unspecified - type null_type;
 #endif
 
 /// \def NANODBC_DEPRECATED
-/// \brief Marks a declaration as deprecated, in whichever way the compiler supports.
-#if __cplusplus >= 201402L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201402L)
-// [[deprecated]] is only available in C++14
+/// \brief Marks a declaration as deprecated.
 #define NANODBC_DEPRECATED [[deprecated]]
-#else
-#ifdef __GNUC__
-#define NANODBC_DEPRECATED __attribute__((deprecated))
-#elif defined(_MSC_VER)
-#define NANODBC_DEPRECATED __declspec(deprecated)
-#else
-#define NANODBC_DEPRECATED
-#endif
-#endif
 
 // forward declare
 #ifndef NANODBC_DISABLE_MSSQL_TVP

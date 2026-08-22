@@ -56,9 +56,10 @@ struct is_optional<std::optional<T>> : std::true_type
 
 #ifdef NANODBC_ENABLE_BOOST
 #include <boost/locale/encoding_utf.hpp>
-#elif defined(__GNUC__) && (__GNUC__ < 5)
-#include <cwchar>
 #endif
+
+// std::wcslen
+#include <cwchar>
 
 #ifdef __APPLE__
 // silence spurious OS X deprecation warnings

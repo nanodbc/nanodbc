@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- The last two `__GNUC__` conditions are gone; both were unreachable at C++14, which is the minimum. [`#383`](https://github.com/nanodbc/nanodbc/issues/383)
+
 - Every integer width renders as a string, where only 32 bits and wider did. [`#467`](https://github.com/nanodbc/nanodbc/issues/467)
 - The tests say `SQLWCHAR` rather than `WCHAR`, which is a Windows type and left the suite unbuildable where the ODBC headers do not supply it. [`#439`](https://github.com/nanodbc/nanodbc/issues/439)
 - `SQLBindParameter` is given the bound type's size as the buffer length rather than the parameter's column size, which is a precision and not a byte count. [`#437`](https://github.com/nanodbc/nanodbc/issues/437)
