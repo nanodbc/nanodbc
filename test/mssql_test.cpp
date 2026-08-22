@@ -2511,6 +2511,81 @@ TEST_CASE_METHOD(mssql_fixture, "test_output_parameters", "[mssql][statement][bi
     REQUIRE(out2 == 2);
 }
 
+
+// A procedure's RETURN value is not an output parameter; it is bound at position zero
+// of a "{ ? = CALL ... }" escape sequence with PARAM_RETURN.
+TEST_CASE_METHOD(mssql_fixture, "test_procedure_return_value", "[mssql][statement][bind]")
+{
+    auto connection = connect();
+    nanodbc::string const name = NANODBC_TEXT("test_procedure_return_value_proc");
+    try
+    {
+        execute(connection, NANODBC_TEXT("DROP PROCEDURE ") + name);
+    }
+    catch (...)
+    {
+    }
+    execute(
+        connection,
+        NANODBC_TEXT("CREATE PROCEDURE ") + name +
+            NANODBC_TEXT(" @in INT AS BEGIN RETURN @in * 3; END;"));
+
+    nanodbc::statement statement(connection);
+    statement.prepare(NANODBC_TEXT("{ ? = CALL ") + name + NANODBC_TEXT("(?) }"));
+
+    int rv = 0;
+    int const in = 14;
+    statement.bind(0, &rv, nanodbc::statement::PARAM_RETURN);
+    statement.bind(1, &in);
+    statement.just_execute();
+
+    REQUIRE(rv == 42);
+// A character outside the basic multilingual plane is a surrogate pair in UTF-16, so
+// reading one and binding it back tests that both paths carry the pair intact. The
+// value is built by the server, keeping non-ASCII out of this file and out of the
+// query text, whose encoding in a narrow build is the driver's to decide.
+TEST_CASE_METHOD(mssql_fixture, "test_non_bmp_round_trip", "[mssql][unicode][bind]")
+{
+    auto connection = connect();
+    create_table(
+        connection,
+        NANODBC_TEXT("test_non_bmp_round_trip"),
+        NANODBC_TEXT("(id int, v nvarchar(50))"));
+    execute(
+        connection,
+        NANODBC_TEXT(
+            "insert into test_non_bmp_round_trip (id, v) values "
+            "(1, NCHAR(0xD83D) + NCHAR(0xDE00));"));
+
+    nanodbc::string read_back;
+    {
+        auto results = execute(
+            connection,
+            NANODBC_TEXT("select v, datalength(v) from test_non_bmp_round_trip where id = 1;"));
+        REQUIRE(results.next());
+        read_back = results.get<nanodbc::string>(0);
+        REQUIRE(results.get<int>(1) == 4); // two UTF-16 code units
+    }
+
+    {
+        nanodbc::statement statement(connection);
+        statement.prepare(
+            NANODBC_TEXT("insert into test_non_bmp_round_trip (id, v) values (2, ?);"));
+        statement.bind(0, read_back.c_str());
+        statement.just_execute();
+    }
+
+    auto results = execute(
+        connection,
+        NANODBC_TEXT(
+            "select datalength(v), cast(case when v = (select v from "
+            "test_non_bmp_round_trip where id = 1) then 1 else 0 end as int) "
+            "from test_non_bmp_round_trip where id = 2;"));
+    REQUIRE(results.next());
+    REQUIRE(results.get<int>(0) == 4);
+    REQUIRE(results.get<int>(1) == 1);
+}
+
 // An NVARCHAR column is bound wide, so reading one as a character takes the wide arm of
 // the string column path.
 TEST_CASE_METHOD(mssql_fixture, "test_wide_bound_column_as_character", "[mssql][result][unicode]")

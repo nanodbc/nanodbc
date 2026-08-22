@@ -67,6 +67,12 @@ The nanodbc continuous integration tests run with `GitHub Actions`_. The build p
 If you must use iODBC, consider disabling Unicode mode in nanodbc build configuration to avoid ``wchar_t`` issues, see :ref:`build`.
 
 ******************************************************************************
+Non-ASCII text
+******************************************************************************
+
+In a narrow build, which is the default, statement text reaches the driver as bytes with no encoding attached, and the driver reads them in whatever the client character set happens to be. A non-ASCII literal written into a statement can therefore arrive mangled. Values bound as parameters are unaffected, as is any build with ``NANODBC_ENABLE_UNICODE`` set to ``ON``. Bind values as parameters rather than pasting them into statement text.
+
+******************************************************************************
 Examples
 ******************************************************************************
 
