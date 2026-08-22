@@ -2511,6 +2511,36 @@ TEST_CASE_METHOD(mssql_fixture, "test_output_parameters", "[mssql][statement][bi
     REQUIRE(out2 == 2);
 }
 
+// A procedure's RETURN value is not an output parameter; it is bound at position zero
+// of a "{ ? = CALL ... }" escape sequence with PARAM_RETURN.
+TEST_CASE_METHOD(mssql_fixture, "test_procedure_return_value", "[mssql][statement][bind]")
+{
+    auto connection = connect();
+    nanodbc::string const name = NANODBC_TEXT("test_procedure_return_value_proc");
+    try
+    {
+        execute(connection, NANODBC_TEXT("DROP PROCEDURE ") + name);
+    }
+    catch (...)
+    {
+    }
+    execute(
+        connection,
+        NANODBC_TEXT("CREATE PROCEDURE ") + name +
+            NANODBC_TEXT(" @in INT AS BEGIN RETURN @in * 3; END;"));
+
+    nanodbc::statement statement(connection);
+    statement.prepare(NANODBC_TEXT("{ ? = CALL ") + name + NANODBC_TEXT("(?) }"));
+
+    int rv = 0;
+    int const in = 14;
+    statement.bind(0, &rv, nanodbc::statement::PARAM_RETURN);
+    statement.bind(1, &in);
+    statement.just_execute();
+
+    REQUIRE(rv == 42);
+}
+
 // An NVARCHAR column is bound wide, so reading one as a character takes the wide arm of
 // the string column path.
 TEST_CASE_METHOD(mssql_fixture, "test_wide_bound_column_as_character", "[mssql][result][unicode]")
