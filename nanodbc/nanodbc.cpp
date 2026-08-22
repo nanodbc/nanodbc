@@ -4125,6 +4125,10 @@ public:
         if (is_null(column))
             throw null_access_error();
         get_ref_impl<T>(column, result);
+
+        // An unbound column's null is only known once SQLGetData has run.
+        if (is_null(column))
+            throw null_access_error();
     }
 
 #ifdef NANODBC_HAS_STD_OPTIONAL
@@ -4138,6 +4142,10 @@ public:
             return;
         }
         get_ref_impl<std::remove_reference_t<decltype(*result)>>(column, *result);
+
+        // An unbound column's null is only known once SQLGetData has run.
+        if (is_null(column))
+            opt_reset(result);
     }
 #endif
 
@@ -4175,6 +4183,10 @@ public:
         if (is_null(column))
             throw null_access_error();
         get_ref_impl<T>(column, result);
+
+        // An unbound column's null is only known once SQLGetData has run.
+        if (is_null(column))
+            throw null_access_error();
     }
 
 #ifdef NANODBC_HAS_STD_OPTIONAL
@@ -4188,6 +4200,10 @@ public:
             return;
         }
         get_ref_impl<std::remove_reference_t<decltype(*result)>>(column, *result);
+
+        // An unbound column's null is only known once SQLGetData has run.
+        if (is_null(column))
+            opt_reset(result);
     }
 #endif
 
@@ -4906,6 +4922,12 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
     case SQL_C_DATE:
     {
         const date d = *ensure_pdata<date>(column);
+        // An unbound column reports null only once SQLGetData has run, and a null leaves
+        // the buffer zeroed, whose month and day are then out of range. Rendering that is
+        // not portable: the Microsoft CRT ends the process rather than return from
+        // strftime. The caller tests for the null again after this returns.
+        if (is_null(column))
+            return;
         std::tm st{};
         st.tm_year = d.year - 1900;
         st.tm_mon = d.month - 1;
@@ -4950,6 +4972,12 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
     case SQL_C_TIMESTAMP:
     {
         const timestamp stamp = *ensure_pdata<timestamp>(column);
+        // An unbound column reports null only once SQLGetData has run, and a null leaves
+        // the buffer zeroed, whose month and day are then out of range. Rendering that is
+        // not portable: the Microsoft CRT ends the process rather than return from
+        // strftime. The caller tests for the null again after this returns.
+        if (is_null(column))
+            return;
         std::tm st{};
         st.tm_year = stamp.year - 1900;
         st.tm_mon = stamp.month - 1;

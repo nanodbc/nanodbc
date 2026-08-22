@@ -1590,21 +1590,44 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(results.is_null(1));
         }
 
+        // Each case reads the null on a freshly fetched row, so the null is discovered
+        // during the read rather than already recorded from an earlier one. That is the
+        // order that renders a zeroed timestamp, whose month and day are out of range.
+        auto const unbound_row = [&]()
         {
-            // Unbound before the fetch, so the values are read one at a time with
-            // SQLGetData, which some drivers only allow in ascending column order.
             auto results = execute(connection, query);
             results.unbind();
             REQUIRE(results.next());
             REQUIRE(!results.is_bound(1));
+            return results;
+        };
 
+        {
+            // Unbound before the fetch, so the values are read one at a time with
+            // SQLGetData, which some drivers only allow in ascending column order.
+            auto results = unbound_row();
             REQUIRE(results.get<int>(0) == 1);
+        }
 
+        {
+            auto results = unbound_row();
             auto const fallback = NANODBC_TEXT("(null)");
             REQUIRE(results.get<nanodbc::string>(1, fallback) == fallback);
+        }
+
+        {
+            auto results = unbound_row();
             nanodbc::timestamp const epoch{};
             REQUIRE(results.get<nanodbc::timestamp>(1, epoch).year == epoch.year);
+        }
+
+        {
+            auto results = unbound_row();
             REQUIRE_THROWS_AS(results.get<nanodbc::string>(1), nanodbc::null_access_error);
+        }
+
+        {
+            auto results = unbound_row();
             REQUIRE_THROWS_AS(results.get<nanodbc::timestamp>(1), nanodbc::null_access_error);
         }
     }
