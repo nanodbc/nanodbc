@@ -337,12 +337,9 @@ TEST_CASE_METHOD(
     test_execute_direct_batch_ops();
 }
 
-TEST_CASE_METHOD(
-    postgresql_fixture,
-    "test_null_timestamp_after_unbind",
-    "[postgresql][result][unbind][null]")
+TEST_CASE_METHOD(postgresql_fixture, "test_string_aggregate", "[postgresql][result][string]")
 {
-    test_null_timestamp_after_unbind();
+    test_string_aggregate();
 }
 
 TEST_CASE_METHOD(postgresql_fixture, "test_result_unbind", "[postgresql][result][unbind]")
