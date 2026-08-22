@@ -460,6 +460,19 @@ TEST_CASE_METHOD(sqlite_fixture, "test_string_aggregate", "[sqlite][result][stri
     test_string_aggregate();
 }
 
+TEST_CASE_METHOD(
+    sqlite_fixture,
+    "test_execute_prepared_statement_repeatedly",
+    "[sqlite][statement][prepare]")
+{
+    test_execute_prepared_statement_repeatedly();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_bind_arithmetic_null_sentry", "[sqlite][bind][null]")
+{
+    test_bind_arithmetic_null_sentry();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_result_unbind", "[sqlite][result][unbind]")
 {
     test_result_unbind();

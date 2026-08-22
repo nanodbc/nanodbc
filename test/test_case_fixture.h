@@ -1612,6 +1612,68 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(by_name.get<nanodbc::string>(NANODBC_TEXT("joined")).size() == expected);
     }
 
+    // Preparing once and executing many times is the point of preparing at all. The
+    // parameters are described when the statement is prepared, so re-binding between
+    // executions must not describe them again.
+    void test_execute_prepared_statement_repeatedly()
+    {
+        auto connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_execute_prepared_statement_repeatedly"),
+            NANODBC_TEXT("(k int)"));
+        execute(
+            connection,
+            NANODBC_TEXT(
+                "insert into test_execute_prepared_statement_repeatedly (k) values "
+                "(1), (2), (3), (4);"));
+
+        nanodbc::statement statement(connection);
+        statement.prepare(
+            NANODBC_TEXT("delete from test_execute_prepared_statement_repeatedly where k = ?;"));
+
+        for (int key = 1; key <= 3; ++key)
+        {
+            statement.bind(0, &key);
+            statement.just_execute();
+        }
+
+        auto results = execute(
+            connection,
+            NANODBC_TEXT("select count(*) from test_execute_prepared_statement_repeatedly;"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<int>(0) == 1);
+    }
+
+    // A sentry marks which of a batch of values are null, and is read whether or not the
+    // separate nulls array was also given. The two were once entangled, so that passing a
+    // sentry without a nulls array marked nothing.
+    void test_bind_arithmetic_null_sentry()
+    {
+        auto connection = connect();
+        create_table(
+            connection, NANODBC_TEXT("test_bind_arithmetic_null_sentry"), NANODBC_TEXT("(i int)"));
+
+        int const values[] = {10, -1, 30, -1, 50};
+        int const sentry = -1;
+        std::size_t const batch = 5;
+
+        nanodbc::statement statement(connection);
+        statement.prepare(
+            NANODBC_TEXT("insert into test_bind_arithmetic_null_sentry (i) values (?);"));
+        statement.bind(0, values, batch, &sentry);
+        transact(statement, static_cast<long>(batch));
+
+        auto results = execute(
+            connection,
+            NANODBC_TEXT(
+                "select count(*), sum(case when i is null then 1 else 0 end) "
+                "from test_bind_arithmetic_null_sentry;"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<int>(0) == 5);
+        REQUIRE(results.get<int>(1) == 2);
+    }
+
     // A binary column is not bound, so the fetch leaves no indicator behind for it and
     // whether it is null has to be asked of the driver.
     void test_is_null_binary()

@@ -342,6 +342,19 @@ TEST_CASE_METHOD(postgresql_fixture, "test_string_aggregate", "[postgresql][resu
     test_string_aggregate();
 }
 
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_execute_prepared_statement_repeatedly",
+    "[postgresql][statement][prepare]")
+{
+    test_execute_prepared_statement_repeatedly();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "test_bind_arithmetic_null_sentry", "[postgresql][bind][null]")
+{
+    test_bind_arithmetic_null_sentry();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_result_unbind", "[postgresql][result][unbind]")
 {
     test_result_unbind();
