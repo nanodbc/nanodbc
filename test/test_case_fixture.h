@@ -972,6 +972,17 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(results.get<std::vector<std::uint8_t>>(1, std::vector<std::uint8_t>{}).empty());
         REQUIRE(results.get<std::vector<std::uint8_t>>(2, std::vector<std::uint8_t>{}).empty());
 
+        // By name as well as by position: the fallback for an unbound column is decided
+        // after the read rather than before it, on a path of its own.
+        REQUIRE(
+            results
+                .get<std::vector<std::uint8_t>>(NANODBC_TEXT("long_b"), std::vector<std::uint8_t>{})
+                .empty());
+        REQUIRE(results
+                    .get<std::vector<std::uint8_t>>(
+                        NANODBC_TEXT("small_b"), std::vector<std::uint8_t>{})
+                    .empty());
+
         REQUIRE(!results.next());
     }
 

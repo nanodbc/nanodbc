@@ -2489,4 +2489,38 @@ TEST_CASE_METHOD(mssql_fixture, "test_output_parameters", "[mssql][statement][bi
 
     REQUIRE(out == 42);
     REQUIRE(inout == 101);
+
+    // A return value is bound in a direction of its own, which maps onto the same
+    // SQL_PARAM_OUTPUT.
+    nanodbc::statement returning(connection);
+    returning.prepare(NANODBC_TEXT("{ ? = CALL ") + name + NANODBC_TEXT("(?, ?, ?) }"));
+    int rv = 0;
+    int const in2 = 1;
+    int out2 = 0;
+    int inout2 = 0;
+    returning.bind(0, &rv, nanodbc::statement::PARAM_RETURN);
+    returning.bind(1, &in2);
+    returning.bind(2, &out2, nanodbc::statement::PARAM_OUT);
+    returning.bind(3, &inout2, nanodbc::statement::PARAM_INOUT);
+    returning.just_execute();
+    REQUIRE(out2 == 2);
+}
+
+// An NVARCHAR column is bound wide, so reading one as a character takes the wide arm of
+// the string column path.
+TEST_CASE_METHOD(mssql_fixture, "test_wide_bound_column_as_character", "[mssql][result][unicode]")
+{
+    auto connection = connect();
+    create_table(
+        connection,
+        NANODBC_TEXT("test_wide_bound_column_as_character"),
+        NANODBC_TEXT("(s nvarchar(10))"));
+    execute(
+        connection,
+        NANODBC_TEXT("insert into test_wide_bound_column_as_character (s) values (N'9');"));
+
+    auto results =
+        execute(connection, NANODBC_TEXT("select s from test_wide_bound_column_as_character;"));
+    REQUIRE(results.next());
+    REQUIRE(results.get<char>(0) == '9');
 }
