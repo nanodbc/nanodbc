@@ -1,6 +1,6 @@
 # ChangeLog
 
-## Unreleased
+## v2.17.0
 
 - A batch of one can bind NULL. The null indicator was withheld from the driver whenever the batch held a single value. [`#220`](https://github.com/nanodbc/nanodbc/issues/220) [`#347`](https://github.com/nanodbc/nanodbc/issues/347)
 - The last two `__GNUC__` conditions are gone; both were unreachable at C++14, which is the minimum. [`#383`](https://github.com/nanodbc/nanodbc/issues/383)
