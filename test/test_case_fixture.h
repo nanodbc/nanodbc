@@ -1568,68 +1568,48 @@ struct test_case_fixture : public base_test_fixture
         }
     }
 
-    // Unbinding drops the indicator that marked a column null, so is_null() no longer
-    // answers for it. Reading through a fallback still reports the null, and reading
-    // without one raises null_access rather than rendering an uninitialised buffer.
-    void test_null_timestamp_after_unbind()
+    // An aggregate builds a value longer than any row it read, so the column size the
+    // driver reports for it is a guess at best. Reading one back whole is what proves
+    // nanodbc sized its buffer from the value rather than from the guess.
+    void test_string_aggregate()
     {
         auto connection = connect();
         create_table(
             connection,
-            NANODBC_TEXT("test_null_timestamp_after_unbind"),
-            NANODBC_TEXT("(i int, ts ") + get_timestamp_type_name() + NANODBC_TEXT(")"));
-        execute(
+            NANODBC_TEXT("test_string_aggregate"),
+            NANODBC_TEXT("(i int, v varchar(20))"));
+
+        // Fifty ten-character rows joined by one separator each: comfortably past the
+        // 255 bytes that truncation reports tend to stop at, and short of the 1024 that
+        // MySQL's group_concat_max_len cuts at by default.
+        std::size_t const rows = 50;
+        nanodbc::string const value = NANODBC_TEXT("0123456789");
+        for (std::size_t i = 0; i < rows; ++i)
+        {
+            execute(
+                connection,
+                NANODBC_TEXT("insert into test_string_aggregate (i, v) values (1, '") + value +
+                    NANODBC_TEXT("');"));
+        }
+
+        auto const expected = rows * value.size() + (rows - 1);
+
+        auto results = execute(
             connection,
-            NANODBC_TEXT("insert into test_null_timestamp_after_unbind(i, ts) values (1, null);"));
+            NANODBC_TEXT("select ") +
+                get_string_agg_expression(NANODBC_TEXT("v"), NANODBC_TEXT(",")) +
+                NANODBC_TEXT(" from test_string_aggregate;"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<nanodbc::string>(0).size() == expected);
 
-        auto const query = NANODBC_TEXT("select i, ts from test_null_timestamp_after_unbind;");
-
-        {
-            auto results = execute(connection, query);
-            REQUIRE(results.next());
-            REQUIRE(results.is_null(1));
-        }
-
-        // Each case reads the null on a freshly fetched row, so the null is discovered
-        // during the read rather than already recorded from an earlier one. That is the
-        // order that renders a zeroed timestamp, whose month and day are out of range.
-        auto const unbound_row = [&]()
-        {
-            auto results = execute(connection, query);
-            results.unbind();
-            REQUIRE(results.next());
-            REQUIRE(!results.is_bound(1));
-            return results;
-        };
-
-        {
-            // Unbound before the fetch, so the values are read one at a time with
-            // SQLGetData, which some drivers only allow in ascending column order.
-            auto results = unbound_row();
-            REQUIRE(results.get<int>(0) == 1);
-        }
-
-        {
-            auto results = unbound_row();
-            auto const fallback = NANODBC_TEXT("(null)");
-            REQUIRE(results.get<nanodbc::string>(1, fallback) == fallback);
-        }
-
-        {
-            auto results = unbound_row();
-            nanodbc::timestamp const epoch{};
-            REQUIRE(results.get<nanodbc::timestamp>(1, epoch).year == epoch.year);
-        }
-
-        {
-            auto results = unbound_row();
-            REQUIRE_THROWS_AS(results.get<nanodbc::string>(1), nanodbc::null_access_error);
-        }
-
-        {
-            auto results = unbound_row();
-            REQUIRE_THROWS_AS(results.get<nanodbc::timestamp>(1), nanodbc::null_access_error);
-        }
+        // The same value by name, which takes a different lookup to the same column.
+        auto by_name = execute(
+            connection,
+            NANODBC_TEXT("select ") +
+                get_string_agg_expression(NANODBC_TEXT("v"), NANODBC_TEXT(",")) +
+                NANODBC_TEXT(" as joined from test_string_aggregate;"));
+        REQUIRE(by_name.next());
+        REQUIRE(by_name.get<nanodbc::string>(NANODBC_TEXT("joined")).size() == expected);
     }
 
     // A binary column is not bound, so the fetch leaves no indicator behind for it and

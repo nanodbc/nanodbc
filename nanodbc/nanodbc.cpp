@@ -4282,6 +4282,39 @@ private:
             throw index_range_error();
     }
 
+    // Whether the driver will hand over a column that is already bound. Drivers that say
+    // no include SQL Server's, so a re-read has to be asked for rather than assumed.
+    bool supports_get_data_on_bound_column() const
+    {
+        if (get_data_extensions_ < 0)
+        {
+            try
+            {
+                get_data_extensions_ = static_cast<int>(
+                    stmt_.connection().get_info<SQLUINTEGER>(SQL_GETDATA_EXTENSIONS));
+            }
+            catch (...)
+            {
+                get_data_extensions_ = 0;
+            }
+        }
+        return (get_data_extensions_ & SQL_GD_BOUND) != 0;
+    }
+
+    // A driver may report a column size smaller than the values it goes on to return, in
+    // which case the bound buffer is too small and the fetch fills it and reports how much
+    // there was. The indicator counts the bytes available, not the bytes written.
+    bool bound_column_was_truncated(short column) const
+    {
+        bound_column const& col = bound_columns_[column];
+        if (!col.bound_ || col.blob_ || col.clen_ == 0)
+            return false;
+        SQLLEN const indicator = col.cbdata_[static_cast<std::size_t>(rowset_position_)];
+        if (indicator == SQL_NULL_DATA || indicator == SQL_NO_TOTAL || indicator < 0)
+            return false;
+        return static_cast<SQLULEN>(indicator) >= col.clen_;
+    }
+
     void before_move() noexcept
     {
         for (short i = 0; i < bound_columns_size_; ++i)
@@ -4609,6 +4642,8 @@ private:
     bool async_; // true if statement is currently in SQL_STILL_EXECUTING mode
 #endif
     bool has_unbound_;
+    // SQL_GETDATA_EXTENSIONS, read once on first use. -1 until then.
+    mutable int get_data_extensions_ = -1;
 };
 
 template <>
@@ -4758,7 +4793,10 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
             return;
         }
 
-        if (!is_bound(column))
+        // A bound column whose value did not fit is read again the unbound way, which
+        // asks the driver for the value in full rather than for as much as was guessed.
+        if (!is_bound(column) ||
+            (bound_column_was_truncated(column) && supports_get_data_on_bound_column()))
         {
             // Input is always std::string, while output may be std::string or wide_string
             std::string out;
@@ -4813,7 +4851,10 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
 
     case SQL_C_WCHAR:
     {
-        if (!is_bound(column))
+        // A bound column whose value did not fit is read again the unbound way, which
+        // asks the driver for the value in full rather than for as much as was guessed.
+        if (!is_bound(column) ||
+            (bound_column_was_truncated(column) && supports_get_data_on_bound_column()))
         {
             // Input is always wide_string, output might be std::string or wide_string.
             // Use a string builder to build the output string.
@@ -4864,8 +4905,15 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
         { // bound and not blob
             void* const data = col.pdata_.get() + rowset_position_ * col.clen_;
             SQLWCHAR const* s = static_cast<SQLWCHAR*>(data);
-            string::size_type const str_size =
-                col.cbdata_[static_cast<size_t>(rowset_position_)] / sizeof(SQLWCHAR);
+            // The indicator counts the characters available, which exceeds what the buffer
+            // holds when the driver under-reported the column size and would not hand the
+            // column over again. Reading past the buffer is not among the options.
+            std::size_t const capacity = col.clen_ / sizeof(SQLWCHAR);
+            std::size_t const available =
+                static_cast<std::size_t>(col.cbdata_[static_cast<size_t>(rowset_position_)]) /
+                sizeof(SQLWCHAR);
+            string::size_type const str_size = static_cast<string::size_type>(
+                std::min(available, capacity > 0 ? capacity - 1 : std::size_t{0}));
             // No-op, or unsigned short to signed char16_t.
             auto const us = static_cast<wide_char_t const*>(static_cast<void const*>(s));
             convert(us, str_size, result);

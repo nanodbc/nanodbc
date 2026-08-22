@@ -358,6 +358,25 @@ struct base_test_fixture
         }
     }
 
+    // SQLite and MySQL spell the aggregate group_concat, and disagree on how the
+    // separator is given; everyone else spells it string_agg.
+    nanodbc::string
+    get_string_agg_expression(nanodbc::string const& column, nanodbc::string const& separator)
+    {
+        switch (vendor_)
+        {
+        case database_vendor::sqlite:
+            return NANODBC_TEXT("group_concat(") + column + NANODBC_TEXT(", '") + separator +
+                   NANODBC_TEXT("')");
+        case database_vendor::mysql:
+            return NANODBC_TEXT("group_concat(") + column + NANODBC_TEXT(" separator '") +
+                   separator + NANODBC_TEXT("')");
+        default:
+            return NANODBC_TEXT("string_agg(") + column + NANODBC_TEXT(", '") + separator +
+                   NANODBC_TEXT("')");
+        }
+    }
+
     nanodbc::string get_primary_key_name(nanodbc::string const& assumed)
     {
         switch (vendor_)
