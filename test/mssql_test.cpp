@@ -2511,6 +2511,85 @@ TEST_CASE_METHOD(mssql_fixture, "test_output_parameters", "[mssql][statement][bi
     REQUIRE(out2 == 2);
 }
 
+// A procedure's RETURN value is not an output parameter; it is bound at position zero
+// of a "{ ? = CALL ... }" escape sequence with PARAM_RETURN.
+TEST_CASE_METHOD(mssql_fixture, "test_procedure_return_value", "[mssql][statement][bind]")
+{
+    auto connection = connect();
+    nanodbc::string const name = NANODBC_TEXT("test_procedure_return_value_proc");
+    try
+    {
+        execute(connection, NANODBC_TEXT("DROP PROCEDURE ") + name);
+    }
+    catch (...)
+    {
+    }
+    execute(
+        connection,
+        NANODBC_TEXT("CREATE PROCEDURE ") + name +
+            NANODBC_TEXT(" @in INT AS BEGIN RETURN @in * 3; END;"));
+
+    nanodbc::statement statement(connection);
+    statement.prepare(NANODBC_TEXT("{ ? = CALL ") + name + NANODBC_TEXT("(?) }"));
+
+    int rv = 0;
+    int const in = 14;
+    statement.bind(0, &rv, nanodbc::statement::PARAM_RETURN);
+    statement.bind(1, &in);
+    statement.just_execute();
+
+    REQUIRE(rv == 42);
+}
+
+// SQLDescribeParam reports a driver limit rather than the column's real capacity for a
+// MAX column, so a value larger than the limit has to be bound as unlimited or the driver
+// refuses it with 22001.
+TEST_CASE_METHOD(mssql_fixture, "test_large_object_parameters", "[mssql][statement][bind]")
+{
+    auto connection = connect();
+    create_table(
+        connection,
+        NANODBC_TEXT("test_large_object_parameters"),
+        NANODBC_TEXT("(id int, b varbinary(max), s varchar(max))"));
+
+    // Past the 8000 bytes SQL Server allows a non-MAX parameter.
+    for (std::size_t const size : {std::size_t{4000}, std::size_t{9000}, std::size_t{100000}})
+    {
+        execute(connection, NANODBC_TEXT("delete from test_large_object_parameters;"));
+
+        std::vector<std::vector<std::uint8_t>> rows{std::vector<std::uint8_t>(size, 0x41)};
+        nanodbc::statement statement(connection);
+        statement.prepare(
+            NANODBC_TEXT("insert into test_large_object_parameters (id, b) values (1, ?);"));
+        statement.bind(0, rows);
+        statement.just_execute();
+
+        auto results = execute(
+            connection,
+            NANODBC_TEXT("select datalength(b) from test_large_object_parameters where id = 1;"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<int>(0) == static_cast<int>(size));
+    }
+
+    for (std::size_t const size : {std::size_t{9000}, std::size_t{100000}})
+    {
+        execute(connection, NANODBC_TEXT("delete from test_large_object_parameters;"));
+
+        std::string const value(size, 'x');
+        nanodbc::statement statement(connection);
+        statement.prepare(
+            NANODBC_TEXT("insert into test_large_object_parameters (id, s) values (2, ?);"));
+        statement.bind(0, value.c_str());
+        statement.just_execute();
+
+        auto results = execute(
+            connection,
+            NANODBC_TEXT("select datalength(s) from test_large_object_parameters where id = 2;"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<int>(0) == static_cast<int>(size));
+    }
+}
+
 // An NVARCHAR column is bound wide, so reading one as a character takes the wide arm of
 // the string column path.
 TEST_CASE_METHOD(mssql_fixture, "test_wide_bound_column_as_character", "[mssql][result][unicode]")

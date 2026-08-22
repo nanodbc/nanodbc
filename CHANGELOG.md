@@ -3,6 +3,7 @@
 ## Unreleased
 
 - A bound character column the driver under-sized is read again in full instead of coming back truncated. [`#343`](https://github.com/nanodbc/nanodbc/issues/343)
+- A regression test covers binding objects past the driver's reported parameter limit, which nothing pinned. [`#5`](https://github.com/nanodbc/nanodbc/issues/5)
 - Column buffer casts go through `void*` rather than `reinterpret_cast` and a C-style cast, which analysers report as unsafe. [`#420`](https://github.com/nanodbc/nanodbc/issues/420)
 - A null timestamp read after `unbind()` yields the fallback or raises `null_access_error`, where it once aborted. [`#423`](https://github.com/nanodbc/nanodbc/issues/423)
 - `PARAM_RETURN` documents that it binds a procedure's return value at parameter zero of `{ ? = CALL proc(?) }`. [`#355`](https://github.com/nanodbc/nanodbc/issues/355)
