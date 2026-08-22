@@ -387,6 +387,11 @@ TEST_CASE_METHOD(mysql_fixture, "test_execute_direct_batch_ops", "[mysql][statem
     test_execute_direct_batch_ops();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_null_timestamp_after_unbind", "[mysql][result][unbind][null]")
+{
+    test_null_timestamp_after_unbind();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_result_unbind", "[mysql][result][unbind]")
 {
     test_result_unbind();

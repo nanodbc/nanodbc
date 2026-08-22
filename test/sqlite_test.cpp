@@ -455,6 +455,14 @@ TEST_CASE_METHOD(sqlite_fixture, "test_execute_direct_batch_ops", "[sqlite][stat
     test_execute_direct_batch_ops();
 }
 
+TEST_CASE_METHOD(
+    sqlite_fixture,
+    "test_null_timestamp_after_unbind",
+    "[sqlite][result][unbind][null]")
+{
+    test_null_timestamp_after_unbind();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_result_unbind", "[sqlite][result][unbind]")
 {
     test_result_unbind();

@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Column buffer casts go through `void*` rather than `reinterpret_cast` and a C-style cast, which analysers report as unsafe. [`#420`](https://github.com/nanodbc/nanodbc/issues/420)
+- A null timestamp read after `unbind()` yields the fallback or raises `null_access_error`, where it once aborted. [`#423`](https://github.com/nanodbc/nanodbc/issues/423)
 
 ## v2.17.0
 

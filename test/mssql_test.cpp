@@ -1177,6 +1177,11 @@ TEST_CASE_METHOD(mssql_fixture, "test_execute_direct_batch_ops", "[mssql][statem
     test_execute_direct_batch_ops();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_null_timestamp_after_unbind", "[mssql][result][unbind][null]")
+{
+    test_null_timestamp_after_unbind();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_result_unbind", "[mssql][result][unbind]")
 {
     test_result_unbind();
