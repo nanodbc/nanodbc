@@ -2511,7 +2511,6 @@ TEST_CASE_METHOD(mssql_fixture, "test_output_parameters", "[mssql][statement][bi
     REQUIRE(out2 == 2);
 }
 
-
 // A procedure's RETURN value is not an output parameter; it is bound at position zero
 // of a "{ ? = CALL ... }" escape sequence with PARAM_RETURN.
 TEST_CASE_METHOD(mssql_fixture, "test_procedure_return_value", "[mssql][statement][bind]")
@@ -2540,6 +2539,8 @@ TEST_CASE_METHOD(mssql_fixture, "test_procedure_return_value", "[mssql][statemen
     statement.just_execute();
 
     REQUIRE(rv == 42);
+}
+
 // A character outside the basic multilingual plane is a surrogate pair in UTF-16, so
 // reading one and binding it back tests that both paths carry the pair intact. The
 // value is built by the server, keeping non-ASCII out of this file and out of the
@@ -2567,6 +2568,10 @@ TEST_CASE_METHOD(mssql_fixture, "test_non_bmp_round_trip", "[mssql][unicode][bin
         REQUIRE(results.get<int>(1) == 4); // two UTF-16 code units
     }
 
+    // Binding the value back returns it intact only in a Unicode build. A narrow build
+    // hands the driver bytes in the client character set, which need not represent a
+    // character outside the basic multilingual plane at all.
+#ifdef NANODBC_ENABLE_UNICODE
     {
         nanodbc::statement statement(connection);
         statement.prepare(
@@ -2584,6 +2589,9 @@ TEST_CASE_METHOD(mssql_fixture, "test_non_bmp_round_trip", "[mssql][unicode][bin
     REQUIRE(results.next());
     REQUIRE(results.get<int>(0) == 4);
     REQUIRE(results.get<int>(1) == 1);
+#else
+    REQUIRE(!read_back.empty());
+#endif
 }
 
 // An NVARCHAR column is bound wide, so reading one as a character takes the wide arm of

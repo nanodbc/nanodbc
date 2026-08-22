@@ -112,7 +112,9 @@ The CI builds do not exercise a Unicode-enabled iODBC driver. As such there is n
 
 ### Note About Non-ASCII Text
 
-In a narrow build, which is the default, statement text reaches the driver as bytes with no encoding attached, and the driver reads them in whatever the client character set happens to be. A non-ASCII literal written into a statement can therefore arrive mangled. Values bound as parameters are unaffected, as is any build with `NANODBC_ENABLE_UNICODE=ON`. Bind values as parameters rather than pasting them into statement text.
+In a narrow build, which is the default, text crosses between nanodbc and the driver as bytes in whatever the client character set happens to be, and a character that set cannot represent does not survive the trip. On Linux with unixODBC that set is normally UTF-8, which covers everything; on Windows it is the system ANSI codepage, which does not, so a character outside the basic multilingual plane is lost in both directions. Build with `NANODBC_ENABLE_UNICODE=ON` to exchange UTF-16 with the driver instead.
+
+Statement text is the more fragile of the two, because unlike a bound parameter it reaches the driver with neither a length nor a type. Bind values as parameters rather than writing them into statement text.
 
 ---
 
