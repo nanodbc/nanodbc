@@ -1568,6 +1568,70 @@ struct test_case_fixture : public base_test_fixture
         }
     }
 
+    // Unbinding drops the indicator that marked a column null, so is_null() no longer
+    // answers for it. Reading through a fallback still reports the null, and reading
+    // without one raises null_access rather than rendering an uninitialised buffer.
+    void test_null_timestamp_after_unbind()
+    {
+        auto connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_null_timestamp_after_unbind"),
+            NANODBC_TEXT("(i int, ts ") + get_timestamp_type_name() + NANODBC_TEXT(")"));
+        execute(
+            connection,
+            NANODBC_TEXT("insert into test_null_timestamp_after_unbind(i, ts) values (1, null);"));
+
+        auto const query = NANODBC_TEXT("select i, ts from test_null_timestamp_after_unbind;");
+
+        {
+            auto results = execute(connection, query);
+            REQUIRE(results.next());
+            REQUIRE(results.is_null(1));
+        }
+
+        // Each case reads the null on a freshly fetched row, so the null is discovered
+        // during the read rather than already recorded from an earlier one. That is the
+        // order that renders a zeroed timestamp, whose month and day are out of range.
+        auto const unbound_row = [&]()
+        {
+            auto results = execute(connection, query);
+            results.unbind();
+            REQUIRE(results.next());
+            REQUIRE(!results.is_bound(1));
+            return results;
+        };
+
+        {
+            // Unbound before the fetch, so the values are read one at a time with
+            // SQLGetData, which some drivers only allow in ascending column order.
+            auto results = unbound_row();
+            REQUIRE(results.get<int>(0) == 1);
+        }
+
+        {
+            auto results = unbound_row();
+            auto const fallback = NANODBC_TEXT("(null)");
+            REQUIRE(results.get<nanodbc::string>(1, fallback) == fallback);
+        }
+
+        {
+            auto results = unbound_row();
+            nanodbc::timestamp const epoch{};
+            REQUIRE(results.get<nanodbc::timestamp>(1, epoch).year == epoch.year);
+        }
+
+        {
+            auto results = unbound_row();
+            REQUIRE_THROWS_AS(results.get<nanodbc::string>(1), nanodbc::null_access_error);
+        }
+
+        {
+            auto results = unbound_row();
+            REQUIRE_THROWS_AS(results.get<nanodbc::timestamp>(1), nanodbc::null_access_error);
+        }
+    }
+
     // A binary column is not bound, so the fetch leaves no indicator behind for it and
     // whether it is null has to be asked of the driver.
     void test_is_null_binary()
