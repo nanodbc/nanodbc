@@ -570,3 +570,8 @@ TEST_CASE_METHOD(mysql_fixture, "test_binary_read_shapes", "[mysql][result][bina
 {
     test_binary_read_shapes();
 }
+
+TEST_CASE_METHOD(mysql_fixture, "test_null_long_text_fallback", "[mysql][result][null]")
+{
+    test_null_long_text_fallback();
+}

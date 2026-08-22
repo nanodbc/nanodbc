@@ -2524,3 +2524,28 @@ TEST_CASE_METHOD(mssql_fixture, "test_wide_bound_column_as_character", "[mssql][
     REQUIRE(results.next());
     REQUIRE(results.get<char>(0) == '9');
 }
+
+TEST_CASE_METHOD(mssql_fixture, "test_null_long_text_fallback", "[mssql][result][null]")
+{
+    test_null_long_text_fallback();
+}
+
+// A column whose SQL type the binding switch does not name falls to its default arm, which
+// binds it as text. uniqueidentifier is one such.
+TEST_CASE_METHOD(mssql_fixture, "test_bind_unnamed_sql_type", "[mssql][result][types]")
+{
+    auto connection = connect();
+    create_table(
+        connection,
+        NANODBC_TEXT("test_bind_unnamed_sql_type"),
+        NANODBC_TEXT("(g uniqueidentifier)"));
+    execute(
+        connection,
+        NANODBC_TEXT(
+            "insert into test_bind_unnamed_sql_type (g) values "
+            "('6F9619FF-8B86-D011-B42D-00C04FC964FF');"));
+
+    auto results = execute(connection, NANODBC_TEXT("select g from test_bind_unnamed_sql_type;"));
+    REQUIRE(results.next());
+    REQUIRE(!results.get<nanodbc::string>(0).empty());
+}

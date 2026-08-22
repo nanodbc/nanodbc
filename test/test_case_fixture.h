@@ -920,6 +920,31 @@ struct test_case_fixture : public base_test_fixture
 
     // Binary reads take a different path per shape: a short column is bound and copied out
     // of the row buffer, a long one is fetched in chunks, and a null one reports itself.
+    // A long text column is unbound, so whether it is null is only known once it has been
+    // read: the fallback is chosen after the read rather than before it.
+    void test_null_long_text_fallback()
+    {
+        nanodbc::connection connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_null_long_text_fallback"),
+            NANODBC_TEXT("(id int, t ") + get_text_type_name() + NANODBC_TEXT(")"));
+        execute(
+            connection,
+            NANODBC_TEXT("insert into test_null_long_text_fallback (id, t) values (1, null);"));
+
+        auto results =
+            execute(connection, NANODBC_TEXT("select id, t from test_null_long_text_fallback;"));
+        REQUIRE(results.next());
+        // Not is_null() first: an unbound column reports what the fetch knew, and a read is
+        // what settles it.
+        REQUIRE(
+            results.get<nanodbc::string>(1, NANODBC_TEXT("fallback")) == NANODBC_TEXT("fallback"));
+        REQUIRE(
+            results.get<nanodbc::string>(NANODBC_TEXT("t"), NANODBC_TEXT("fallback")) ==
+            NANODBC_TEXT("fallback"));
+    }
+
     void test_binary_read_shapes()
     {
         nanodbc::connection connection = connect();
