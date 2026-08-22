@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Column buffer casts go through `void*` rather than `reinterpret_cast` and a C-style cast, which analysers report as unsafe. [`#420`](https://github.com/nanodbc/nanodbc/issues/420)
+- `PARAM_RETURN` documents that it binds a procedure's return value at parameter zero of `{ ? = CALL proc(?) }`. [`#355`](https://github.com/nanodbc/nanodbc/issues/355)
 
 ## v2.17.0
 
