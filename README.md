@@ -110,6 +110,12 @@ Under Windows `sizeof(wchar_t) == sizeof(SQLWCHAR) == 2`, yet on Unix systems `s
 
 The CI builds do not exercise a Unicode-enabled iODBC driver. As such there is no guarantee that tests will pass in entirety on a system using iODBC. My recommendation is to use unixODBC. If you must use iODBC, consider _disabling_ unicode mode to avoid `wchar_t` issues.
 
+### Note About Non-ASCII Text
+
+In a narrow build, which is the default, text crosses between nanodbc and the driver as bytes in whatever the client character set happens to be, and a character that set cannot represent does not survive the trip. On Linux with unixODBC that set is normally UTF-8, which covers everything; on Windows it is the system ANSI codepage, which does not, so a character outside the basic multilingual plane is lost in both directions. Build with `NANODBC_ENABLE_UNICODE=ON` to exchange UTF-16 with the driver instead.
+
+Statement text is the more fragile of the two, because unlike a bound parameter it reaches the driver with neither a length nor a type. Bind values as parameters rather than writing them into statement text.
+
 ---
 
 ## Contributing

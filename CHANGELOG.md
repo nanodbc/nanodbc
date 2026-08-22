@@ -6,6 +6,7 @@
 - Column buffer casts go through `void*` rather than `reinterpret_cast` and a C-style cast, which analysers report as unsafe. [`#420`](https://github.com/nanodbc/nanodbc/issues/420)
 - A null timestamp read after `unbind()` yields the fallback or raises `null_access_error`, where it once aborted. [`#423`](https://github.com/nanodbc/nanodbc/issues/423)
 - `PARAM_RETURN` documents that it binds a procedure's return value at parameter zero of `{ ? = CALL proc(?) }`. [`#355`](https://github.com/nanodbc/nanodbc/issues/355)
+- Documented that non-ASCII text belongs in bound parameters, not statement text, whose encoding a narrow build leaves to the driver. [`#359`](https://github.com/nanodbc/nanodbc/issues/359)
 
 ## v2.17.0
 
