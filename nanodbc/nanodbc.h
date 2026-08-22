@@ -907,7 +907,8 @@ public:
         PARAM_IN,    ///< Binding an input parameter.
         PARAM_OUT,   ///< Binding an output parameter.
         PARAM_INOUT, ///< Binding an input/output parameter.
-        PARAM_RETURN ///< Binding a return parameter.
+        PARAM_RETURN ///< Binding a procedure's return value, at parameter zero of a
+                     ///< `{ ? = CALL proc(?) }` escape sequence.
     };
 
 public:
