@@ -1182,6 +1182,19 @@ TEST_CASE_METHOD(mssql_fixture, "test_string_aggregate", "[mssql][result][string
     test_string_aggregate();
 }
 
+TEST_CASE_METHOD(
+    mssql_fixture,
+    "test_execute_prepared_statement_repeatedly",
+    "[mssql][statement][prepare]")
+{
+    test_execute_prepared_statement_repeatedly();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_bind_arithmetic_null_sentry", "[mssql][bind][null]")
+{
+    test_bind_arithmetic_null_sentry();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_result_unbind", "[mssql][result][unbind]")
 {
     test_result_unbind();
