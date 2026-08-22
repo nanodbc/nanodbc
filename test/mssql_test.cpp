@@ -2589,3 +2589,8 @@ TEST_CASE_METHOD(
     REQUIRE(sentry_nulls == 1);
     REQUIRE(flagged_nulls == 1);
 }
+
+TEST_CASE_METHOD(mssql_fixture, "test_bind_date_to_timestamp_parameter", "[mssql][bind][date]")
+{
+    test_bind_date_to_timestamp_parameter();
+}

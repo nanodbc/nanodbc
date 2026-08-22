@@ -190,21 +190,23 @@ TEST_CASE("convert", "[string]")
         SECTION("SQLWCHAR via nanodbc::wide_char_t to std::string")
         {
 #ifdef NANODBC_USE_IODBC_WIDE_STRINGS
-            static_assert(sizeof(WCHAR) == sizeof(char32_t), "WCHAR size is invalid");
-            static_assert(sizeof(WCHAR) == sizeof(nanodbc::wide_char_t), "WCHAR size is invalid");
+            static_assert(sizeof(SQLWCHAR) == sizeof(char32_t), "SQLWCHAR size is invalid");
+            static_assert(
+                sizeof(SQLWCHAR) == sizeof(nanodbc::wide_char_t), "SQLWCHAR size is invalid");
 
             std::string out;
-            SQLWCHAR const* s = reinterpret_cast<WCHAR const*>(u32.data());
+            SQLWCHAR const* s = reinterpret_cast<SQLWCHAR const*>(u32.data());
             auto const us = reinterpret_cast<nanodbc::wide_char_t const*>(
                 s); // no-op or unsigned short to signed char16_t
             convert(us, u32.size(), out);
             REQUIRE(u8 == out);
 #else
-            static_assert(sizeof(WCHAR) == sizeof(char16_t), "WCHAR size is invalid");
-            static_assert(sizeof(WCHAR) == sizeof(nanodbc::wide_char_t), "WCHAR size is invalid");
+            static_assert(sizeof(SQLWCHAR) == sizeof(char16_t), "SQLWCHAR size is invalid");
+            static_assert(
+                sizeof(SQLWCHAR) == sizeof(nanodbc::wide_char_t), "SQLWCHAR size is invalid");
 
             std::string out;
-            SQLWCHAR const* s = reinterpret_cast<WCHAR const*>(u16.data());
+            SQLWCHAR const* s = reinterpret_cast<SQLWCHAR const*>(u16.data());
             auto const us = reinterpret_cast<nanodbc::wide_char_t const*>(
                 s); // no-op or unsigned short to signed char16_t
             convert(us, u16.size(), out);

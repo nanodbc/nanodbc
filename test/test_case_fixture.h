@@ -945,6 +945,36 @@ struct test_case_fixture : public base_test_fixture
             NANODBC_TEXT("fallback"));
     }
 
+    // A date bound to a timestamp parameter, which ODBC lists as a supported C to SQL
+    // conversion. The buffer length has to be the date's own size; the parameter's declared
+    // precision says nothing about it.
+    void test_bind_date_to_timestamp_parameter()
+    {
+        nanodbc::connection connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_bind_date_to_timestamp"),
+            NANODBC_TEXT("(ts ") + get_timestamp_type_name() + NANODBC_TEXT(")"));
+
+        nanodbc::date const d{2006, 12, 30};
+        {
+            nanodbc::statement statement(connection);
+            prepare(
+                statement,
+                NANODBC_TEXT("insert into test_bind_date_to_timestamp (ts) values (?);"));
+            statement.bind(0, &d);
+            nanodbc::execute(statement);
+        }
+
+        auto results =
+            execute(connection, NANODBC_TEXT("select ts from test_bind_date_to_timestamp;"));
+        REQUIRE(results.next());
+        auto const ts = results.get<nanodbc::timestamp>(0);
+        REQUIRE(ts.year == d.year);
+        REQUIRE(ts.month == d.month);
+        REQUIRE(ts.day == d.day);
+    }
+
     void test_binary_read_shapes()
     {
         nanodbc::connection connection = connect();
@@ -1122,13 +1152,13 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(results.get<double>(5) == 2.5);
         REQUIRE(results.get<float>(5) == 2.5f);
 
-        // Rendering as text is a conversion per type, and only the widths from 32 bits up
-        // have one: a smallint read as a string is refused rather than rendered.
+        // Rendering as text is a conversion per type, and every integer width has one.
+        REQUIRE(results.get<nanodbc::string>(0) == NANODBC_TEXT("7"));
+        REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("300"));
         REQUIRE(results.get<nanodbc::string>(2) == NANODBC_TEXT("70000"));
         REQUIRE(results.get<nanodbc::string>(3) == NANODBC_TEXT("5000000000"));
         REQUIRE(!results.get<nanodbc::string>(4).empty());
         REQUIRE(!results.get<nanodbc::string>(5).empty());
-        REQUIRE_THROWS_AS(results.get<nanodbc::string>(0), nanodbc::type_incompatible_error);
 
         // A bound character column read as a character goes through the string column path;
         // a long one would be unbound and read with SQLGetData instead.

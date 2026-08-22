@@ -625,3 +625,8 @@ TEST_CASE_METHOD(sqlite_fixture, "test_null_long_text_fallback", "[sqlite][resul
 {
     test_null_long_text_fallback();
 }
+
+TEST_CASE_METHOD(sqlite_fixture, "test_bind_date_to_timestamp_parameter", "[sqlite][bind][date]")
+{
+    test_bind_date_to_timestamp_parameter();
+}

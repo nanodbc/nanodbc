@@ -2516,6 +2516,13 @@ public:
             param_size = SQL_SS_LENGTH_UNLIMITED;
         }
 
+        // Buffer length is the size of one element of the bound array. Where the caller
+        // stated it that is the answer, and otherwise it is the bound type's own size,
+        // which the column's is not: a date is six bytes whatever precision the parameter
+        // was declared with.
+        auto const buffer_length =
+            buffer.value_size_ > 0 ? buffer.value_size_ : static_cast<std::size_t>(sizeof(T));
+
         RETCODE rc = SQL_SUCCESS;
         NANODBC_CALL_RC(
             SQLBindParameter,
@@ -2528,7 +2535,7 @@ public:
             param_size,       // column size ignored for many types, but needed for strings
             param.scale_,     // decimal digits
             (SQLPOINTER)buffer.values_, // parameter value
-            value_size,                 // buffer length
+            buffer_length,              // buffer length
             bind_len_or_null_[param.index_].data());
 
         if (!success(rc))
@@ -2545,7 +2552,13 @@ public:
             throw programming_error("cannot bind parameter, close tvp first");
 #endif
 
-        auto const buffer_size = buffer.value_size_ > 0 ? buffer.value_size_ : param.size_;
+        // Buffer length is a count of bytes, where the parameter's size is a count of
+        // digits for a numeric column and says nothing about how long the text is. A sign
+        // or a decimal point is enough to make the text the longer of the two, so the
+        // length of the value is measured rather than assumed.
+        auto buffer_size = buffer.value_size_;
+        if (buffer_size == 0)
+            buffer_size = (std::char_traits<T>::length(buffer.values_) + 1) * sizeof(T);
 
         RETCODE rc = SQL_SUCCESS;
         NANODBC_CALL_RC(
@@ -3211,6 +3224,13 @@ public:
             param_size = SQL_SS_LENGTH_UNLIMITED;
         }
 
+        // Buffer length is the size of one element of the bound array. Where the caller
+        // stated it that is the answer, and otherwise it is the bound type's own size,
+        // which the column's is not: a date is six bytes whatever precision the parameter
+        // was declared with.
+        auto const buffer_length =
+            buffer.value_size_ > 0 ? buffer.value_size_ : static_cast<std::size_t>(sizeof(T));
+
         auto stmt_impl = stmt_.lock();
         NANODBC_ASSERT(stmt_impl != nullptr);
 
@@ -3226,7 +3246,7 @@ public:
             param_size,   // column size ignored for many types, but needed for strings
             param.scale_, // decimal digits
             (SQLPOINTER)buffer.values_, // parameter value
-            value_size,                 // buffer length
+            buffer_length,              // buffer length
             bind_len_or_null_[param.index_].data());
 
         if (!success(rc))
@@ -4832,13 +4852,40 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
 
     // std::to_string renders each as the SQL type demands: "%d" and "%lld" for integers,
     // "%f" for floating point, whose column scale is undefined.
+    case SQL_C_BIT:
+    case SQL_C_TINYINT:
+    case SQL_C_STINYINT:
+        convert(std::to_string(*ensure_pdata<int8_t>(column)), result);
+        return;
+
+    case SQL_C_UTINYINT:
+        convert(std::to_string(*ensure_pdata<uint8_t>(column)), result);
+        return;
+
+    case SQL_C_SHORT:
+    case SQL_C_SSHORT:
+        convert(std::to_string(*ensure_pdata<int16_t>(column)), result);
+        return;
+
+    case SQL_C_USHORT:
+        convert(std::to_string(*ensure_pdata<uint16_t>(column)), result);
+        return;
+
     case SQL_C_LONG:
     case SQL_C_SLONG:
         convert(std::to_string(*ensure_pdata<int32_t>(column)), result);
         return;
 
+    case SQL_C_ULONG:
+        convert(std::to_string(*ensure_pdata<uint32_t>(column)), result);
+        return;
+
     case SQL_C_SBIGINT:
         convert(std::to_string(*ensure_pdata<int64_t>(column)), result);
+        return;
+
+    case SQL_C_UBIGINT:
+        convert(std::to_string(*ensure_pdata<uint64_t>(column)), result);
         return;
 
     case SQL_C_FLOAT:
