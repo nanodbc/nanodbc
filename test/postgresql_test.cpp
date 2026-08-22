@@ -641,3 +641,11 @@ TEST_CASE_METHOD(
 {
     test_bind_date_to_timestamp_parameter();
 }
+
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_bind_null_in_single_row_batch",
+    "[postgresql][bind][null]")
+{
+    test_bind_null_in_single_row_batch();
+}

@@ -580,3 +580,8 @@ TEST_CASE_METHOD(mysql_fixture, "test_bind_date_to_timestamp_parameter", "[mysql
 {
     test_bind_date_to_timestamp_parameter();
 }
+
+TEST_CASE_METHOD(mysql_fixture, "test_bind_null_in_single_row_batch", "[mysql][bind][null]")
+{
+    test_bind_null_in_single_row_batch();
+}

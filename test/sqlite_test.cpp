@@ -630,3 +630,8 @@ TEST_CASE_METHOD(sqlite_fixture, "test_bind_date_to_timestamp_parameter", "[sqli
 {
     test_bind_date_to_timestamp_parameter();
 }
+
+TEST_CASE_METHOD(sqlite_fixture, "test_bind_null_in_single_row_batch", "[sqlite][bind][null]")
+{
+    test_bind_null_in_single_row_batch();
+}

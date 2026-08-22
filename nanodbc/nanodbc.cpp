@@ -2574,7 +2574,7 @@ public:
             param.scale_,     // decimal digits
             (SQLPOINTER)buffer.values_, // parameter value
             buffer_size,                // buffer length
-            (buffer.size_ <= 1 ? nullptr : bind_len_or_null_[param.index_].data()));
+            bind_len_or_null_[param.index_].data());
 
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
@@ -2782,23 +2782,26 @@ void statement::statement_impl::bind(
     prepare_bind(param_index, batch_size, direction, param);
 
     // prepare_bind starts every indicator out as SQL_NULL_DATA, so only the values that
-    // are not null need marking here.
+    // are not null need marking here. A character value carries its own end, so it is
+    // marked as terminated rather than as being the width of the parameter.
+    auto const present = is_character<T>::value ? static_cast<null_type>(SQL_NTS)
+                                                : static_cast<null_type>(param.size_);
     if (null_sentry)
     {
         for (std::size_t i = 0; i < batch_size; ++i)
             if (!equals(values[i], *null_sentry))
-                bind_len_or_null_[param_index][i] = param.size_;
+                bind_len_or_null_[param_index][i] = present;
     }
     else if (nulls)
     {
         for (std::size_t i = 0; i < batch_size; ++i)
             if (!nulls[i])
-                bind_len_or_null_[param_index][i] = param.size_;
+                bind_len_or_null_[param_index][i] = present;
     }
     else
     {
         for (std::size_t i = 0; i < batch_size; ++i)
-            bind_len_or_null_[param_index][i] = param.size_;
+            bind_len_or_null_[param_index][i] = present;
     }
 
     bound_buffer<T> buffer(values, batch_size);
@@ -3277,7 +3280,7 @@ public:
             param.scale_, // decimal digits
             (SQLPOINTER)buffer.values_, // parameter value
             buffer_size,                // buffer length
-            (buffer.size_ <= 1 ? nullptr : bind_len_or_null_[param.index_].data()));
+            bind_len_or_null_[param.index_].data());
 
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_impl->native_statement_handle(), SQL_HANDLE_STMT);
@@ -3496,23 +3499,26 @@ void table_valued_parameter::table_valued_parameter_impl::bind(
     prepare_bind(param_index, batch_size, param);
 
     // prepare_bind starts every indicator out as SQL_NULL_DATA, so only the values that
-    // are not null need marking here.
+    // are not null need marking here. A character value carries its own end, so it is
+    // marked as terminated rather than as being the width of the parameter.
+    auto const present = is_character<T>::value ? static_cast<null_type>(SQL_NTS)
+                                                : static_cast<null_type>(param.size_);
     if (null_sentry)
     {
         for (std::size_t i = 0; i < batch_size; ++i)
             if (!equals(values[i], *null_sentry))
-                bind_len_or_null_[param_index][i] = param.size_;
+                bind_len_or_null_[param_index][i] = present;
     }
     else if (nulls)
     {
         for (std::size_t i = 0; i < batch_size; ++i)
             if (!nulls[i])
-                bind_len_or_null_[param_index][i] = param.size_;
+                bind_len_or_null_[param_index][i] = present;
     }
     else
     {
         for (std::size_t i = 0; i < batch_size; ++i)
-            bind_len_or_null_[param_index][i] = param.size_;
+            bind_len_or_null_[param_index][i] = present;
     }
 
     bound_buffer<T> buffer(values, batch_size);

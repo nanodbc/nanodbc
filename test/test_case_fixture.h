@@ -975,6 +975,42 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(ts.day == d.day);
     }
 
+    // A batch of one is still a batch: the null flags have to reach the driver whatever the
+    // size, and for a long time they did not, so a single row came out holding the value it
+    // was told was null.
+    void test_bind_null_in_single_row_batch()
+    {
+        nanodbc::connection connection = connect();
+
+        for (std::size_t batch : {std::size_t{1}, std::size_t{2}})
+        {
+            create_table(
+                connection,
+                NANODBC_TEXT("test_bind_null_single"),
+                NANODBC_TEXT("(i int, s varchar(20))"));
+
+            std::vector<int> ids(batch, 0);
+            for (std::size_t i = 0; i < batch; ++i)
+                ids[i] = static_cast<int>(i);
+            std::vector<nanodbc::string> strings(batch, NANODBC_TEXT("hello"));
+            std::vector<std::uint8_t> flags(batch, 0);
+            flags[0] = 1; // the first value is null
+
+            nanodbc::statement statement(connection);
+            prepare(
+                statement, NANODBC_TEXT("insert into test_bind_null_single (i, s) values (?, ?);"));
+            statement.bind(0, ids.data(), batch);
+            statement.bind_strings(1, strings, reinterpret_cast<bool const*>(flags.data()));
+            nanodbc::execute(statement, static_cast<long>(batch));
+
+            auto results = execute(
+                connection, NANODBC_TEXT("select count(*), count(s) from test_bind_null_single;"));
+            REQUIRE(results.next());
+            REQUIRE(results.get<int>(0) == static_cast<int>(batch));
+            REQUIRE(results.get<int>(0) - results.get<int>(1) == 1);
+        }
+    }
+
     void test_binary_read_shapes()
     {
         nanodbc::connection connection = connect();
