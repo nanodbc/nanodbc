@@ -2549,3 +2549,43 @@ TEST_CASE_METHOD(mssql_fixture, "test_bind_unnamed_sql_type", "[mssql][result][t
     REQUIRE(results.next());
     REQUIRE(!results.get<nanodbc::string>(0).empty());
 }
+
+// The two ways a table valued parameter column can be told which of its values are null: a
+// sentry for the numeric columns, and a flag per value for the binary one.
+TEST_CASE_METHOD(
+    mssql_table_valued_parameter_fixture,
+    "test_table_valued_parameter_null_marking",
+    "[mssql][table_valued_paramter]")
+{
+    auto conn = connect();
+    auto stmt = nanodbc::statement(conn);
+    stmt.prepare(NANODBC_TEXT("{ CALL tvp_test(?, ?, ?) }"));
+    stmt.bind(0, &p0_);
+
+    // A flag set marks that value null; the rest are given their length.
+    std::vector<char> nulls(static_cast<std::size_t>(num_rows_), 0);
+    nulls[0] = 1;
+
+    auto p1 = nanodbc::table_valued_parameter(stmt, 1, num_rows_);
+    p1.bind(0, p1_col0_.data(), p1_col0_.size());
+    // The first value as its own sentry, so that row's col1 arrives null.
+    p1.bind(1, p1_col1_.data(), p1_col1_.size(), &p1_col1_.front());
+    p1.bind_strings(2, p1_col2_);
+    p1.bind_strings(3, p1_col3_);
+    p1.bind(4, p1_col4_, reinterpret_cast<bool const*>(nulls.data()));
+    p1.close();
+    stmt.bind(2, p2_.c_str());
+
+    auto results = stmt.execute();
+    int sentry_nulls = 0;
+    int flagged_nulls = 0;
+    while (results.next())
+    {
+        if (results.is_null(2))
+            ++sentry_nulls;
+        if (results.is_null(5))
+            ++flagged_nulls;
+    }
+    REQUIRE(sentry_nulls == 1);
+    REQUIRE(flagged_nulls == 1);
+}
