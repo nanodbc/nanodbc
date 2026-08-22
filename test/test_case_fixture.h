@@ -945,6 +945,36 @@ struct test_case_fixture : public base_test_fixture
             NANODBC_TEXT("fallback"));
     }
 
+    // A date bound to a timestamp parameter, which ODBC lists as a supported C to SQL
+    // conversion. The buffer length has to be the date's own size; the parameter's declared
+    // precision says nothing about it.
+    void test_bind_date_to_timestamp_parameter()
+    {
+        nanodbc::connection connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_bind_date_to_timestamp"),
+            NANODBC_TEXT("(ts ") + get_timestamp_type_name() + NANODBC_TEXT(")"));
+
+        nanodbc::date const d{2006, 12, 30};
+        {
+            nanodbc::statement statement(connection);
+            prepare(
+                statement,
+                NANODBC_TEXT("insert into test_bind_date_to_timestamp (ts) values (?);"));
+            statement.bind(0, &d);
+            nanodbc::execute(statement);
+        }
+
+        auto results =
+            execute(connection, NANODBC_TEXT("select ts from test_bind_date_to_timestamp;"));
+        REQUIRE(results.next());
+        auto const ts = results.get<nanodbc::timestamp>(0);
+        REQUIRE(ts.year == d.year);
+        REQUIRE(ts.month == d.month);
+        REQUIRE(ts.day == d.day);
+    }
+
     void test_binary_read_shapes()
     {
         nanodbc::connection connection = connect();

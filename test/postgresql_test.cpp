@@ -633,3 +633,11 @@ TEST_CASE_METHOD(postgresql_fixture, "test_null_long_text_fallback", "[postgresq
 {
     test_null_long_text_fallback();
 }
+
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_bind_date_to_timestamp_parameter",
+    "[postgresql][bind][date]")
+{
+    test_bind_date_to_timestamp_parameter();
+}

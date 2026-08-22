@@ -2516,6 +2516,13 @@ public:
             param_size = SQL_SS_LENGTH_UNLIMITED;
         }
 
+        // Buffer length is the size of one element of the bound array. Where the caller
+        // stated it that is the answer, and otherwise it is the bound type's own size,
+        // which the column's is not: a date is six bytes whatever precision the parameter
+        // was declared with.
+        auto const buffer_length =
+            buffer.value_size_ > 0 ? buffer.value_size_ : static_cast<std::size_t>(sizeof(T));
+
         RETCODE rc = SQL_SUCCESS;
         NANODBC_CALL_RC(
             SQLBindParameter,
@@ -2528,7 +2535,7 @@ public:
             param_size,       // column size ignored for many types, but needed for strings
             param.scale_,     // decimal digits
             (SQLPOINTER)buffer.values_, // parameter value
-            value_size,                 // buffer length
+            buffer_length,              // buffer length
             bind_len_or_null_[param.index_].data());
 
         if (!success(rc))
@@ -3217,6 +3224,13 @@ public:
             param_size = SQL_SS_LENGTH_UNLIMITED;
         }
 
+        // Buffer length is the size of one element of the bound array. Where the caller
+        // stated it that is the answer, and otherwise it is the bound type's own size,
+        // which the column's is not: a date is six bytes whatever precision the parameter
+        // was declared with.
+        auto const buffer_length =
+            buffer.value_size_ > 0 ? buffer.value_size_ : static_cast<std::size_t>(sizeof(T));
+
         auto stmt_impl = stmt_.lock();
         NANODBC_ASSERT(stmt_impl != nullptr);
 
@@ -3232,7 +3246,7 @@ public:
             param_size,   // column size ignored for many types, but needed for strings
             param.scale_, // decimal digits
             (SQLPOINTER)buffer.values_, // parameter value
-            value_size,                 // buffer length
+            buffer_length,              // buffer length
             bind_len_or_null_[param.index_].data());
 
         if (!success(rc))

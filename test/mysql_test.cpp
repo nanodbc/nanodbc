@@ -575,3 +575,8 @@ TEST_CASE_METHOD(mysql_fixture, "test_null_long_text_fallback", "[mysql][result]
 {
     test_null_long_text_fallback();
 }
+
+TEST_CASE_METHOD(mysql_fixture, "test_bind_date_to_timestamp_parameter", "[mysql][bind][date]")
+{
+    test_bind_date_to_timestamp_parameter();
+}
