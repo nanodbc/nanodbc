@@ -628,3 +628,8 @@ TEST_CASE_METHOD(postgresql_fixture, "test_binary_read_shapes", "[postgresql][re
 {
     test_binary_read_shapes();
 }
+
+TEST_CASE_METHOD(postgresql_fixture, "test_null_long_text_fallback", "[postgresql][result][null]")
+{
+    test_null_long_text_fallback();
+}

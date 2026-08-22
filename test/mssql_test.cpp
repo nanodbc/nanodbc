@@ -2489,4 +2489,103 @@ TEST_CASE_METHOD(mssql_fixture, "test_output_parameters", "[mssql][statement][bi
 
     REQUIRE(out == 42);
     REQUIRE(inout == 101);
+
+    // A return value is bound in a direction of its own, which maps onto the same
+    // SQL_PARAM_OUTPUT.
+    nanodbc::statement returning(connection);
+    returning.prepare(NANODBC_TEXT("{ ? = CALL ") + name + NANODBC_TEXT("(?, ?, ?) }"));
+    int rv = 0;
+    int const in2 = 1;
+    int out2 = 0;
+    int inout2 = 0;
+    returning.bind(0, &rv, nanodbc::statement::PARAM_RETURN);
+    returning.bind(1, &in2);
+    returning.bind(2, &out2, nanodbc::statement::PARAM_OUT);
+    returning.bind(3, &inout2, nanodbc::statement::PARAM_INOUT);
+    returning.just_execute();
+    REQUIRE(out2 == 2);
+}
+
+// An NVARCHAR column is bound wide, so reading one as a character takes the wide arm of
+// the string column path.
+TEST_CASE_METHOD(mssql_fixture, "test_wide_bound_column_as_character", "[mssql][result][unicode]")
+{
+    auto connection = connect();
+    create_table(
+        connection,
+        NANODBC_TEXT("test_wide_bound_column_as_character"),
+        NANODBC_TEXT("(s nvarchar(10))"));
+    execute(
+        connection,
+        NANODBC_TEXT("insert into test_wide_bound_column_as_character (s) values (N'9');"));
+
+    auto results =
+        execute(connection, NANODBC_TEXT("select s from test_wide_bound_column_as_character;"));
+    REQUIRE(results.next());
+    REQUIRE(results.get<char>(0) == '9');
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_null_long_text_fallback", "[mssql][result][null]")
+{
+    test_null_long_text_fallback();
+}
+
+// A column whose SQL type the binding switch does not name falls to its default arm, which
+// binds it as text. uniqueidentifier is one such.
+TEST_CASE_METHOD(mssql_fixture, "test_bind_unnamed_sql_type", "[mssql][result][types]")
+{
+    auto connection = connect();
+    create_table(
+        connection,
+        NANODBC_TEXT("test_bind_unnamed_sql_type"),
+        NANODBC_TEXT("(g uniqueidentifier)"));
+    execute(
+        connection,
+        NANODBC_TEXT(
+            "insert into test_bind_unnamed_sql_type (g) values "
+            "('6F9619FF-8B86-D011-B42D-00C04FC964FF');"));
+
+    auto results = execute(connection, NANODBC_TEXT("select g from test_bind_unnamed_sql_type;"));
+    REQUIRE(results.next());
+    REQUIRE(!results.get<nanodbc::string>(0).empty());
+}
+
+// The two ways a table valued parameter column can be told which of its values are null: a
+// sentry for the numeric columns, and a flag per value for the binary one.
+TEST_CASE_METHOD(
+    mssql_table_valued_parameter_fixture,
+    "test_table_valued_parameter_null_marking",
+    "[mssql][table_valued_paramter]")
+{
+    auto conn = connect();
+    auto stmt = nanodbc::statement(conn);
+    stmt.prepare(NANODBC_TEXT("{ CALL tvp_test(?, ?, ?) }"));
+    stmt.bind(0, &p0_);
+
+    // A flag set marks that value null; the rest are given their length.
+    std::vector<char> nulls(static_cast<std::size_t>(num_rows_), 0);
+    nulls[0] = 1;
+
+    auto p1 = nanodbc::table_valued_parameter(stmt, 1, num_rows_);
+    p1.bind(0, p1_col0_.data(), p1_col0_.size());
+    // The first value as its own sentry, so that row's col1 arrives null.
+    p1.bind(1, p1_col1_.data(), p1_col1_.size(), &p1_col1_.front());
+    p1.bind_strings(2, p1_col2_);
+    p1.bind_strings(3, p1_col3_);
+    p1.bind(4, p1_col4_, reinterpret_cast<bool const*>(nulls.data()));
+    p1.close();
+    stmt.bind(2, p2_.c_str());
+
+    auto results = stmt.execute();
+    int sentry_nulls = 0;
+    int flagged_nulls = 0;
+    while (results.next())
+    {
+        if (results.is_null(2))
+            ++sentry_nulls;
+        if (results.is_null(5))
+            ++flagged_nulls;
+    }
+    REQUIRE(sentry_nulls == 1);
+    REQUIRE(flagged_nulls == 1);
 }

@@ -4170,7 +4170,8 @@ public:
         short const column = this->column(column_name);
         if (is_null(column))
         {
-            NANODBC_ASSERT(is_bound(column));
+            // Not asserted to be bound: an unbound column reports itself null here too, and
+            // MySQL sets the indicator to SQL_NULL_DATA from SQLBindCol regardless.
             result = fallback;
             return;
         }
