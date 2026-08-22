@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Every integer width renders as a string, where only 32 bits and wider did. [`#467`](https://github.com/nanodbc/nanodbc/issues/467)
+- A bound C string is given its own length as the buffer length, rather than the parameter's column size, which counts digits. [`#462`](https://github.com/nanodbc/nanodbc/issues/462)
+- `result::get(column_name, fallback)` no longer aborts on a null unbound column. [`#480`](https://github.com/nanodbc/nanodbc/pull/480)
 - `result_iterator`'s postfix increment returns `void`, so `*it++` is a compile error rather than the row after the one it names; `it++` and `++it` are unaffected.
 - Cleared the remaining code scanning alerts. [`#476`](https://github.com/nanodbc/nanodbc/pull/476)
 - Column buffers are owned by `std::unique_ptr`, and the implementation types are allocated with `std::make_shared`.
