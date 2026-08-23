@@ -1,0 +1,21 @@
+var searchData=
+[
+  ['data_5ftype_0',['data_type',['../classnanodbc_1_1catalog_1_1columns.html#afc61c619375282c2777ecc79f6a47cd0',1,'nanodbc::catalog::columns::data_type()'],['../classnanodbc_1_1catalog_1_1procedure__columns.html#ae0af90d1c091a9f7419ef4f75291f0f9',1,'nanodbc::catalog::procedure_columns::data_type()']]],
+  ['database_5ferror_1',['database_error',['../classnanodbc_1_1database__error.html',1,'nanodbc::database_error'],['../classnanodbc_1_1database__error.html#af54de798fb98a7a6490c0e253a964145',1,'nanodbc::database_error::database_error()']]],
+  ['database_5fname_2',['database_name',['../classnanodbc_1_1connection.html#af6cc1d8f8eaa9cd2ac9f215020f75dec',1,'nanodbc::connection']]],
+  ['datasource_3',['datasource',['../structnanodbc_1_1datasource.html',1,'nanodbc']]],
+  ['date_4',['date',['../structnanodbc_1_1date.html',1,'nanodbc']]],
+  ['day_5',['day',['../structnanodbc_1_1date.html#ad796f131143db2ceb9277f52745b8d33',1,'nanodbc::date::day'],['../structnanodbc_1_1timestamp.html#a5ca9eb0eb39990449ba3f855e119f487',1,'nanodbc::timestamp::day']]],
+  ['dbms_5fname_6',['dbms_name',['../classnanodbc_1_1connection.html#a39d2e978322f4f8c24ece6641169fd30',1,'nanodbc::connection']]],
+  ['dbms_5fversion_7',['dbms_version',['../classnanodbc_1_1connection.html#ad1d7d8901d376a3d451a49220e2c2b3c',1,'nanodbc::connection']]],
+  ['deallocate_8',['deallocate',['../classnanodbc_1_1connection.html#a625a5575d144f49f75b0e637bf297fad',1,'nanodbc::connection']]],
+  ['decimal_5fdigits_9',['decimal_digits',['../classnanodbc_1_1catalog_1_1columns.html#ad22f3bf4453bc59bba45b7abbde93851',1,'nanodbc::catalog::columns::decimal_digits()'],['../classnanodbc_1_1catalog_1_1procedure__columns.html#a0d205e7c60856286d2bdd3ab50ca0948',1,'nanodbc::catalog::procedure_columns::decimal_digits()']]],
+  ['describe_5fparameters_10',['describe_parameters',['../classnanodbc_1_1table__valued__parameter.html#ae8f71dacc0004a0f67968791a9e9ab42',1,'nanodbc::table_valued_parameter::describe_parameters()'],['../classnanodbc_1_1statement.html#a8aa87b3c1660353541c5b0b5b2f295fc',1,'nanodbc::statement::describe_parameters()']]],
+  ['difference_5ftype_11',['difference_type',['../classnanodbc_1_1result__iterator.html#af16f09f398c533c9346d521a2ea9aeef',1,'nanodbc::result_iterator']]],
+  ['disable_5fasync_12',['disable_async',['../classnanodbc_1_1statement.html#a7b96b992fb9891b46411c300b017fe74',1,'nanodbc::statement']]],
+  ['disconnect_13',['disconnect',['../classnanodbc_1_1connection.html#adf614b7fdc08596122ca12e21a61ba34',1,'nanodbc::connection']]],
+  ['display_5fsize_14',['display_size',['../classnanodbc_1_1implementation__row__descriptor.html#a8a3f4b02f49551c2b5b640c58b97d9fd',1,'nanodbc::implementation_row_descriptor']]],
+  ['driver_15',['driver',['../structnanodbc_1_1driver.html',1,'nanodbc::driver'],['../structnanodbc_1_1datasource.html#a5545e93a01b3fb68a92f50aa5285c653',1,'nanodbc::datasource::driver']]],
+  ['driver_5fname_16',['driver_name',['../classnanodbc_1_1connection.html#a9a93b35bd875edefa81c39c14ecc282f',1,'nanodbc::connection']]],
+  ['driver_5fversion_17',['driver_version',['../classnanodbc_1_1connection.html#a6899e2959ff51d304cfc9bad496f26a2',1,'nanodbc::connection']]]
+];

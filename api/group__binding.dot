@@ -1,0 +1,13 @@
+digraph "Binding parameters"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir=LR;
+  Node2 [id="Node000002",label="Binding multiple non\l-string values",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$group__bind__multi.html",tooltip="Binds given values to given parameter placeholder number in the prepared statement."];
+  Node3 [id="Node000003",label="Binding multiple string\l values",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$group__bind__strings.html",tooltip="Binds given string values to parameter marker in prepared statement."];
+  Node1 [id="Node000001",label="Binding parameters",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="These functions are used to bind values to ODBC parameters."];
+  Node1->Node2 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node3 [shape=plaintext, dir="back", style="solid"];
+}
