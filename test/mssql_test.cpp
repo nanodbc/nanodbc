@@ -283,6 +283,39 @@ TEST_CASE_METHOD(mssql_fixture, "test_multi_statement_insert_select", "[mssql]")
     REQUIRE(nid == 1);
 }
 
+// The OUTPUT clause returns the generated key from the INSERT itself, as one result set
+// with rows, rather than as a second statement whose count has to be stepped over first.
+TEST_CASE_METHOD(mssql_fixture, "test_insert_output_identity", "[mssql][result][identity]")
+{
+    auto connection = connect();
+    create_table(
+        connection,
+        NANODBC_TEXT("test_insert_output_identity"),
+        NANODBC_TEXT("(id int IDENTITY(1,1) PRIMARY KEY, data varchar(20) NOT NULL)"));
+
+    auto const insert = NANODBC_TEXT(
+        "insert into test_insert_output_identity (data) "
+        "output inserted.id values (?);");
+
+    for (int expected = 1; expected <= 3; ++expected)
+    {
+        nanodbc::statement statement(connection);
+        statement.prepare(insert);
+        statement.bind(0, "abc");
+
+        auto results = statement.execute();
+        REQUIRE(results.columns() == 1);
+        REQUIRE(results.next());
+        REQUIRE(results.get<int>(0) == expected);
+        REQUIRE(!results.next());
+    }
+
+    auto rows =
+        execute(connection, NANODBC_TEXT("select count(*) from test_insert_output_identity;"));
+    REQUIRE(rows.next());
+    REQUIRE(rows.get<int>(0) == 3);
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_blob", "[mssql][blob][binary][varbinary]")
 {
     nanodbc::connection connection = connect();
