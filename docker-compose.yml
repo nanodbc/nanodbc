@@ -108,12 +108,13 @@ services:
       - "1521:1521"
     environment:
       ORACLE_PWD: *default_credential
+    # The image carries its own health check, which runs the database's own status
+    # script, so only the timing is set here.
     healthcheck:
-      test: ["CMD-SHELL", "grep -q 'DATABASE IS READY TO USE' /opt/oracle/diag/rdbms/*/*/trace/alert*.log 2>/dev/null || healthcheck.sh"]
-      interval: 15s
-      timeout: 10s
+      interval: 30s
+      timeout: 30s
       retries: 40
-      start_period: 300s
+      start_period: 600s
 
   nanodbc:
     build:
