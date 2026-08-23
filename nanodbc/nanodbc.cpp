@@ -2652,6 +2652,14 @@ public:
         bool const* nulls = nullptr,
         T const* null_sentry = nullptr);
 
+    // takes a copy of the values, so that the caller's vector need not outlive the bind
+    template <class T>
+    void bind_vector(
+        param_direction direction,
+        short param_index,
+        std::vector<T> const& values,
+        bool const* nulls = nullptr);
+
     // handles multiple binary values
     void bind(
         param_direction direction,
@@ -2817,6 +2825,10 @@ private:
     std::map<short, std::vector<wide_string::value_type>> wide_string_data_;
     std::map<short, std::vector<std::string::value_type>> string_data_;
     std::map<short, std::vector<uint8_t>> binary_data_;
+    // Values the statement holds on behalf of a caller who bound a vector, kept as bytes
+    // because one statement's parameters are of no single type. ODBC reads a bound buffer
+    // when the statement executes, so these have to outlive the bind.
+    std::map<short, std::vector<uint8_t>> value_data_;
     std::map<short, bound_parameter> param_descr_data_;
 
 #if defined(NANODBC_DO_ASYNC_IMPL)
@@ -2869,6 +2881,24 @@ void statement::statement_impl::bind(
 
     bound_buffer<T> buffer(values, batch_size);
     bind_parameter(param, buffer);
+}
+
+template <class T>
+void statement::statement_impl::bind_vector(
+    param_direction direction,
+    short param_index,
+    std::vector<T> const& values,
+    bool const* nulls)
+{
+    // The values move to where the statement can keep them, the caller's vector being
+    // under no obligation to outlive the bind. Binding a parameter again replaces
+    // whatever was held for it.
+    auto& owned = value_data_[param_index];
+    owned.resize(values.size() * sizeof(T));
+    if (!values.empty())
+        std::memcpy(owned.data(), values.data(), owned.size());
+
+    bind(direction, param_index, reinterpret_cast<T const*>(owned.data()), values.size(), nulls);
 }
 
 template <class T, typename>
@@ -6347,7 +6377,11 @@ short statement::parameter_type(short param_index) const
     template void statement::bind(                                                                 \
         short, const type*, std::size_t, const type*, param_direction); /* n-ary, sentry */        \
     template void statement::bind(                                                                 \
-        short, const type*, std::size_t, const bool*, param_direction) /* n-ary, flags */
+        short, const type*, std::size_t, const bool*, param_direction); /* n-ary, flags */         \
+    template void statement::bind(                                                                 \
+        short, std::vector<type> const&, param_direction); /* vector, copied */                    \
+    template void statement::bind(                                                                 \
+        short, std::vector<type> const&, const bool*, param_direction) /* vector, flags */
 
 #define NANODBC_INSTANTIATE_BIND_VECTOR_STRINGS(type)                                              \
     template void statement::bind_strings(short, std::vector<type> const&, param_direction);       \
@@ -6468,6 +6502,22 @@ void statement::bind(
     param_direction direction)
 {
     impl_->bind(direction, param_index, values, nullptr, null_sentry);
+}
+
+template <class T>
+void statement::bind(short param_index, std::vector<T> const& values, param_direction direction)
+{
+    impl_->bind_vector(direction, param_index, values);
+}
+
+template <class T>
+void statement::bind(
+    short param_index,
+    std::vector<T> const& values,
+    bool const* nulls,
+    param_direction direction)
+{
+    impl_->bind_vector(direction, param_index, values, nulls);
 }
 
 template <class T, typename>

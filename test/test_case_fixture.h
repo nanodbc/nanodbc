@@ -304,6 +304,113 @@ struct test_case_fixture : public base_test_fixture
         }
     }
 
+    void test_bind_rows()
+    {
+        struct row
+        {
+            int i;
+            nanodbc::string s;
+            float f;
+        };
+
+        auto conn = connect();
+        create_table(
+            conn, NANODBC_TEXT("test_bind_rows"), NANODBC_TEXT("(i int, s varchar(60), f float)"));
+
+        nanodbc::statement stmt(conn);
+        prepare(stmt, NANODBC_TEXT("insert into test_bind_rows (i, s, f) values (?, ?, ?)"));
+        REQUIRE(stmt.parameters() == 3);
+
+        std::size_t const batch_size = 3;
+        {
+            std::vector<row> rows{
+                {1, NANODBC_TEXT("first"), 1.5f},
+                {2, NANODBC_TEXT("second"), 2.5f},
+                {3, NANODBC_TEXT("third"), 3.5f}};
+
+            // The last parameter is read by a call rather than named as a member, since
+            // both are allowed.
+            nanodbc::bind_rows(stmt, rows, &row::i, &row::s, [](row const& r) { return r.f; });
+        }
+
+        // The rows are out of scope by here. What the statement executes is its own copy.
+        nanodbc::execute(stmt, batch_size);
+
+        auto result = nanodbc::execute(
+            conn, NANODBC_TEXT("select i, s, f from test_bind_rows order by i asc"));
+
+        REQUIRE(result.next());
+        REQUIRE(result.get<int>(0) == 1);
+        REQUIRE(result.get<nanodbc::string>(1) == NANODBC_TEXT("first"));
+        REQUIRE(result.get<float>(2) == Catch::Approx(1.5f));
+
+        REQUIRE(result.next());
+        REQUIRE(result.get<int>(0) == 2);
+        REQUIRE(result.get<nanodbc::string>(1) == NANODBC_TEXT("second"));
+        REQUIRE(result.get<float>(2) == Catch::Approx(2.5f));
+
+        REQUIRE(result.next());
+        REQUIRE(result.get<int>(0) == 3);
+        REQUIRE(result.get<nanodbc::string>(1) == NANODBC_TEXT("third"));
+        REQUIRE(result.get<float>(2) == Catch::Approx(3.5f));
+
+        REQUIRE(!result.next());
+    }
+
+    void test_bind_rows_null()
+    {
+#ifdef NANODBC_HAS_STD_OPTIONAL
+        struct row
+        {
+            int i;
+            std::optional<nanodbc::string> s;
+            std::optional<float> f;
+        };
+
+        auto conn = connect();
+        create_table(
+            conn,
+            NANODBC_TEXT("test_bind_rows_null"),
+            NANODBC_TEXT("(i int, s varchar(60), f float)"));
+
+        nanodbc::statement stmt(conn);
+        prepare(stmt, NANODBC_TEXT("insert into test_bind_rows_null (i, s, f) values (?, ?, ?)"));
+
+        std::vector<row> rows{
+            {1, nanodbc::string(NANODBC_TEXT("present")), 1.5f},
+            {2, std::nullopt, std::nullopt},
+            {3, nanodbc::string(NANODBC_TEXT("also present")), 3.5f}};
+
+        nanodbc::bind_rows(stmt, rows, &row::i, &row::s, &row::f);
+        nanodbc::execute(stmt, rows.size());
+
+        auto result = nanodbc::execute(
+            conn, NANODBC_TEXT("select i, s, f from test_bind_rows_null order by i asc"));
+
+        REQUIRE(result.next());
+        REQUIRE(result.get<int>(0) == 1);
+        REQUIRE(!result.is_null(1));
+        REQUIRE(result.get<nanodbc::string>(1) == NANODBC_TEXT("present"));
+        REQUIRE(!result.is_null(2));
+        REQUIRE(result.get<float>(2) == Catch::Approx(1.5f));
+
+        REQUIRE(result.next());
+        REQUIRE(result.get<int>(0) == 2);
+        REQUIRE(result.is_null(1));
+        REQUIRE(result.is_null(2));
+
+        REQUIRE(result.next());
+        REQUIRE(result.get<int>(0) == 3);
+        REQUIRE(!result.is_null(1));
+        REQUIRE(result.get<nanodbc::string>(1) == NANODBC_TEXT("also present"));
+        REQUIRE(!result.is_null(2));
+
+        REQUIRE(!result.next());
+#else
+        SUCCEED("binding an absent value as null asks for std::optional, so C++17 or later");
+#endif
+    }
+
     template <std::size_t BatchSize, std::size_t MaxValueSize>
     void test_batch_insert_string_template(
         nanodbc::connection& conn,

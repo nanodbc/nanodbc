@@ -148,6 +148,42 @@ Where a driver walks them, a single statement carrying many rows is faster than 
 None of this applies to a database in the same process. SQLite has no round trip to save and shows no difference between the two.
 
 ******************************************************************************
+Binding a batch held as rows
+******************************************************************************
+
+Parameters are bound a column at a time, an array to each marker, which is the shape the drivers take. Data usually arrives as rows instead, a struct to each, and turning one into the other means a vector per column and a loop to fill them.
+
+``bind_rows`` does that. Each accessor names one parameter, in the order the markers appear, either as a pointer to a member or as anything callable with a row:
+
+.. code-block:: cpp
+
+    #include <nanodbc/nanodbc.h>
+    #include <vector>
+
+    struct person
+    {
+        long id;
+        nanodbc::string name;
+    };
+
+    int main()
+    {
+        nanodbc::connection conn(NANODBC_TEXT("dsn"));
+        std::vector<person> people{{1, NANODBC_TEXT("Ada")}, {2, NANODBC_TEXT("Grace")}};
+
+        nanodbc::statement stmt(conn);
+        prepare(stmt, NANODBC_TEXT("insert into people (id, name) values (?, ?)"));
+        bind_rows(stmt, people, &person::id, &person::name);
+        execute(stmt, people.size());
+    }
+
+The values are copied into the statement, so the rows are free to go out of scope before it runs. The overloads of ``bind`` taking a pointer bind the caller's buffer instead, which has to stay alive and unchanged until execution.
+
+Built as C++17 or later, an accessor yielding ``std::optional`` binds an absent value as null, which is how a nullable column is filled from a row that has no value for it.
+
+What reaches the driver is a parameter array either way, so this is the same batch described above, and the same limits apply to how far it carries.
+
+******************************************************************************
 Examples
 ******************************************************************************
 

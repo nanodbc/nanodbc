@@ -249,6 +249,16 @@ TEST_CASE_METHOD(mssql_fixture, "test_batch_insert_mixed", "[mssql][batch]")
     test_batch_insert_mixed();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_bind_rows", "[mssql][batch][bind_rows]")
+{
+    test_bind_rows();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_bind_rows_null", "[mssql][batch][bind_rows]")
+{
+    test_bind_rows_null();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_std_optional", "[mssql][optional]")
 {
     test_std_optional();
