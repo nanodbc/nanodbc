@@ -290,7 +290,13 @@ struct test_case_fixture : public base_test_fixture
                     REQUIRE(
                         result.get<float>(1) ==
                         floats[i]); // exact test might fail, switch to Approx
-                    REQUIRE(result.get<nanodbc::string>(2) == strings[i]);
+                    // Oracle keeps an empty string as null, having no way to tell the two
+                    // apart, so the one empty value in the batch comes back null rather
+                    // than as the empty string that went in.
+                    if (vendor_ == database_vendor::oracle && strings[i][0] == 0)
+                        REQUIRE(result.is_null(2));
+                    else
+                        REQUIRE(result.get<nanodbc::string>(2) == strings[i]);
                     ++i;
                 }
                 REQUIRE(i == batch_size);
@@ -531,7 +537,7 @@ struct test_case_fixture : public base_test_fixture
             execute(connection, NANODBC_TEXT("select i, s, f, bg from test_result_accessors;"));
         REQUIRE(results.next());
 
-        nanodbc::string const i_name = NANODBC_TEXT("i");
+        nanodbc::string const i_name = as_identifier(NANODBC_TEXT("i"));
         check_every_accessor<bool>(results, 0, i_name, true);
         check_every_accessor<signed char>(results, 0, i_name, 42);
         check_every_accessor<unsigned char>(results, 0, i_name, 42);
@@ -547,7 +553,7 @@ struct test_case_fixture : public base_test_fixture
         check_every_accessor<double>(results, 0, i_name, 42.0);
         check_every_accessor<nanodbc::string>(results, 0, i_name, NANODBC_TEXT("42"));
 
-        nanodbc::string const s_name = NANODBC_TEXT("s");
+        nanodbc::string const s_name = as_identifier(NANODBC_TEXT("s"));
         check_every_accessor<nanodbc::string>(results, 1, s_name, NANODBC_TEXT("forty two"));
 
         // A text column can also be read one character at a time, which is a conversion of
@@ -557,13 +563,13 @@ struct test_case_fixture : public base_test_fixture
 
         // Each column type binds to a C type of its own, and every target type reaches it
         // by a branch of its own, so the wider columns are read across types as well.
-        nanodbc::string const f_name = NANODBC_TEXT("f");
+        nanodbc::string const f_name = as_identifier(NANODBC_TEXT("f"));
         check_every_accessor<double>(results, 2, f_name, 42.0);
         check_every_accessor<int>(results, 2, f_name, 42);
         check_every_accessor<long long>(results, 2, f_name, 42LL);
         check_every_accessor<short>(results, 2, f_name, 42);
 
-        nanodbc::string const bg_name = NANODBC_TEXT("bg");
+        nanodbc::string const bg_name = as_identifier(NANODBC_TEXT("bg"));
         check_every_accessor<long long>(results, 3, bg_name, 42LL);
         check_every_accessor<int>(results, 3, bg_name, 42);
         check_every_accessor<double>(results, 3, bg_name, 42.0);
@@ -1320,10 +1326,18 @@ struct test_case_fixture : public base_test_fixture
         auto const wide_column = get_bigint_type_name();
         check_bind_forms<int>(wide_column, 100, 200, 300);
         check_bind_forms<unsigned int>(wide_column, 100, 200, 300);
-        check_bind_forms<long>(wide_column, 1000, 2000, 3000);
-        check_bind_forms<unsigned long>(wide_column, 1000, 2000, 3000);
-        check_bind_forms<long long>(wide_column, 10000, 20000, 30000);
-        check_bind_forms<unsigned long long>(wide_column, 10000, 20000, 30000);
+
+        // Oracle's driver takes a SQL_C_SBIGINT binding and then fails the execution,
+        // leaving no diagnostic record to say why, whatever type the parameter is
+        // declared as. The same value bound as SQL_C_SLONG goes in, so it is the sixty
+        // four bit C type it will not carry rather than the size of the number.
+        if (vendor_ != database_vendor::oracle)
+        {
+            check_bind_forms<long>(wide_column, 1000, 2000, 3000);
+            check_bind_forms<unsigned long>(wide_column, 1000, 2000, 3000);
+            check_bind_forms<long long>(wide_column, 10000, 20000, 30000);
+            check_bind_forms<unsigned long long>(wide_column, 10000, 20000, 30000);
+        }
 
         // Values a float holds exactly, so that the sentry compares equal.
         auto const real_column = NANODBC_TEXT("float");
@@ -2711,7 +2725,18 @@ struct test_case_fixture : public base_test_fixture
 
         // i int
         REQUIRE(result.column_name(0) == as_identifier(NANODBC_TEXT("i")));
-        REQUIRE(result.column_datatype(0) == SQL_INTEGER);
+        // Oracle has one numeric type and describes an int as that: SQL_DECIMAL with the
+        // 38 digits a NUMBER carries, rather than SQL_INTEGER with ten.
+        if (vendor_ == database_vendor::oracle)
+        {
+            REQUIRE(result.column_datatype(0) == SQL_DECIMAL);
+            REQUIRE(result.column_size(0) == 38);
+        }
+        else
+        {
+            REQUIRE(result.column_datatype(0) == SQL_INTEGER);
+            REQUIRE(result.column_size(0) == 10);
+        }
         if (vendor_ == database_vendor::sqlserver)
         {
             REQUIRE(result.column_c_datatype(0) == SQL_C_SLONG);
@@ -2723,7 +2748,6 @@ struct test_case_fixture : public base_test_fixture
                 type_name, Catch::Matchers::ContainsSubstring("int", Catch::CaseSensitive::No));
             REQUIRE(result.column_c_datatype(0) == SQL_C_SLONG);
         }
-        REQUIRE(result.column_size(0) == 10);
         REQUIRE(result.column_decimal_digits(0) == 0);
         REQUIRE(!result.column_unsigned(0));
         // d decimal(7,3)
