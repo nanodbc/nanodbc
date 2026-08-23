@@ -359,19 +359,19 @@ jobs:
     timeout-minutes: 45
     services:
       oracle:
-        image: container-registry.oracle.com/database/free:latest
+        image: gvenzl/oracle-free:23-slim-faststart
         ports:
           - 1521:1521
         env:
-          ORACLE_PWD: nanodbc
-        # The image carries its own health check, which runs the database's own status
-        # script. Only the timing is set here: opening takes several minutes on a runner,
-        # and a check of its own would have to guess at what ready looks like.
+          ORACLE_PASSWORD: nanodbc
+        # The image ships /opt/oracle/healthcheck.sh but declares no health check of its
+        # own, so the script is named here. A faststart image opens in well under a minute.
         options: >-
-          --health-interval 30s
-          --health-timeout 30s
-          --health-retries 40
-          --health-start-period 600s
+          --health-cmd /opt/oracle/healthcheck.sh
+          --health-interval 10s
+          --health-timeout 10s
+          --health-retries 30
+          --health-start-period 30s
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install
