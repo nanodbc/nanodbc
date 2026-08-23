@@ -151,6 +151,36 @@ struct test_case_fixture : public base_test_fixture
         }
     }
 #endif
+    // A batch runs the statement once per parameter set, so the sets that match nothing
+    // are not errors and the ones that match are still carried out.
+    void test_batch_delete()
+    {
+        auto connection = connect();
+        create_table(connection, NANODBC_TEXT("test_batch_delete"), NANODBC_TEXT("(i int)"));
+        execute(
+            connection, NANODBC_TEXT("insert into test_batch_delete (i) values (1), (2), (3);"));
+
+        // The first set matches nothing, so a driver reporting only the first set's count
+        // reports zero for a batch that went on to delete two rows. How many rows
+        // affected_rows() answers with for a batch is the driver's to decide, and the
+        // drivers here disagree; what the batch did to the table is not.
+        int const keys[] = {40, 1, 2};
+        std::size_t const batch = 3;
+
+        nanodbc::statement statement(connection);
+        statement.prepare(NANODBC_TEXT("delete from test_batch_delete where i = ?;"));
+        statement.bind(0, keys, batch);
+        execute(statement, static_cast<long>(batch));
+
+        auto results = execute(connection, NANODBC_TEXT("select count(*) from test_batch_delete;"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<int>(0) == 1);
+
+        auto remaining = execute(connection, NANODBC_TEXT("select i from test_batch_delete;"));
+        REQUIRE(remaining.next());
+        REQUIRE(remaining.get<int>(0) == 3);
+    }
+
     void test_batch_insert_mixed()
     {
         std::size_t const batch_size = 9;
