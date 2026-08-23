@@ -319,8 +319,12 @@ struct base_test_fixture
             return NANODBC_TEXT("blob") + s;
         case database_vendor::postgresql:
             return NANODBC_TEXT("bytea");
+        case database_vendor::oracle:
+            // Oracle spells a bounded binary raw, which holds 2000 bytes at most, and
+            // anything longer than that a blob.
+            return size > 0 && size <= 2000 ? NANODBC_TEXT("raw") + s : NANODBC_TEXT("blob");
         default:
-            return NANODBC_TEXT("varbinary") + s; // Oracle, MySQL, SQL Server,...standard type?
+            return NANODBC_TEXT("varbinary") + s;
         }
     }
 
@@ -332,6 +336,18 @@ struct base_test_fixture
             return NANODBC_TEXT("bit");
         default:
             return NANODBC_TEXT("boolean");
+        }
+    }
+
+    // Oracle has no bigint; its numbers carry a precision instead.
+    nanodbc::string get_bigint_type_name()
+    {
+        switch (vendor_)
+        {
+        case database_vendor::oracle:
+            return NANODBC_TEXT("number(19)");
+        default:
+            return NANODBC_TEXT("bigint");
         }
     }
 
@@ -353,8 +369,11 @@ struct base_test_fixture
         {
         case database_vendor::vertica:
             return NANODBC_TEXT("long varchar");
+        case database_vendor::oracle:
+            // Oracle has no text; a character column with no bound is a clob.
+            return NANODBC_TEXT("clob");
         default:
-            return NANODBC_TEXT("text"); // Oracle, MySQL, SQL Server,...standard type?
+            return NANODBC_TEXT("text");
         }
     }
 
@@ -371,10 +390,35 @@ struct base_test_fixture
         case database_vendor::mysql:
             return NANODBC_TEXT("group_concat(") + column + NANODBC_TEXT(" separator '") +
                    separator + NANODBC_TEXT("')");
+        case database_vendor::oracle:
+            // Oracle spells it listagg, and wants the order stated.
+            return NANODBC_TEXT("listagg(") + column + NANODBC_TEXT(", '") + separator +
+                   NANODBC_TEXT("') within group (order by ") + column + NANODBC_TEXT(")");
         default:
             return NANODBC_TEXT("string_agg(") + column + NANODBC_TEXT(", '") + separator +
                    NANODBC_TEXT("')");
         }
+    }
+
+    // An unquoted identifier folds to upper case on Oracle, which is what the standard
+    // asks for, so a name written lower case in a query comes back upper case from the
+    // catalog and has to be looked up that way.
+    nanodbc::string as_identifier(nanodbc::string const& name) const
+    {
+        if (vendor_ != database_vendor::oracle)
+            return name;
+
+        nanodbc::string folded;
+        folded.reserve(name.size());
+        for (auto const c : name)
+        {
+            folded.push_back(
+                c >= static_cast<nanodbc::string::value_type>('a') &&
+                        c <= static_cast<nanodbc::string::value_type>('z')
+                    ? static_cast<nanodbc::string::value_type>(c - ('a' - 'A'))
+                    : c);
+        }
+        return folded;
     }
 
     nanodbc::string get_primary_key_name(nanodbc::string const& assumed)

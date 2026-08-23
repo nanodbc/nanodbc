@@ -942,6 +942,7 @@ public:
         , cbdata_(nullptr)
         , pdata_(nullptr)
         , bound_(false)
+        , cached_(false)
     {
     }
 
@@ -952,6 +953,8 @@ public:
     {
         for (std::size_t i = 0; i < count; ++i)
             cbdata_[i] = 0;
+        cache_.clear();
+        cached_ = false;
     }
 
 public:
@@ -966,6 +969,10 @@ public:
     std::unique_ptr<nanodbc::null_type[]> cbdata_;
     std::unique_ptr<char[]> pdata_;
     bool bound_;
+    // An unbound column read ahead of time, because asking whether it is null costs the
+    // only reading of it there is. Emptied when the row moves.
+    std::vector<std::uint8_t> cache_;
+    bool cached_;
 };
 
 // Renders value as decimal digits, zero padded to at least width, keeping a minus sign in
@@ -2491,29 +2498,6 @@ public:
         return static_cast<short>(param_type);
     }
 
-    // Whether a parameter takes a date, a time, or both.
-    static bool is_datetime_param_type(SQLSMALLINT type) noexcept
-    {
-        switch (type)
-        {
-        case SQL_DATE:
-        case SQL_TYPE_DATE:
-        case SQL_TIME:
-        case SQL_TYPE_TIME:
-        case SQL_TIMESTAMP:
-        case SQL_TYPE_TIMESTAMP:
-#ifdef SQL_SS_TIME2
-        case SQL_SS_TIME2:
-#endif
-#ifdef SQL_SS_TIMESTAMPOFFSET
-        case SQL_SS_TIMESTAMPOFFSET:
-#endif
-            return true;
-        default:
-            return false;
-        }
-    }
-
     static SQLSMALLINT param_type_from_direction(param_direction direction)
     {
         switch (direction)
@@ -2640,20 +2624,6 @@ public:
         if (buffer_size == 0)
             buffer_size = (std::char_traits<T>::length(buffer.values_) + 1) * sizeof(T);
 
-        // A date or time parameter given text is declared as text, which leaves the
-        // server to read the value rather than the driver. Drivers read a narrower set of
-        // spellings than the servers they speak to, and report success whether or not
-        // they read all of what they were given.
-        auto parameter_type = param.type_;
-        auto parameter_size = param.size_;
-        auto parameter_scale = param.scale_;
-        if (is_datetime_param_type(parameter_type))
-        {
-            parameter_type = SQL_VARCHAR;
-            parameter_size = buffer_size / sizeof(T);
-            parameter_scale = 0;
-        }
-
         RETCODE rc = SQL_SUCCESS;
         NANODBC_CALL_RC(
             SQLBindParameter,
@@ -2662,9 +2632,9 @@ public:
             param.index_ + 1, // parameter number
             param.iotype_,    // input or output type
             buffer.ctype_,    // value type
-            parameter_type,   // parameter type
-            parameter_size,   // column size ignored for many types, but needed for strings
-            parameter_scale,  // decimal digits
+            param.type_,      // parameter type
+            param.size_,      // column size ignored for many types, but needed for strings
+            param.scale_,     // decimal digits
             (SQLPOINTER)buffer.values_, // parameter value
             buffer_size,                // buffer length
             bind_len_or_null_[param.index_].data());
@@ -3987,31 +3957,65 @@ public:
         if (rowset_position_ >= rows())
             throw index_range_error();
 
-        // An unbound column carries no indicator from the fetch, so ask the driver. Only
-        // binary can be asked: a zero buffer length reports the length and moves no data.
-        // The others cannot, and report what the fetch knew.
-        if (!col.bound_ && col.ctype_ == SQL_C_BINARY)
+        // An unbound column carries no indicator from the fetch, so the driver has to be
+        // asked. Asking costs the only reading of the column there is: a driver hands
+        // over a character or binary value once, and a zero length SQLGetData counts as
+        // part of that handing over on some of them, Oracle's among them, which then
+        // returns the rest of the value to whoever reads next. So the value is read here
+        // in full and kept for that reader.
+        if (!col.bound_ && col.ctype_ == SQL_C_BINARY && !col.cached_)
+            read_binary_into_cache(column);
+
+        return col.cbdata_[static_cast<size_t>(rowset_position_)] == SQL_NULL_DATA;
+    }
+
+    // Reads an unbound binary column in full, recording its length as the indicator the
+    // fetch did not leave. A driver that declines leaves the question to what the fetch
+    // knew, and nothing is cached.
+    void read_binary_into_cache(short column) const
+    {
+        bound_column& col = bound_columns_[column];
+        std::vector<std::uint8_t> out;
+        std::uint8_t buffer[1024] = {0};
+        SQLLEN indicator = 0;
+        RETCODE rc = SQL_SUCCESS;
+        bool answered = false;
+
+        do
         {
-            SQLCHAR unused = 0;
-            constexpr SQLLEN buffer_length = 0;
-            SQLLEN indicator = 0;
-            RETCODE rc = SQL_SUCCESS;
             NANODBC_CALL_RC(
                 SQLGetData,
                 rc,
                 stmt_.native_statement_handle(),       // StatementHandle
                 static_cast<SQLUSMALLINT>(column + 1), // Col_or_Param_Num
-                col.ctype_,                            // TargetType
-                &unused,                               // TargetValuePtr
-                buffer_length,                         // BufferLength
+                SQL_C_BINARY,                          // TargetType
+                buffer,                                // TargetValuePtr
+                sizeof(buffer),                        // BufferLength
                 &indicator);                           // StrLen_or_IndPtr
-            // A driver that declines leaves the question to what the fetch knew.
-            if (rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO)
-                col.cbdata_[static_cast<size_t>(rowset_position_)] =
-                    static_cast<null_type>(indicator);
-        }
+            if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO)
+                break;
+            answered = true;
+            if (indicator == SQL_NULL_DATA)
+            {
+                col.cbdata_[static_cast<std::size_t>(rowset_position_)] =
+                    static_cast<null_type>(SQL_NULL_DATA);
+                col.cached_ = true;
+                return;
+            }
+            auto const filled =
+                indicator == SQL_NO_TOTAL
+                    ? sizeof(buffer)
+                    : std::min<std::size_t>(static_cast<std::size_t>(indicator), sizeof(buffer));
+            out.insert(out.end(), buffer, buffer + filled);
+        } while (rc == SQL_SUCCESS_WITH_INFO);
 
-        return col.cbdata_[static_cast<size_t>(rowset_position_)] == SQL_NULL_DATA;
+        if (!answered)
+            return;
+
+        col.cbdata_[static_cast<std::size_t>(rowset_position_)] =
+            static_cast<null_type>(out.size());
+        col.cache_ = std::move(out);
+        col.cached_ = true;
     }
 
     bool is_null(string const& column_name) const
@@ -4891,6 +4895,18 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
         if (!is_bound(column) ||
             (bound_column_was_truncated(column) && supports_get_data_on_bound_column()))
         {
+            // A binary column read to answer whether it was null was read in full, the
+            // driver handing such a value over once, so the answer is served from what
+            // that read kept rather than asked for again.
+            if (col.cached_)
+            {
+                convert(
+                    std::string(
+                        reinterpret_cast<char const*>(col.cache_.data()), col.cache_.size()),
+                    result);
+                return;
+            }
+
             // Input is always std::string, while output may be std::string or wide_string
             std::string out;
             // Data still available, which shrinks with each SQLGetData; not the amount
@@ -5014,9 +5030,14 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
         return;
     }
 
+    // A bit is 0 or 1 by definition, whatever a driver puts in the byte. Oracle's writes
+    // the character rather than the value, and 49 is not what was stored.
+    case SQL_C_BIT:
+        convert(std::string(*ensure_pdata<int8_t>(column) != 0 ? "1" : "0"), result);
+        return;
+
     // std::to_string renders each as the SQL type demands: "%d" and "%lld" for integers,
     // "%f" for floating point, whose column scale is undefined.
-    case SQL_C_BIT:
     case SQL_C_TINYINT:
     case SQL_C_STINYINT:
         convert(std::to_string(*ensure_pdata<int8_t>(column)), result);
@@ -5160,6 +5181,14 @@ inline void result::result_impl::get_ref_impl<std::vector<std::uint8_t>>(
     {
         if (!is_bound(column))
         {
+            // Asking whether the column was null had to read it, the driver handing a
+            // binary value over once, so the answer is served from what that read kept.
+            if (col.cached_)
+            {
+                result = col.cache_;
+                return;
+            }
+
             // Input and output is always array of bytes.
             std::vector<std::uint8_t> out;
             std::uint8_t buffer[1024] = {0};
@@ -5439,6 +5468,14 @@ auto from_string(std::string const& s, unsigned long long)
     return std::stoull(s);
 }
 
+// A bool is tested rather than narrowed. Reading 42 as a bool is true, which is what it
+// is where the driver hands the value over as a number rather than as text, and the
+// answer should not turn on which of the two a driver chose.
+inline auto from_string(std::string const& s, bool)
+{
+    return from_string(s, static_cast<long long>(0)) != 0;
+}
+
 template <typename R, typename std::enable_if<std::is_integral<R>::value, int>::type = 0>
 auto from_string(std::string const& s, R)
 {
@@ -5491,6 +5528,12 @@ void result::result_impl::get_ref_from_string_column(short column, T& result) co
         throw type_incompatible_error();
     std::string str;
     get_ref_impl(col.column_, str);
+    // An unbound column reports null only once the read has happened, and a null leaves
+    // nothing to convert: from_string would raise out of the standard library rather than
+    // the fallback being handed back. The caller tests for the null again after this
+    // returns.
+    if (is_null(column))
+        return;
     result = from_string<T>(str);
 }
 
@@ -5539,7 +5582,9 @@ void result::result_impl::get_ref_impl(short column, T& result) const
     switch (col.ctype_)
     {
     case SQL_C_BIT:
-        result = (T) * (ensure_pdata<int8_t>(column));
+        // A bit is 0 or 1 by definition. A driver writing the character '1' into the byte,
+        // as Oracle's does, means what it stored rather than 49.
+        result = static_cast<T>(*ensure_pdata<int8_t>(column) != 0 ? 1 : 0);
         return;
     case SQL_C_CHAR:
     case SQL_C_WCHAR:

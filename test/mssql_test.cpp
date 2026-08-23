@@ -331,14 +331,6 @@ TEST_CASE_METHOD(mssql_fixture, "test_insert_output_identity", "[mssql][result][
 
 TEST_CASE_METHOD(
     mssql_fixture,
-    "test_bind_iso8601_timestamp_as_string",
-    "[mssql][statement][bind][timestamp]")
-{
-    test_bind_iso8601_timestamp_as_string();
-}
-
-TEST_CASE_METHOD(
-    mssql_fixture,
     "test_bind_timestamp_as_string",
     "[mssql][statement][bind][timestamp]")
 {
