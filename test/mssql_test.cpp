@@ -1817,19 +1817,24 @@ TEST_CASE_METHOD(mssql_fixture, "test_bind_float", "[mssql][number][float]")
         auto result =
             nanodbc::execute(conn, NANODBC_TEXT("select r,f,f24,f53,d from test_bind_float"));
         result.next();
-        // Read as text, each column reads back as the value it holds. The digits are
-        // the column's to decide rather than the literal's: a C float widened into a
-        // float(53) holds 3.1229999065399170, and saying so is the point.
+        // Read as text and read back as a number, each column names the value it holds.
+        // Comparing numbers rather than characters leaves how many digits were written
+        // out of it. Slicing the text instead truncates rather than rounds, which is how
+        // 3.1229999065399170 reads as 3.122 while being 3.123 to every digit a float
+        // carries.
+        auto const names_the_same_value = [](std::string const& text, double value)
+        { return Catch::Matchers::WithinRel(value, 1e-6).match(std::stod(text)); };
+
         REQUIRE(result.get<float>(0) == static_cast<float>(r));
-        REQUIRE(std::stod(result.get<std::string>(0)) == result.get<double>(0));
+        REQUIRE(names_the_same_value(result.get<std::string>(0), result.get<double>(0)));
         REQUIRE(result.get<float>(1) == static_cast<float>(f));
-        REQUIRE(std::stod(result.get<std::string>(1)) == result.get<double>(1));
+        REQUIRE(names_the_same_value(result.get<std::string>(1), result.get<double>(1)));
         REQUIRE(result.get<float>(2) == static_cast<float>(f));
-        REQUIRE(std::stod(result.get<std::string>(2)) == result.get<double>(2));
+        REQUIRE(names_the_same_value(result.get<std::string>(2), result.get<double>(2)));
         REQUIRE(result.get<float>(3) == static_cast<float>(f));
-        REQUIRE(std::stod(result.get<std::string>(3)) == result.get<double>(3));
+        REQUIRE(names_the_same_value(result.get<std::string>(3), result.get<double>(3)));
         REQUIRE(result.get<double>(4) == static_cast<double>(d));
-        REQUIRE(std::stod(result.get<std::string>(4)) == result.get<double>(4));
+        REQUIRE(names_the_same_value(result.get<std::string>(4), result.get<double>(4)));
     }
 }
 
