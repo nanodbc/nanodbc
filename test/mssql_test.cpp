@@ -221,6 +221,11 @@ TEST_CASE_METHOD(mssql_fixture, "test_batch_insert_integral", "[mssql][batch][in
     test_batch_insert_integral();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_batch_delete", "[mssql][batch][delete]")
+{
+    test_batch_delete();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_batch_insert_null", "[mssql][batch][null]")
 {
     test_batch_insert_null();
