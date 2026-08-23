@@ -1136,7 +1136,6 @@ public:
     /// \param batch_operations Rows to fetch per rowset, or number of batch parameters to process.
     /// \param timeout Seconds before query timeout. Default is 0 indicating no timeout.
     /// \throws database_error
-    /// \return A result set object.
     /// \attention You will want to use transactions if you are doing batch operations because it
     ///            will prevent auto commits after each individual operation is executed.
     /// \see open(), prepare(), execute(), execute_direct(), result, transaction
@@ -1160,7 +1159,6 @@ public:
     /// \param batch_operations Rows to fetch per rowset, or number of batch parameters to process.
     /// \param timeout The number in seconds before query timeout. Default 0 meaning no timeout.
     /// \throws database_error
-    /// \return A result set object.
     /// \attention You will want to use transactions if you are doing batch operations because it
     ///            will prevent auto commits after each individual operation is executed.
     /// \see open(), prepare(), execute(), result, transaction
@@ -2809,7 +2807,6 @@ result execute(connection& conn, string const& query, long batch_operations = 1,
 /// \param query The SQL query that will be executed.
 /// \param batch_operations Rows to fetch per rowset, or number of batch parameters to process.
 /// \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
-/// \return A result set object.
 /// \attention You will want to use transactions if you are doing batch operations because it will
 ///            prevent auto commits from occurring after each individual operation is executed.
 /// \see open(), prepare(), execute(), result, transaction
@@ -2833,7 +2830,6 @@ result execute(statement& stmt, long batch_operations = 1);
 /// \param stmt The prepared statement that will be executed.
 /// \param batch_operations Rows to fetch per rowset, or the number of batch parameters to process.
 /// \throws database_error
-/// \return A result set object.
 /// \attention You will want to use transactions if you are doing batch operations because it will
 ///            prevent auto commits from occurring after each individual operation is executed.
 /// \see open(), prepare(), execute(), result
@@ -2855,7 +2851,6 @@ result transact(statement& stmt, long batch_operations);
 /// \param stmt The prepared statement that will be executed in batch.
 /// \param batch_operations Rows to fetch per rowset, or the number of batch parameters to process.
 /// \throws database_error
-/// \return A result set object.
 /// \see open(), prepare(), execute(), result, transaction
 void just_transact(statement& stmt, long batch_operations);
 

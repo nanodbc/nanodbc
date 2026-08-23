@@ -17,7 +17,7 @@ I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 .PHONY: help
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
-	@echo "  doxygen    to generate Doxygen XML files."
+	@echo "  doxygen    to generate the API reference into $(BUILDDIR)/html/api"
 	@echo "  html       to make standalone HTML files"
 	@echo "  dirhtml    to make HTML files named index.html in directories"
 	@echo "  singlehtml to make a single large HTML file"
@@ -48,18 +48,30 @@ help:
 .PHONY: clean
 clean:
 	rm -rf $(BUILDDIR)/*
-	rm -rf doxygen/xml*;
-	rm -rf doxygen/html*;
+	rm -rf doxygen-awesome-css
+
+# doxygen-awesome-css is fetched rather than vendored, at the tag the Doxyfile was
+# written against. Doxygen 1.9.1 or later is needed for the theme to render.
+AWESOME_VERSION = v2.4.2
+AWESOME_DIR     = doxygen-awesome-css
+
+$(AWESOME_DIR):
+	git clone --quiet --depth 1 --branch $(AWESOME_VERSION) \
+		https://github.com/jothepro/doxygen-awesome-css.git $(AWESOME_DIR)
 
 .PHONY: doxygen
-doxygen:
-	cd ../ ; doxygen docs/doxygen/doxygen.conf; cd docs
+doxygen: $(AWESOME_DIR)
+	mkdir -p $(BUILDDIR)/html/api
+	doxygen Doxyfile
 	@echo
-	@echo "Build finished. The Doxygen pages are in docs/doxygen/xml and docs/doxygen/html."
+	@echo "Build finished. The API reference is in $(BUILDDIR)/html/api."
 
+# The reference is built after Sphinx, which would otherwise empty the output it
+# lives in.
 .PHONY: html
 html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
+	$(MAKE) doxygen
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 

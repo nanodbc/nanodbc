@@ -27,7 +27,7 @@ import subprocess
 
 # If your documentation needs a minimal Sphinx version, state it here.
 # requirements.txt pins nothing, so this is the floor the extensions themselves set:
-# Breathe requires 7.2 or later, sphinx_rtd_theme 6 or later.
+# sphinx_rtd_theme requires Sphinx 6 or later.
 needs_sphinx = "7.2"
 
 # Add any Sphinx extension module names here, as strings. They can be
@@ -35,23 +35,9 @@ needs_sphinx = "7.2"
 # ones.
 extensions = [
     "sphinx.ext.githubpages",
-    "breathe",
 ]
 
-# Breathe
-breathe_default_project = "nanodbc"
-breathe_domain_by_extension = {"h": "cpp"}
-
 doc_dir = os.path.dirname(os.path.realpath(__file__))
-src_dir = os.path.join(os.path.dirname(doc_dir), "nanodbc")
-breathe_projects_source = {"nanodbc": (src_dir, ["nanodbc.h"])}
-breathe_implementation_filename_extensions = [".cpp"]
-breathe_doxygen_config_options = {
-    "PREDEFINED": "DOXYGEN=1",
-    # Friend declarations name implementation classes and are not part of the API.
-    # Sphinx's C++ domain cannot parse them either, so leave them out of the XML.
-    "HIDE_FRIEND_COMPOUNDS": "YES",
-}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
