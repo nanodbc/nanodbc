@@ -53,6 +53,22 @@ TEST_CASE_METHOD(postgresql_fixture, "test_datasources", "[postgresql][datasourc
     test_datasources();
 }
 
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_bind_iso8601_timestamp_as_string",
+    "[postgresql][statement][bind][timestamp]")
+{
+    test_bind_iso8601_timestamp_as_string();
+}
+
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_bind_timestamp_as_string",
+    "[postgresql][statement][bind][timestamp]")
+{
+    test_bind_timestamp_as_string();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_batch_insert_integer", "[postgresql][batch][integral]")
 {
     test_batch_insert_integral();
