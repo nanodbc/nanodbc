@@ -34,4 +34,5 @@ DISABLE_INDEX          = NO
 FULL_SIDEBAR           = NO
 HTML_COLORSTYLE        = LIGHT
 HTML_EXTRA_STYLESHEET  = doxygen-awesome-css/doxygen-awesome.css \
-                         doxygen-awesome-css/doxygen-awesome-sidebar-only.css
+                         doxygen-awesome-css/doxygen-awesome-sidebar-only.css \
+                         doxygen-extra.css

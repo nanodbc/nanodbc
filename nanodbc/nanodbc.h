@@ -23,7 +23,7 @@
 ///     - \ref bind_strings
 ///
 /// \section license License
-/// <div class="license">
+/// <pre class="license">
 /// Copyright (C) lexicalunit <lexicalunit@lexicalunit.com>
 /// Copyright (C) Mateusz Loskot <mateusz@loskot.net>
 ///
@@ -46,10 +46,10 @@
 /// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
-/// </div>
+/// </pre>
 ///
 /// \section credits Credits
-/// <div class="license">
+/// <pre class="license">
 /// Much of the code in this file was originally derived from TinyODBC.
 /// TinyODBC is hosted at http://code.google.com/p/tiodbc/
 /// Copyright (C) SqUe squarious@gmail.com
@@ -72,7 +72,7 @@
 /// Copyright (C) Nick E. Geht
 /// License: Perpetual license to reproduce, distribute, adapt, perform, display, and sublicense.
 /// See http://www.codeguru.com/submission-guidelines.php for details.
-/// </div>
+/// </pre>
 
 #ifndef NANODBC_NANODBC_H
 #define NANODBC_NANODBC_H
