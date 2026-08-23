@@ -128,6 +128,11 @@ TEST_CASE_METHOD(mysql_fixture, "test_batch_insert_integer", "[mysql][batch][int
     test_batch_insert_integral();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_batch_delete", "[mysql][batch][delete]")
+{
+    test_batch_delete();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_batch_insert_null", "[mysql][batch][null]")
 {
     test_batch_insert_null();
