@@ -1817,16 +1817,24 @@ TEST_CASE_METHOD(mssql_fixture, "test_bind_float", "[mssql][number][float]")
         auto result =
             nanodbc::execute(conn, NANODBC_TEXT("select r,f,f24,f53,d from test_bind_float"));
         result.next();
+        // Read as text and read back as a number, each column names the value it holds.
+        // Comparing numbers rather than characters leaves how many digits were written
+        // out of it. Slicing the text instead truncates rather than rounds, which is how
+        // 3.1229999065399170 reads as 3.122 while being 3.123 to every digit a float
+        // carries.
+        auto const names_the_same_value = [](std::string const& text, double value)
+        { return Catch::Matchers::WithinRel(value, 1e-6).match(std::stod(text)); };
+
         REQUIRE(result.get<float>(0) == static_cast<float>(r));
-        REQUIRE(result.get<std::string>(0).substr(0, 5) == "1.123");
+        REQUIRE(names_the_same_value(result.get<std::string>(0), result.get<double>(0)));
         REQUIRE(result.get<float>(1) == static_cast<float>(f));
-        REQUIRE(result.get<std::string>(1).substr(0, 5) == "3.123");
+        REQUIRE(names_the_same_value(result.get<std::string>(1), result.get<double>(1)));
         REQUIRE(result.get<float>(2) == static_cast<float>(f));
-        REQUIRE(result.get<std::string>(2).substr(0, 5) == "3.123");
+        REQUIRE(names_the_same_value(result.get<std::string>(2), result.get<double>(2)));
         REQUIRE(result.get<float>(3) == static_cast<float>(f));
-        REQUIRE(result.get<std::string>(3).substr(0, 5) == "3.123");
+        REQUIRE(names_the_same_value(result.get<std::string>(3), result.get<double>(3)));
         REQUIRE(result.get<double>(4) == static_cast<double>(d));
-        REQUIRE(result.get<std::string>(4).substr(0, 5) == "7.123");
+        REQUIRE(names_the_same_value(result.get<std::string>(4), result.get<double>(4)));
     }
 }
 
