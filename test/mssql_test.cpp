@@ -1792,6 +1792,56 @@ TEST_CASE_METHOD(mssql_fixture, "test_async", "[mssql][async]")
 }
 #endif
 
+// A timestamp's fraction counts nanoseconds, while datetime2(7) resolves a hundred of
+// them, so the fraction bound has to be a multiple of 100. Asking for finer than the
+// column carries is refused rather than rounded.
+TEST_CASE_METHOD(mssql_fixture, "test_bind_timestamp_fraction", "[mssql][bind][timestamp]")
+{
+    auto connection = connect();
+    create_table(
+        connection,
+        NANODBC_TEXT("test_bind_timestamp_fraction"),
+        NANODBC_TEXT("(id int, t datetime2(7))"));
+
+    auto const bind_fraction = [&](std::int32_t fraction)
+    {
+        execute(connection, NANODBC_TEXT("delete from test_bind_timestamp_fraction;"));
+
+        nanodbc::timestamp stamp{};
+        stamp.year = 2020;
+        stamp.month = 9;
+        stamp.day = 3;
+        stamp.hour = 15;
+        stamp.min = 27;
+        stamp.sec = 38;
+        stamp.fract = fraction;
+
+        nanodbc::statement statement(connection);
+        statement.prepare(
+            NANODBC_TEXT("insert into test_bind_timestamp_fraction (id, t) values (1, ?);"));
+        statement.bind(0, &stamp);
+        statement.just_execute();
+    };
+
+    auto const stored_fraction = [&]()
+    {
+        auto results =
+            execute(connection, NANODBC_TEXT("select t from test_bind_timestamp_fraction;"));
+        REQUIRE(results.next());
+        return results.get<nanodbc::timestamp>(0).fract;
+    };
+
+    for (std::int32_t const fraction : {0, 100, 1000000, 123456700, 999999900})
+    {
+        bind_fraction(fraction);
+        REQUIRE(stored_fraction() == fraction);
+    }
+
+    // Finer than a hundred nanoseconds is more than the column holds.
+    REQUIRE_THROWS_AS(bind_fraction(1), nanodbc::database_error);
+    REQUIRE_THROWS_AS(bind_fraction(9999999), nanodbc::database_error);
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_bind_float", "[mssql][number][float]")
 {
     auto conn = connect();
