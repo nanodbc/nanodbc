@@ -309,6 +309,11 @@ TEST_CASE_METHOD(oracle_fixture, "test_statement_open_close", "[oracle][statemen
     test_statement_open_close();
 }
 
+TEST_CASE_METHOD(oracle_fixture, "test_affected_rows_counts", "[oracle][statement][affected_rows]")
+{
+    test_affected_rows_counts();
+}
+
 TEST_CASE_METHOD(oracle_fixture, "test_statement_parameter_description", "[oracle][statement]")
 {
     test_statement_parameter_description();

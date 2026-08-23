@@ -378,6 +378,11 @@ TEST_CASE_METHOD(mysql_fixture, "test_statement_open_close", "[mysql][statement]
     test_statement_open_close();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_affected_rows_counts", "[mysql][statement][affected_rows]")
+{
+    test_affected_rows_counts();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_boolean_column", "[mysql][boolean]")
 {
     test_boolean_column();
