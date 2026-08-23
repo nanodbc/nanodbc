@@ -316,6 +316,14 @@ TEST_CASE_METHOD(mssql_fixture, "test_insert_output_identity", "[mssql][result][
     REQUIRE(rows.get<int>(0) == 3);
 }
 
+TEST_CASE_METHOD(
+    mssql_fixture,
+    "test_bind_timestamp_as_string",
+    "[mssql][statement][bind][timestamp]")
+{
+    test_bind_timestamp_as_string();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_blob", "[mssql][blob][binary][varbinary]")
 {
     nanodbc::connection connection = connect();

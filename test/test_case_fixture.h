@@ -1529,6 +1529,38 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(rows == 4);
     }
 
+    // A string bound to a timestamp parameter has to be in the ODBC literal format,
+    // "yyyy-mm-dd hh:mm:ss", with a space. An ISO 8601 "T" in its place is accepted
+    // without complaint by at least one driver, which then stores midnight.
+    void test_bind_timestamp_as_string()
+    {
+        auto connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_bind_timestamp_as_string"),
+            NANODBC_TEXT("(id int, ts ") + get_timestamp_type_name() + NANODBC_TEXT(")"));
+
+        auto const value = NANODBC_TEXT("2020-09-03 15:27:38");
+
+        nanodbc::statement statement(connection);
+        statement.prepare(
+            NANODBC_TEXT("insert into test_bind_timestamp_as_string (id, ts) values (1, ?);"));
+        statement.bind(0, value);
+        statement.just_execute();
+
+        auto results =
+            execute(connection, NANODBC_TEXT("select ts from test_bind_timestamp_as_string;"));
+        REQUIRE(results.next());
+
+        auto const stamp = results.template get<nanodbc::timestamp>(0);
+        REQUIRE(stamp.year == 2020);
+        REQUIRE(stamp.month == 9);
+        REQUIRE(stamp.day == 3);
+        REQUIRE(stamp.hour == 15);
+        REQUIRE(stamp.min == 27);
+        REQUIRE(stamp.sec == 38);
+    }
+
     // Unbinding releases the buffer a column was read into, after which it is read one
     // value at a time instead.
     void test_result_unbind()

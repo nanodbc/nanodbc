@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Documented the ODBC literal format a date or timestamp string parameter must use, and covered it with a test. [`#248`](https://github.com/nanodbc/nanodbc/issues/248)
 - A test covers reading a generated identity back from an INSERT through the OUTPUT clause. [`#193`](https://github.com/nanodbc/nanodbc/issues/193)
 - Documented that a batch returns a result set per statement, counts included, and how to reach the rows. [`#247`](https://github.com/nanodbc/nanodbc/issues/247)
 - A test reads long text at the sizes either side of the chunk the driver is asked for, where a piece could be dropped or repeated. [`#22`](https://github.com/nanodbc/nanodbc/issues/22)
