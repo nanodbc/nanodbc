@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Documented that a batch returns a result set per statement, counts included, and how to reach the rows. [`#247`](https://github.com/nanodbc/nanodbc/issues/247)
 - `transaction::commit()` honours the connection's rollback flag, so an inner rollback is no longer discarded by an outer commit. [`#78`](https://github.com/nanodbc/nanodbc/issues/78)
 - A regression test covers binding objects past the driver's reported parameter limit, which nothing pinned. [`#5`](https://github.com/nanodbc/nanodbc/issues/5)
 - A bound character column the driver under-sized is read again in full instead of coming back truncated. [`#343`](https://github.com/nanodbc/nanodbc/issues/343)
