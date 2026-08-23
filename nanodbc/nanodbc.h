@@ -884,7 +884,7 @@ public:
         friend class nanodbc::statement::statement_impl;
     };
 #else
-private:
+public:
     class attribute : public nanodbc::attribute
     {
     public:
@@ -1549,7 +1549,7 @@ public:
         friend class nanodbc::connection::connection_impl;
     };
 #else
-private:
+public:
     class attribute : public nanodbc::attribute
     {
     public:
@@ -1602,7 +1602,6 @@ public:
     /// \see connected(), connect()
     explicit connection(string const& connection_string, long timeout = 0);
 
-#ifdef NANODBC_HAS_STD_VARIANT
     /// \brief Create new connection object, set the connection attributes passed as
     /// arguments and connect to the given data source.
     ///
@@ -1632,7 +1631,6 @@ public:
     /// \throws database_error
     /// \see connected(), connect(), attribute
     connection(string const& connection_string, std::list<attribute> const& attributes);
-#endif
     /// \brief Automatically disconnects from the database and frees all associated resources.
     ///
     /// Will not throw even if disconnecting causes some kind of error and raises an exception.
@@ -1669,7 +1667,6 @@ public:
     /// \see connected()
     void connect(string const& connection_string, long timeout = 0);
 
-#ifdef NANODBC_HAS_STD_VARIANT
     /// \brief Set the connection attributes passed by the user, and connect to the given
     /// data source.
     /// \param dsn The name of the data source.
@@ -1691,7 +1688,6 @@ public:
     /// \throws database_error
     /// \see connected(), attribute
     void connect(string const& connection_string, std::list<attribute> const& attributes);
-#endif
 #if !defined(NANODBC_DISABLE_ASYNC)
     /// \brief Initiate an asynchronous connection operation to the given data source.
     ///

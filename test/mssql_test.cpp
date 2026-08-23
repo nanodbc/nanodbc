@@ -580,13 +580,11 @@ TEST_CASE_METHOD(
             "in the table in bound col', 'this is the longest text of the three texts in "
             "the table in unbound col');"));
 
-#ifdef NANODBC_HAS_STD_VARIANT
+    // A scrollable cursor, asked for by statement attribute. The value is an integer, so
+    // this reads the same whether or not std::variant is available.
     std::list<nanodbc::statement::attribute> attributes;
     attributes.push_back({SQL_ATTR_CURSOR_TYPE, 0, (std::uintptr_t)SQL_CURSOR_STATIC});
     nanodbc::statement stmt(conn, attributes);
-#else
-    nanodbc::statement stmt(conn);
-#endif
     nanodbc::batch_ops array_sizes;
     array_sizes.rowset_size = rowset_size;
     nanodbc::result results = stmt.execute_direct(
