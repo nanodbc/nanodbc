@@ -1771,7 +1771,20 @@ public:
         if (conn_.unref_transaction() == 0 && conn_.connected())
         {
             RETCODE rc = SQL_SUCCESS;
-            NANODBC_CALL_RC(SQLEndTran, rc, SQL_HANDLE_DBC, conn_.native_dbc_handle(), SQL_COMMIT);
+            // Transactions on one connection share a single ODBC transaction, so a
+            // rollback anywhere within it discards all of it. The flag says one was
+            // asked for, and the destructor has always honoured it.
+            if (conn_.rollback())
+            {
+                NANODBC_CALL_RC(
+                    SQLEndTran, rc, SQL_HANDLE_DBC, conn_.native_dbc_handle(), SQL_ROLLBACK);
+                conn_.rollback(false);
+            }
+            else
+            {
+                NANODBC_CALL_RC(
+                    SQLEndTran, rc, SQL_HANDLE_DBC, conn_.native_dbc_handle(), SQL_COMMIT);
+            }
             if (!success(rc))
                 NANODBC_THROW_DATABASE_ERROR(conn_.native_dbc_handle(), SQL_HANDLE_DBC);
         }

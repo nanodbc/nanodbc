@@ -355,6 +355,14 @@ TEST_CASE_METHOD(postgresql_fixture, "test_bind_arithmetic_null_sentry", "[postg
     test_bind_arithmetic_null_sentry();
 }
 
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_nested_transaction_rollback",
+    "[postgresql][transaction][rollback]")
+{
+    test_nested_transaction_rollback();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_result_unbind", "[postgresql][result][unbind]")
 {
     test_result_unbind();

@@ -405,6 +405,14 @@ TEST_CASE_METHOD(mysql_fixture, "test_bind_arithmetic_null_sentry", "[mysql][bin
     test_bind_arithmetic_null_sentry();
 }
 
+TEST_CASE_METHOD(
+    mysql_fixture,
+    "test_nested_transaction_rollback",
+    "[mysql][transaction][rollback]")
+{
+    test_nested_transaction_rollback();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_result_unbind", "[mysql][result][unbind]")
 {
     test_result_unbind();
