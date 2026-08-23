@@ -413,6 +413,11 @@ TEST_CASE_METHOD(mysql_fixture, "test_result_rowset_navigation", "[mysql][result
     test_result_rowset_navigation();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_scrollable_cursor", "[mysql][result][cursor][scroll]")
+{
+    test_scrollable_cursor();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_execute_direct_batch_ops", "[mysql][statement][batch]")
 {
     test_execute_direct_batch_ops();

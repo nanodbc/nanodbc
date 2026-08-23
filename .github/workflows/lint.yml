@@ -26,6 +26,10 @@ jobs:
           DOCS_DIR: "doc/"
       - name: Install rstcheck
         run: python3 -m pip install --disable-pip-version-check "rstcheck[sphinx]==6.3.0"
+      # rstcheck compiles the C++ blocks, and the ones reaching for an ODBC constant need
+      # the ODBC headers to compile at all.
+      - name: Install ODBC headers
+        run: sudo apt-get -o DPkg::Lock::Timeout=120 install -y unixodbc-dev
       - name: Run rstcheck
         run: rstcheck doc/*.rst
 

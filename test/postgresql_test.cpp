@@ -362,6 +362,14 @@ TEST_CASE_METHOD(
 
 TEST_CASE_METHOD(
     postgresql_fixture,
+    "test_scrollable_cursor",
+    "[postgresql][result][cursor][scroll]")
+{
+    test_scrollable_cursor();
+}
+
+TEST_CASE_METHOD(
+    postgresql_fixture,
     "test_execute_direct_batch_ops",
     "[postgresql][statement][batch]")
 {

@@ -1914,8 +1914,12 @@ public:
     bool prior();
 
     /// \brief Moves to and fetches the specified row in the current result set.
+    /// \param row The row to fetch, counted from one.
     /// \return true if there are results or false otherwise.
     /// \throws database_error
+    /// \attention Fetching anywhere other than forward asks the driver for a cursor that
+    ///            scrolls, which ODBC does not give by default. Without one the call fails
+    ///            with HY106. \see statement::attribute, SQL_ATTR_CURSOR_TYPE
     bool move(long row);
 
     /// \brief Skips a number of rows and then fetches the resulting row in the current result set.

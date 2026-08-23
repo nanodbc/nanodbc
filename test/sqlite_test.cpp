@@ -481,6 +481,11 @@ TEST_CASE_METHOD(sqlite_fixture, "test_result_rowset_navigation", "[sqlite][resu
     test_result_rowset_navigation();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "test_scrollable_cursor", "[sqlite][result][cursor][scroll]")
+{
+    test_scrollable_cursor();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_execute_direct_batch_ops", "[sqlite][statement][batch]")
 {
     test_execute_direct_batch_ops();
