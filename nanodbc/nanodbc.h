@@ -1326,6 +1326,25 @@ public:
         uint8_t const* null_sentry,
         param_direction direction = PARAM_IN);
 
+    /// \brief Binds multiple values, holding a copy of them.
+    ///
+    /// The overloads taking a pointer bind the caller's buffer, which has to stay alive
+    /// and unchanged until the statement has been executed. These take a copy instead, so
+    /// the vector is free to go out of scope.
+    /// \see bind_multi
+    template <class T>
+    void
+    bind(short param_index, std::vector<T> const& values, param_direction direction = PARAM_IN);
+
+    /// \brief Binds multiple values, holding a copy of them.
+    /// \see bind_multi
+    template <class T>
+    void bind(
+        short param_index,
+        std::vector<T> const& values,
+        bool const* nulls,
+        param_direction direction = PARAM_IN);
+
     /// @}
 
     /// \addtogroup bind_strings Binding multiple string values
@@ -2831,6 +2850,221 @@ void just_execute(
     string const& query,
     long batch_operations = 1,
     long timeout = 0);
+
+/// \brief Implementation details, not part of the interface.
+namespace detail
+{
+
+/// \brief Reads a member through a pointer to it.
+template <class Row, class Member, class Class>
+Member const& read_field(Row const& row, Member Class::* field)
+{
+    return row.*field;
+}
+
+/// \brief Reads a value by calling something with the row.
+template <class Row, class Accessor>
+auto read_field(Row const& row, Accessor const& accessor) -> decltype(accessor(row))
+{
+    return accessor(row);
+}
+
+/// \brief The type an accessor yields for a row, stripped of reference and const.
+template <class Row, class Accessor>
+struct field_type
+{
+    using type = typename std::decay<
+        decltype(read_field(std::declval<Row const&>(), std::declval<Accessor const&>()))>::type;
+};
+
+template <class T>
+struct is_optional : std::false_type
+{
+};
+
+#ifdef NANODBC_HAS_STD_OPTIONAL
+template <class T>
+struct is_optional<std::optional<T>> : std::true_type
+{
+};
+#endif
+
+template <class T>
+struct is_bindable_string : std::false_type
+{
+};
+
+template <>
+struct is_bindable_string<std::string> : std::true_type
+{
+};
+
+template <>
+struct is_bindable_string<wide_string> : std::true_type
+{
+};
+
+// Four ways to bind a column, told apart by what the accessor yields.
+struct bind_as_value
+{
+};
+struct bind_as_string
+{
+};
+struct bind_as_optional_value
+{
+};
+struct bind_as_optional_string
+{
+};
+
+template <class T, bool IsOptional = is_optional<T>::value>
+struct bind_kind
+{
+    using type = typename std::
+        conditional<is_bindable_string<T>::value, bind_as_string, bind_as_value>::type;
+};
+
+#ifdef NANODBC_HAS_STD_OPTIONAL
+template <class T>
+struct bind_kind<T, true>
+{
+    using type = typename std::conditional<
+        is_bindable_string<typename T::value_type>::value,
+        bind_as_optional_string,
+        bind_as_optional_value>::type;
+};
+#endif
+
+template <class Rows, class Accessor>
+void bind_column(
+    statement& stmt,
+    short param_index,
+    Rows const& rows,
+    Accessor const& accessor,
+    bind_as_value)
+{
+    using value_type = typename field_type<typename Rows::value_type, Accessor>::type;
+    std::vector<value_type> column;
+    column.reserve(rows.size());
+    for (auto const& row : rows)
+        column.push_back(read_field(row, accessor));
+    stmt.bind(param_index, column);
+}
+
+template <class Rows, class Accessor>
+void bind_column(
+    statement& stmt,
+    short param_index,
+    Rows const& rows,
+    Accessor const& accessor,
+    bind_as_string)
+{
+    using value_type = typename field_type<typename Rows::value_type, Accessor>::type;
+    std::vector<value_type> column;
+    column.reserve(rows.size());
+    for (auto const& row : rows)
+        column.push_back(read_field(row, accessor));
+    stmt.bind_strings(param_index, column);
+}
+
+#ifdef NANODBC_HAS_STD_OPTIONAL
+// An absent value still occupies its place in the column, so that the values line up with
+// the flags marking which of them are null.
+template <class Rows, class Accessor, class Column>
+std::unique_ptr<bool[]> gather_optional(Rows const& rows, Accessor const& accessor, Column& column)
+{
+    std::unique_ptr<bool[]> nulls(new bool[rows.size()]);
+    std::size_t i = 0;
+    for (auto const& row : rows)
+    {
+        auto const& value = read_field(row, accessor);
+        nulls[i++] = !value.has_value();
+        column.push_back(value ? *value : typename Column::value_type());
+    }
+    return nulls;
+}
+
+template <class Rows, class Accessor>
+void bind_column(
+    statement& stmt,
+    short param_index,
+    Rows const& rows,
+    Accessor const& accessor,
+    bind_as_optional_value)
+{
+    using optional_type = typename field_type<typename Rows::value_type, Accessor>::type;
+    std::vector<typename optional_type::value_type> column;
+    column.reserve(rows.size());
+    auto const nulls = gather_optional(rows, accessor, column);
+    stmt.bind(param_index, column, nulls.get());
+}
+
+template <class Rows, class Accessor>
+void bind_column(
+    statement& stmt,
+    short param_index,
+    Rows const& rows,
+    Accessor const& accessor,
+    bind_as_optional_string)
+{
+    using optional_type = typename field_type<typename Rows::value_type, Accessor>::type;
+    std::vector<typename optional_type::value_type> column;
+    column.reserve(rows.size());
+    auto const nulls = gather_optional(rows, accessor, column);
+    stmt.bind_strings(param_index, column, nulls.get());
+}
+#endif
+
+template <class Rows, class Accessor>
+void bind_one(statement& stmt, short param_index, Rows const& rows, Accessor const& accessor)
+{
+    using value_type = typename field_type<typename Rows::value_type, Accessor>::type;
+    bind_column(stmt, param_index, rows, accessor, typename bind_kind<value_type>::type());
+}
+
+} // namespace detail
+
+/// \brief Binds a range of rows, a parameter at a time.
+///
+/// Parameters are bound column-wise, which is what the ODBC drivers expect, from rows held
+/// however the caller finds convenient. Each accessor names one parameter, in the order the
+/// placeholders appear: either a pointer to a member, or anything callable with a row.
+///
+/// \code
+/// struct person
+/// {
+///     long id;
+///     nanodbc::string name;
+/// };
+///
+/// std::vector<person> people = load();
+/// nanodbc::statement stmt(conn);
+/// prepare(stmt, NANODBC_TEXT("insert into people (id, name) values (?, ?)"));
+/// bind_rows(stmt, people, &person::id, &person::name);
+/// execute(stmt, people.size());
+/// \endcode
+///
+/// Where the library is built as C++17 or later, an accessor yielding std::optional binds
+/// an absent value as null.
+///
+/// The values are copied into the statement, so the rows are free to go out of scope
+/// before it is executed.
+///
+/// \param stmt The prepared statement to bind to.
+/// \param rows The rows to bind, a container with size() whose values the accessors read.
+/// \param accessors One per parameter marker, left to right.
+/// \throws database_error
+/// \see statement::bind(), statement::bind_strings(), execute()
+template <class Rows, class... Accessors>
+void bind_rows(statement& stmt, Rows const& rows, Accessors const&... accessors)
+{
+    short param_index = 0;
+    // Expanded through a braced list, which C++14 orders left to right where a fold
+    // expression is not yet available.
+    int const sequence[] = {0, (detail::bind_one(stmt, param_index++, rows, accessors), 0)...};
+    (void)sequence;
+}
 
 /// \brief Execute the previously prepared query now.
 /// \param stmt The prepared statement that will be executed.

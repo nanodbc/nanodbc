@@ -94,6 +94,16 @@ TEST_CASE_METHOD(postgresql_fixture, "test_batch_insert_mixed", "[postgresql][ba
     test_batch_insert_mixed();
 }
 
+TEST_CASE_METHOD(postgresql_fixture, "test_bind_rows", "[postgresql][batch][bind_rows]")
+{
+    test_bind_rows();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "test_bind_rows_null", "[postgresql][batch][bind_rows]")
+{
+    test_bind_rows_null();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_std_optional", "[postgresql][optional]")
 {
     test_std_optional();

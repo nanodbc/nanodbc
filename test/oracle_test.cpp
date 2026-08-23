@@ -32,6 +32,16 @@ TEST_CASE_METHOD(oracle_fixture, "test_batch_insert_mixed", "[oracle][batch]")
     test_batch_insert_mixed();
 }
 
+TEST_CASE_METHOD(oracle_fixture, "test_bind_rows", "[oracle][batch][bind_rows]")
+{
+    test_bind_rows();
+}
+
+TEST_CASE_METHOD(oracle_fixture, "test_bind_rows_null", "[oracle][batch][bind_rows]")
+{
+    test_bind_rows_null();
+}
+
 TEST_CASE_METHOD(oracle_fixture, "test_batch_insert_null", "[oracle][batch][null]")
 {
     test_batch_insert_null();

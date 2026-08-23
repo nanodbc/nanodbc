@@ -137,6 +137,16 @@ TEST_CASE_METHOD(sqlite_fixture, "test_batch_insert_mixed", "[sqlite][batch]")
     test_batch_insert_mixed();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "test_bind_rows", "[sqlite][batch][bind_rows]")
+{
+    test_bind_rows();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_bind_rows_null", "[sqlite][batch][bind_rows]")
+{
+    test_bind_rows_null();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_batch_insert_string", "[sqlite][batch][string]")
 {
     test_batch_insert_string();
