@@ -1234,6 +1234,11 @@ TEST_CASE_METHOD(mssql_fixture, "test_result_rowset_navigation", "[mssql][result
     test_result_rowset_navigation();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_scrollable_cursor", "[mssql][result][cursor][scroll]")
+{
+    test_scrollable_cursor();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_execute_direct_batch_ops", "[mssql][statement][batch]")
 {
     test_execute_direct_batch_ops();

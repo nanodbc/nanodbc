@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <cstring>
 #include <limits>
+#include <list>
 #include <random>
 #include <set>
 #include <tuple>
@@ -1693,6 +1694,43 @@ struct test_case_fixture : public base_test_fixture
             {
             }
         }
+    }
+
+    // first(), last(), prior() and move() ask the driver to fetch somewhere other than
+    // forward, which a forward only cursor refuses with HY106. ODBC leaves the cursor
+    // forward only unless asked otherwise, so the statement asks.
+    void test_scrollable_cursor()
+    {
+        auto connection = connect();
+        create_table(connection, NANODBC_TEXT("test_scrollable_cursor"), NANODBC_TEXT("(i int)"));
+        execute(
+            connection,
+            NANODBC_TEXT("insert into test_scrollable_cursor (i) values (1), (2), (3);"));
+
+        std::list<nanodbc::statement::attribute> attributes;
+        attributes.push_back({SQL_ATTR_CURSOR_TYPE, 0, (std::uintptr_t)SQL_CURSOR_STATIC});
+        nanodbc::statement statement(connection, attributes);
+        prepare(statement, NANODBC_TEXT("select i from test_scrollable_cursor order by i asc;"));
+        auto results = execute(statement);
+
+        REQUIRE(results.next());
+        REQUIRE(results.get<int>(0) == 1);
+
+        REQUIRE(results.last());
+        REQUIRE(results.get<int>(0) == 3);
+
+        REQUIRE(results.prior());
+        REQUIRE(results.get<int>(0) == 2);
+
+        REQUIRE(results.first());
+        REQUIRE(results.get<int>(0) == 1);
+
+        // An absolute row number, which ODBC counts from one.
+        REQUIRE(results.move(3));
+        REQUIRE(results.get<int>(0) == 3);
+
+        REQUIRE(results.move(1));
+        REQUIRE(results.get<int>(0) == 1);
     }
 
     // batch_ops chooses the parameter array length and the rowset size separately, where

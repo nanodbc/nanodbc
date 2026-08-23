@@ -284,6 +284,11 @@ TEST_CASE_METHOD(oracle_fixture, "test_result_rowset_navigation", "[oracle][resu
     test_result_rowset_navigation();
 }
 
+TEST_CASE_METHOD(oracle_fixture, "test_scrollable_cursor", "[oracle][result][cursor][scroll]")
+{
+    test_scrollable_cursor();
+}
+
 TEST_CASE_METHOD(oracle_fixture, "test_result_unbind", "[oracle][result][unbind]")
 {
     test_result_unbind();

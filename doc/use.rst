@@ -184,6 +184,49 @@ Built as C++17 or later, an accessor yielding ``std::optional`` binds an absent 
 What reaches the driver is a parameter array either way, so this is the same batch described above, and the same limits apply to how far it carries.
 
 ******************************************************************************
+Reading a result other than forwards
+******************************************************************************
+
+``next()`` works on any result. ``first()``, ``last()``, ``prior()``, ``move()`` and ``skip()`` ask the driver to fetch somewhere other than the next row, and a cursor has to be able to scroll for that. ODBC does not give one by default, so the calls fail:
+
+.. code-block:: text
+
+    HY106: [Microsoft][ODBC Driver 18 for SQL Server]Fetch type out of range
+
+``position()`` reporting zero comes from the same place.
+
+The cursor type is a statement attribute, set before the statement runs:
+
+.. code-block:: cpp
+
+    #include <nanodbc/nanodbc.h>
+    #include <cstdint>
+    #include <list>
+    #include <sql.h>
+    #include <sqlext.h>
+
+    int main()
+    {
+        nanodbc::connection conn(NANODBC_TEXT("dsn"));
+
+        std::list<nanodbc::statement::attribute> attributes;
+        attributes.push_back({SQL_ATTR_CURSOR_TYPE, 0, (std::uintptr_t)SQL_CURSOR_STATIC});
+
+        nanodbc::statement stmt(conn, attributes);
+        prepare(stmt, NANODBC_TEXT("select i from t order by i asc"));
+        auto results = execute(stmt);
+
+        results.last();
+        results.prior();
+        results.first();
+        results.move(2);  // absolute, counted from one
+    }
+
+``SQL_CURSOR_STATIC`` takes a snapshot of the rows and scrolls over it. ``SQL_CURSOR_DYNAMIC`` and ``SQL_CURSOR_KEYSET_DRIVEN`` scroll as well and see later changes to differing degrees, at a cost the driver decides. A scrolling cursor is dearer than the forward only one, which is why it is not what you get without asking.
+
+SQL Server, PostgreSQL, MySQL, SQLite and Oracle all honour ``SQL_CURSOR_STATIC`` through their ODBC drivers. A driver that cannot give the cursor asked for is free to substitute another and say so through ``SQLGetDiagRec`` rather than to fail, so a result that still will not scroll is worth checking the diagnostics for.
+
+******************************************************************************
 Examples
 ******************************************************************************
 
