@@ -23,7 +23,9 @@
 #include <ctime>
 #include <iomanip>
 #include <limits>
+#include <locale>
 #include <map>
+#include <sstream>
 #include <type_traits>
 
 #ifndef __clang__
@@ -1126,6 +1128,31 @@ inline void allocate_dbc_handle(SQLHDBC& conn, SQLHENV env)
         deallocate_handle(conn, SQL_HANDLE_DBC);
         throw;
     }
+}
+
+// The fewest digits that read back as the same value. std::to_string renders a floating
+// point value as %f, six digits after the point whatever the magnitude, which drops
+// precision from a large value and all of a small one: 1.23e-07 comes out "0.000000".
+template <class T>
+inline std::string render_floating_point(T value)
+{
+    std::ostringstream out;
+    out.imbue(std::locale::classic());
+    for (auto precision = std::numeric_limits<T>::digits10;
+         precision <= std::numeric_limits<T>::max_digits10;
+         ++precision)
+    {
+        out.str(std::string());
+        out << std::setprecision(precision) << value;
+
+        std::istringstream in(out.str());
+        in.imbue(std::locale::classic());
+        T parsed = 0;
+        in >> parsed;
+        if (parsed == value)
+            break;
+    }
+    return out.str();
 }
 
 } // namespace
@@ -5010,11 +5037,11 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
         return;
 
     case SQL_C_FLOAT:
-        convert(std::to_string(*ensure_pdata<float>(column)), result);
+        convert(render_floating_point(*ensure_pdata<float>(column)), result);
         return;
 
     case SQL_C_DOUBLE:
-        convert(std::to_string(*ensure_pdata<double>(column)), result);
+        convert(render_floating_point(*ensure_pdata<double>(column)), result);
         return;
 
     case SQL_C_DATE:
