@@ -413,6 +413,11 @@ TEST_CASE_METHOD(
     test_nested_transaction_rollback();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_long_text_chunk_boundaries", "[mysql][result][string]")
+{
+    test_long_text_chunk_boundaries();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_result_unbind", "[mysql][result][unbind]")
 {
     test_result_unbind();
