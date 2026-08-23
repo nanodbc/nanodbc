@@ -117,9 +117,11 @@ On SQL Server, ``SET NOCOUNT ON`` withholds the counts instead, leaving the rows
 Dates and times as strings
 ******************************************************************************
 
-A string bound to a date, time or timestamp parameter has to be written the way ODBC spells those literals, which is ``yyyy-mm-dd``, ``hh:mm:ss`` and ``yyyy-mm-dd hh:mm:ss[.f...]``. The separator between date and time is a **space**, and there is no place for a time zone offset.
+ODBC spells its date and time literals ``yyyy-mm-dd``, ``hh:mm:ss`` and ``yyyy-mm-dd hh:mm:ss[.f...]``, with a space between date and time and no place for a time zone offset. A driver asked to parse a string as a timestamp accepts little else: given the ISO 8601 ``2020-09-03T15:27:38-02:00``, the PostgreSQL driver used to store ``2020-09-03 00:00:00`` and report success, the ``T`` having stopped it reading the time, with nothing in the return code or the diagnostics to say so.
 
-ISO 8601 looks close enough to pass and does not. Given ``2020-09-03T15:27:38-02:00``, the PostgreSQL driver stores ``2020-09-03 00:00:00`` and reports success: the ``T`` stops it reading the time, and nothing in the return code or the diagnostics says so. Writing the same value as ``2020-09-03 15:27:38`` stores it correctly, and the offset is ignored either way.
+nanodbc now declares such a parameter as text, which leaves the reading to the server rather than the driver. Servers accept both spellings, so either form stores the time, and a time zone offset is applied or ignored according to the column's own type rather than being dropped on the way.
+
+What the server will accept is still the server's business. SQL Server, for one, rejects an offset on a ``datetime`` column — but it says so, rather than silently keeping the date alone.
 
 Binding a ``nanodbc::timestamp`` avoids the question entirely, since it carries its fields rather than a spelling of them.
 

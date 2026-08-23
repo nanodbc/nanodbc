@@ -55,6 +55,14 @@ TEST_CASE_METHOD(postgresql_fixture, "test_datasources", "[postgresql][datasourc
 
 TEST_CASE_METHOD(
     postgresql_fixture,
+    "test_bind_iso8601_timestamp_as_string",
+    "[postgresql][statement][bind][timestamp]")
+{
+    test_bind_iso8601_timestamp_as_string();
+}
+
+TEST_CASE_METHOD(
+    postgresql_fixture,
     "test_bind_timestamp_as_string",
     "[postgresql][statement][bind][timestamp]")
 {

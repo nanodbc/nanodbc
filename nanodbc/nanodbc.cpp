@@ -2448,6 +2448,29 @@ public:
         return static_cast<short>(param_type);
     }
 
+    // Whether a parameter takes a date, a time, or both.
+    static bool is_datetime_param_type(SQLSMALLINT type) noexcept
+    {
+        switch (type)
+        {
+        case SQL_DATE:
+        case SQL_TYPE_DATE:
+        case SQL_TIME:
+        case SQL_TYPE_TIME:
+        case SQL_TIMESTAMP:
+        case SQL_TYPE_TIMESTAMP:
+#ifdef SQL_SS_TIME2
+        case SQL_SS_TIME2:
+#endif
+#ifdef SQL_SS_TIMESTAMPOFFSET
+        case SQL_SS_TIMESTAMPOFFSET:
+#endif
+            return true;
+        default:
+            return false;
+        }
+    }
+
     static SQLSMALLINT param_type_from_direction(param_direction direction)
     {
         switch (direction)
@@ -2574,6 +2597,21 @@ public:
         if (buffer_size == 0)
             buffer_size = (std::char_traits<T>::length(buffer.values_) + 1) * sizeof(T);
 
+        // Text bound to a date or time parameter is left for the server to read rather
+        // than the driver. A driver reads a narrower set of spellings than the server it
+        // speaks to and reports success either way, so an ISO 8601 timestamp can lose its
+        // time without a word said. The value is unchanged; only the type it is declared
+        // as differs.
+        auto parameter_type = param.type_;
+        auto parameter_size = param.size_;
+        auto parameter_scale = param.scale_;
+        if (is_datetime_param_type(parameter_type))
+        {
+            parameter_type = SQL_VARCHAR;
+            parameter_size = buffer_size / sizeof(T);
+            parameter_scale = 0;
+        }
+
         RETCODE rc = SQL_SUCCESS;
         NANODBC_CALL_RC(
             SQLBindParameter,
@@ -2582,9 +2620,9 @@ public:
             param.index_ + 1, // parameter number
             param.iotype_,    // input or output type
             buffer.ctype_,    // value type
-            param.type_,      // parameter type
-            param.size_,      // column size ignored for many types, but needed for strings
-            param.scale_,     // decimal digits
+            parameter_type,   // parameter type
+            parameter_size,   // column size ignored for many types, but needed for strings
+            parameter_scale,  // decimal digits
             (SQLPOINTER)buffer.values_, // parameter value
             buffer_size,                // buffer length
             bind_len_or_null_[param.index_].data());

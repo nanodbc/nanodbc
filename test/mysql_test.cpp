@@ -150,6 +150,14 @@ TEST_CASE_METHOD(mysql_fixture, "test_std_optional", "[mysql][optional]")
 
 TEST_CASE_METHOD(
     mysql_fixture,
+    "test_bind_iso8601_timestamp_as_string",
+    "[mysql][statement][bind][timestamp]")
+{
+    test_bind_iso8601_timestamp_as_string();
+}
+
+TEST_CASE_METHOD(
+    mysql_fixture,
     "test_bind_timestamp_as_string",
     "[mysql][statement][bind][timestamp]")
 {
