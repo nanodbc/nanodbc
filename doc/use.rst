@@ -117,13 +117,11 @@ On SQL Server, ``SET NOCOUNT ON`` withholds the counts instead, leaving the rows
 Dates and times as strings
 ******************************************************************************
 
-ODBC spells its date and time literals ``yyyy-mm-dd``, ``hh:mm:ss`` and ``yyyy-mm-dd hh:mm:ss[.f...]``, with a space between date and time and no place for a time zone offset. A driver asked to parse a string as a timestamp accepts little else: given the ISO 8601 ``2020-09-03T15:27:38-02:00``, the PostgreSQL driver used to store ``2020-09-03 00:00:00`` and report success, the ``T`` having stopped it reading the time, with nothing in the return code or the diagnostics to say so.
+A string bound to a date, time or timestamp parameter is declared to the driver as text, so the server reads it rather than the driver does. Drivers accept little beyond the literals ODBC spells out — ``yyyy-mm-dd``, ``hh:mm:ss`` and ``yyyy-mm-dd hh:mm:ss[.f...]``, a space between date and time and no time zone offset — while servers read a good deal more, ISO 8601 among it. Both ``2020-09-03 15:27:38`` and ``2020-09-03T15:27:38`` therefore store the time, and a time zone offset is applied or ignored according to the type of the column it lands in.
 
-nanodbc now declares such a parameter as text, which leaves the reading to the server rather than the driver. Servers accept both spellings, so either form stores the time, and a time zone offset is applied or ignored according to the column's own type rather than being dropped on the way.
+What a server accepts remains the server's business. SQL Server rejects an offset on a ``datetime`` column, and says so.
 
-What the server will accept is still the server's business. SQL Server, for one, rejects an offset on a ``datetime`` column — but it says so, rather than silently keeping the date alone.
-
-Binding a ``nanodbc::timestamp`` avoids the question entirely, since it carries its fields rather than a spelling of them.
+Binding a ``nanodbc::timestamp`` avoids the question, since it carries its fields rather than a spelling of them.
 
 ******************************************************************************
 Examples

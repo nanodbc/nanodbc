@@ -1529,9 +1529,9 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(rows == 4);
     }
 
-    // The same value written the ISO 8601 way, which a driver asked to parse it as a
-    // timestamp reads only the date from. Declaring the parameter as text instead leaves
-    // the reading to the server, which understands both spellings.
+    // The same moment written the ISO 8601 way, which reaches the server whole because a
+    // date or time parameter given text is declared as text. A driver asked to read this
+    // one as a timestamp takes the date and stops at the "T", and says nothing of it.
     void test_bind_iso8601_timestamp_as_string()
     {
         auto connection = connect();
@@ -1561,9 +1561,8 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(stamp.sec == 38);
     }
 
-    // A string bound to a timestamp parameter has to be in the ODBC literal format,
-    // "yyyy-mm-dd hh:mm:ss", with a space. An ISO 8601 "T" in its place is accepted
-    // without complaint by at least one driver, which then stores midnight.
+    // A timestamp in the form ODBC spells its literals, "yyyy-mm-dd hh:mm:ss", bound as
+    // a string and read back field by field.
     void test_bind_timestamp_as_string()
     {
         auto connection = connect();

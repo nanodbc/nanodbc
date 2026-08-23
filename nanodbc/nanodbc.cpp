@@ -2597,11 +2597,10 @@ public:
         if (buffer_size == 0)
             buffer_size = (std::char_traits<T>::length(buffer.values_) + 1) * sizeof(T);
 
-        // Text bound to a date or time parameter is left for the server to read rather
-        // than the driver. A driver reads a narrower set of spellings than the server it
-        // speaks to and reports success either way, so an ISO 8601 timestamp can lose its
-        // time without a word said. The value is unchanged; only the type it is declared
-        // as differs.
+        // A date or time parameter given text is declared as text, which leaves the
+        // server to read the value rather than the driver. Drivers read a narrower set of
+        // spellings than the servers they speak to, and report success whether or not
+        // they read all of what they were given.
         auto parameter_type = param.type_;
         auto parameter_size = param.size_;
         auto parameter_scale = param.scale_;
