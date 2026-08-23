@@ -5515,6 +5515,12 @@ void result::result_impl::get_ref_from_string_column(short column, T& result) co
         throw type_incompatible_error();
     std::string str;
     get_ref_impl(col.column_, str);
+    // An unbound column reports null only once the read has happened, and a null leaves
+    // nothing to convert: from_string would raise out of the standard library rather than
+    // the fallback being handed back. The caller tests for the null again after this
+    // returns.
+    if (is_null(column))
+        return;
     result = from_string<T>(str);
 }
 

@@ -1139,10 +1139,10 @@ struct test_case_fixture : public base_test_fixture
 
         // By name as well as by position: the fallback for an unbound column is decided
         // after the read rather than before it, on a path of its own.
-        REQUIRE(
-            results
-                .get<std::vector<std::uint8_t>>(NANODBC_TEXT("long_b"), std::vector<std::uint8_t>{})
-                .empty());
+        REQUIRE(results
+                    .get<std::vector<std::uint8_t>>(
+                        as_identifier(NANODBC_TEXT("long_b")), std::vector<std::uint8_t>{})
+                    .empty());
         REQUIRE(results
                     .get<std::vector<std::uint8_t>>(
                         NANODBC_TEXT("small_b"), std::vector<std::uint8_t>{})
@@ -4462,19 +4462,16 @@ PRIMARY KEY(t2_fid)
             {0x00, 0x01, 0x02, 0x03}, {0x03, 0x02, 0x01, 0x00}};
 
         drop_table(connection, NANODBC_TEXT("test_batch_binary"));
-        nanodbc::string const binary_type_name = get_binary_type_name();
-
         // PostgreSQL does not allow limits on bytea fields, MS-SQL requires
-        // them on varbinary fields
-        nanodbc::string create_table_sql = NANODBC_TEXT("create table test_batch_binary (s ");
-        if (vendor_ == database_vendor::postgresql)
-        {
-            create_table_sql = create_table_sql + binary_type_name + NANODBC_TEXT(")");
-        }
-        else
-        {
-            create_table_sql = create_table_sql + binary_type_name + NANODBC_TEXT("(10))");
-        }
+        // them on varbinary fields. The size belongs to the type name rather than being
+        // appended to it, a bounded binary being spelled differently from an unbounded
+        // one on some databases.
+        nanodbc::string const binary_type_name = vendor_ == database_vendor::postgresql
+                                                     ? get_binary_type_name()
+                                                     : get_binary_type_name(10);
+        nanodbc::string const create_table_sql =
+            NANODBC_TEXT("create table test_batch_binary (s ") + binary_type_name +
+            NANODBC_TEXT(")");
 
         execute(connection, create_table_sql);
         nanodbc::statement query(connection);
