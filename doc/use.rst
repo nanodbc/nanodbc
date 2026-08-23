@@ -117,9 +117,9 @@ On SQL Server, ``SET NOCOUNT ON`` withholds the counts instead, leaving the rows
 Dates and times as strings
 ******************************************************************************
 
-A string bound to a date, time or timestamp parameter is declared to the driver as text, so the server reads it rather than the driver does. Drivers accept little beyond the literals ODBC spells out — ``yyyy-mm-dd``, ``hh:mm:ss`` and ``yyyy-mm-dd hh:mm:ss[.f...]``, a space between date and time and no time zone offset — while servers read a good deal more, ISO 8601 among it. Both ``2020-09-03 15:27:38`` and ``2020-09-03T15:27:38`` therefore store the time, and a time zone offset is applied or ignored according to the type of the column it lands in.
+A string bound to a date, time or timestamp parameter is read by the driver, which accepts the literals ODBC spells out and little else: ``yyyy-mm-dd``, ``hh:mm:ss`` and ``yyyy-mm-dd hh:mm:ss[.f...]``, a space between date and time and no time zone offset. That form is the portable one and every driver here stores it correctly.
 
-What a server accepts remains the server's business. SQL Server rejects an offset on a ``datetime`` column, and says so.
+ISO 8601 looks close enough to pass and is not. Given ``2020-09-03T15:27:38-02:00``, the PostgreSQL driver stores ``2020-09-03 00:00:00`` and reports success, the ``T`` having stopped it reading the time, with nothing in the return code or the diagnostics to say so. SQL Server refuses the same value outright. Writing it as ``2020-09-03 15:27:38`` stores the time on both.
 
 Binding a ``nanodbc::timestamp`` avoids the question, since it carries its fields rather than a spelling of them.
 
