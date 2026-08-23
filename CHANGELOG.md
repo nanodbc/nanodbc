@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- A regression test covers binding objects past the driver's reported parameter limit, which nothing pinned. [`#5`](https://github.com/nanodbc/nanodbc/issues/5)
 - A bound character column the driver under-sized is read again in full instead of coming back truncated. [`#343`](https://github.com/nanodbc/nanodbc/issues/343)
 - Tests cover executing a prepared statement repeatedly and binding a batch with an arithmetic null sentry. [`#56`](https://github.com/nanodbc/nanodbc/issues/56) [`#77`](https://github.com/nanodbc/nanodbc/issues/77)
 - Column buffer casts go through `void*` rather than `reinterpret_cast` and a C-style cast, which analysers report as unsafe. [`#420`](https://github.com/nanodbc/nanodbc/issues/420)
