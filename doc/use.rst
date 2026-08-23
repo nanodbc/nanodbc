@@ -124,6 +124,30 @@ What a server accepts remains the server's business. SQL Server rejects an offse
 Binding a ``nanodbc::timestamp`` avoids the question, since it carries its fields rather than a spelling of them.
 
 ******************************************************************************
+Batch parameters and how far they carry
+******************************************************************************
+
+Binding arrays and executing them as a batch sets ``SQL_ATTR_PARAMSET_SIZE``, and what happens next is the driver's to decide. A driver that implements array binding sends the sets together; one that does not is free to walk them, executing the statement once per set, and the ODBC API gives the caller no way to tell which it got.
+
+The difference is large. Inserting 5000 rows of two columns, over a local network, at several batch sizes:
+
+===============  ===================  ===================
+Batch size       PostgreSQL (rows/s)  SQL Server (rows/s)
+===============  ===================  ===================
+1                4,322                858
+10               21,887               7,480
+100              29,043               52,731
+1000             32,328               123,524
+5000             33,051               140,003
+===============  ===================  ===================
+
+SQL Server's driver keeps gaining as the batch grows. The PostgreSQL driver stops gaining after a hundred or so, a batch fifty times larger buying another tenth, which is the shape of a driver walking the sets rather than sending them.
+
+Where a driver walks them, a single statement carrying many rows is faster than many parameter sets — around thirteen times, in the same measurement. It costs the safety of bound parameters, so build it from values you trust or bind a smaller batch and accept the rate.
+
+None of this applies to a database in the same process. SQLite has no round trip to save and shows no difference between the two.
+
+******************************************************************************
 Examples
 ******************************************************************************
 

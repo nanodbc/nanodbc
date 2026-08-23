@@ -1,5 +1,9 @@
 # ChangeLog
 
+## Unreleased
+
+- Documented that how far a batch of parameters carries is the driver's to decide, with measurements. [`#241`](https://github.com/nanodbc/nanodbc/issues/241)
+
 ## v2.18.0
 
 - The API reference is a Doxygen site themed with doxygen-awesome-css, with search and a navigation tree. [`#373`](https://github.com/nanodbc/nanodbc/issues/373)
