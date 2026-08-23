@@ -377,7 +377,7 @@ jobs:
       - name: Install
         run: |
           apt-get -o DPkg::Lock::Timeout=120 update
-          apt-get -o DPkg::Lock::Timeout=120 install -y ccache unixodbc-dev unzip libaio1t64
+          apt-get -o DPkg::Lock::Timeout=120 install -y ccache unixodbc unixodbc-dev odbcinst unzip libaio1t64
         shell: sudo bash {0}
       - name: Install Oracle Instant Client
         # Instant Client is published for x86_64 only, which the runners are. The driver
