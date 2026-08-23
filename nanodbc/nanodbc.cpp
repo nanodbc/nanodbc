@@ -1286,7 +1286,6 @@ public:
         }
     }
 
-#ifdef NANODBC_HAS_STD_VARIANT
     connection_impl(
         string const& dsn,
         string const& user,
@@ -1329,7 +1328,6 @@ public:
             throw;
         }
     }
-#endif
 
     ~connection_impl() noexcept
     {
@@ -5893,7 +5891,6 @@ connection::connection(string const& connection_string, long timeout)
 {
 }
 
-#ifdef NANODBC_HAS_STD_VARIANT
 connection::connection(
     string const& dsn,
     string const& user,
@@ -5907,7 +5904,6 @@ connection::connection(string const& connection_string, std::list<attribute> con
     : impl_(std::make_shared<connection_impl>(connection_string, attributes))
 {
 }
-#endif
 
 connection::~connection() noexcept {}
 
@@ -5931,7 +5927,6 @@ void connection::connect(string const& connection_string, long timeout)
     impl_->connect(connection_string, timeout);
 }
 
-#ifdef NANODBC_HAS_STD_VARIANT
 void connection::connect(
     string const& dsn,
     string const& user,
@@ -5945,7 +5940,6 @@ void connection::connect(string const& connection_string, std::list<attribute> c
 {
     impl_->connect(connection_string, attributes);
 }
-#endif
 
 #if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_EVENT)
 bool connection::async_connect(
