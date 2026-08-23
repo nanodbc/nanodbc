@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- A test covers the transaction isolation level set by a statement holding for the session, as it is the session's to hold. [`#10`](https://github.com/nanodbc/nanodbc/issues/10)
 - A floating point column read as text carries every digit needed to read back as the same value, where six decimals were rendered whatever the magnitude. [`#196`](https://github.com/nanodbc/nanodbc/issues/196)
 - A test covers binding a timestamp's fractional second, which counts nanoseconds and has to suit what the column resolves. [`#4`](https://github.com/nanodbc/nanodbc/issues/4)
 - A date or time parameter bound as text is declared as text, so the server reads it rather than the driver, which reads fewer spellings. [`#248`](https://github.com/nanodbc/nanodbc/issues/248)
