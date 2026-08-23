@@ -5473,7 +5473,7 @@ auto from_string(std::string const& s, unsigned long long)
 // answer should not turn on which of the two a driver chose.
 inline auto from_string(std::string const& s, bool)
 {
-    return from_string(s, (long long){}) != 0;
+    return from_string(s, static_cast<long long>(0)) != 0;
 }
 
 template <typename R, typename std::enable_if<std::is_integral<R>::value, int>::type = 0>
