@@ -1,0 +1,38 @@
+# Doxygen configuration for the nanodbc API reference.
+#
+# The reference is a Doxygen site of its own, themed with doxygen-awesome-css, and is
+# written into the Sphinx output under api/ so that both are published together. See
+# the doxygen target in the Makefile, which fetches the theme this expects.
+
+PROJECT_NAME           = nanodbc
+PROJECT_BRIEF          = "A small C++ wrapper for the native C ODBC API"
+
+INPUT                  = ../nanodbc/nanodbc.h
+OUTPUT_DIRECTORY       = build/html/api
+HTML_OUTPUT            = .
+GENERATE_LATEX         = NO
+
+# The library is documented in the header; the implementation is not part of the API.
+EXTRACT_ALL            = NO
+EXTRACT_PRIVATE        = NO
+EXTRACT_STATIC         = NO
+HIDE_UNDOC_MEMBERS     = NO
+
+# Friend declarations name implementation classes and are not part of the API.
+HIDE_FRIEND_COMPOUNDS  = YES
+PREDEFINED             = DOXYGEN=1
+
+JAVADOC_AUTOBRIEF      = YES
+SORT_MEMBER_DOCS       = NO
+WARN_IF_UNDOCUMENTED   = NO
+QUIET                  = YES
+
+# doxygen-awesome-css. HTML_COLORSTYLE must be LIGHT for the theme to control the
+# palette itself; it carries its own dark mode.
+GENERATE_TREEVIEW      = YES
+DISABLE_INDEX          = NO
+FULL_SIDEBAR           = NO
+HTML_COLORSTYLE        = LIGHT
+HTML_EXTRA_STYLESHEET  = doxygen-awesome-css/doxygen-awesome.css \
+                         doxygen-awesome-css/doxygen-awesome-sidebar-only.css \
+                         doxygen-extra.css

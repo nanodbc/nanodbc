@@ -1,0 +1,28 @@
+/* Styling for the nanodbc API reference, loaded after doxygen-awesome-css.
+   Colours come from the theme's custom properties so that light and dark both work. */
+
+/* The license and credits blocks in nanodbc.h name one copyright holder, host or licence
+   per line, and are hard wrapped to suit. Doxygen passes raw HTML through untouched, and
+   HTML collapses whitespace, so the block is a pre element to keep those line endings.
+   pre-wrap rather than pre so that a long line still wraps rather than scrolling. */
+pre.license {
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: inherit;
+    font-size: 0.9em;
+    line-height: 1.5;
+    color: var(--page-secondary-foreground-color, #4b5157);
+    background: none;
+    border: none;
+    border-left: 3px solid var(--separator-color, #dedede);
+    border-radius: 0;
+    padding: 0.4em 0 0.4em 1em;
+    margin: 0.75em 0;
+    overflow-x: auto;
+}
+
+/* Links in those blocks are hosts and addresses rather than prose, so they read better
+   without the weight the theme gives links in body text. */
+pre.license a {
+    font-weight: normal;
+}
