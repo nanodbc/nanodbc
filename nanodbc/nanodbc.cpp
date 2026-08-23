@@ -2295,6 +2295,22 @@ public:
         return rc;
     }
 
+    result execute(batch_ops const& array_sizes, long timeout, statement& statement)
+    {
+        // A length that was never chosen is 1: one set of parameters, one row at a time.
+        long const parameter_sets =
+            array_sizes.parameter_array_length > 0 ? array_sizes.parameter_array_length : 1;
+        long const rows_per_fetch = array_sizes.rowset_size > 0 ? array_sizes.rowset_size : 1;
+#ifdef NANODBC_ENABLE_WORKAROUND_NODATA
+        const RETCODE rc = just_execute(parameter_sets, timeout, statement);
+        if (rc == SQL_NO_DATA)
+            return result();
+#else
+        just_execute(parameter_sets, timeout, statement);
+#endif
+        return {statement, rows_per_fetch};
+    }
+
     result execute(long batch_operations, long timeout, statement& statement)
     {
 #ifdef NANODBC_ENABLE_WORKAROUND_NODATA
@@ -6167,6 +6183,11 @@ result statement::execute_direct(
     long timeout)
 {
     return impl_->execute_direct(conn, query, array_sizes, timeout, *this);
+}
+
+result statement::execute(batch_ops const& array_sizes, long timeout)
+{
+    return impl_->execute(array_sizes, timeout, *this);
 }
 
 #if defined(NANODBC_DO_ASYNC_IMPL)

@@ -221,6 +221,14 @@ TEST_CASE_METHOD(mssql_fixture, "test_batch_insert_integral", "[mssql][batch][in
     test_batch_insert_integral();
 }
 
+TEST_CASE_METHOD(
+    mssql_fixture,
+    "test_rowset_size_apart_from_parameter_sets",
+    "[mssql][result][rowset]")
+{
+    test_rowset_size_apart_from_parameter_sets();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_batch_delete", "[mssql][batch][delete]")
 {
     test_batch_delete();

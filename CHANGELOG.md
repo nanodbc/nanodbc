@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- `statement::execute` takes a `batch_ops`, so the rowset size and the parameter array length can differ. [`#162`](https://github.com/nanodbc/nanodbc/issues/162)
 - Documented that how far a batch of parameters carries is the driver's to decide, with measurements. [`#241`](https://github.com/nanodbc/nanodbc/issues/241)
 
 ## v2.18.0

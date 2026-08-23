@@ -1155,6 +1155,22 @@ public:
     /// \see open(), prepare(), result, transaction
     class result execute(long batch_operations = 1, long timeout = 0);
 
+    /// \brief Execute the previously prepared query now, sizing the parameter array and
+    ///        the rowset separately.
+    ///
+    /// The number of parameter sets to execute and the number of rows to fetch at a time
+    /// are unrelated: a query taking one set of parameters may still want its rows in
+    /// large blocks. The single argument overload sets both alike, which asks the driver
+    /// to read as many parameter sets as it was told to fetch rows.
+    ///
+    /// \param array_sizes Parameter array length and rowset size. A length of zero or less
+    ///                    leaves that one at 1.
+    /// \param timeout The number in seconds before query timeout. Default 0 meaning no timeout.
+    /// \throws database_error
+    /// \return A result set object.
+    /// \see open(), prepare(), result, transaction, batch_ops
+    class result execute(batch_ops const& array_sizes, long timeout = 0);
+
     /// \brief Execute the previously prepared query now without constructing result object.
     /// \param batch_operations Rows to fetch per rowset, or number of batch parameters to process.
     /// \param timeout The number in seconds before query timeout. Default 0 meaning no timeout.
