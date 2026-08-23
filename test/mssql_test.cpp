@@ -1685,6 +1685,42 @@ TEST_CASE_METHOD(mssql_fixture, "test_timestamp", "[mssql][rowversion][timestamp
     }
 }
 
+// The isolation level belongs to the session, so setting it with a statement holds for
+// the statements after it, and for a transaction opened later.
+TEST_CASE_METHOD(mssql_fixture, "test_transaction_isolation_level_persists", "[mssql][transaction]")
+{
+    auto connection = connect();
+
+    auto const level = [&]()
+    {
+        auto results = execute(
+            connection,
+            NANODBC_TEXT(
+                "select transaction_isolation_level from sys.dm_exec_sessions "
+                "where session_id = @@SPID;"));
+        REQUIRE(results.next());
+        return results.get<int>(0);
+    };
+
+    int const read_uncommitted = 1;
+    int const serializable = 4;
+
+    execute(connection, NANODBC_TEXT("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;"));
+    REQUIRE(level() == read_uncommitted);
+    // Each call above runs its own statement, so the level outlasts the one that set it.
+    REQUIRE(level() == read_uncommitted);
+
+    execute(connection, NANODBC_TEXT("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;"));
+    REQUIRE(level() == serializable);
+
+    {
+        nanodbc::transaction transaction(connection);
+        REQUIRE(level() == serializable);
+        transaction.commit();
+    }
+    REQUIRE(level() == serializable);
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_transaction", "[mssql][transaction]")
 {
     test_transaction();
