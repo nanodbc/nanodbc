@@ -99,7 +99,7 @@ services:
       start_period: 60s
 
   oracle:
-    image: container-registry.oracle.com/database/free:${ORACLE_VERSION:-latest}
+    image: gvenzl/oracle-free:${ORACLE_VERSION:-23-slim-faststart}
     container_name: nanooracle
     restart: unless-stopped
     # Instant Client is published for x86_64 only.
@@ -107,14 +107,15 @@ services:
     ports:
       - "1521:1521"
     environment:
-      ORACLE_PWD: *default_credential
-    # The image carries its own health check, which runs the database's own status
-    # script, so only the timing is set here.
+      ORACLE_PASSWORD: *default_credential
+    # The image ships a health check script but declares no health check of its own,
+    # so the script is named here. A faststart image opens in well under a minute.
     healthcheck:
-      interval: 30s
-      timeout: 30s
-      retries: 40
-      start_period: 600s
+      test: ["CMD", "/opt/oracle/healthcheck.sh"]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 30s
 
   nanodbc:
     build:
