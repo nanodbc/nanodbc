@@ -1145,7 +1145,7 @@ struct test_case_fixture : public base_test_fixture
                     .empty());
         REQUIRE(results
                     .get<std::vector<std::uint8_t>>(
-                        NANODBC_TEXT("small_b"), std::vector<std::uint8_t>{})
+                        as_identifier(NANODBC_TEXT("small_b")), std::vector<std::uint8_t>{})
                     .empty());
 
         REQUIRE(!results.next());
@@ -1287,7 +1287,9 @@ struct test_case_fixture : public base_test_fixture
             connection, NANODBC_TEXT("test_get_every_ctype_date"), NANODBC_TEXT("(d date)"));
         execute(
             connection,
-            NANODBC_TEXT("insert into test_get_every_ctype_date (d) values ('2006-12-30');"));
+            // The ODBC date escape rather than a bare literal: a bare one is read in whatever
+            // format the database is set to, and Oracle's is DD-MON-RR.
+            NANODBC_TEXT("insert into test_get_every_ctype_date (d) values ({d '2006-12-30'});"));
         auto dates = execute(connection, NANODBC_TEXT("select d from test_get_every_ctype_date;"));
         REQUIRE(dates.next());
         REQUIRE_THROWS_AS(dates.get<int>(0), nanodbc::type_incompatible_error);
@@ -1315,7 +1317,7 @@ struct test_case_fixture : public base_test_fixture
         check_bind_forms<short>(narrow_column, 10, 20, 30);
         check_bind_forms<unsigned short>(narrow_column, 10, 20, 30);
 
-        auto const wide_column = NANODBC_TEXT("bigint");
+        auto const wide_column = get_bigint_type_name();
         check_bind_forms<int>(wide_column, 100, 200, 300);
         check_bind_forms<unsigned int>(wide_column, 100, 200, 300);
         check_bind_forms<long>(wide_column, 1000, 2000, 3000);

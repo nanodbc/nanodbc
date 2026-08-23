@@ -5030,9 +5030,14 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
         return;
     }
 
+    // A bit is 0 or 1 by definition, whatever a driver puts in the byte. Oracle's writes
+    // the character rather than the value, and 49 is not what was stored.
+    case SQL_C_BIT:
+        convert(std::string(*ensure_pdata<int8_t>(column) != 0 ? "1" : "0"), result);
+        return;
+
     // std::to_string renders each as the SQL type demands: "%d" and "%lld" for integers,
     // "%f" for floating point, whose column scale is undefined.
-    case SQL_C_BIT:
     case SQL_C_TINYINT:
     case SQL_C_STINYINT:
         convert(std::to_string(*ensure_pdata<int8_t>(column)), result);
@@ -5463,6 +5468,14 @@ auto from_string(std::string const& s, unsigned long long)
     return std::stoull(s);
 }
 
+// A bool is tested rather than narrowed. Reading 42 as a bool is true, which is what it
+// is where the driver hands the value over as a number rather than as text, and the
+// answer should not turn on which of the two a driver chose.
+inline auto from_string(std::string const& s, bool)
+{
+    return from_string(s, (long long){}) != 0;
+}
+
 template <typename R, typename std::enable_if<std::is_integral<R>::value, int>::type = 0>
 auto from_string(std::string const& s, R)
 {
@@ -5569,7 +5582,9 @@ void result::result_impl::get_ref_impl(short column, T& result) const
     switch (col.ctype_)
     {
     case SQL_C_BIT:
-        result = (T) * (ensure_pdata<int8_t>(column));
+        // A bit is 0 or 1 by definition. A driver writing the character '1' into the byte,
+        // as Oracle's does, means what it stored rather than 49.
+        result = static_cast<T>(*ensure_pdata<int8_t>(column) != 0 ? 1 : 0);
         return;
     case SQL_C_CHAR:
     case SQL_C_WCHAR:
