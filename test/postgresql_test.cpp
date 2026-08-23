@@ -363,6 +363,14 @@ TEST_CASE_METHOD(
     test_nested_transaction_rollback();
 }
 
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_long_text_chunk_boundaries",
+    "[postgresql][result][string]")
+{
+    test_long_text_chunk_boundaries();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_result_unbind", "[postgresql][result][unbind]")
 {
     test_result_unbind();
