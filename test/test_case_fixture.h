@@ -1734,6 +1734,51 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(count() == 1);
     }
 
+    // A long column is read in fixed-size pieces with repeated SQLGetData calls, 1024
+    // bytes at a time narrow and 512 characters wide. Lengths either side of both are
+    // where a piece gets dropped, repeated or double counted.
+    void test_long_text_chunk_boundaries()
+    {
+        auto connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_long_text_chunk_boundaries"),
+            NANODBC_TEXT("(id int, t ") + get_text_type_name() + NANODBC_TEXT(")"));
+
+        for (std::size_t const length :
+             {std::size_t{511},
+              std::size_t{512},
+              std::size_t{513},
+              std::size_t{1023},
+              std::size_t{1024},
+              std::size_t{1025},
+              std::size_t{5000}})
+        {
+            execute(connection, NANODBC_TEXT("delete from test_long_text_chunk_boundaries;"));
+
+            // Repeating rather than uniform, so a repeated piece shows up as a mismatch
+            // instead of blending in.
+            nanodbc::string value;
+            value.reserve(length);
+            for (std::size_t i = 0; i < length; ++i)
+                value.push_back(
+                    static_cast<nanodbc::string::value_type>(NANODBC_TEXT("abcdefghij")[i % 10]));
+
+            nanodbc::statement statement(connection);
+            statement.prepare(
+                NANODBC_TEXT("insert into test_long_text_chunk_boundaries (id, t) values (1, ?);"));
+            statement.bind(0, value.c_str());
+            statement.just_execute();
+
+            auto results =
+                execute(connection, NANODBC_TEXT("select t from test_long_text_chunk_boundaries;"));
+            REQUIRE(results.next());
+            auto const read_back = results.template get<nanodbc::string>(0);
+            REQUIRE(read_back.size() == length);
+            REQUIRE(read_back == value);
+        }
+    }
+
     // A binary column is not bound, so the fetch leaves no indicator behind for it and
     // whether it is null has to be asked of the driver.
     void test_is_null_binary()

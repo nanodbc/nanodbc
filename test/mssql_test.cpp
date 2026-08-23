@@ -1203,6 +1203,11 @@ TEST_CASE_METHOD(
     test_nested_transaction_rollback();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_long_text_chunk_boundaries", "[mssql][result][string]")
+{
+    test_long_text_chunk_boundaries();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_result_unbind", "[mssql][result][unbind]")
 {
     test_result_unbind();
