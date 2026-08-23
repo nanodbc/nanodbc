@@ -1,5 +1,9 @@
 # ChangeLog
 
+## Unreleased
+
+- `statement::execute` takes a `batch_ops`, so the rowset size and the parameter array length can differ. [`#162`](https://github.com/nanodbc/nanodbc/issues/162)
+
 ## v2.18.0
 
 - The API reference is a Doxygen site themed with doxygen-awesome-css, with search and a navigation tree. [`#373`](https://github.com/nanodbc/nanodbc/issues/373)

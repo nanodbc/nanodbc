@@ -114,6 +114,14 @@ TEST_CASE_METHOD(sqlite_fixture, "test_batch_insert_integral", "[sqlite][batch][
     test_batch_insert_integral();
 }
 
+TEST_CASE_METHOD(
+    sqlite_fixture,
+    "test_rowset_size_apart_from_parameter_sets",
+    "[sqlite][result][rowset]")
+{
+    test_rowset_size_apart_from_parameter_sets();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_batch_delete", "[sqlite][batch][delete]")
 {
     test_batch_delete();

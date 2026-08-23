@@ -151,6 +151,48 @@ struct test_case_fixture : public base_test_fixture
         }
     }
 #endif
+    // How many parameter sets a statement executes and how many rows it fetches at a time
+    // are unrelated. A query taking one set of parameters may still want its rows in large
+    // blocks, which asking for both with one number cannot express.
+    void test_rowset_size_apart_from_parameter_sets()
+    {
+        auto connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_rowset_size_apart_from_parameter_sets"),
+            NANODBC_TEXT("(i int)"));
+        for (int i = 0; i < 20; ++i)
+        {
+            execute(
+                connection,
+                NANODBC_TEXT(
+                    "insert into test_rowset_size_apart_from_parameter_sets (i) "
+                    "values (") +
+                    nanodbc::string(1, static_cast<nanodbc::string::value_type>('0' + i / 10)) +
+                    nanodbc::string(1, static_cast<nanodbc::string::value_type>('0' + i % 10)) +
+                    NANODBC_TEXT(");"));
+        }
+
+        int const threshold = 5;
+        nanodbc::statement statement(connection);
+        statement.prepare(NANODBC_TEXT(
+            "select i from test_rowset_size_apart_from_parameter_sets "
+            "where i >= ? order by i;"));
+        statement.bind(0, &threshold);
+
+        nanodbc::batch_ops array_sizes;
+        array_sizes.parameter_array_length = 1;
+        array_sizes.rowset_size = 10;
+
+        auto results = statement.execute(array_sizes);
+        REQUIRE(results.rowset_size() == 10);
+
+        int rows = 0;
+        while (results.next())
+            ++rows;
+        REQUIRE(rows == 15);
+    }
+
     // A batch runs the statement once per parameter set, so the sets that match nothing
     // are not errors and the ones that match are still carried out.
     void test_batch_delete()

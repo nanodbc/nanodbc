@@ -74,6 +74,14 @@ TEST_CASE_METHOD(postgresql_fixture, "test_batch_insert_integer", "[postgresql][
     test_batch_insert_integral();
 }
 
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_rowset_size_apart_from_parameter_sets",
+    "[postgresql][result][rowset]")
+{
+    test_rowset_size_apart_from_parameter_sets();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_batch_delete", "[postgresql][batch][delete]")
 {
     test_batch_delete();

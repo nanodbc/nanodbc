@@ -128,6 +128,14 @@ TEST_CASE_METHOD(mysql_fixture, "test_batch_insert_integer", "[mysql][batch][int
     test_batch_insert_integral();
 }
 
+TEST_CASE_METHOD(
+    mysql_fixture,
+    "test_rowset_size_apart_from_parameter_sets",
+    "[mysql][result][rowset]")
+{
+    test_rowset_size_apart_from_parameter_sets();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_batch_delete", "[mysql][batch][delete]")
 {
     test_batch_delete();
