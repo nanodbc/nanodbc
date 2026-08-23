@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Documented that a batch returns a result set per statement, counts included, and how to reach the rows. [`#247`](https://github.com/nanodbc/nanodbc/issues/247)
+- A test covers binding a string as an output parameter, which the driver writes back into the caller's buffer. [`#231`](https://github.com/nanodbc/nanodbc/issues/231)
 - A test reads long text at the sizes either side of the chunk the driver is asked for, where a piece could be dropped or repeated. [`#22`](https://github.com/nanodbc/nanodbc/issues/22)
 - `transaction::commit()` honours the connection's rollback flag, so an inner rollback is no longer discarded by an outer commit. [`#78`](https://github.com/nanodbc/nanodbc/issues/78)
 - A regression test covers binding objects past the driver's reported parameter limit, which nothing pinned. [`#5`](https://github.com/nanodbc/nanodbc/issues/5)

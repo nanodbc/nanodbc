@@ -2537,6 +2537,40 @@ TEST_CASE_METHOD(mssql_fixture, "test_output_parameters", "[mssql][statement][bi
     REQUIRE(out2 == 2);
 }
 
+// An output parameter of a string type is bound with bind_strings and a direction. The
+// buffer belongs to the caller and the driver writes the value into it, so it has to be
+// writable and large enough for whatever the procedure returns.
+TEST_CASE_METHOD(mssql_fixture, "test_output_string_parameter", "[mssql][statement][bind]")
+{
+    auto connection = connect();
+    nanodbc::string const name = NANODBC_TEXT("test_output_string_parameter_proc");
+    try
+    {
+        execute(connection, NANODBC_TEXT("DROP PROCEDURE ") + name);
+    }
+    catch (...)
+    {
+    }
+    execute(
+        connection,
+        NANODBC_TEXT("CREATE PROCEDURE ") + name +
+            NANODBC_TEXT(
+                " @in varchar(20), @out varchar(50) OUTPUT AS "
+                "BEGIN SET @out = 'hello ' + @in; END;"));
+
+    nanodbc::statement statement(connection);
+    statement.prepare(NANODBC_TEXT("{ call ") + name + NANODBC_TEXT("(?, ?) }"));
+
+    char in[21] = "world";
+    char out[51] = {};
+
+    statement.bind_strings(0, in, sizeof(in), 1);
+    statement.bind_strings(1, out, sizeof(out), 1, nanodbc::statement::PARAM_OUT);
+    statement.just_execute();
+
+    REQUIRE(std::string(out) == "hello world");
+}
+
 // A procedure's RETURN value is not an output parameter; it is bound at position zero
 // of a "{ ? = CALL ... }" escape sequence with PARAM_RETURN.
 TEST_CASE_METHOD(mssql_fixture, "test_procedure_return_value", "[mssql][statement][bind]")
