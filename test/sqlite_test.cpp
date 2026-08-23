@@ -473,6 +473,14 @@ TEST_CASE_METHOD(sqlite_fixture, "test_bind_arithmetic_null_sentry", "[sqlite][b
     test_bind_arithmetic_null_sentry();
 }
 
+TEST_CASE_METHOD(
+    sqlite_fixture,
+    "test_nested_transaction_rollback",
+    "[sqlite][transaction][rollback]")
+{
+    test_nested_transaction_rollback();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_result_unbind", "[sqlite][result][unbind]")
 {
     test_result_unbind();

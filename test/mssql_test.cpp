@@ -1195,6 +1195,14 @@ TEST_CASE_METHOD(mssql_fixture, "test_bind_arithmetic_null_sentry", "[mssql][bin
     test_bind_arithmetic_null_sentry();
 }
 
+TEST_CASE_METHOD(
+    mssql_fixture,
+    "test_nested_transaction_rollback",
+    "[mssql][transaction][rollback]")
+{
+    test_nested_transaction_rollback();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_result_unbind", "[mssql][result][unbind]")
 {
     test_result_unbind();

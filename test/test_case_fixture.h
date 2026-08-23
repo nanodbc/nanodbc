@@ -1674,6 +1674,66 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(results.get<int>(1) == 2);
     }
 
+    // Transactions on one connection share a single ODBC transaction, there being no
+    // savepoints underneath, so a rollback anywhere within it discards all of it. An
+    // outer commit cannot rescue work an inner transaction asked to throw away.
+    void test_nested_transaction_rollback()
+    {
+        auto connection = connect();
+        create_table(
+            connection, NANODBC_TEXT("test_nested_transaction_rollback"), NANODBC_TEXT("(i int)"));
+
+        auto const count = [&]()
+        {
+            auto results = execute(
+                connection, NANODBC_TEXT("select count(*) from test_nested_transaction_rollback;"));
+            results.next();
+            return results.template get<int>(0);
+        };
+
+        // Inner rolls back, outer commits: nothing is kept.
+        {
+            nanodbc::transaction outer(connection);
+            {
+                nanodbc::transaction inner(connection);
+                execute(
+                    connection,
+                    NANODBC_TEXT("insert into test_nested_transaction_rollback values (1);"));
+                inner.rollback();
+            }
+            outer.commit();
+        }
+        REQUIRE(count() == 0);
+
+        // Inner commits, outer rolls back: nothing is kept either.
+        {
+            nanodbc::transaction outer(connection);
+            {
+                nanodbc::transaction inner(connection);
+                execute(
+                    connection,
+                    NANODBC_TEXT("insert into test_nested_transaction_rollback values (2);"));
+                inner.commit();
+            }
+            outer.rollback();
+        }
+        REQUIRE(count() == 0);
+
+        // Both commit: the work is kept.
+        {
+            nanodbc::transaction outer(connection);
+            {
+                nanodbc::transaction inner(connection);
+                execute(
+                    connection,
+                    NANODBC_TEXT("insert into test_nested_transaction_rollback values (3);"));
+                inner.commit();
+            }
+            outer.commit();
+        }
+        REQUIRE(count() == 1);
+    }
+
     // A binary column is not bound, so the fetch leaves no indicator behind for it and
     // whether it is null has to be asked of the driver.
     void test_is_null_binary()
