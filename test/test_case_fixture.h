@@ -5130,8 +5130,14 @@ PRIMARY KEY(t2_fid)
 #ifdef NANODBC_HAS_STD_OPTIONAL
         test_batch_insert_integral_optional();
         test_string_optional();
-        test_time_optional();
-        test_date_optional();
+        // Oracle has no TIME type, and its DATE carries a time of day, which the driver
+        // describes as a timestamp rather than a date. test_time and test_date are left
+        // unregistered there on those grounds, and these assert the same column types.
+        if (vendor_ != database_vendor::oracle)
+        {
+            test_time_optional();
+            test_date_optional();
+        }
 #endif
     }
 };
