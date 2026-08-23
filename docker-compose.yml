@@ -98,6 +98,23 @@ services:
       retries: 30
       start_period: 60s
 
+  oracle:
+    image: container-registry.oracle.com/database/free:${ORACLE_VERSION:-latest}
+    container_name: nanooracle
+    restart: unless-stopped
+    # Instant Client is published for x86_64 only.
+    platform: linux/amd64
+    ports:
+      - "1521:1521"
+    environment:
+      ORACLE_PWD: *default_credential
+    healthcheck:
+      test: ["CMD-SHELL", "grep -q 'DATABASE IS READY TO USE' /opt/oracle/diag/rdbms/*/*/trace/alert*.log 2>/dev/null || healthcheck.sh"]
+      interval: 15s
+      timeout: 10s
+      retries: 40
+      start_period: 300s
+
   nanodbc:
     build:
       context: .
@@ -114,6 +131,10 @@ services:
         condition: service_healthy
       mssql:
         condition: service_healthy
+    # Oracle is deliberately not depended on: it takes minutes to open and its driver is
+    # published for x86_64 only, so waiting for it would cost every run on every host to
+    # serve the one suite that cannot run on some of them. Start it when it is wanted,
+    # with docker compose up -d oracle.
 
     volumes:
       - .:/opt/nanodbc
@@ -134,3 +155,4 @@ services:
       NANODBC_TEST_CONNSTR_MYSQL: "Driver={MySQL ODBC 8.4 ANSI Driver};Server=mysql;Database=nanodbc;User=root;Password=nanodbc;big_packets=1;"
       NANODBC_TEST_CONNSTR_MARIADB: "Driver={MariaDB Unicode};Server=mariadb;Port=3306;Database=nanodbc;User=root;Password=nanodbc;"
       NANODBC_TEST_CONNSTR_MSSQL: "Driver={ODBC Driver 18 for SQL Server};Server=mssql;Database=master;UID=sa;PWD=Password12!;TrustServerCertificate=yes;"
+      NANODBC_TEST_CONNSTR_ORACLE: "Driver={Oracle};DBQ=oracle:1521/FREEPDB1;UID=system;PWD=nanodbc;"

@@ -354,6 +354,59 @@ jobs:
           export NANODBC_TEST_CONNSTR_PGSQL="Driver={PostgreSQL ANSI};Server=localhost;Port=5432;Database=nanodbc;UID=postgres;PWD=postgres"
           ctest --test-dir ${GITHUB_WORKSPACE}/build --output-on-failure --no-tests=error -R postgresql_tests
 
+  test-oracle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    services:
+      oracle:
+        image: container-registry.oracle.com/database/free:latest
+        ports:
+          - 1521:1521
+        env:
+          ORACLE_PWD: nanodbc
+        options: >-
+          --health-cmd "grep -q 'DATABASE IS READY TO USE' /opt/oracle/diag/rdbms/*/*/trace/alert*.log"
+          --health-interval 15s
+          --health-timeout 10s
+          --health-retries 60
+          --health-start-period 300s
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install
+        run: |
+          apt-get -o DPkg::Lock::Timeout=120 update
+          apt-get -o DPkg::Lock::Timeout=120 install -y ccache unixodbc-dev unzip libaio1t64
+        shell: sudo bash {0}
+      - name: Install Oracle Instant Client
+        # Instant Client is published for x86_64 only, which the runners are. The driver
+        # asks for libaio.so.1, which Ubuntu ships as libaio.so.1t64.
+        run: |
+          curl -fsSL -o /tmp/ic-basic.zip https://download.oracle.com/otn_software/linux/instantclient/instantclient-basic-linuxx64.zip
+          curl -fsSL -o /tmp/ic-odbc.zip https://download.oracle.com/otn_software/linux/instantclient/instantclient-odbc-linuxx64.zip
+          sudo unzip -oq /tmp/ic-basic.zip -d /opt/oracle
+          sudo unzip -oq /tmp/ic-odbc.zip -d /opt/oracle
+          ic=$(ls -d /opt/oracle/instantclient_*)
+          sudo ln -sf /usr/lib/x86_64-linux-gnu/libaio.so.1t64 /usr/lib/x86_64-linux-gnu/libaio.so.1
+          echo "${ic}" | sudo tee /etc/ld.so.conf.d/oracle-instantclient.conf
+          sudo ldconfig
+          printf '[Oracle]\nDescription=Oracle Instant Client ODBC\nDriver=%s/libsqora.so.23.1\n' "${ic}" | sudo odbcinst -i -d -r
+      - name: Restore compiled objects
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.ccache
+          key: ccache-oracle-${{ github.sha }}
+          restore-keys: ccache-oracle-
+      - name: Configure
+        run: |
+          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+      - name: Build
+        run: |
+          cmake --build ${GITHUB_WORKSPACE}/build --parallel --target oracle_tests
+      - name: Test
+        run: |
+          export NANODBC_TEST_CONNSTR_ORACLE="Driver={Oracle};DBQ=localhost:1521/FREEPDB1;UID=system;PWD=nanodbc;"
+          ctest --test-dir ${GITHUB_WORKSPACE}/build --output-on-failure --no-tests=error -R oracle_tests
+
   test-mssql:
     runs-on: ubuntu-latest
     timeout-minutes: 30

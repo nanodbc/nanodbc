@@ -942,6 +942,7 @@ public:
         , cbdata_(nullptr)
         , pdata_(nullptr)
         , bound_(false)
+        , cached_(false)
     {
     }
 
@@ -952,6 +953,8 @@ public:
     {
         for (std::size_t i = 0; i < count; ++i)
             cbdata_[i] = 0;
+        cache_.clear();
+        cached_ = false;
     }
 
 public:
@@ -966,6 +969,10 @@ public:
     std::unique_ptr<nanodbc::null_type[]> cbdata_;
     std::unique_ptr<char[]> pdata_;
     bool bound_;
+    // An unbound column read ahead of time, because asking whether it is null costs the
+    // only reading of it there is. Emptied when the row moves.
+    std::vector<std::uint8_t> cache_;
+    bool cached_;
 };
 
 // Renders value as decimal digits, zero padded to at least width, keeping a minus sign in
@@ -3950,31 +3957,65 @@ public:
         if (rowset_position_ >= rows())
             throw index_range_error();
 
-        // An unbound column carries no indicator from the fetch, so ask the driver. Only
-        // binary can be asked: a zero buffer length reports the length and moves no data.
-        // The others cannot, and report what the fetch knew.
-        if (!col.bound_ && col.ctype_ == SQL_C_BINARY)
+        // An unbound column carries no indicator from the fetch, so the driver has to be
+        // asked. Asking costs the only reading of the column there is: a driver hands
+        // over a character or binary value once, and a zero length SQLGetData counts as
+        // part of that handing over on some of them, Oracle's among them, which then
+        // returns the rest of the value to whoever reads next. So the value is read here
+        // in full and kept for that reader.
+        if (!col.bound_ && col.ctype_ == SQL_C_BINARY && !col.cached_)
+            read_binary_into_cache(column);
+
+        return col.cbdata_[static_cast<size_t>(rowset_position_)] == SQL_NULL_DATA;
+    }
+
+    // Reads an unbound binary column in full, recording its length as the indicator the
+    // fetch did not leave. A driver that declines leaves the question to what the fetch
+    // knew, and nothing is cached.
+    void read_binary_into_cache(short column) const
+    {
+        bound_column& col = bound_columns_[column];
+        std::vector<std::uint8_t> out;
+        std::uint8_t buffer[1024];
+        SQLLEN indicator = 0;
+        RETCODE rc = SQL_SUCCESS;
+        bool answered = false;
+
+        do
         {
-            SQLCHAR unused = 0;
-            constexpr SQLLEN buffer_length = 0;
-            SQLLEN indicator = 0;
-            RETCODE rc = SQL_SUCCESS;
             NANODBC_CALL_RC(
                 SQLGetData,
                 rc,
                 stmt_.native_statement_handle(),       // StatementHandle
                 static_cast<SQLUSMALLINT>(column + 1), // Col_or_Param_Num
-                col.ctype_,                            // TargetType
-                &unused,                               // TargetValuePtr
-                buffer_length,                         // BufferLength
+                SQL_C_BINARY,                          // TargetType
+                buffer,                                // TargetValuePtr
+                sizeof(buffer),                        // BufferLength
                 &indicator);                           // StrLen_or_IndPtr
-            // A driver that declines leaves the question to what the fetch knew.
-            if (rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO)
-                col.cbdata_[static_cast<size_t>(rowset_position_)] =
-                    static_cast<null_type>(indicator);
-        }
+            if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO)
+                break;
+            answered = true;
+            if (indicator == SQL_NULL_DATA)
+            {
+                col.cbdata_[static_cast<std::size_t>(rowset_position_)] =
+                    static_cast<null_type>(SQL_NULL_DATA);
+                col.cached_ = true;
+                return;
+            }
+            auto const filled =
+                indicator == SQL_NO_TOTAL
+                    ? sizeof(buffer)
+                    : std::min<std::size_t>(static_cast<std::size_t>(indicator), sizeof(buffer));
+            out.insert(out.end(), buffer, buffer + filled);
+        } while (rc == SQL_SUCCESS_WITH_INFO);
 
-        return col.cbdata_[static_cast<size_t>(rowset_position_)] == SQL_NULL_DATA;
+        if (!answered)
+            return;
+
+        col.cbdata_[static_cast<std::size_t>(rowset_position_)] =
+            static_cast<null_type>(out.size());
+        col.cache_ = std::move(out);
+        col.cached_ = true;
     }
 
     bool is_null(string const& column_name) const
@@ -4854,6 +4895,18 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
         if (!is_bound(column) ||
             (bound_column_was_truncated(column) && supports_get_data_on_bound_column()))
         {
+            // A binary column read to answer whether it was null was read in full, the
+            // driver handing such a value over once, so the answer is served from what
+            // that read kept rather than asked for again.
+            if (col.cached_)
+            {
+                convert(
+                    std::string(
+                        reinterpret_cast<char const*>(col.cache_.data()), col.cache_.size()),
+                    result);
+                return;
+            }
+
             // Input is always std::string, while output may be std::string or wide_string
             std::string out;
             // Data still available, which shrinks with each SQLGetData; not the amount
@@ -5123,6 +5176,14 @@ inline void result::result_impl::get_ref_impl<std::vector<std::uint8_t>>(
     {
         if (!is_bound(column))
         {
+            // Asking whether the column was null had to read it, the driver handing a
+            // binary value over once, so the answer is served from what that read kept.
+            if (col.cached_)
+            {
+                result = col.cache_;
+                return;
+            }
+
             // Input and output is always array of bytes.
             std::vector<std::uint8_t> out;
             std::uint8_t buffer[1024] = {0};

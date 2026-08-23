@@ -54,6 +54,27 @@ RUN curl -sSL -o /tmp/packages-microsoft-prod.deb "https://packages.microsoft.co
     && odbcinst -i -d -f /usr/share/sqliteodbc/unixodbc.ini \
     && printf '[nanodbc_dsn]\nDriver=SQLite3\nDatabase=/tmp/nanodbc_dsn.db\n' > /etc/odbc.ini
 
+# Oracle Instant Client, published for x86_64 only, so the driver is registered only
+# where it can load. The driver asks for libaio.so.1, which Ubuntu 24.04 ships as
+# libaio.so.1t64.
+RUN arch="$(uname -m)" \
+    && if [ "${arch}" = "x86_64" ]; then \
+    apt-get -qy update \
+    && apt-get -qy install --no-upgrade --no-install-recommends libaio1t64 unzip \
+    && apt-get clean && rm -rf /var/lib/apt/lists/* \
+    && curl -fsSL -o /tmp/ic-basic.zip https://download.oracle.com/otn_software/linux/instantclient/instantclient-basic-linuxx64.zip \
+    && curl -fsSL -o /tmp/ic-odbc.zip https://download.oracle.com/otn_software/linux/instantclient/instantclient-odbc-linuxx64.zip \
+    && unzip -oq /tmp/ic-basic.zip -d /opt/oracle \
+    && unzip -oq /tmp/ic-odbc.zip -d /opt/oracle \
+    && rm /tmp/ic-basic.zip /tmp/ic-odbc.zip \
+    && ic="$(ls -d /opt/oracle/instantclient_*)" \
+    && ln -sf /usr/lib/x86_64-linux-gnu/libaio.so.1t64 /usr/lib/x86_64-linux-gnu/libaio.so.1 \
+    && echo "${ic}" > /etc/ld.so.conf.d/oracle-instantclient.conf \
+    && ldconfig \
+    && printf '[Oracle]\nDescription=Oracle Instant Client ODBC\nDriver=%s/libsqora.so.23.1\n' "${ic}" \
+    | odbcinst -i -d -r \
+    ; else echo "Instant Client is x86_64 only; skipping on ${arch}"; fi
+
 # MySQL names the x86_64 build x86-64bit and the arm64 one aarch64.
 RUN arch="$(uname -m)" \
     && if [ "${arch}" = "x86_64" ]; then arch="x86-64bit"; fi \
