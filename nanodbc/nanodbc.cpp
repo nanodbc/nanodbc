@@ -3976,7 +3976,7 @@ public:
     {
         bound_column& col = bound_columns_[column];
         std::vector<std::uint8_t> out;
-        std::uint8_t buffer[1024];
+        std::uint8_t buffer[1024] = {0};
         SQLLEN indicator = 0;
         RETCODE rc = SQL_SUCCESS;
         bool answered = false;
