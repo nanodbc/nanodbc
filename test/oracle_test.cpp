@@ -16,6 +16,8 @@ struct oracle_fixture : public test_case_fixture
 
 // Oracle has no TIME type, only DATE and TIMESTAMP, so test_time has nothing to create a
 // column with here and is left out rather than made to pass against a different type.
+// Oracle's DATE carries a time of day, which the driver reports as SQL_TYPE_TIMESTAMP, so
+// test_date is left out on the same grounds.
 
 TEST_CASE_METHOD(oracle_fixture, "test_batch_binary", "[oracle][binary]")
 {
