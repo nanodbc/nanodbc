@@ -75,6 +75,45 @@ In a narrow build, which is the default, text crosses between nanodbc and the dr
 Statement text is the more fragile of the two, because unlike a bound parameter it reaches the driver with neither a length nor a type. Bind values as parameters rather than writing them into statement text.
 
 ******************************************************************************
+Batches and multiple result sets
+******************************************************************************
+
+A batch of statements returns one result set per statement, in order, and the counts from ``INSERT``, ``UPDATE`` and ``DELETE`` count as result sets of their own. ``execute`` hands back the first of them, so a batch that modifies rows before selecting any arrives positioned on a count, which has no columns and no rows to read. Calling ``next()`` on it raises ``24000 Invalid cursor state`` rather than returning the rows the ``SELECT`` produced.
+
+``result::next_result`` moves to the following result set:
+
+.. code-block:: cpp
+
+  #include <nanodbc/nanodbc.h>
+
+  #include <cstdlib>
+  #include <exception>
+  #include <iostream>
+
+  int main() try
+  {
+    nanodbc::connection conn(NANODBC_TEXT("..."));
+    auto results = nanodbc::execute(conn, NANODBC_TEXT(
+      "declare @t table (id int); "
+      "insert into @t values (1), (2); "
+      "select id from @t;"));
+
+    results.next_result(); // past the insert's count, onto the select's rows
+    while (results.next())
+    {
+      std::cout << results.get<int>(0) << std::endl;
+    }
+    return EXIT_SUCCESS;
+  }
+  catch (std::exception const& e)
+  {
+      std::cerr << e.what() << std::endl;
+      return EXIT_FAILURE;
+  }
+
+On SQL Server, ``SET NOCOUNT ON`` withholds the counts instead, leaving the rows as the only result set and removing the need to step over anything.
+
+******************************************************************************
 Examples
 ******************************************************************************
 

@@ -2702,6 +2702,44 @@ TEST_CASE_METHOD(mssql_fixture, "test_non_bmp_round_trip", "[mssql][unicode][bin
 #endif
 }
 
+// A batch of statements returns a result set for each, and the counts from INSERT come
+// before the rows from SELECT. Reading the batch as though it returned only the rows
+// reaches for a result set that has none.
+TEST_CASE_METHOD(mssql_fixture, "test_batch_with_table_variable", "[mssql][result][batch]")
+{
+    auto connection = connect();
+    nanodbc::string const batch = NANODBC_TEXT(
+        "declare @t table (id int, name varchar(20)); "
+        "insert into @t values (1, 'one'), (2, 'two'); "
+        "select id, name from @t;");
+
+    // The insert's count arrives first, with no columns to read.
+    {
+        auto results = execute(connection, batch);
+        REQUIRE(results.columns() == 0);
+        REQUIRE_THROWS_AS(results.next(), nanodbc::database_error);
+
+        REQUIRE(results.next_result());
+        REQUIRE(results.columns() == 2);
+        REQUIRE(results.next());
+        REQUIRE(results.get<int>(0) == 1);
+        REQUIRE(results.next());
+        REQUIRE(results.get<int>(0) == 2);
+        REQUIRE(!results.next());
+    }
+
+    // SET NOCOUNT ON withholds the counts, leaving the rows as the only result set.
+    {
+        auto results = execute(connection, NANODBC_TEXT("set nocount on; ") + batch);
+        REQUIRE(results.columns() == 2);
+        REQUIRE(results.next());
+        REQUIRE(results.get<int>(0) == 1);
+        REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("one"));
+        REQUIRE(results.next());
+        REQUIRE(!results.next());
+    }
+}
+
 // An NVARCHAR column is bound wide, so reading one as a character takes the wide arm of
 // the string column path.
 TEST_CASE_METHOD(mssql_fixture, "test_wide_bound_column_as_character", "[mssql][result][unicode]")
