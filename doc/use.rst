@@ -227,6 +227,45 @@ The cursor type is a statement attribute, set before the statement runs:
 SQL Server, PostgreSQL, MySQL, SQLite and Oracle all honour ``SQL_CURSOR_STATIC`` through their ODBC drivers. A driver that cannot give the cursor asked for is free to substitute another and say so through ``SQLGetDiagRec`` rather than to fail, so a result that still will not scroll is worth checking the diagnostics for.
 
 ******************************************************************************
+Reading many rows into containers
+******************************************************************************
+
+Results are read a row at a time, and there is no binding of output buffers to read a column straight into a container. What makes a read bulk is the rowset: ``execute`` takes the number of rows to fetch per round trip, and the driver fills that many at once while ``next()`` walks what it fetched.
+
+``get_ref`` reads a column into a variable already to hand rather than returning a new one, which keeps a string's buffer in play across the loop instead of allocating one per row:
+
+.. code-block:: cpp
+
+    #include <nanodbc/nanodbc.h>
+    #include <string>
+    #include <vector>
+
+    int main()
+    {
+        nanodbc::connection conn(NANODBC_TEXT("dsn"));
+
+        // A thousand rows per round trip rather than one.
+        auto results = execute(conn, NANODBC_TEXT("select a, b from t"), 1000);
+
+        std::vector<nanodbc::string> a, b;
+        nanodbc::string value;
+        while (results.next())
+        {
+            results.get_ref(0, value);
+            a.push_back(value);
+
+            results.get_ref(1, value);
+            b.push_back(value);
+        }
+    }
+
+Reserving on the vectors is worth it where the row count is known or can be estimated, since the loop otherwise grows them as it goes.
+
+The rowset size is what to vary if the read is slow. Its effect is the same as the one batch parameters have, described above: the round trip is what costs, and fetching a thousand rows in one is far cheaper than a thousand round trips. Sizes beyond a few thousand rarely pay for the memory they take, since the rowset is held in full.
+
+``batch_ops`` sets the rowset size where a statement also carries parameters, so that the two are chosen separately.
+
+******************************************************************************
 Examples
 ******************************************************************************
 
