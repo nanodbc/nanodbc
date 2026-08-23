@@ -1,6 +1,6 @@
 # ChangeLog
 
-## Unreleased
+## v2.18.0
 
 - The API reference is a Doxygen site themed with doxygen-awesome-css, with search and a navigation tree. [`#373`](https://github.com/nanodbc/nanodbc/issues/373)
 - Five functions returning nothing documented a return value, which Doxygen reported and Breathe did not.
