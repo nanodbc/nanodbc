@@ -198,7 +198,7 @@ jobs:
       - name: Run the suites
         run: |
           mkdir -p "${GITHUB_WORKSPACE}/profraw"
-          export NANODBC_TEST_CONNSTR_PGSQL="Driver={PostgreSQL ANSI};Server=localhost;Port=5432;Database=nanodbc;UID=postgres;PWD=postgres"
+          export NANODBC_TEST_CONNSTR_PGSQL="Driver={PostgreSQL Unicode};Server=localhost;Port=5432;Database=nanodbc;UID=postgres;PWD=postgres"
           export NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 17 for SQL Server};Server=localhost;Database=master;UID=sa;PWD=Password!123;"
           for suite in utility sqlite postgresql mssql; do
             LLVM_PROFILE_FILE="${GITHUB_WORKSPACE}/profraw/${suite}-%p.profraw" \
@@ -318,13 +318,20 @@ jobs:
       matrix:
         postgres: [14, 15, 16, 17, 18]
         cxxstd: ["14"]
+        unicode: ["OFF"]
         # The newest server also runs the suite built as C++17, which is where the
         # std::optional cases exist at all. Repeating that for every server version
         # would buy nothing, what differs being the library rather than the server.
         include:
           - postgres: 18
             cxxstd: "17"
-    name: test-postgresql (${{ matrix.postgres }}, c++${{ matrix.cxxstd }})
+            unicode: "OFF"
+          # The newest server also runs a Unicode build, through the Unicode driver, the
+          # ANSI one being unable to take a wide parameter.
+          - postgres: 18
+            cxxstd: "14"
+            unicode: "ON"
+    name: test-postgresql (${{ matrix.postgres }}, c++${{ matrix.cxxstd }}, unicode ${{ matrix.unicode }})
     services:
       postgresql:
         image: postgres:${{ matrix.postgres }}
@@ -348,17 +355,17 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.ccache
-          key: ccache-postgresql-${{ matrix.cxxstd }}-${{ github.sha }}
-          restore-keys: ccache-postgresql-${{ matrix.cxxstd }}-
+          key: ccache-postgresql-${{ matrix.cxxstd }}-${{ matrix.unicode }}-${{ github.sha }}
+          restore-keys: ccache-postgresql-${{ matrix.cxxstd }}-${{ matrix.unicode }}-
       - name: Configure
         run: |
-          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=${{ matrix.cxxstd }} -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=${{ matrix.cxxstd }} -DNANODBC_ENABLE_UNICODE=${{ matrix.unicode }} -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
       - name: Build
         run: |
           cmake --build ${GITHUB_WORKSPACE}/build --parallel --target postgresql_tests
       - name: Test
         run: |
-          export NANODBC_TEST_CONNSTR_PGSQL="Driver={PostgreSQL ANSI};Server=localhost;Port=5432;Database=nanodbc;UID=postgres;PWD=postgres"
+          export NANODBC_TEST_CONNSTR_PGSQL="Driver={PostgreSQL Unicode};Server=localhost;Port=5432;Database=nanodbc;UID=postgres;PWD=postgres"
           ctest --test-dir ${GITHUB_WORKSPACE}/build --output-on-failure --no-tests=error -R postgresql_tests
 
   test-oracle:
