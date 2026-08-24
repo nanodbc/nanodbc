@@ -1,0 +1,79 @@
+/* Styling for the nanodbc documentation site, loaded after the Furo theme.
+
+   The palette lives in conf.py, as light_css_variables and dark_css_variables, which
+   Furo writes out at the specificity its light/dark/auto switch needs. What is left here
+   is the handful of things Furo has no variable for, each matching how the API reference
+   beside these pages renders the same thing. The values come from doxygen-awesome-css at
+   the tag doc/Makefile pins as AWESOME_VERSION; update the two together. */
+
+body {
+    /* --font-family and --font-family-monospace */
+    --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+        Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    --font-stack--headings: var(--font-stack);
+    --font-stack--monospace: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+        "Liberation Mono", monospace;
+
+    /* --page-font-size and --code-font-size, so a paragraph and a line of code are the
+       same size on both sides. Furo sizes all of its code from the second of these. */
+    font-size: 15.6px;
+    --code-font-size: 14px;
+}
+
+/* Furo sizes inline code from --font-size--small--2 rather than --code-font-size, and
+   that variable also drives the sidebar and the search box, so it is set here on the
+   elements themselves instead of globally. */
+article code.literal,
+article .sig-inline {
+    font-size: var(--code-font-size);
+}
+
+/* --fragment-background, the colour the theme paints a block of code. Pygments styles
+   paint their own, which is what pygments_style in conf.py picks a neutral pair to
+   avoid; the block itself is painted here so that both halves agree exactly. */
+article .highlight,
+article pre,
+body[data-theme="dark"] article .highlight,
+body[data-theme="dark"] article pre {
+    background: var(--nanodbc-fragment-background);
+    color: var(--nanodbc-fragment-foreground);
+}
+
+@media (prefers-color-scheme: dark) {
+    body:not([data-theme="light"]) article .highlight,
+    body:not([data-theme="light"]) article pre {
+        background: var(--nanodbc-fragment-background);
+        color: var(--nanodbc-fragment-foreground);
+    }
+}
+
+/* --border-radius-medium and --border-radius-small, the radii the theme gives its
+   fragments, boxes and inline code. */
+article pre,
+article .admonition,
+article table.docutils {
+    border-radius: 8px;
+}
+
+article code.literal {
+    border-radius: 5px;
+}
+
+/* The two snippets on the landing page are there to be compared at a glance, and the
+   ODBC one runs to sixty lines, so they are set smaller than code elsewhere to keep the
+   pair closer to one screen. Tagged with :class: comparison in index.rst. */
+article .comparison pre {
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+/* doxygen-awesome underlines a link on hover rather than throughout, which Furo does
+   not, and a page of prose is where the difference shows. */
+article a,
+article a:visited {
+    text-decoration: none;
+}
+
+article a:hover {
+    text-decoration: underline;
+}
