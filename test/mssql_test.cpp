@@ -269,6 +269,11 @@ TEST_CASE_METHOD(mssql_fixture, "test_std_any", "[mssql][any]")
     test_std_any();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_std_variant", "[mssql][variant]")
+{
+    test_std_variant();
+}
+
 TEST_CASE_METHOD(
     mssql_fixture,
     "test_batch_insert_describe_param",

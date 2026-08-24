@@ -8215,7 +8215,9 @@ result::operator bool() const noexcept
 namespace
 {
 // Reads a column as whatever it says it holds. What a column holds is the driver's to
-// say, so this asks rather than being told by the caller.
+// say, so this asks rather than being told by the caller. It lives here rather than in
+// the header because the type codes come from the ODBC headers, which nanodbc.h does not
+// carry into everything that includes it.
 std::any read_column_as_its_own_type(result const& results, short column)
 {
     switch (results.column_datatype(column))
