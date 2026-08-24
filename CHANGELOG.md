@@ -1,10 +1,28 @@
 # ChangeLog
 
+## Unreleased
+
+- Every diagnostic a failure carries reaches the message, where all but the first were dropped outside Windows, and each arrives once rather than trailing the buffer it was read into. [`#315`](https://github.com/nanodbc/nanodbc/issues/315)
+- `result::get_ref` builds the value before reading a column into a `std::optional`, having read into one that held nothing, which crashes for a wide string. [`#525`](https://github.com/nanodbc/nanodbc/issues/525)
+- `statement::parameter_is_null` says whether a parameter bound for output came back null, which its value cannot, the driver leaving the caller's buffer alone. [`#436`](https://github.com/nanodbc/nanodbc/issues/436)
+- The suites run at C++17 as well as C++14, so what is written behind `std::optional` and `std::variant` is executed rather than only compiled. [`#514`](https://github.com/nanodbc/nanodbc/issues/514)
+- A test covers a connection to each of several threads, which is the arrangement the library asks for and nothing exercised. [`#285`](https://github.com/nanodbc/nanodbc/issues/285)
+
 ## v2.19.0
 
 - A date or time parameter bound as text is declared as the driver describes it, Oracle refusing the ODBC literal form when it is declared as text. [`#248`](https://github.com/nanodbc/nanodbc/issues/248)
 - `statement::execute` takes a `batch_ops`, so the rowset size and the parameter array length can differ. [`#162`](https://github.com/nanodbc/nanodbc/issues/162)
 - Documented that how far a batch of parameters carries is the driver's to decide, with measurements. [`#241`](https://github.com/nanodbc/nanodbc/issues/241)
+- Oracle runs in the test suite and in CI, against Oracle Database Free through Instant Client, carrying the cases the other backends share. [`#487`](https://github.com/nanodbc/nanodbc/issues/487)
+- The Oracle job starts a prepared database rather than opening one on first boot, which is most of the difference between three minutes fifty and two minutes five.
+- `bind_rows` binds a batch held as rows, naming one accessor per parameter, and copies the columns into the statement so the rows need not outlive it. [`#443`](https://github.com/nanodbc/nanodbc/issues/443)
+- The constructors taking connection and statement attributes are reachable at C++14, the nested `attribute` having been private there and the `connection` overloads compiled out altogether. [`#494`](https://github.com/nanodbc/nanodbc/issues/494)
+- Connection attributes reach the driver before it connects, which is what several of them govern; setting them on an allocated handle beforehand cannot work, since `connect()` allocates another. [`#215`](https://github.com/nanodbc/nanodbc/issues/215)
+- A test covers reading a result other than forwards, which asks the driver for a cursor that scrolls; `move()` counts rows from one, which it did not say. [`#368`](https://github.com/nanodbc/nanodbc/issues/368)
+- Tests pin down what `affected_rows` reports for the statements whose count is defined, a statement matching nothing included. [`#168`](https://github.com/nanodbc/nanodbc/issues/168)
+- The SQLite and SQL Server suites also run built for Unicode, and SQL Server is tested through the ODBC driver the development container has used for some time. [`#265`](https://github.com/nanodbc/nanodbc/issues/265)
+- `test_std_optional` leaves out its date and time cases on Oracle, which has no TIME type and describes a DATE as a timestamp, as the tests they wrap are already left out there.
+- Documented reading many rows into containers, which is the rowset size and `get_ref` rather than any binding of output buffers. [`#163`](https://github.com/nanodbc/nanodbc/issues/163)
 
 ## v2.18.0
 
