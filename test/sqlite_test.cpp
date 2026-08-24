@@ -451,6 +451,11 @@ TEST_CASE_METHOD(sqlite_fixture, "test_statement_open_close", "[sqlite][statemen
     test_statement_open_close();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "test_affected_rows_counts", "[sqlite][statement][affected_rows]")
+{
+    test_affected_rows_counts();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_bind_null_array", "[sqlite][null]")
 {
     test_bind_null_array();

@@ -5270,6 +5270,69 @@ PRIMARY KEY(t2_fid)
         }
     }
 
+    // What SQLRowCount answers with is defined for the statements that change rows, and
+    // left to the driver for the rest. These pin down the defined half, which the loose
+    // assertions elsewhere in this fixture deliberately do not.
+    void test_affected_rows_counts()
+    {
+        auto connection = connect();
+        create_table(
+            connection, NANODBC_TEXT("test_affected_rows"), NANODBC_TEXT("(i int, s varchar(10))"));
+
+        // An insert of one row affects one.
+        {
+            auto results = execute(
+                connection, NANODBC_TEXT("insert into test_affected_rows (i, s) values (1, 'a');"));
+            REQUIRE(results.affected_rows() == 1);
+        }
+
+        // An insert of several affects that many.
+        {
+            auto results = execute(
+                connection,
+                NANODBC_TEXT(
+                    "insert into test_affected_rows (i, s) values (2, 'b'), (3, 'c'), (4, 'd');"));
+            REQUIRE(results.affected_rows() == 3);
+        }
+
+        // An update reports the rows it changed, not the rows it looked at.
+        {
+            auto results = execute(
+                connection, NANODBC_TEXT("update test_affected_rows set s = 'z' where i > 2;"));
+            REQUIRE(results.affected_rows() == 2);
+        }
+
+        // Matching nothing is zero, not an error and not a count of what was searched.
+        // This is the case the pgsql-odbc thread in #168 turns on: a statement that
+        // matched no rows has to say zero rather than report success as though it had.
+        {
+            auto results = execute(
+                connection, NANODBC_TEXT("update test_affected_rows set s = 'y' where i = 999;"));
+            REQUIRE(results.affected_rows() == 0);
+        }
+
+        {
+            auto results =
+                execute(connection, NANODBC_TEXT("delete from test_affected_rows where i = 999;"));
+            REQUIRE(results.affected_rows() == 0);
+        }
+
+        // A delete that matches reports what it removed.
+        {
+            auto results =
+                execute(connection, NANODBC_TEXT("delete from test_affected_rows where i > 2;"));
+            REQUIRE(results.affected_rows() == 2);
+        }
+
+        // And the table agrees with the counts reported along the way.
+        {
+            auto results =
+                execute(connection, NANODBC_TEXT("select count(*) from test_affected_rows;"));
+            REQUIRE(results.next());
+            REQUIRE(results.get<int>(0) == 2);
+        }
+    }
+
     void test_std_optional()
     {
 #ifdef NANODBC_HAS_STD_OPTIONAL

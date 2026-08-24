@@ -319,6 +319,14 @@ TEST_CASE_METHOD(postgresql_fixture, "test_statement_open_close", "[postgresql][
     test_statement_open_close();
 }
 
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_affected_rows_counts",
+    "[postgresql][statement][affected_rows]")
+{
+    test_affected_rows_counts();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_boolean_column", "[postgresql][boolean]")
 {
     test_boolean_column();

@@ -1199,6 +1199,11 @@ TEST_CASE_METHOD(mssql_fixture, "test_statement_open_close", "[mssql][statement]
     test_statement_open_close();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_affected_rows_counts", "[mssql][statement][affected_rows]")
+{
+    test_affected_rows_counts();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_boolean_column", "[mssql][boolean]")
 {
     test_boolean_column();
