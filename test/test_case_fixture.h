@@ -5372,7 +5372,7 @@ PRIMARY KEY(t2_fid)
     {
         auto connection = connect();
 
-        nanodbc::string message;
+        nanodbc::string diagnostic;
         try
         {
             execute(connection, NANODBC_TEXT("this is not a statement"));
@@ -5380,35 +5380,42 @@ PRIMARY KEY(t2_fid)
         }
         catch (nanodbc::database_error const& e)
         {
-            message = nanodbc::test::convert(std::string(e.what()));
+            // what() opens with the file and line the error was raised from, which says
+            // nothing about the diagnostic and repeats whatever the source tree is called.
+            // The state follows it, and the driver's own text follows that.
+            auto const message = nanodbc::test::convert(std::string(e.what()));
+            auto const state = nanodbc::test::convert(e.state());
+            auto const after_state = message.find(state);
+            REQUIRE(after_state != nanodbc::string::npos);
+            diagnostic = message.substr(after_state + state.size());
         }
 
-        REQUIRE(!message.empty());
-        REQUIRE(message.find_first_not_of(NANODBC_TEXT(" ")) != nanodbc::string::npos);
+        REQUIRE(!diagnostic.empty());
+        REQUIRE(diagnostic.find_first_not_of(NANODBC_TEXT(" :")) != nanodbc::string::npos);
 
         // Nothing of any length says the same thing twice. A window this wide will not
         // repeat by chance in a sentence, but does repeat when a record is appended along
         // with the tail of the buffer it was read into.
         std::size_t const window = 24;
         nanodbc::string repeated;
-        for (std::size_t i = 0; i + window <= message.size(); ++i)
+        for (std::size_t i = 0; i + window <= diagnostic.size(); ++i)
         {
-            auto const chunk = message.substr(i, window);
+            auto const chunk = diagnostic.substr(i, window);
             if (chunk.find_first_not_of(NANODBC_TEXT(" ")) == nanodbc::string::npos)
                 continue;
-            if (message.find(chunk, i + 1) != nanodbc::string::npos)
+            if (diagnostic.find(chunk, i + 1) != nanodbc::string::npos)
             {
                 repeated = chunk;
                 break;
             }
         }
-        INFO("repeated in message: " << nanodbc::test::convert(repeated));
+        INFO("repeated in diagnostic: " << nanodbc::test::convert(repeated));
         REQUIRE(repeated.empty());
 
         // And it ends with what the driver said, not with the remains of a buffer.
         std::size_t trailing = 0;
-        while (trailing < message.size() &&
-               message[message.size() - 1 - trailing] == NANODBC_TEXT(' '))
+        while (trailing < diagnostic.size() &&
+               diagnostic[diagnostic.size() - 1 - trailing] == NANODBC_TEXT(' '))
             ++trailing;
         REQUIRE(trailing <= 1);
     }
