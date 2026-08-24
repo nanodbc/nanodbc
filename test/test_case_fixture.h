@@ -5525,6 +5525,49 @@ PRIMARY KEY(t2_fid)
 #endif
     }
 
+    void test_std_variant()
+    {
+#ifdef NANODBC_HAS_STD_VARIANT
+        using value = std::variant<std::monostate, nanodbc::string, int, double>;
+
+        auto connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_std_variant"),
+            NANODBC_TEXT("(i int, s varchar(10), n int)"));
+        execute(
+            connection,
+            NANODBC_TEXT("insert into test_std_variant (i, s, n) values (42, 'text', NULL);"));
+
+        auto results = execute(connection, NANODBC_TEXT("select i, s, n from test_std_variant;"));
+        REQUIRE(results.next());
+
+        auto const i = results.get_as<value>(0);
+        REQUIRE(std::holds_alternative<int>(i));
+        REQUIRE(std::get<int>(i) == 42);
+
+        auto const s = results.get_as<value>(1);
+        REQUIRE(std::holds_alternative<nanodbc::string>(s));
+        REQUIRE(std::get<nanodbc::string>(s) == NANODBC_TEXT("text"));
+
+        // A null column leaves the variant on its first alternative, as the issue asks.
+        auto const n = results.get_as<value>(2);
+        REQUIRE(n.index() == 0);
+        REQUIRE(std::holds_alternative<std::monostate>(n));
+
+        // And by name, which reads the same column.
+        auto const by_name = results.get_as<value>(as_identifier(NANODBC_TEXT("i")));
+        REQUIRE(std::get<int>(by_name) == 42);
+
+        // A variant with nowhere to put what the column holds says so, which the compiler
+        // cannot: what the column holds is the driver's to say.
+        using narrow = std::variant<std::monostate, double>;
+        REQUIRE_THROWS_AS(results.get_as<narrow>(1), nanodbc::type_incompatible_error);
+#else
+        SUCCEED("std::variant needs C++17 or later");
+#endif
+    }
+
     void test_std_optional()
     {
 #ifdef NANODBC_HAS_STD_OPTIONAL

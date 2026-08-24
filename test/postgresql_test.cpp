@@ -114,6 +114,11 @@ TEST_CASE_METHOD(postgresql_fixture, "test_std_any", "[postgresql][any]")
     test_std_any();
 }
 
+TEST_CASE_METHOD(postgresql_fixture, "test_std_variant", "[postgresql][variant]")
+{
+    test_std_variant();
+}
+
 TEST_CASE_METHOD(
     postgresql_fixture,
     "test_catalog_list_catalogs",

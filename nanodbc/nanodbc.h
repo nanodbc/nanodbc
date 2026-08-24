@@ -2060,7 +2060,7 @@ public:
     /// Where the library is built as C++17 or later, T may be std::any, which is filled
     /// according to what the column says it holds rather than what the caller asks for.
     /// A null column gives an any holding nothing.
-    /// \see column_datatype()
+    /// \see column_datatype(), get_as()
     template <class T>
     T get(short column) const;
 
@@ -2076,6 +2076,35 @@ public:
     /// \throws type_incompatible_error
     template <class T>
     T get(short column, T const& fallback) const;
+
+#if defined(NANODBC_HAS_STD_ANY) || defined(NANODBC_HAS_STD_VARIANT)
+    /// \brief Reads a column as whatever it holds, into a type able to hold any of them.
+    ///
+    /// Where get() reads a column as the type the caller names, converting where it can,
+    /// this reads it as the type the column says it is and hands back a T holding that.
+    /// T may be std::any, or a std::variant naming the alternatives to choose between.
+    ///
+    /// A null column gives a T built from nothing: an any holding nothing, or a variant
+    /// on its first alternative, which is what std::monostate is for.
+    ///
+    /// \code
+    /// using v_t = std::variant<std::monostate, nanodbc::string, int>;
+    /// auto v = results.get_as<v_t>(0);
+    /// \endcode
+    ///
+    /// \param column position.
+    /// \throws database_error
+    /// \throws index_range_error
+    /// \throws type_incompatible_error if the column holds something T cannot.
+    /// \see get(), column_datatype()
+    template <class T>
+    T get_as(short column) const;
+
+    /// \brief Reads a column by name as whatever it holds.
+    /// \see get_as(short)
+    template <class T>
+    T get_as(string const& column_name) const;
+#endif
 
     /// \brief Gets data from the given column by name of the current rowset.
     ///
@@ -2810,6 +2839,74 @@ private:
 // 888     888    88888888 88888888      888     888  888 888  888 888      888    888 888  888 888  888 "Y8888b.
 // 888     888    Y8b.     Y8b.          888     Y88b 888 888  888 Y88b.    Y88b.  888 Y88..88P 888  888      X88
 // 888     888     "Y8888   "Y8888       888      "Y88888 888  888  "Y8888P  "Y888 888  "Y88P"  888  888  88888P'
+#if defined(NANODBC_HAS_STD_ANY) || defined(NANODBC_HAS_STD_VARIANT)
+/// \brief Implementation details, not part of the interface.
+namespace detail
+{
+
+// Moves what a column held, which get<std::any>() worked out from the type the driver
+// reports, into whatever the caller asked to hold it.
+template <class T>
+struct hold_column_value;
+
+#ifdef NANODBC_HAS_STD_ANY
+template <>
+struct hold_column_value<std::any>
+{
+    static std::any from(std::any value) { return value; }
+};
+#endif
+
+#ifdef NANODBC_HAS_STD_VARIANT
+template <class Alternative, class Variant>
+inline bool hold_alternative(Variant& variant, std::any const& value)
+{
+    if (auto const* held = std::any_cast<Alternative>(&value))
+    {
+        variant = *held;
+        return true;
+    }
+    return false;
+}
+
+template <class... Ts>
+struct hold_column_value<std::variant<Ts...>>
+{
+    static std::variant<Ts...> from(std::any const& value)
+    {
+        std::variant<Ts...> variant;
+        if (!value.has_value())
+            return variant; // the first alternative, which is what monostate is for
+
+        bool held = false;
+        bool const each[] = {false, (held = held || hold_alternative<Ts>(variant, value))...};
+        (void)each;
+
+        // The column holds something none of the alternatives can, which the compiler
+        // cannot catch: what a column holds is only known once the driver has said.
+        if (!held)
+            throw type_incompatible_error();
+
+        return variant;
+    }
+};
+#endif
+
+} // namespace detail
+
+template <class T>
+T result::get_as(short column) const
+{
+    return detail::hold_column_value<T>::from(get<std::any>(column));
+}
+
+template <class T>
+T result::get_as(string const& column_name) const
+{
+    return get_as<T>(this->column(column_name));
+}
+#endif
+
 // MARK: Free Functions -
 // clang-format on
 
