@@ -1,6 +1,6 @@
 # ChangeLog
 
-## Unreleased
+## v3.0.0
 
 - nanodbc requires C++17. C++11 and C++14 are no longer supported, and the conditionals standing in for `std::optional`, `std::variant`, `std::any` and `std::string_view` are gone, the four being there unconditionally. The `NANODBC_HAS_STD_*` macros are still defined, so code asking whether the feature is there keeps compiling.
 - `statement::bind` and `statement::bind_strings` take a `std::optional`, and a vector of them, so an absent value binds as null without a sentry value or an array of flags kept in step with the values. The sentry and flag overloads remain.
