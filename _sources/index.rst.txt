@@ -1,7 +1,7 @@
 .. _index:
 
 ##############################################################################
-nanodbc - C++ wrapper for ODBC API
+nanodbc - C++ ODBC wrapper
 ##############################################################################
 
 nanodbc is a small library that makes ODBC API programming easy and fun again.
