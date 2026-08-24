@@ -81,9 +81,17 @@ message( STATUS "nanodbc version: ${NANODBC_VERSION}" )
 ########################################
 # set project-global variables for tests/examples if we're not a subproject
 if( PROJECT_IS_TOP_LEVEL )
-  set(CMAKE_CXX_STANDARD 14 CACHE STRING "The C++ standard to use for nanodbc")
+  set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard to use for nanodbc")
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
   set(CMAKE_CXX_EXTENSIONS OFF)
+endif()
+
+# cxx_std_17 below would quietly raise a lower setting rather than refuse it, which reads
+# as nanodbc ignoring what was asked for. Say so instead.
+if( CMAKE_CXX_STANDARD AND CMAKE_CXX_STANDARD LESS 17 )
+  message( FATAL_ERROR
+    "nanodbc 3.0 and later require C++17; CMAKE_CXX_STANDARD is ${CMAKE_CXX_STANDARD}. "
+    "Use nanodbc 2.x for C++14, or 2.11 and earlier for C++11." )
 endif()
 # ==== CMAKE default vars must be set before target creation! ====
 # BUILD_SHARED_LIBS dictates type
@@ -95,10 +103,10 @@ target_sources(nanodbc
 target_sources(nanodbc
   PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:nanodbc/variant_row_cached_result.cpp>)
-message( STATUS "nanodbc compile: Global setting: C++${CMAKE_CXX_STANDARD}; nanodbc requires C++14 or greater" )
+message( STATUS "nanodbc compile: Global setting: C++${CMAKE_CXX_STANDARD}; nanodbc requires C++17 or greater" )
 
-# nanodbc requires at least C++14, but can use C++17 and beyond
-target_compile_features(nanodbc PRIVATE cxx_std_14)
+# nanodbc requires at least C++17, but can use C++20 and beyond
+target_compile_features(nanodbc PUBLIC cxx_std_17)
 
 message( STATUS "nanodbc compile: warning-as-error ${NANODBC_FORCE_WARNINGS_AS_ERROR}" )
 if( NANODBC_FORCE_WARNINGS_AS_ERROR )

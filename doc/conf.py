@@ -27,7 +27,7 @@ import subprocess
 
 # If your documentation needs a minimal Sphinx version, state it here.
 # requirements.txt pins nothing, so this is the floor the extensions themselves set:
-# sphinx_rtd_theme requires Sphinx 6 or later.
+# Furo requires Sphinx 6 or later.
 needs_sphinx = "7.2"
 
 # Add any Sphinx extension module names here, as strings. They can be
@@ -196,7 +196,12 @@ exclude_patterns = [".venv", ".pyvenv"]
 # show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = "sphinx"
+#
+# The previous "sphinx" style paints its own background, a pale green that sits badly
+# beside the API reference's fragments. These two are neutral, and _static/nanodbc.css
+# paints the block itself with doxygen-awesome's fragment colour.
+pygments_style = "friendly"
+pygments_dark_style = "material"
 
 # A list of ignored prefixes for module index sorting.
 # modindex_common_prefix = []
@@ -213,13 +218,83 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_rtd_theme"
+# Furo, rather than the theme this site used before, because it is the closest in
+# structure to the doxygen-awesome-css theme the API reference uses -- one sidebar of
+# navigation, one column of content -- and because it reads its colours and fonts from
+# custom properties, which _static/nanodbc.css sets to doxygen-awesome's own values so
+# that the two halves of the site match.
+html_theme = "furo"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
+# doxygen-awesome-css's own custom properties, read out of its `html { ... }` block and
+# the prefers-color-scheme block beneath it, at the tag doc/Makefile pins as
+# AWESOME_VERSION. Mapping them onto the variables Furo reads is what makes these pages
+# and the API reference beside them one site rather than two. Update both together.
 #
-# html_theme_options = {}
+# Furo writes these into a stylesheet of its own, at the selector and specificity its
+# light/dark/auto switch expects. Setting them by hand in a plain stylesheet does not
+# work, Furo declaring its own on `body` rather than `:root`.
+_AWESOME_LIGHT = {
+    "color-brand-primary": "#1779c4",  # --primary-color
+    "color-brand-content": "#1779c4",
+    "color-brand-visited": "#1779c4",
+    "color-background-primary": "#ffffff",  # --page-background-color
+    "color-background-secondary": "#fbfbfb",  # --side-nav-background
+    "color-background-hover": "#f5f5f5",
+    "color-background-border": "#dedede",  # --separator-color
+    "color-foreground-primary": "#2f4153",  # --page-foreground-color
+    "color-foreground-secondary": "#6f7e8e",  # --page-secondary-foreground-color
+    "color-foreground-muted": "#6f7e8e",
+    "color-foreground-border": "#dedede",
+    "color-sidebar-background": "#fbfbfb",
+    "color-sidebar-background-border": "#dedede",
+    "color-sidebar-link-text--top-level": "#2f4153",
+    "color-sidebar-brand-text": "#2f4153",
+    "color-sidebar-search-border": "#dedede",
+    "color-inline-code-background": "#f5f5f5",  # --code-background
+    "color-api-background": "#f5f5f5",
+    "color-admonition-background": "#e4f3ff",  # --note-color
+    "color-card-border": "#dedede",
+    "color-card-background": "#fbfbfb",
+    "nanodbc-fragment-background": "#f8f9fa",  # --fragment-background
+    "nanodbc-fragment-foreground": "#37474f",  # --fragment-foreground
+}
+
+_AWESOME_DARK = {
+    "color-brand-primary": "#1982d2",
+    "color-brand-content": "#1982d2",
+    "color-brand-visited": "#1982d2",
+    "color-background-primary": "#1c1d1f",
+    "color-background-secondary": "#252628",
+    "color-background-hover": "#2a2c2f",
+    "color-background-border": "#38393b",
+    "color-foreground-primary": "#d2dbde",
+    "color-foreground-secondary": "#859399",
+    "color-foreground-muted": "#859399",
+    "color-foreground-border": "#38393b",
+    "color-sidebar-background": "#252628",
+    "color-sidebar-background-border": "#38393b",
+    "color-sidebar-link-text--top-level": "#d2dbde",
+    "color-sidebar-brand-text": "#d2dbde",
+    "color-sidebar-search-border": "#38393b",
+    "color-inline-code-background": "#2a2c2f",
+    "color-api-background": "#2a2c2f",
+    "color-admonition-background": "#163750",
+    "color-card-border": "#38393b",
+    "color-card-background": "#252628",
+    "nanodbc-fragment-background": "#282c34",  # --fragment-background
+    "nanodbc-fragment-foreground": "#dbe4eb",  # --fragment-foreground
+}
+
+html_theme_options = {
+    "light_css_variables": _AWESOME_LIGHT,
+    "dark_css_variables": _AWESOME_DARK,
+    "source_repository": "https://github.com/nanodbc/nanodbc/",
+    "source_branch": "main",
+    "source_directory": "doc/",
+}
 
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
@@ -247,7 +322,10 @@ html_theme = "sphinx_rtd_theme"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = []
+html_static_path = ["_static"]
+
+# Loaded after the theme's own stylesheet, so that it can override the variables.
+html_css_files = ["nanodbc.css"]
 
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied

@@ -79,6 +79,19 @@ TEST_CASE_METHOD(postgresql_fixture, "test_batch_delete", "[postgresql][batch][d
     test_batch_delete();
 }
 
+TEST_CASE_METHOD(postgresql_fixture, "test_bind_optional", "[postgresql][bind][null][optional]")
+{
+    test_bind_optional();
+}
+
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_batch_bind_optional",
+    "[postgresql][batch][null][optional]")
+{
+    test_batch_bind_optional();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_batch_insert_null", "[postgresql][batch][null]")
 {
     test_batch_insert_null();

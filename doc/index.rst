@@ -14,7 +14,107 @@ Motivation
 
 Here's a before and after look at straight ODBC C API code and its equivalent nanodbc code.
 
-|before| |after|
+Reading three columns of every row, through the ODBC C API:
+
+.. code-block:: cpp
+   :class: comparison
+
+    #include <sql.h>
+    #include <sqlext.h>
+    #include <stdio.h>
+
+    #define NAME_LEN 50
+    #define PHONE_LEN 20
+
+    int main()
+    {
+        SQLHENV henv;
+        SQLHDBC hdbc;
+        SQLHSTMT hstmt = 0;
+        SQLRETURN retcode;
+        SQLCHAR sCustID[NAME_LEN], szName[NAME_LEN], szPhone[PHONE_LEN];
+        SQLLEN cbName = 0, cbCustID = 0, cbPhone = 0;
+
+        retcode = SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &henv);
+        if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)
+        {
+            retcode =
+                SQLSetEnvAttr(henv, SQL_ATTR_ODBC_VERSION, (SQLPOINTER)SQL_OV_ODBC3, 0);
+            if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)
+            {
+                retcode = SQLAllocHandle(SQL_HANDLE_DBC, henv, &hdbc);
+                if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)
+                {
+                    SQLSetConnectAttr(hdbc, SQL_LOGIN_TIMEOUT, (SQLPOINTER)5, 0);
+                    retcode = SQLConnect(
+                        hdbc, (SQLCHAR*)"NorthWind", SQL_NTS, NULL, 0, NULL, 0);
+                    if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)
+                    {
+                        retcode = SQLAllocHandle(SQL_HANDLE_STMT, hdbc, &hstmt);
+                        retcode = SQLExecDirect(
+                            hstmt,
+                            (SQLCHAR*)"SELECT CustomerID, ContactName, Phone"
+                                      " FROM CUSTOMERS ORDER BY 2, 1, 3",
+                            SQL_NTS);
+                        if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)
+                        {
+                            SQLBindCol(
+                                hstmt, 1, SQL_C_CHAR, sCustID, NAME_LEN, &cbCustID);
+                            SQLBindCol(hstmt, 2, SQL_C_CHAR, szName, NAME_LEN, &cbName);
+                            SQLBindCol(
+                                hstmt, 3, SQL_C_CHAR, szPhone, PHONE_LEN, &cbPhone);
+                            for (int i = 0;; i++)
+                            {
+                                retcode = SQLFetch(hstmt);
+                                if (retcode == SQL_ERROR ||
+                                    retcode == SQL_SUCCESS_WITH_INFO)
+                                    printf("error\n");
+                                if (retcode == SQL_SUCCESS ||
+                                    retcode == SQL_SUCCESS_WITH_INFO)
+                                    printf(
+                                        "%d: %s %s %s\n",
+                                        i + 1,
+                                        sCustID,
+                                        szName,
+                                        szPhone);
+                                else
+                                    break;
+                            }
+                            SQLCancel(hstmt);
+                            SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
+                        }
+                        SQLDisconnect(hdbc);
+                    }
+                    SQLFreeHandle(SQL_HANDLE_DBC, hdbc);
+                }
+            }
+            SQLFreeHandle(SQL_HANDLE_ENV, henv);
+        }
+    }
+
+The same thing, through nanodbc:
+
+.. code-block:: cpp
+   :class: comparison
+
+    #include <nanodbc/nanodbc.h>
+
+    #include <iostream>
+
+    int main()
+    {
+        nanodbc::connection conn(NANODBC_TEXT("NorthWind"));
+        auto rows = nanodbc::execute(
+            conn, NANODBC_TEXT("SELECT CustomerID, ContactName, Phone"
+                               " FROM CUSTOMERS ORDER BY 2, 1, 3"));
+
+        for (auto& row : rows)
+        {
+            std::cout << row.get<std::string>(0) << " "
+                      << row.get<std::string>(1) << " "
+                      << row.get<std::string>(2) << '\n';
+        }
+    }
 
 The native C API for working with ODBC is exorbitantly verbose, ridiculously complicated, and fantastically brittle. nanodbc addresses these frustrations! The goal for nanodbc is to make developers happy.
 
@@ -74,9 +174,3 @@ Major features beyond what's already supported by ODBC are not within the scope 
 .. _`C++ best practices`: https://github.com/isocpp/CppCoreGuidelines
 .. _`semantic versioning`: http://semver.org
 .. _`pimpl`: http://wiki.c2.com/?PimplIdiom
-
-.. |before| image:: images/before.png
-   :width: 45%
-
-.. |after| image:: images/after.png
-   :width: 45%

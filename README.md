@@ -37,9 +37,10 @@ Each release line sets a minimum C++ standard. Pick the nanodbc version whose mi
 | nanodbc version | Minimum C++ standard |
 | --------------- | -------------------- |
 | `< 2.12`        | C++11                |
-| `>= 2.12`       | C++14                |
+| `2.12` - `2.x`  | C++14                |
+| `>= 3.0`        | C++17                |
 
-CI builds every supported compiler against C++14, C++17 and C++20, so all three are exercised on each change.
+CI builds every supported compiler against C++17 and C++20, so both are exercised on each change.
 
 nanodbc is intentionally small enough that you can drag and drop the header and implementation files into your project and run with it. For those that want it, I have also provided [CMake][cmake] files which build a library object, or build and run the included tests. The CMake files will also support out of source builds.
 

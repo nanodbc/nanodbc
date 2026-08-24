@@ -46,7 +46,11 @@ inline void append_as_utf8(char32_t cp, std::string& out)
 template <class T>
 inline void append_as_wide(char32_t cp, std::basic_string<T>& out)
 {
-    if (sizeof(T) == 4 || cp < 0x10000)
+    if constexpr (sizeof(T) == 4)
+    {
+        out.push_back(static_cast<T>(cp));
+    }
+    else if (cp < 0x10000)
     {
         out.push_back(static_cast<T>(cp));
     }
@@ -100,20 +104,25 @@ inline char32_t next_utf8_code_point(char const*& beg, char const* end)
 }
 
 template <class T>
-inline char32_t next_wide_code_point(T const*& beg, T const* end)
+inline char32_t next_wide_code_point(T const*& beg, [[maybe_unused]] T const* end)
 {
-    char32_t const unit =
-        static_cast<char32_t>(static_cast<typename std::make_unsigned<T>::type>(*beg++));
-    if (sizeof(T) == 4 || unit < 0xD800 || unit > 0xDFFF)
+    char32_t const unit = static_cast<char32_t>(static_cast<std::make_unsigned_t<T>>(*beg++));
+    if constexpr (sizeof(T) == 4)
+    {
         return unit;
-    if (unit >= 0xDC00 || beg == end)
-        throw std::range_error("wide -> UTF-8 conversion error");
-    char32_t const trail =
-        static_cast<char32_t>(static_cast<typename std::make_unsigned<T>::type>(*beg));
-    if (trail < 0xDC00 || trail > 0xDFFF)
-        throw std::range_error("wide -> UTF-8 conversion error");
-    ++beg;
-    return 0x10000 + ((unit - 0xD800) << 10) + (trail - 0xDC00);
+    }
+    else
+    {
+        if (unit < 0xD800 || unit > 0xDFFF)
+            return unit;
+        if (unit >= 0xDC00 || beg == end)
+            throw std::range_error("wide -> UTF-8 conversion error");
+        char32_t const trail = static_cast<char32_t>(static_cast<std::make_unsigned_t<T>>(*beg));
+        if (trail < 0xDC00 || trail > 0xDFFF)
+            throw std::range_error("wide -> UTF-8 conversion error");
+        ++beg;
+        return 0x10000 + ((unit - 0xD800) << 10) + (trail - 0xDC00);
+    }
 }
 
 } // namespace detail

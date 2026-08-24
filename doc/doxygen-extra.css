@@ -26,3 +26,19 @@ pre.license {
 pre.license a {
     font-weight: normal;
 }
+
+/* Doxygen's own stylesheet carries a dark palette of its own, which HTML_COLORSTYLE
+   AUTO_LIGHT lets through so that this reference follows the system the way the pages
+   beside it do. doxygen-awesome overrides all of it bar one token: it sets
+   --font-family-monospace only in its light block, so Doxygen's JetBrains Mono stack
+   wins in the dark and code stops matching the rest of the site. Re-assert the theme's
+   value, this file being the last one loaded.
+
+   Only this one token leaks; the rest of Doxygen's dark block loses to doxygen-awesome's,
+   which is declared later at equal specificity. */
+@media (prefers-color-scheme: dark) {
+    html:not(.light-mode) {
+        --font-family-monospace: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas,
+            Liberation Mono, monospace;
+    }
+}

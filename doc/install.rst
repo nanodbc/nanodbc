@@ -39,10 +39,12 @@ Each release line sets a minimum C++ standard. Pick the nanodbc version whose mi
      - Minimum C++ standard
    * - ``< 2.12``
      - C++11
-   * - ``>= 2.12``
+   * - ``2.12`` - ``2.x``
      - C++14
+   * - ``>= 3.0``
+     - C++17
 
-CI builds every supported compiler against C++14, C++17 and C++20, so all three are exercised on each change.
+CI builds every supported compiler against C++17 and C++20, so both are exercised on each change.
 
 Requirements
 ==============================================================================

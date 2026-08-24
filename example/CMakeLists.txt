@@ -13,7 +13,7 @@ endif()
 foreach( example IN LISTS example_list )
     add_executable( example_${example} ${example}.cpp example_unicode_utils.h )
     target_link_libraries( example_${example} PRIVATE nanodbc ODBC::ODBC )
-    target_compile_features(example_${example} PRIVATE cxx_std_14)
+    target_compile_features(example_${example} PRIVATE cxx_std_17)
     set_target_properties(example_${example}
       PROPERTIES
       CXX_EXTENSIONS OFF

@@ -3,14 +3,16 @@
 ## Prerequisites
 
 1. Python 3
-2. Doxygen, which Breathe runs to read the API out of `nanodbc/nanodbc.h`
+2. Doxygen, which builds the API reference from `nanodbc/nanodbc.h`
 3. Node and markdownlint-cli (optional)
 
 Doxygen is the one that does not come from pip: `brew install doxygen` on macOS, `apt-get install doxygen` on Debian and Ubuntu.
 
 ## Install
 
-Sphinx, Breathe and the theme are listed in `requirements.txt`, which is also what the workflow installs, so a local build matches the published one.
+Sphinx and the theme are listed in `requirements.txt`, which is also what the workflow installs, so a local build matches the published one.
+
+The theme is [Furo](https://github.com/pradyunsg/furo), chosen because it is the closest in structure to the doxygen-awesome-css theme the API reference uses and because it reads its colours from custom properties. `conf.py` sets those to doxygen-awesome's own values, as `_AWESOME_LIGHT` and `_AWESOME_DARK`, and `_static/nanodbc.css` carries the few things Furo has no variable for. The two halves of the site are meant to match, so when `AWESOME_VERSION` in the `Makefile` moves, check those values against the theme's `doxygen-awesome.css` and update them together.
 
 ```console
 python3 -m venv doc/.venv
@@ -36,7 +38,7 @@ python3 -m pip install "rstcheck[sphinx]==6.3.0"
 rstcheck doc/*.rst
 ```
 
-`.rstcheck.cfg` ignores the `autodoxygenfile` directive, which Breathe supplies, and the `release_tag` substitution, which `conf.py` defines in `rst_prolog` where rstcheck cannot see it. `report_level` keeps INFO-level notes about implicit section targets out of the way, as those are Sphinx-isms rather than defects.
+`.rstcheck.cfg` ignores the `release_tag` substitution, which `conf.py` defines in `rst_prolog` where rstcheck cannot see it. `report_level` keeps INFO-level notes about implicit section targets out of the way, as those are Sphinx-isms rather than defects.
 
 The Markdown is checked by [markdownlint-cli](https://github.com/igorshubovych/markdownlint-cli), configured by `.markdownlint.json`, over every file rather than the README alone. Pin the version CI pins, which the `markdown-lint` action in `lint.yml` builds in: later releases added rules that the repository has never been held to, and reporting those locally would be reporting failures CI does not have.
 
@@ -59,7 +61,9 @@ make -C doc clean html
 open doc/build/html/index.html
 ```
 
-A clean build reports three warnings, all of them Breathe failing to parse the same declaration in `api.rst`. Doxygen may add warnings of its own about `@return` on functions that return nothing, depending on its version.
+A clean build reports no warnings, from Sphinx or from Doxygen.
+
+The `html` target runs Sphinx first and Doxygen second, the reference living inside the output Sphinx would otherwise empty. The Doxygen step clones [doxygen-awesome-css](https://github.com/jothepro/doxygen-awesome-css) at the version the `Makefile` pins, so that step needs network access; `make -C doc clean` removes the clone along with the build.
 
 ## Deploy
 

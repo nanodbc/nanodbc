@@ -28,7 +28,6 @@ struct mssql_fixture : public test_case_fixture
             connection_string_ = get_env("NANODBC_TEST_CONNSTR_MSSQL");
     }
 
-#ifdef NANODBC_HAS_STD_VARIANT
     using base_test_fixture::connect;
     nanodbc::connection
     connect(std::list<nanodbc::connection::attribute> const& attributes, bool const& is_async)
@@ -41,7 +40,6 @@ struct mssql_fixture : public test_case_fixture
         }
         return connection;
     }
-#endif
 
 #if !defined(NANODBC_DISABLE_ASYNC) && defined(WIN32)
     void test_async_internal(nanodbc::connection& conn, HANDLE& event_handle)
@@ -98,8 +96,7 @@ struct mssql_fixture : public test_case_fixture
                 NANODBC_TEXT("SELECT 1 FROM sys.types WHERE is_table_type = 1 AND name = '") +
                 name + NANODBC_TEXT("';");
             nanodbc::result results = execute(connection, sql);
-            results.next();
-            type_exists = (0 < results.rows());
+            type_exists = results.next() && 0 < results.rows();
         }
         catch (...)
         {
@@ -121,8 +118,7 @@ struct mssql_fixture : public test_case_fixture
             auto sql = NANODBC_TEXT("SELECT 1 FROM sys.procedures WHERE name = '") + name +
                        NANODBC_TEXT("';");
             nanodbc::result results = execute(connection, sql);
-            results.next();
-            procedure_exists = (0 < results.rows());
+            procedure_exists = results.next() && 0 < results.rows();
         }
         catch (...)
         {
@@ -232,6 +228,16 @@ TEST_CASE_METHOD(
 TEST_CASE_METHOD(mssql_fixture, "test_batch_delete", "[mssql][batch][delete]")
 {
     test_batch_delete();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_bind_optional", "[mssql][bind][null][optional]")
+{
+    test_bind_optional();
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_batch_bind_optional", "[mssql][batch][null][optional]")
+{
+    test_batch_bind_optional();
 }
 
 TEST_CASE_METHOD(mssql_fixture, "test_batch_insert_null", "[mssql][batch][null]")
@@ -568,13 +574,8 @@ TEST_CASE_METHOD(
 {
     nanodbc::connection conn = connect();
 
-#ifdef NANODBC_HAS_STD_VARIANT
     // Block Cursors: https://technet.microsoft.com/en-us/library/aa172590.aspx
     constexpr std::size_t const rowset_size = 2;
-#else
-    // Not testing block cursors
-    constexpr std::size_t const rowset_size = 1;
-#endif
 
     create_table(
         conn,
@@ -1950,7 +1951,7 @@ TEST_CASE_METHOD(mssql_fixture, "test_bind_float", "[mssql][number][float]")
     {
         auto result =
             nanodbc::execute(conn, NANODBC_TEXT("select r,f,f24,f53,d from test_bind_float"));
-        result.next();
+        REQUIRE(result.next());
         // Read as text and read back as a number, each column names the value it holds.
         // Comparing numbers rather than characters leaves how many digits were written
         // out of it. Slicing the text instead truncates rather than rounds, which is how
@@ -2267,7 +2268,6 @@ TEST_CASE_METHOD(
     }
 }
 
-#ifdef NANODBC_HAS_STD_STRING_VIEW
 TEST_CASE_METHOD(
     mssql_table_valued_parameter_fixture,
     "test_table_valued_parameter_with_records_string_view",
@@ -2318,7 +2318,6 @@ TEST_CASE_METHOD(
         ++rcnt;
     }
 }
-#endif
 
 TEST_CASE_METHOD(
     mssql_table_valued_parameter_fixture,
@@ -2438,7 +2437,6 @@ TEST_CASE_METHOD(
     }
 }
 
-#ifdef NANODBC_HAS_STD_VARIANT
 TEST_CASE_METHOD(mssql_fixture, "test_conn_attributes", "[mssql][conn_attibutes]")
 {
     {
@@ -2514,7 +2512,6 @@ TEST_CASE_METHOD(mssql_fixture, "test_conn_attributes", "[mssql][conn_attibutes]
     }
 #endif
 }
-#endif
 
 #if defined(NANODBC_ENABLE_UNICODE)
 /* Test that when we have Unicode data stored in a

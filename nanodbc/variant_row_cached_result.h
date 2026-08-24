@@ -46,13 +46,13 @@ public:
     /// \brief Gets cached data from the given column of the current rowset.
     ///
     /// Columns are numbered from left to right and 0-indexed.
-    _variant_t const& get(short column) const;
+    [[nodiscard]] _variant_t const& get(short column) const;
 
     /// \brief Returns true if and only if cached value of the given column is of VT_NULL type.
-    bool is_null(short column) const;
+    [[nodiscard]] bool is_null(short column) const;
 
     /// \brief Returns the next result.
-    bool next();
+    [[nodiscard]] bool next();
 
     /// \brief Access to underlying result
     ///

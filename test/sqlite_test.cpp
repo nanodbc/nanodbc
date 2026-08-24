@@ -127,6 +127,16 @@ TEST_CASE_METHOD(sqlite_fixture, "test_batch_delete", "[sqlite][batch][delete]")
     test_batch_delete();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "test_bind_optional", "[sqlite][bind][null][optional]")
+{
+    test_bind_optional();
+}
+
+TEST_CASE_METHOD(sqlite_fixture, "test_batch_bind_optional", "[sqlite][batch][null][optional]")
+{
+    test_batch_bind_optional();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_batch_insert_null", "[sqlite][batch][null]")
 {
     test_batch_insert_null();

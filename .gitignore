@@ -41,6 +41,8 @@ package-lock.json
 *.log
 /doc/build/
 /doc/_generated/
+# Cloned by the doc Makefile's doxygen target, and removed by its clean target.
+/doc/doxygen-awesome-css/
 /.vagrant
 /*build*/
 /out/

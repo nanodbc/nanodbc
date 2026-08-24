@@ -141,6 +141,16 @@ TEST_CASE_METHOD(mysql_fixture, "test_batch_delete", "[mysql][batch][delete]")
     test_batch_delete();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_bind_optional", "[mysql][bind][null][optional]")
+{
+    test_bind_optional();
+}
+
+TEST_CASE_METHOD(mysql_fixture, "test_batch_bind_optional", "[mysql][batch][null][optional]")
+{
+    test_batch_bind_optional();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_batch_insert_null", "[mysql][batch][null]")
 {
     test_batch_insert_null();
