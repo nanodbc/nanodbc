@@ -127,6 +127,11 @@ TEST_CASE_METHOD(oracle_fixture, "test_connection_per_thread", "[oracle][connect
     test_connection_per_thread();
 }
 
+TEST_CASE_METHOD(oracle_fixture, "test_browse_connect_unsupported", "[oracle][connection][browse]")
+{
+    test_browse_connect_unsupported();
+}
+
 TEST_CASE_METHOD(oracle_fixture, "test_datasources", "[oracle][datasources]")
 {
     test_datasources();

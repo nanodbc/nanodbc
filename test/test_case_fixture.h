@@ -5568,6 +5568,19 @@ PRIMARY KEY(t2_fid)
 #endif
     }
 
+    // A driver that cannot answer what SQLBrowseConnect asks says so through the
+    // diagnostics rather than by any other means, so a caller learns it by asking. This
+    // is registered for the backends whose drivers do not support it; SQL Server's does,
+    // and is covered by test_browse_connect.
+    void test_browse_connect_unsupported()
+    {
+        nanodbc::connection connection;
+        bool more_wanted = false;
+        REQUIRE_THROWS_AS(
+            connection.browse_connect(connection_string_, more_wanted), nanodbc::database_error);
+        REQUIRE(!connection.connected());
+    }
+
     void test_std_optional()
     {
 #ifdef NANODBC_HAS_STD_OPTIONAL

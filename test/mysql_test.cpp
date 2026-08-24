@@ -251,6 +251,11 @@ TEST_CASE_METHOD(mysql_fixture, "test_connection_per_thread", "[mysql][connectio
     test_connection_per_thread();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_browse_connect_unsupported", "[mysql][connection][browse]")
+{
+    test_browse_connect_unsupported();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_dbms_info", "[mysql][dmbs][metadata][info]")
 {
     test_dbms_info();

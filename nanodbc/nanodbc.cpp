@@ -1583,6 +1583,58 @@ public:
         return rc;
     }
 
+    // SQLBrowseConnect is asked the same question repeatedly, each answer carrying more
+    // of what the driver wants, so the handle has to live across the calls. connect()
+    // frees and allocates one every time, which would lose the exchange halfway.
+    string browse(string const& connection_string, bool& more_wanted)
+    {
+        allocate_env_handle(env_);
+        if (dbc_ == nullptr)
+            allocate_dbc_handle(dbc_, env_);
+
+        RETCODE rc = SQL_SUCCESS;
+        std::vector<NANODBC_SQLCHAR> out(1024);
+        SQLSMALLINT length = 0;
+
+        NANODBC_CALL_RC(
+            NANODBC_FUNC(SQLBrowseConnect),
+            rc,
+            dbc_,
+            (NANODBC_SQLCHAR*)connection_string.c_str(),
+            SQL_NTS,
+            out.data(),
+            (SQLSMALLINT)out.size(),
+            &length);
+
+        // A driver wanting more room than was offered says so, and says how much.
+        if (rc == SQL_SUCCESS_WITH_INFO && length > (SQLSMALLINT)out.size())
+        {
+            out.resize(static_cast<std::size_t>(length) + 1);
+            NANODBC_CALL_RC(
+                NANODBC_FUNC(SQLBrowseConnect),
+                rc,
+                dbc_,
+                (NANODBC_SQLCHAR*)connection_string.c_str(),
+                SQL_NTS,
+                out.data(),
+                (SQLSMALLINT)out.size(),
+                &length);
+        }
+
+        if (rc == SQL_NEED_DATA)
+        {
+            more_wanted = true;
+            return string(out.begin(), out.begin() + static_cast<std::ptrdiff_t>(length));
+        }
+
+        if (!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
+
+        more_wanted = false;
+        connected_ = true;
+        return string();
+    }
+
     bool connected() const noexcept { return connected_; }
 
     void disconnect()
@@ -5970,6 +6022,11 @@ void connection::connect(
 void connection::connect(string const& connection_string, std::list<attribute> const& attributes)
 {
     impl_->connect(connection_string, attributes);
+}
+
+string connection::browse_connect(string const& connection_string, bool& more_wanted)
+{
+    return impl_->browse(connection_string, more_wanted);
 }
 
 #if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_EVENT)
