@@ -5477,6 +5477,54 @@ PRIMARY KEY(t2_fid)
         REQUIRE(results.get<int>(0) == static_cast<int>(thread_count * rows_each));
     }
 
+    void test_std_any()
+    {
+#ifdef NANODBC_HAS_STD_ANY
+        auto connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_std_any"),
+            NANODBC_TEXT("(i int, d float, s varchar(10), n int)"));
+        execute(
+            connection,
+            NANODBC_TEXT("insert into test_std_any (i, d, s, n) values (42, 3.5, 'text', NULL);"));
+
+        auto results = execute(connection, NANODBC_TEXT("select i, d, s, n from test_std_any;"));
+        REQUIRE(results.next());
+
+        // What comes back is what the column holds, not what the caller guessed.
+        auto const i = results.get<std::any>(0);
+        REQUIRE(i.has_value());
+        REQUIRE(std::any_cast<int>(i) == 42);
+
+        // Whether a float column describes itself as SQL_REAL or SQL_DOUBLE is the
+        // driver's to say, and they disagree: MySQL says the first, PostgreSQL and SQL
+        // Server the second. The any holds whichever it said.
+        auto const d = results.get<std::any>(1);
+        REQUIRE(d.has_value());
+        double const floating =
+            d.type() == typeid(double) ? std::any_cast<double>(d) : std::any_cast<float>(d);
+        REQUIRE(floating == Catch::Approx(3.5));
+
+        auto const s = results.get<std::any>(2);
+        REQUIRE(s.has_value());
+        REQUIRE(std::any_cast<nanodbc::string>(s) == NANODBC_TEXT("text"));
+
+        // A null column holds nothing at all, rather than a value standing in for one.
+        auto const n = results.get<std::any>(3);
+        REQUIRE(!n.has_value());
+
+        // And by name, which reads the same column.
+        auto const by_name = results.get<std::any>(as_identifier(NANODBC_TEXT("i")));
+        REQUIRE(std::any_cast<int>(by_name) == 42);
+
+        // Asking for the wrong type is the caller's mistake, and says so.
+        REQUIRE_THROWS_AS(std::any_cast<nanodbc::string>(i), std::bad_any_cast);
+#else
+        SUCCEED("std::any needs C++17 or later");
+#endif
+    }
+
     void test_std_optional()
     {
 #ifdef NANODBC_HAS_STD_OPTIONAL

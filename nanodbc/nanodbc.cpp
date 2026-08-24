@@ -8211,6 +8211,68 @@ result::operator bool() const noexcept
     return static_cast<bool>(impl_);
 }
 
+#ifdef NANODBC_HAS_STD_ANY
+namespace
+{
+// Reads a column as whatever it says it holds. What a column holds is the driver's to
+// say, so this asks rather than being told by the caller.
+std::any read_column_as_its_own_type(result const& results, short column)
+{
+    switch (results.column_datatype(column))
+    {
+    case SQL_BIT:
+        return std::any(results.get<bool>(column));
+    case SQL_TINYINT:
+        return std::any(results.get<signed char>(column));
+    case SQL_SMALLINT:
+        return std::any(results.get<short>(column));
+    case SQL_INTEGER:
+        return std::any(results.get<int>(column));
+    case SQL_BIGINT:
+        return std::any(results.get<long long>(column));
+    case SQL_REAL:
+        return std::any(results.get<float>(column));
+    case SQL_FLOAT:
+    case SQL_DOUBLE:
+        return std::any(results.get<double>(column));
+    case SQL_DATE:
+    case SQL_TYPE_DATE:
+        return std::any(results.get<date>(column));
+    case SQL_TIME:
+    case SQL_TYPE_TIME:
+        return std::any(results.get<time>(column));
+    case SQL_TIMESTAMP:
+    case SQL_TYPE_TIMESTAMP:
+        return std::any(results.get<timestamp>(column));
+    case SQL_BINARY:
+    case SQL_VARBINARY:
+    case SQL_LONGVARBINARY:
+        return std::any(results.get<std::vector<std::uint8_t>>(column));
+    default:
+        // Character types, and the numeric ones carrying more digits than a double holds,
+        // where the text the driver renders is the value rather than an approximation of
+        // it.
+        return std::any(results.get<string>(column));
+    }
+}
+} // namespace
+
+template <>
+std::any result::get(short column) const
+{
+    if (is_null(column))
+        return std::any{};
+
+    return read_column_as_its_own_type(*this, column);
+}
+
+template <>
+std::any result::get(string const& column_name) const
+{
+    return get<std::any>(this->column(column_name));
+}
+#endif
+
 // The following are the only supported instantiations of result::get_ref().
 template void result::get_ref(short, std::string::value_type&) const;
 template void result::get_ref(short, wide_string::value_type&) const;
