@@ -124,6 +124,73 @@ ISO 8601 looks close enough to pass and is not. Given ``2020-09-03T15:27:38-02:0
 Binding a ``nanodbc::timestamp`` avoids the question, since it carries its fields rather than a spelling of them.
 
 ******************************************************************************
+Binding null
+******************************************************************************
+
+A parameter is bound as null with ``bind_null()``, or, for a batch, by handing ``bind()`` something that says which of the values are null: a sentry value that stands for one, or an array of flags in step with the values.
+
+``std::optional`` says it for itself, and ``bind()`` and ``bind_strings()`` take one directly, so the caller need not tell a value and its absence apart:
+
+.. code-block:: cpp
+
+    #include <nanodbc/nanodbc.h>
+    #include <optional>
+
+    int main()
+    {
+        nanodbc::connection conn(NANODBC_TEXT("dsn"));
+        std::optional<int> const age; // holding nothing
+
+        nanodbc::statement stmt(conn);
+        prepare(stmt, NANODBC_TEXT("insert into people (age) values (?)"));
+        stmt.bind(0, age); // the value, or null where there is none
+        execute(stmt);
+    }
+
+The batch forms read the values and which of them are null out of the one vector, where the flags overload asks for two kept in step:
+
+.. code-block:: cpp
+
+    #include <nanodbc/nanodbc.h>
+    #include <optional>
+    #include <vector>
+
+    int main()
+    {
+        nanodbc::connection conn(NANODBC_TEXT("dsn"));
+        std::vector<std::optional<int>> const ages{31, std::nullopt, 47};
+        std::vector<std::optional<nanodbc::string>> const names{
+            NANODBC_TEXT("ada"), NANODBC_TEXT("grace"), std::nullopt};
+
+        nanodbc::statement stmt(conn);
+        prepare(stmt, NANODBC_TEXT("insert into people (age, name) values (?, ?)"));
+        stmt.bind(0, ages);
+        stmt.bind_strings(1, names);
+        transact(stmt, ages.size());
+    }
+
+The values are copied into the statement, so the vector is free to go out of scope before it runs. The sentry and flag overloads remain, and are what to reach for where the values are already laid out as a plain array.
+
+Reading a column back the same way is ``get`` with a ``std::optional``, which holds nothing where the column was null rather than throwing ``null_access_error``:
+
+.. code-block:: cpp
+
+    #include <nanodbc/nanodbc.h>
+    #include <iostream>
+    #include <optional>
+
+    int main()
+    {
+        nanodbc::connection conn(NANODBC_TEXT("dsn"));
+        auto results = execute(conn, NANODBC_TEXT("select age from people"));
+        while (results.next())
+        {
+            auto const age = results.get<std::optional<int>>(0);
+            std::cout << (age ? std::to_string(*age) : "unknown") << '\n';
+        }
+    }
+
+******************************************************************************
 Batch parameters and how far they carry
 ******************************************************************************
 
@@ -179,7 +246,7 @@ Parameters are bound a column at a time, an array to each marker, which is the s
 
 The values are copied into the statement, so the rows are free to go out of scope before it runs. The overloads of ``bind`` taking a pointer bind the caller's buffer instead, which has to stay alive and unchanged until execution.
 
-Built as C++17 or later, an accessor yielding ``std::optional`` binds an absent value as null, which is how a nullable column is filled from a row that has no value for it.
+An accessor yielding ``std::optional`` binds an absent value as null, which is how a nullable column is filled from a row that has no value for it.
 
 What reaches the driver is a parameter array either way, so this is the same batch described above, and the same limits apply to how far it carries.
 
@@ -293,7 +360,7 @@ Some ODBC connection attributes govern how the connection is made, so they have 
 
 Allocating a connection and setting attributes on it by hand before calling ``connect()`` does not work, and is not meant to: ``connect()`` frees the handle it is given and allocates another, so anything set on the old one goes with it. The overloads above are how the ordering is expressed.
 
-Where the library is built as C++17 or later, an attribute's value may also be a string or a binary buffer, which it holds for as long as the attribute lives. Below that the value is a ``std::uintptr_t``, which covers the integer attributes.
+An attribute's value may be an integer, as a ``std::uintptr_t``, or a string or a binary buffer, which it holds for as long as the attribute lives.
 
 ******************************************************************************
 Threads

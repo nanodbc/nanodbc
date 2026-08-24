@@ -38,9 +38,12 @@ void run_test(nanodbc::string const& connection_string)
         nanodbc::result results = execute(
             connection,
             NANODBC_TEXT("select a as first, b as second from simple_test where a = 1;"));
-        results.next();
-        auto const value = results.get<nanodbc::string>(1);
-        cout << endl << results.get<int>(NANODBC_TEXT("first")) << ", " << convert(value) << endl;
+        if (results.next())
+        {
+            auto const value = results.get<nanodbc::string>(1);
+            cout << endl
+                 << results.get<int>(NANODBC_TEXT("first")) << ", " << convert(value) << endl;
+        }
     }
 
     // Binding parameters
@@ -82,8 +85,8 @@ void run_test(nanodbc::string const& connection_string)
         }
         nanodbc::result results =
             execute(connection, NANODBC_TEXT("select count(1) from simple_test;"));
-        results.next();
-        cout << "still have " << results.get<int>(0) << " rows!" << endl;
+        if (results.next())
+            cout << "still have " << results.get<int>(0) << " rows!" << endl;
     }
 
     // Batch inserting
@@ -127,10 +130,11 @@ void run_test(nanodbc::string const& connection_string)
         execute(connection, NANODBC_TEXT("insert into date_test values (current_timestamp);"));
 
         nanodbc::result results = execute(connection, NANODBC_TEXT("select * from date_test;"));
-        results.next();
-
-        nanodbc::date date = results.get<nanodbc::date>(0);
-        cout << endl << date.year << "-" << date.month << "-" << date.day << endl;
+        if (results.next())
+        {
+            nanodbc::date date = results.get<nanodbc::date>(0);
+            cout << endl << date.year << "-" << date.month << "-" << date.day << endl;
+        }
 
         results = execute(connection, NANODBC_TEXT("select * from date_test;"));
         show(results);

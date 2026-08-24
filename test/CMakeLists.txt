@@ -8,7 +8,7 @@ add_compile_definitions( "$<$<CXX_COMPILER_ID:MSVC>:_SILENCE_CXX17_CODECVT_HEADE
 add_library(Catch STATIC catch/catch_amalgamated.cpp)
 target_compile_definitions(Catch PRIVATE CATCH_AMALGAMATED_CUSTOM_MAIN)
 target_include_directories(Catch PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_compile_features(Catch PUBLIC cxx_std_14)
+target_compile_features(Catch PUBLIC cxx_std_17)
 
 if(NANODBC_FORCE_LIBCXX)
   target_compile_options(Catch PUBLIC -stdlib=libc++)
@@ -20,7 +20,7 @@ add_custom_target(tests)
 message( STATUS "Building utility tests")
 add_executable(utility_tests utility_test.cpp)
 target_link_libraries(utility_tests PRIVATE ODBC::ODBC Catch nanodbc)
-target_compile_features(utility_tests PRIVATE cxx_std_14)
+target_compile_features(utility_tests PRIVATE cxx_std_17)
 add_test(NAME utility_tests COMMAND utility_tests)
 add_dependencies(tests utility_tests)
 
@@ -57,7 +57,7 @@ foreach(test_item IN LISTS test_list)
     $<$<CXX_COMPILER_ID:GNU>:-Wno-error=parentheses>
   )
 
-  target_compile_features(${test_name} PRIVATE cxx_std_14)
+  target_compile_features(${test_name} PRIVATE cxx_std_17)
 
   set_target_properties(${test_name}
     PROPERTIES

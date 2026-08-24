@@ -44,6 +44,16 @@ TEST_CASE_METHOD(oracle_fixture, "test_bind_rows_null", "[oracle][batch][bind_ro
     test_bind_rows_null();
 }
 
+TEST_CASE_METHOD(oracle_fixture, "test_bind_optional", "[oracle][bind][null][optional]")
+{
+    test_bind_optional();
+}
+
+TEST_CASE_METHOD(oracle_fixture, "test_batch_bind_optional", "[oracle][batch][null][optional]")
+{
+    test_batch_bind_optional();
+}
+
 TEST_CASE_METHOD(oracle_fixture, "test_batch_insert_null", "[oracle][batch][null]")
 {
     test_batch_insert_null();

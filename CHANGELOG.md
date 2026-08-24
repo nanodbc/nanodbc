@@ -1,5 +1,16 @@
 # ChangeLog
 
+## Unreleased
+
+- nanodbc requires C++17. C++11 and C++14 are no longer supported, and the conditionals standing in for `std::optional`, `std::variant`, `std::any` and `std::string_view` are gone, the four being there unconditionally. The `NANODBC_HAS_STD_*` macros are still defined, so code asking whether the feature is there keeps compiling.
+- `statement::bind` and `statement::bind_strings` take a `std::optional`, and a vector of them, so an absent value binds as null without a sentry value or an array of flags kept in step with the values. The sentry and flag overloads remain.
+- The observers whose answer is the whole point are `[[nodiscard]]`: `result::next` and the rest of the navigation, `is_null`, `get`, `get_as` and the column accessors, along with `connected`, `rows`, `columns` and `affected_rows`. Discarding one of them was a quiet way to read the wrong row. `execute` and `transact` are left alone, ignoring their result being a fair thing to do.
+- The `attribute` class that stood in for `std::variant` below C++17 is gone, as are the `#else` halves of `statement::attribute` and `connection::attribute` that went with it.
+- CI builds against C++17 and C++20 and the suites run at both; the C++14 jobs are gone. The MinGW job passes the standard its matrix names, having declared one and then configured without it.
+- Internals follow the standard they are now written against: fold expressions where a braced list was standing in for one, `if constexpr` where a pair of `enable_if` overloads differed only by a compile-time condition, `std::optional` read through one trait rather than two, and `using` rather than `typedef`.
+- The documentation build is warning-free again: `PARAM_RETURN`'s comment gave Doxygen a code span it read as two sentences, `JAVADOC_AUTOBRIEF` ending the brief at the `?` inside it, and `doc/README.md` still described the Breathe step that generating the reference with Doxygen replaced.
+- Describing a parameter and finding a bound column look the key up once rather than twice, `count()` followed by `at()` having asked the same map the same question either side of the answer.
+
 ## v2.20.0
 
 - `connection::browse_connect` asks the driver what it needs in order to connect, which SQL Server's answers with the attributes it wants and most others decline. [`#235`](https://github.com/nanodbc/nanodbc/issues/235)

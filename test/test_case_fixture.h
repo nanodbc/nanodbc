@@ -29,7 +29,7 @@ struct test_case_fixture : public base_test_fixture
 {
     // To invoke a unit test over all integral types, use:
     //
-    typedef std::tuple<
+    using integral_test_types = std::tuple<
         short,
         unsigned short,
         int,
@@ -43,8 +43,7 @@ struct test_case_fixture : public base_test_fixture
         signed long long,
         unsigned long long,
         float,
-        double>
-        integral_test_types;
+        double>;
 
     // Test Cases
 
@@ -122,7 +121,90 @@ struct test_case_fixture : public base_test_fixture
         }
         REQUIRE(!result.next());
     }
-#ifdef NANODBC_HAS_STD_OPTIONAL
+
+    // Binding optionals, which say for themselves which values are null, rather than
+    // keeping a separate array of flags in step with the values.
+    void test_bind_optional()
+    {
+        auto conn = connect();
+        create_table(
+            conn,
+            NANODBC_TEXT("test_bind_optional"),
+            NANODBC_TEXT("(id int, i int, s varchar(60))"));
+
+        nanodbc::statement stmt(conn);
+        prepare(stmt, NANODBC_TEXT("insert into test_bind_optional(id, i, s) values (?, ?, ?)"));
+        REQUIRE(stmt.parameters() == 3);
+
+        // A value that is there, and one that is not, through the same call.
+        std::optional<int> const present{42};
+        std::optional<int> const absent;
+        std::optional<nanodbc::string> const text{NANODBC_TEXT("hello")};
+        std::optional<nanodbc::string> const no_text;
+
+        int id = 0;
+        stmt.bind(0, &id);
+        stmt.bind(1, present);
+        stmt.bind(2, text);
+        nanodbc::execute(stmt);
+
+        id = 1;
+        stmt.bind(0, &id);
+        stmt.bind(1, absent);
+        stmt.bind(2, no_text);
+        nanodbc::execute(stmt);
+
+        auto result = nanodbc::execute(
+            conn, NANODBC_TEXT("select i, s from test_bind_optional order by id asc"));
+
+        REQUIRE(result.next());
+        REQUIRE(result.get<std::optional<int>>(0) == present);
+        REQUIRE(result.get<std::optional<nanodbc::string>>(1) == text);
+
+        REQUIRE(result.next());
+        REQUIRE(result.is_null(0));
+        REQUIRE(result.is_null(1));
+        REQUIRE(result.get<std::optional<int>>(0) == std::nullopt);
+        REQUIRE(result.get<std::optional<nanodbc::string>>(1) == std::nullopt);
+
+        REQUIRE(!result.next());
+    }
+
+    // The batch forms of the same thing: one vector carrying both the values and which of
+    // them are null, where the flags overload asks for two.
+    void test_batch_bind_optional()
+    {
+        auto conn = connect();
+        create_table(
+            conn,
+            NANODBC_TEXT("test_batch_bind_optional"),
+            NANODBC_TEXT("(id int, i int, s varchar(60))"));
+
+        std::vector<int> const ids{0, 1, 2};
+        std::vector<std::optional<int>> const values{10, std::nullopt, 30};
+        std::vector<std::optional<nanodbc::string>> const texts{
+            NANODBC_TEXT("first"), NANODBC_TEXT("second"), std::nullopt};
+
+        nanodbc::statement stmt(conn);
+        prepare(
+            stmt, NANODBC_TEXT("insert into test_batch_bind_optional(id, i, s) values (?, ?, ?)"));
+        REQUIRE(stmt.parameters() == 3);
+        stmt.bind(0, ids);
+        stmt.bind(1, values);
+        stmt.bind_strings(2, texts);
+        nanodbc::transact(stmt, ids.size());
+
+        auto result = nanodbc::execute(
+            conn, NANODBC_TEXT("select i, s from test_batch_bind_optional order by id asc"));
+        for (std::size_t i = 0; i < ids.size(); ++i)
+        {
+            REQUIRE(result.next());
+            REQUIRE(result.get<std::optional<int>>(0) == values[i]);
+            REQUIRE(result.get<std::optional<nanodbc::string>>(1) == texts[i]);
+        }
+        REQUIRE(!result.next());
+    }
+
     void test_batch_insert_integral_optional()
     {
         auto conn = connect();
@@ -153,7 +235,6 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE(i == batch_size);
         }
     }
-#endif
     // How many parameter sets a statement executes and how many rows it fetches at a time
     // are unrelated. A query taking one set of parameters may still want its rows in large
     // blocks, which asking for both with one number cannot express.
@@ -362,7 +443,6 @@ struct test_case_fixture : public base_test_fixture
 
     void test_bind_rows_null()
     {
-#ifdef NANODBC_HAS_STD_OPTIONAL
         struct row
         {
             int i;
@@ -409,9 +489,6 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(!result.is_null(2));
 
         REQUIRE(!result.next());
-#else
-        SUCCEED("binding an absent value as null asks for std::optional, so C++17 or later");
-#endif
     }
 
     template <std::size_t BatchSize, std::size_t MaxValueSize>
@@ -1686,11 +1763,12 @@ struct test_case_fixture : public base_test_fixture
             {
                 if (backwards.prior())
                     REQUIRE(backwards.get<int>(0) == 1);
-                // Relative and absolute fetches alike, which such cursors refuse.
-                backwards.skip(2);
-                backwards.first();
-                backwards.last();
-                backwards.move(1);
+                // Relative and absolute fetches alike, which such cursors refuse. Whether
+                // each moved is beside the point: the throw is what is being watched for.
+                static_cast<void>(backwards.skip(2));
+                static_cast<void>(backwards.first());
+                static_cast<void>(backwards.last());
+                static_cast<void>(backwards.move(1));
             }
             catch (nanodbc::database_error const&)
             {
@@ -1956,7 +2034,7 @@ struct test_case_fixture : public base_test_fixture
         {
             auto results = execute(
                 connection, NANODBC_TEXT("select count(*) from test_nested_transaction_rollback;"));
-            results.next();
+            REQUIRE(results.next());
             return results.template get<int>(0);
         };
 
@@ -2629,7 +2707,7 @@ struct test_case_fixture : public base_test_fixture
                         REQUIRE(columns.ordinal_position() > 0);
                         columns.procedure_catalog();
                         columns.procedure_schema();
-                        columns.column_size();
+                        static_cast<void>(columns.column_size());
                         columns.buffer_length();
                         columns.decimal_digits();
                         columns.numeric_precision_radix();
@@ -3011,7 +3089,6 @@ struct test_case_fixture : public base_test_fixture
         }
     }
 
-#ifdef NANODBC_HAS_STD_OPTIONAL
     void test_date_optional()
     {
         auto connection = connect();
@@ -3047,7 +3124,7 @@ struct test_case_fixture : public base_test_fixture
             REQUIRE((*d).day == 12);
         }
     }
-#endif
+
     void test_dbms_info()
     {
         // A generic test to exercise the DBMS info API is callable.
@@ -3284,14 +3361,14 @@ struct test_case_fixture : public base_test_fixture
         nanodbc::prepare(statement, NANODBC_TEXT("select 42;"));
 
         nanodbc::result results = statement.execute();
-        results.next();
+        REQUIRE(results.next());
 
         results = statement.execute();
-        results.next();
+        REQUIRE(results.next());
         REQUIRE(results.get<int>(0) == 42);
 
         results = statement.execute();
-        results.next();
+        REQUIRE(results.next());
         REQUIRE(results.get<int>(0) == 42);
     }
 
@@ -3306,12 +3383,12 @@ struct test_case_fixture : public base_test_fixture
         {
             nanodbc::transaction transaction(connection);
             results = statement.execute();
-            results.next();
+            REQUIRE(results.next());
             REQUIRE(results.get<int>(0) == 42);
         }
 
         results = statement.execute();
-        results.next();
+        REQUIRE(results.next());
         REQUIRE(results.get<int>(0) == 42);
     }
 
@@ -4417,7 +4494,6 @@ PRIMARY KEY(t2_fid)
         REQUIRE(ref == name);
     }
 
-#ifdef NANODBC_HAS_STD_OPTIONAL
     void test_string_optional()
     {
         nanodbc::connection connection = connect();
@@ -4445,7 +4521,7 @@ PRIMARY KEY(t2_fid)
         results.get_ref(0, ref);
         REQUIRE(*ref == name);
     }
-#endif
+
     void test_string_with_varchar_max()
     {
         nanodbc::connection connection = connect();
@@ -4524,8 +4600,6 @@ PRIMARY KEY(t2_fid)
 
     void test_string_view_vector()
     {
-// std::string_view is only supported since C++17 compliant compilers
-#if __cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L)
         nanodbc::connection connection = connect();
         REQUIRE(connection.native_dbc_handle() != nullptr);
         REQUIRE(connection.native_env_handle() != nullptr);
@@ -4584,7 +4658,6 @@ PRIMARY KEY(t2_fid)
         REQUIRE(results.get<nanodbc::string>(0) == NANODBC_TEXT("Dino"));
         REQUIRE(results.is_null(1));
         REQUIRE(results.is_null(2));
-#endif //__cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L)
     }
 
     void test_string_vector_null_vector()
@@ -4688,7 +4761,6 @@ PRIMARY KEY(t2_fid)
         }
     }
 
-#ifdef NANODBC_HAS_STD_OPTIONAL
     void test_time_optional()
     {
         auto connection = connect();
@@ -4715,7 +4787,7 @@ PRIMARY KEY(t2_fid)
             REQUIRE((*t).sec == 59);
         }
     }
-#endif
+
     void test_transaction()
     {
         nanodbc::connection connection = connect();
@@ -5151,7 +5223,7 @@ PRIMARY KEY(t2_fid)
         int i = 3;
         while (!results.at_end())
         {
-            results.next();
+            REQUIRE(results.next());
             REQUIRE(results.get<int>(0) == i--);
         }
     }
@@ -5479,7 +5551,6 @@ PRIMARY KEY(t2_fid)
 
     void test_std_any()
     {
-#ifdef NANODBC_HAS_STD_ANY
         auto connection = connect();
         create_table(
             connection,
@@ -5520,14 +5591,10 @@ PRIMARY KEY(t2_fid)
 
         // Asking for the wrong type is the caller's mistake, and says so.
         REQUIRE_THROWS_AS(std::any_cast<nanodbc::string>(i), std::bad_any_cast);
-#else
-        SUCCEED("std::any needs C++17 or later");
-#endif
     }
 
     void test_std_variant()
     {
-#ifdef NANODBC_HAS_STD_VARIANT
         using value = std::variant<std::monostate, nanodbc::string, int, double>;
 
         auto connection = connect();
@@ -5563,9 +5630,6 @@ PRIMARY KEY(t2_fid)
         // cannot: what the column holds is the driver's to say.
         using narrow = std::variant<std::monostate, double>;
         REQUIRE_THROWS_AS(results.get_as<narrow>(1), nanodbc::type_incompatible_error);
-#else
-        SUCCEED("std::variant needs C++17 or later");
-#endif
     }
 
     // A driver that cannot answer what SQLBrowseConnect asks says so through the
@@ -5583,7 +5647,6 @@ PRIMARY KEY(t2_fid)
 
     void test_std_optional()
     {
-#ifdef NANODBC_HAS_STD_OPTIONAL
         test_batch_insert_integral_optional();
         test_string_optional();
         // Oracle has no TIME type, and its DATE carries a time of day, which the driver
@@ -5594,7 +5657,6 @@ PRIMARY KEY(t2_fid)
             test_time_optional();
             test_date_optional();
         }
-#endif
     }
 };
 

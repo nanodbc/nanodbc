@@ -37,7 +37,7 @@ jobs:
       fail-fast: false
       matrix:
         gcc: [16, 15, 14, 13]
-        cxxstd: ["20", "17", "14"]
+        cxxstd: ["20", "17"]
     name: build-gcc-${{ matrix.gcc }}-std-${{ matrix.cxxstd }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -77,7 +77,7 @@ jobs:
       fail-fast: false
       matrix:
         clang: [22, 21, 20, 19]
-        cxxstd: ["20", "17", "14"]
+        cxxstd: ["20", "17"]
     name: build-clang-${{ matrix.clang }}-std-${{ matrix.cxxstd }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -317,19 +317,19 @@ jobs:
       fail-fast: false
       matrix:
         postgres: [14, 15, 16, 17, 18]
-        cxxstd: ["14"]
+        cxxstd: ["17"]
         unicode: ["OFF"]
-        # The newest server also runs the suite built as C++17, which is where the
-        # std::optional cases exist at all. Repeating that for every server version
-        # would buy nothing, what differs being the library rather than the server.
+        # The newest server also runs the suite built as C++20, to catch what a later
+        # standard changes. Repeating that for every server version would buy nothing,
+        # what differs being the library rather than the server.
         include:
           - postgres: 18
-            cxxstd: "17"
+            cxxstd: "20"
             unicode: "OFF"
           # The newest server also runs a Unicode build, through the Unicode driver, the
           # ANSI one being unable to take a wide parameter.
           - postgres: 18
-            cxxstd: "14"
+            cxxstd: "17"
             unicode: "ON"
     name: test-postgresql (${{ matrix.postgres }}, c++${{ matrix.cxxstd }}, unicode ${{ matrix.unicode }})
     services:
@@ -374,7 +374,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cxxstd: ["14", "17"]
+        cxxstd: ["17", "20"]
     name: test-oracle (c++${{ matrix.cxxstd }})
     services:
       oracle:
@@ -435,7 +435,7 @@ jobs:
       fail-fast: false
       matrix:
         unicode: ["OFF", "ON"]
-        cxxstd: ["14", "17"]
+        cxxstd: ["17", "20"]
     name: test-mssql (unicode ${{ matrix.unicode }}, c++${{ matrix.cxxstd }})
     services:
       sqlserver:
@@ -478,7 +478,7 @@ jobs:
       fail-fast: false
       matrix:
         unicode: ["OFF", "ON"]
-        cxxstd: ["14", "17"]
+        cxxstd: ["17", "20"]
     name: test-sqlite (unicode ${{ matrix.unicode }}, c++${{ matrix.cxxstd }})
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
