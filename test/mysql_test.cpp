@@ -256,6 +256,11 @@ TEST_CASE_METHOD(mysql_fixture, "test_error", "[mysql][error]")
     test_error();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_error_message_carries_each_diagnostic_once", "[mysql][error]")
+{
+    test_error_message_carries_each_diagnostic_once();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_exception", "[mysql][exception]")
 {
     test_exception();

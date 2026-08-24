@@ -300,6 +300,14 @@ TEST_CASE_METHOD(sqlite_fixture, "test_error", "[sqlite][error]")
     test_error();
 }
 
+TEST_CASE_METHOD(
+    sqlite_fixture,
+    "test_error_message_carries_each_diagnostic_once",
+    "[sqlite][error]")
+{
+    test_error_message_carries_each_diagnostic_once();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_exception", "[sqlite][exception]")
 {
     test_exception();

@@ -966,6 +966,11 @@ TEST_CASE_METHOD(mssql_fixture, "test_error", "[mssql][error]")
     test_error();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_error_message_carries_each_diagnostic_once", "[mssql][error]")
+{
+    test_error_message_carries_each_diagnostic_once();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_exception", "[mssql][exception]")
 {
     test_exception();

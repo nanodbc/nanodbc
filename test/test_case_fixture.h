@@ -5364,6 +5364,59 @@ PRIMARY KEY(t2_fid)
         }
     }
 
+    // A failure carries one or more diagnostic records, and what reaches the exception is
+    // their text and nothing else. Each is read into a buffer longer than the text, and
+    // appending the whole buffer carried its unused tail along, so a driver answering
+    // twice produced the same diagnostic twice over.
+    void test_error_message_carries_each_diagnostic_once()
+    {
+        auto connection = connect();
+
+        nanodbc::string diagnostic;
+        try
+        {
+            execute(connection, NANODBC_TEXT("this is not a statement"));
+            FAIL("a syntax error was expected");
+        }
+        catch (nanodbc::database_error const& e)
+        {
+            // what() opens with the file and line the error was raised from, which says
+            // nothing about the diagnostic and repeats whatever the source tree is called.
+            // The state follows it, and the driver's own text follows that.
+            auto const message = nanodbc::test::convert(std::string(e.what()));
+            auto const state = nanodbc::test::convert(e.state());
+            auto const after_state = message.find(state);
+            REQUIRE(after_state != nanodbc::string::npos);
+            diagnostic = message.substr(after_state + state.size());
+        }
+
+        REQUIRE(!diagnostic.empty());
+        REQUIRE(diagnostic.find_first_not_of(NANODBC_TEXT(" :")) != nanodbc::string::npos);
+
+        // Nothing of any length says the same thing twice. A window this wide will not
+        // repeat by chance in a sentence, but does repeat when a record is appended along
+        // with the tail of the buffer it was read into.
+        std::size_t const window = 24;
+        nanodbc::string repeated;
+        for (std::size_t i = 0; i + window <= diagnostic.size(); ++i)
+        {
+            auto const chunk = diagnostic.substr(i, window);
+            if (chunk.find_first_not_of(NANODBC_TEXT(" ")) == nanodbc::string::npos)
+                continue;
+            if (diagnostic.find(chunk, i + 1) != nanodbc::string::npos)
+            {
+                repeated = chunk;
+                break;
+            }
+        }
+        INFO("repeated in diagnostic: " << nanodbc::test::convert(repeated));
+        REQUIRE(repeated.empty());
+
+        // Trailing space is not checked. Oracle's driver reports its message with a long
+        // run of it, counted in the length it gives, so it is the driver's text rather
+        // than anything left over from reading it.
+    }
+
     void test_std_optional()
     {
 #ifdef NANODBC_HAS_STD_OPTIONAL
