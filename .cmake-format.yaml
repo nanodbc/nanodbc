@@ -1,0 +1,21 @@
+# Configuration for cmakelang, of which only the linter is run. See .github/workflows/lint.yml.
+#
+# cmake-format is deliberately not run. Its output rewrites these files whole — 385 of the
+# 365 lines across them with its defaults, and 329 of CMakeLists.txt's 259 even when told
+# this project's line width — because it does not keep the spacing inside parentheses that
+# the files are written with. That is a change of style rather than a formatting pass, and
+# not one worth making to gain a check.
+lint:
+  disabled_codes:
+    # Line length, which clang-format sets at 100 for the C++ and these files follow.
+    - "C0301"
+    # Variable naming. Local variables here are lower case, as CMake's own documentation
+    # writes them; cmake-lint wants upper case for everything that is not function-local.
+    - "C0103"
+    # A missing COMMENT argument, which these files leave out where the command says what
+    # it is doing.
+    - "C0113"
+    # Indentation, which follows the same two spaces as the rest of the project and not
+    # the layout cmake-format would impose.
+    - "C0307"
+  max_arguments: 10
