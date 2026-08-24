@@ -1,6 +1,6 @@
 # ChangeLog
 
-## Unreleased
+## v2.20.0
 
 - `connection::browse_connect` asks the driver what it needs in order to connect, which SQL Server's answers with the attributes it wants and most others decline. [`#235`](https://github.com/nanodbc/nanodbc/issues/235)
 - `result::get_as` reads a column as the type the driver says it is, into a `std::variant` naming the alternatives to choose between. [`#324`](https://github.com/nanodbc/nanodbc/issues/324)
