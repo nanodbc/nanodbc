@@ -1217,6 +1217,19 @@ public:
     /// \brief Returns parameter type for indicated parameter placeholder in a prepared statement.
     short parameter_type(short param_index) const;
 
+    /// \brief Whether the parameter came back null.
+    ///
+    /// A parameter bound for output carries an indicator the driver writes when the
+    /// statement runs, saying whether a value came back at all. Reading it tells a null
+    /// apart from a buffer the driver left alone, which the value cannot.
+    ///
+    /// \param param_index Zero-based index of the parameter marker.
+    /// \param batch_index Which of the bound values to ask about, where several were.
+    /// \throws programming_error if nothing is bound to that parameter.
+    /// \throws index_range_error if there is no such value in the batch.
+    /// \see bind(), PARAM_OUT, PARAM_INOUT
+    bool parameter_is_null(short param_index, std::size_t batch_index = 0) const;
+
     /// \addtogroup binding Binding parameters
     /// \brief These functions are used to bind values to ODBC parameters.
     ///

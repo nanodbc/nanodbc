@@ -2663,6 +2663,47 @@ TEST_CASE_METHOD(mssql_fixture, "test_binary_read_shapes", "[mssql][result][bina
     test_binary_read_shapes();
 }
 
+// An output parameter that comes back null leaves the buffer as it found it, so the value
+// alone cannot say whether the procedure set it. The indicator can.
+TEST_CASE_METHOD(mssql_fixture, "test_output_parameter_is_null", "[mssql][statement][bind]")
+{
+    auto connection = connect();
+    nanodbc::string const name = NANODBC_TEXT("test_output_parameter_is_null_proc");
+    try
+    {
+        execute(connection, NANODBC_TEXT("DROP PROCEDURE ") + name);
+    }
+    catch (...)
+    {
+    }
+    execute(
+        connection,
+        NANODBC_TEXT("CREATE PROCEDURE ") + name +
+            NANODBC_TEXT(
+                " @setme INT OUTPUT, @leaveme INT OUTPUT AS "
+                "BEGIN SET @setme = 42; SET @leaveme = NULL; END;"));
+
+    nanodbc::statement statement(connection);
+    statement.prepare(NANODBC_TEXT("{ CALL ") + name + NANODBC_TEXT("(?, ?) }"));
+
+    int setme = 0;
+    int leaveme = 12345;
+    statement.bind(0, &setme, nanodbc::statement::PARAM_OUT);
+    statement.bind(1, &leaveme, nanodbc::statement::PARAM_OUT);
+    statement.just_execute();
+
+    REQUIRE(setme == 42);
+    REQUIRE(!statement.parameter_is_null(0));
+
+    // The value says 12345, which is what was there before the call. Only the indicator
+    // tells that apart from a procedure that set it to 12345.
+    REQUIRE(statement.parameter_is_null(1));
+
+    // Nothing is bound to the third parameter, and there is no second value in the batch.
+    REQUIRE_THROWS_AS(statement.parameter_is_null(7), nanodbc::programming_error);
+    REQUIRE_THROWS_AS(statement.parameter_is_null(0, 64), nanodbc::index_range_error);
+}
+
 // Binding a parameter in a direction other than PARAM_IN, which is what maps onto
 // SQL_PARAM_OUTPUT and SQL_PARAM_INPUT_OUTPUT.
 TEST_CASE_METHOD(mssql_fixture, "test_output_parameters", "[mssql][statement][bind]")
