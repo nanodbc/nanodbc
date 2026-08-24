@@ -580,6 +580,10 @@ recent_error(SQLHANDLE handle, SQLSMALLINT handle_type, long& native, std::strin
     SQLINTEGER native_error = 0;
     SQLSMALLINT total_bytes = 0;
     NANODBC_SQLCHAR sql_state[6] = {0};
+    // ODBC orders the records with the most relevant first, so the state and the native
+    // code are taken from that one however many follow it.
+    NANODBC_SQLCHAR first_sql_state[6] = {0};
+    SQLINTEGER first_native_error = 0;
     RETCODE rc = SQL_SUCCESS;
 
     do
@@ -620,32 +624,31 @@ recent_error(SQLHANDLE handle, SQLSMALLINT handle_type, long& native, std::strin
             return rvalue;
         }
 
+        if (i == 1)
+        {
+            std::copy(std::begin(sql_state), std::end(sql_state), std::begin(first_sql_state));
+            first_native_error = native_error;
+        }
+
         if (!result.empty())
             result += ' ';
 
         result += nanodbc::string(sql_message.begin(), sql_message.end());
         i++;
-
-// NOTE: unixODBC using PostgreSQL and SQLite drivers crash if you call SQLGetDiagRec()
-// more than once. So as a (terrible but the best possible) workaround just exit
-// this loop early on non-Windows systems.
-#ifndef _MSC_VER
-        break;
-#endif
     } while (rc != SQL_NO_DATA);
 
     convert(std::move(result), rvalue);
-    if (size(sql_state) > 0)
+    if (size(first_sql_state) > 0)
     {
         state.clear();
-        state.reserve(size(sql_state));
-        for (std::size_t idx = 0; idx != size(sql_state); ++idx)
+        state.reserve(size(first_sql_state));
+        for (std::size_t idx = 0; idx != size(first_sql_state); ++idx)
         {
-            state.push_back(static_cast<char>(sql_state[idx]));
+            state.push_back(static_cast<char>(first_sql_state[idx]));
         }
     }
 
-    native = native_error;
+    native = first_native_error;
     std::string status = state;
     status += ": ";
     status += rvalue;
