@@ -2719,6 +2719,43 @@ TEST_CASE_METHOD(mssql_fixture, "test_output_parameter_is_null", "[mssql][statem
     REQUIRE_THROWS_AS(statement.parameter_is_null(0, 64), nanodbc::index_range_error);
 }
 
+// Binding without preparing first. A bind asks the driver what the parameter is, which
+// needs a prepared statement, unless it has been told already.
+TEST_CASE_METHOD(mssql_fixture, "test_bind_without_prepare", "[mssql][statement][bind]")
+{
+    auto connection = connect();
+    create_table(
+        connection,
+        NANODBC_TEXT("test_bind_without_prepare"),
+        NANODBC_TEXT("(i int, s varchar(20))"));
+
+    nanodbc::statement statement(connection);
+
+    // Saying what the parameters are, so that binding does not have to ask.
+    std::vector<short> const index{0, 1};
+    std::vector<short> const type{SQL_INTEGER, SQL_VARCHAR};
+    std::vector<unsigned long> const size{10, 20};
+    std::vector<short> const scale{0, 0};
+    statement.describe_parameters(index, type, size, scale);
+
+    int const i = 7;
+    nanodbc::string const s = NANODBC_TEXT("no prepare");
+    statement.bind(0, &i);
+    statement.bind(1, s.c_str());
+
+    statement.execute_direct(
+        connection, NANODBC_TEXT("insert into test_bind_without_prepare (i, s) values (?, ?)"));
+
+    auto results = execute(connection, NANODBC_TEXT("select i, s from test_bind_without_prepare;"));
+    REQUIRE(results.next());
+    REQUIRE(results.get<int>(0) == 7);
+    REQUIRE(results.get<nanodbc::string>(1) == NANODBC_TEXT("no prepare"));
+
+    // Without describing them, the bind has to ask, and there is nothing to ask about.
+    nanodbc::statement undescribed(connection);
+    REQUIRE_THROWS_AS(undescribed.bind(0, &i), nanodbc::database_error);
+}
+
 // Binding a parameter in a direction other than PARAM_IN, which is what maps onto
 // SQL_PARAM_OUTPUT and SQL_PARAM_INPUT_OUTPUT.
 TEST_CASE_METHOD(mssql_fixture, "test_output_parameters", "[mssql][statement][bind]")
