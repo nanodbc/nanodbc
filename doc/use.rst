@@ -296,6 +296,41 @@ Allocating a connection and setting attributes on it by hand before calling ``co
 Where the library is built as C++17 or later, an attribute's value may also be a string or a binary buffer, which it holds for as long as the attribute lives. Below that the value is a ``std::uintptr_t``, which covers the integer attributes.
 
 ******************************************************************************
+Threads
+******************************************************************************
+
+A connection belongs to the thread that made it. Several threads working at once, each with a connection of its own, is the arrangement nanodbc is built for and needs no locking of its own:
+
+.. code-block:: cpp
+
+    #include <nanodbc/nanodbc.h>
+    #include <thread>
+    #include <vector>
+
+    int main()
+    {
+        std::vector<std::thread> threads;
+        for (int t = 0; t < 8; ++t)
+        {
+            threads.emplace_back(
+                []()
+                {
+                    nanodbc::connection conn(NANODBC_TEXT("dsn"));
+                    nanodbc::statement stmt(conn);
+                    prepare(stmt, NANODBC_TEXT("insert into t (i) values (?)"));
+                    // ... bind and execute
+                });
+        }
+
+        for (auto& thread : threads)
+            thread.join();
+    }
+
+Each connection allocates an ODBC environment of its own, so nothing is shared between them and the driver sees one connection per thread, which is what a threading-enabled driver expects.
+
+Sharing one connection between threads is a different matter, and nanodbc makes no guarantee about it. A ``connection``, a ``statement`` and a ``result`` are handles onto driver state; two threads using one at the same time is for the caller to synchronize. Every thread joining before the objects it used go out of scope is the caller's business too — a crash on shutdown is more often threads outliving what they captured than anything the driver did.
+
+******************************************************************************
 Examples
 ******************************************************************************
 

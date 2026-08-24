@@ -946,6 +946,11 @@ TEST_CASE_METHOD(mssql_fixture, "test_connection_attributes", "[mssql][connectio
     test_connection_attributes();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_connection_per_thread", "[mssql][connection][threads]")
+{
+    test_connection_per_thread();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_dbms_info", "[mssql][dmbs][metadata][info]")
 {
     test_dbms_info();

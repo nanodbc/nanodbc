@@ -122,6 +122,11 @@ TEST_CASE_METHOD(oracle_fixture, "test_connection_attributes", "[oracle][connect
     test_connection_attributes();
 }
 
+TEST_CASE_METHOD(oracle_fixture, "test_connection_per_thread", "[oracle][connection][threads]")
+{
+    test_connection_per_thread();
+}
+
 TEST_CASE_METHOD(oracle_fixture, "test_datasources", "[oracle][datasources]")
 {
     test_datasources();
