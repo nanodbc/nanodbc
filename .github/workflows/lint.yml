@@ -32,6 +32,10 @@ jobs:
         run: sudo apt-get -o DPkg::Lock::Timeout=120 install -y unixodbc-dev
       - name: Run rstcheck
         run: rstcheck doc/*.rst
+      - name: Install cmakelang
+        run: python3 -m pip install --disable-pip-version-check "cmakelang==0.6.13"
+      - name: Run cmake-lint
+        run: cmake-lint $(git ls-files '*CMakeLists.txt' '*.cmake')
 
   docker:
     runs-on: ubuntu-latest
