@@ -2,6 +2,7 @@
 
 ## v3.0.0
 
+- The documentation's landing page is titled "nanodbc - C++ ODBC wrapper", which fits on one line where the longer wording wrapped, the heading's own anchor link taking up the width that tipped it over.
 - nanodbc requires C++17. C++11 and C++14 are no longer supported, and the conditionals standing in for `std::optional`, `std::variant`, `std::any` and `std::string_view` are gone, the four being there unconditionally. The `NANODBC_HAS_STD_*` macros are still defined, so code asking whether the feature is there keeps compiling.
 - `statement::bind` and `statement::bind_strings` take a `std::optional`, and a vector of them, so an absent value binds as null without a sentry value or an array of flags kept in step with the values. The sentry and flag overloads remain.
 - The observers whose answer is the whole point are `[[nodiscard]]`: `result::next` and the rest of the navigation, `is_null`, `get`, `get_as` and the column accessors, along with `connected`, `rows`, `columns` and `affected_rows`. Discarding one of them was a quiet way to read the wrong row. `execute` and `transact` are left alone, ignoring their result being a fair thing to do.
