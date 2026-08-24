@@ -1,6 +1,6 @@
 # ChangeLog
 
-## Unreleased
+## v2.19.0
 
 - A date or time parameter bound as text is declared as the driver describes it, Oracle refusing the ODBC literal form when it is declared as text. [`#248`](https://github.com/nanodbc/nanodbc/issues/248)
 - `statement::execute` takes a `batch_ops`, so the rowset size and the parameter array length can differ. [`#162`](https://github.com/nanodbc/nanodbc/issues/162)
