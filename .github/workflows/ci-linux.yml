@@ -412,6 +412,11 @@ jobs:
   test-mssql:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        unicode: ["OFF", "ON"]
+    name: test-mssql (unicode ${{ matrix.unicode }})
     services:
       sqlserver:
         image: mcr.microsoft.com/mssql/server:2022-latest
@@ -427,28 +432,33 @@ jobs:
           apt-get -o DPkg::Lock::Timeout=120 update
           curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
           curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list > /etc/apt/sources.list.d/mssql-release.list
-          ACCEPT_EULA=Y apt-get -o DPkg::Lock::Timeout=120 install -y ccache unixodbc-dev msodbcsql17
+          ACCEPT_EULA=Y apt-get -o DPkg::Lock::Timeout=120 install -y ccache unixodbc-dev msodbcsql18
         shell: sudo bash {0}
       - name: Restore compiled objects
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.ccache
-          key: ccache-mssql-${{ github.sha }}
-          restore-keys: ccache-mssql-
+          key: ccache-mssql-${{ matrix.unicode }}-${{ github.sha }}
+          restore-keys: ccache-mssql-${{ matrix.unicode }}-
       - name: Configure
         run: |
-          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DNANODBC_ENABLE_UNICODE=${{ matrix.unicode }} -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
       - name: Build
         run: |
           cmake --build ${GITHUB_WORKSPACE}/build --parallel --target mssql_tests
       - name: Test
         run: |
-          export NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 17 for SQL Server};Server=localhost;Database=master;UID=sa;PWD=Password!123;"
+          export NANODBC_TEST_CONNSTR_MSSQL="Driver={ODBC Driver 18 for SQL Server};Server=localhost;Database=master;UID=sa;PWD=Password!123;TrustServerCertificate=yes;"
           ctest --test-dir ${GITHUB_WORKSPACE}/build --output-on-failure --no-tests=error -R mssql_tests
 
   test-sqlite:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        unicode: ["OFF", "ON"]
+    name: test-sqlite (unicode ${{ matrix.unicode }})
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install
@@ -470,11 +480,11 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.ccache
-          key: ccache-sqlite-${{ github.sha }}
-          restore-keys: ccache-sqlite-
+          key: ccache-sqlite-${{ matrix.unicode }}-${{ github.sha }}
+          restore-keys: ccache-sqlite-${{ matrix.unicode }}-
       - name: Configure
         run: |
-          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DNANODBC_ENABLE_UNICODE=${{ matrix.unicode }} -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
       - name: Build
         run: |
           cmake --build ${GITHUB_WORKSPACE}/build --parallel --target sqlite_tests
