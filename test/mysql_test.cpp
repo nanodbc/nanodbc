@@ -171,6 +171,11 @@ TEST_CASE_METHOD(mysql_fixture, "test_std_optional", "[mysql][optional]")
     test_std_optional();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_std_any", "[mysql][any]")
+{
+    test_std_any();
+}
+
 TEST_CASE_METHOD(
     mysql_fixture,
     "test_bind_timestamp_as_string",

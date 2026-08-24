@@ -96,6 +96,8 @@
 #define NANODBC_HAS_STD_OPTIONAL
 #include <variant>
 #define NANODBC_HAS_STD_VARIANT
+#include <any>
+#define NANODBC_HAS_STD_ANY
 #endif
 
 /// \brief The entirety of nanodbc can be found within this one namespace.
@@ -2054,6 +2056,11 @@ public:
     /// \throws index_range_error
     /// \throws type_incompatible_error
     /// \throws null_access_error
+    ///
+    /// Where the library is built as C++17 or later, T may be std::any, which is filled
+    /// according to what the column says it holds rather than what the caller asks for.
+    /// A null column gives an any holding nothing.
+    /// \see column_datatype()
     template <class T>
     T get(short column) const;
 

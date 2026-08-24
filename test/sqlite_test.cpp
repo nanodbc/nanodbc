@@ -157,6 +157,11 @@ TEST_CASE_METHOD(sqlite_fixture, "test_std_optional", "[sqlite][optional]")
     test_std_optional();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "test_std_any", "[sqlite][any]")
+{
+    test_std_any();
+}
+
 TEST_CASE_METHOD(
     sqlite_fixture,
     "test_bind_timestamp_as_string",
