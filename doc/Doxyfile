@@ -32,7 +32,10 @@ QUIET                  = YES
 GENERATE_TREEVIEW      = YES
 DISABLE_INDEX          = NO
 FULL_SIDEBAR           = NO
-HTML_COLORSTYLE        = LIGHT
+# AUTO_LIGHT rather than LIGHT: doxygen-awesome carries a full dark palette behind a
+# prefers-color-scheme query, which Doxygen suppresses when the page is pinned light.
+# The Sphinx pages beside it follow the system the same way, so the two now agree.
+HTML_COLORSTYLE        = AUTO_LIGHT
 HTML_EXTRA_STYLESHEET  = doxygen-awesome-css/doxygen-awesome.css \
                          doxygen-awesome-css/doxygen-awesome-sidebar-only.css \
                          doxygen-extra.css

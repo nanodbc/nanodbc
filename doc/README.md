@@ -12,6 +12,8 @@ Doxygen is the one that does not come from pip: `brew install doxygen` on macOS,
 
 Sphinx and the theme are listed in `requirements.txt`, which is also what the workflow installs, so a local build matches the published one.
 
+The theme is [Furo](https://github.com/pradyunsg/furo), chosen because it is the closest in structure to the doxygen-awesome-css theme the API reference uses and because it reads its colours from custom properties. `conf.py` sets those to doxygen-awesome's own values, as `_AWESOME_LIGHT` and `_AWESOME_DARK`, and `_static/nanodbc.css` carries the few things Furo has no variable for. The two halves of the site are meant to match, so when `AWESOME_VERSION` in the `Makefile` moves, check those values against the theme's `doxygen-awesome.css` and update them together.
+
 ```console
 python3 -m venv doc/.venv
 . doc/.venv/bin/activate
