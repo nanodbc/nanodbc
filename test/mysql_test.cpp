@@ -231,6 +231,11 @@ TEST_CASE_METHOD(mysql_fixture, "test_connection_environment", "[mysql][connecti
     test_connection_environment();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_connection_attributes", "[mysql][connection][attributes]")
+{
+    test_connection_attributes();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_dbms_info", "[mysql][dmbs][metadata][info]")
 {
     test_dbms_info();

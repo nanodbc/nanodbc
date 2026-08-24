@@ -5333,6 +5333,37 @@ PRIMARY KEY(t2_fid)
         }
     }
 
+    // Connection attributes have to reach the driver before it connects, since that is
+    // what several of them govern. The overloads taking a list set them on the handle
+    // between allocating it and connecting with it.
+    void test_connection_attributes()
+    {
+        std::list<nanodbc::connection::attribute> attributes;
+        attributes.push_back({SQL_ATTR_LOGIN_TIMEOUT, SQL_IS_UINTEGER, (std::uintptr_t)30});
+
+        // Constructed with the attributes, which connects.
+        {
+            nanodbc::connection connection(connection_string_, attributes);
+            REQUIRE(connection.connected());
+
+            auto results = execute(connection, NANODBC_TEXT("select 1;"));
+            REQUIRE(results.next());
+            REQUIRE(results.get<int>(0) == 1);
+        }
+
+        // And the same by way of connect(), on a connection that has none yet.
+        {
+            nanodbc::connection connection;
+            REQUIRE(!connection.connected());
+            connection.connect(connection_string_, attributes);
+            REQUIRE(connection.connected());
+
+            auto results = execute(connection, NANODBC_TEXT("select 1;"));
+            REQUIRE(results.next());
+            REQUIRE(results.get<int>(0) == 1);
+        }
+    }
+
     void test_std_optional()
     {
 #ifdef NANODBC_HAS_STD_OPTIONAL

@@ -941,6 +941,11 @@ TEST_CASE_METHOD(mssql_fixture, "test_connection_environment", "[mssql][connecti
     test_connection_environment();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_connection_attributes", "[mssql][connection][attributes]")
+{
+    test_connection_attributes();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_dbms_info", "[mssql][dmbs][metadata][info]")
 {
     test_dbms_info();

@@ -166,6 +166,14 @@ TEST_CASE_METHOD(postgresql_fixture, "test_connection_environment", "[postgresql
     test_connection_environment();
 }
 
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_connection_attributes",
+    "[postgresql][connection][attributes]")
+{
+    test_connection_attributes();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_dbms_info", "[postgresql][dmbs][metadata][info]")
 {
     test_dbms_info();

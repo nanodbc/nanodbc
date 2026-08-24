@@ -117,6 +117,11 @@ TEST_CASE_METHOD(oracle_fixture, "test_connection_environment", "[oracle][connec
     test_connection_environment();
 }
 
+TEST_CASE_METHOD(oracle_fixture, "test_connection_attributes", "[oracle][connection][attributes]")
+{
+    test_connection_attributes();
+}
+
 TEST_CASE_METHOD(oracle_fixture, "test_datasources", "[oracle][datasources]")
 {
     test_datasources();
