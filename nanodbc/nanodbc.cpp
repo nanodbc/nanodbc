@@ -4269,6 +4269,10 @@ public:
             opt_reset(result);
             return;
         }
+        // The value has to exist before it can be read into. An optional holding nothing
+        // has storage for one but has not built it, and writing into what is not there is
+        // undefined however well it may appear to work for a type that is trivial.
+        result.emplace();
         get_ref_impl<std::remove_reference_t<decltype(*result)>>(column, *result);
 
         // An unbound column's null is only known once SQLGetData has run.
@@ -4327,6 +4331,8 @@ public:
             opt_reset(result);
             return;
         }
+        // As above: the value is built before it is read into.
+        result.emplace();
         get_ref_impl<std::remove_reference_t<decltype(*result)>>(column, *result);
 
         // An unbound column's null is only known once SQLGetData has run.
