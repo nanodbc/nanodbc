@@ -236,6 +236,11 @@ TEST_CASE_METHOD(mysql_fixture, "test_connection_attributes", "[mysql][connectio
     test_connection_attributes();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_connection_per_thread", "[mysql][connection][threads]")
+{
+    test_connection_per_thread();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_dbms_info", "[mysql][dmbs][metadata][info]")
 {
     test_dbms_info();

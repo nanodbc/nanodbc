@@ -245,6 +245,11 @@ TEST_CASE_METHOD(sqlite_fixture, "test_connection_attributes", "[sqlite][connect
     test_connection_attributes();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "test_connection_per_thread", "[sqlite][connection][threads]")
+{
+    test_connection_per_thread();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_date", "[sqlite][date]")
 {
     test_date();

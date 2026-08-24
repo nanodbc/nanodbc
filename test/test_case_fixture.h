@@ -4,12 +4,14 @@
 #include "base_test_fixture.h"
 
 #include <algorithm>
+#include <atomic>
 #include <cstdint>
 #include <cstring>
 #include <limits>
 #include <list>
 #include <random>
 #include <set>
+#include <thread>
 #include <tuple>
 #include <vector>
 
@@ -5415,6 +5417,64 @@ PRIMARY KEY(t2_fid)
         // Trailing space is not checked. Oracle's driver reports its message with a long
         // run of it, counted in the length it gives, so it is the driver's text rather
         // than anything left over from reading it.
+    }
+
+    // A connection belongs to the thread that made it. Several threads working at once,
+    // each with its own, is the arrangement nanodbc asks for, and this is that.
+    void test_connection_per_thread()
+    {
+        std::size_t const thread_count = 8;
+        std::size_t const rows_each = 25;
+
+        auto connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_connection_per_thread"),
+            NANODBC_TEXT("(tid int, i int)"));
+
+        nanodbc::string const connection_string = connection_string_;
+        std::atomic<int> failures(0);
+        std::vector<std::thread> threads;
+
+        for (std::size_t t = 0; t < thread_count; ++t)
+        {
+            threads.emplace_back(
+                [connection_string, t, rows_each, &failures]()
+                {
+                    try
+                    {
+                        nanodbc::connection own(connection_string);
+                        nanodbc::statement statement(own);
+                        prepare(
+                            statement,
+                            NANODBC_TEXT(
+                                "insert into test_connection_per_thread (tid, i) values (?, ?);"));
+
+                        for (std::size_t i = 0; i < rows_each; ++i)
+                        {
+                            int tid = static_cast<int>(t);
+                            int value = static_cast<int>(i);
+                            statement.bind(0, &tid);
+                            statement.bind(1, &value);
+                            execute(statement);
+                        }
+                    }
+                    catch (...)
+                    {
+                        ++failures;
+                    }
+                });
+        }
+
+        for (auto& thread : threads)
+            thread.join();
+
+        REQUIRE(failures.load() == 0);
+
+        auto results =
+            execute(connection, NANODBC_TEXT("select count(*) from test_connection_per_thread;"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<int>(0) == static_cast<int>(thread_count * rows_each));
     }
 
     void test_std_optional()

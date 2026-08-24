@@ -174,6 +174,14 @@ TEST_CASE_METHOD(
     test_connection_attributes();
 }
 
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_connection_per_thread",
+    "[postgresql][connection][threads]")
+{
+    test_connection_per_thread();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_dbms_info", "[postgresql][dmbs][metadata][info]")
 {
     test_dbms_info();
