@@ -317,7 +317,14 @@ jobs:
       fail-fast: false
       matrix:
         postgres: [14, 15, 16, 17, 18]
-    name: test-postgresql (${{ matrix.postgres }})
+        cxxstd: ["14"]
+        # The newest server also runs the suite built as C++17, which is where the
+        # std::optional cases exist at all. Repeating that for every server version
+        # would buy nothing, what differs being the library rather than the server.
+        include:
+          - postgres: 18
+            cxxstd: "17"
+    name: test-postgresql (${{ matrix.postgres }}, c++${{ matrix.cxxstd }})
     services:
       postgresql:
         image: postgres:${{ matrix.postgres }}
@@ -341,11 +348,11 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.ccache
-          key: ccache-postgresql-${{ github.sha }}
-          restore-keys: ccache-postgresql-
+          key: ccache-postgresql-${{ matrix.cxxstd }}-${{ github.sha }}
+          restore-keys: ccache-postgresql-${{ matrix.cxxstd }}-
       - name: Configure
         run: |
-          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=${{ matrix.cxxstd }} -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
       - name: Build
         run: |
           cmake --build ${GITHUB_WORKSPACE}/build --parallel --target postgresql_tests
@@ -357,6 +364,11 @@ jobs:
   test-oracle:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        cxxstd: ["14", "17"]
+    name: test-oracle (c++${{ matrix.cxxstd }})
     services:
       oracle:
         image: gvenzl/oracle-free:23-slim-faststart
@@ -396,11 +408,11 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.ccache
-          key: ccache-oracle-${{ github.sha }}
-          restore-keys: ccache-oracle-
+          key: ccache-oracle-${{ matrix.cxxstd }}-${{ github.sha }}
+          restore-keys: ccache-oracle-${{ matrix.cxxstd }}-
       - name: Configure
         run: |
-          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=${{ matrix.cxxstd }} -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
       - name: Build
         run: |
           cmake --build ${GITHUB_WORKSPACE}/build --parallel --target oracle_tests
@@ -416,7 +428,8 @@ jobs:
       fail-fast: false
       matrix:
         unicode: ["OFF", "ON"]
-    name: test-mssql (unicode ${{ matrix.unicode }})
+        cxxstd: ["14", "17"]
+    name: test-mssql (unicode ${{ matrix.unicode }}, c++${{ matrix.cxxstd }})
     services:
       sqlserver:
         image: mcr.microsoft.com/mssql/server:2022-latest
@@ -438,11 +451,11 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.ccache
-          key: ccache-mssql-${{ matrix.unicode }}-${{ github.sha }}
-          restore-keys: ccache-mssql-${{ matrix.unicode }}-
+          key: ccache-mssql-${{ matrix.unicode }}-${{ matrix.cxxstd }}-${{ github.sha }}
+          restore-keys: ccache-mssql-${{ matrix.unicode }}-${{ matrix.cxxstd }}-
       - name: Configure
         run: |
-          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DNANODBC_ENABLE_UNICODE=${{ matrix.unicode }} -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=${{ matrix.cxxstd }} -DNANODBC_ENABLE_UNICODE=${{ matrix.unicode }} -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
       - name: Build
         run: |
           cmake --build ${GITHUB_WORKSPACE}/build --parallel --target mssql_tests
@@ -458,7 +471,8 @@ jobs:
       fail-fast: false
       matrix:
         unicode: ["OFF", "ON"]
-    name: test-sqlite (unicode ${{ matrix.unicode }})
+        cxxstd: ["14", "17"]
+    name: test-sqlite (unicode ${{ matrix.unicode }}, c++${{ matrix.cxxstd }})
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install
@@ -480,11 +494,11 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.ccache
-          key: ccache-sqlite-${{ matrix.unicode }}-${{ github.sha }}
-          restore-keys: ccache-sqlite-${{ matrix.unicode }}-
+          key: ccache-sqlite-${{ matrix.unicode }}-${{ matrix.cxxstd }}-${{ github.sha }}
+          restore-keys: ccache-sqlite-${{ matrix.unicode }}-${{ matrix.cxxstd }}-
       - name: Configure
         run: |
-          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DNANODBC_ENABLE_UNICODE=${{ matrix.unicode }} -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=${{ matrix.cxxstd }} -DNANODBC_ENABLE_UNICODE=${{ matrix.unicode }} -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
       - name: Build
         run: |
           cmake --build ${GITHUB_WORKSPACE}/build --parallel --target sqlite_tests
