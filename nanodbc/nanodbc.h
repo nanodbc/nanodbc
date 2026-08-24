@@ -1722,6 +1722,24 @@ public:
     /// \throws database_error
     /// \see connected(), attribute
     void connect(string const& connection_string, std::list<attribute> const& attributes);
+
+    /// \brief Asks the driver what it needs in order to connect.
+    ///
+    /// Wraps ODBC's SQLBrowseConnect, which is asked repeatedly. Each call is given what
+    /// is known so far and answers with the attributes it still wants, spelled as a
+    /// connection string of its own: the required ones first, then the optional, with the
+    /// values a driver can enumerate listed in braces. Filling those in and asking again
+    /// carries the exchange forward until the driver has enough, at which point it
+    /// connects, \a more_wanted is false and the returned string is empty.
+    ///
+    /// A driver need not support this, and one that does not raises.
+    ///
+    /// \param connection_string What is known so far, beginning with the driver or DSN.
+    /// \param more_wanted Set to whether the driver is asking for more.
+    /// \return The attributes wanted next, or nothing once connected.
+    /// \throws database_error
+    /// \see connect(), connected()
+    string browse_connect(string const& connection_string, bool& more_wanted);
 #if !defined(NANODBC_DISABLE_ASYNC)
     /// \brief Initiate an asynchronous connection operation to the given data source.
     ///

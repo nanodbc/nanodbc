@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- `connection::browse_connect` asks the driver what it needs in order to connect, which SQL Server's answers with the attributes it wants and most others decline. [`#235`](https://github.com/nanodbc/nanodbc/issues/235)
+- `result::get_as` reads a column as the type the driver says it is, into a `std::variant` naming the alternatives to choose between. [`#324`](https://github.com/nanodbc/nanodbc/issues/324)
+- A parameter described with `describe_parameters` can be bound without preparing first, which is what a stored procedure with known parameters wants. [`#207`](https://github.com/nanodbc/nanodbc/issues/207)
+- `cmake-lint` reads the CMake scripts in CI; `cmake-format` is not run, its output rewriting them whole. [`#394`](https://github.com/nanodbc/nanodbc/issues/394)
+- PostgreSQL is tested through its Unicode driver, the ANSI one being unable to take the wide parameter a Unicode build binds. [`#519`](https://github.com/nanodbc/nanodbc/issues/519)
+- `result::get` reads a column into a `std::any`, holding what the column holds, or nothing where it is null. [`#325`](https://github.com/nanodbc/nanodbc/issues/325)
 - Every diagnostic a failure carries reaches the message, where all but the first were dropped outside Windows, and each arrives once rather than trailing the buffer it was read into. [`#315`](https://github.com/nanodbc/nanodbc/issues/315)
 - `result::get_ref` builds the value before reading a column into a `std::optional`, having read into one that held nothing, which crashes for a wide string. [`#525`](https://github.com/nanodbc/nanodbc/issues/525)
 - `statement::parameter_is_null` says whether a parameter bound for output came back null, which its value cannot, the driver leaving the caller's buffer alone. [`#436`](https://github.com/nanodbc/nanodbc/issues/436)

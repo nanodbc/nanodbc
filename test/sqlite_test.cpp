@@ -260,6 +260,11 @@ TEST_CASE_METHOD(sqlite_fixture, "test_connection_per_thread", "[sqlite][connect
     test_connection_per_thread();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "test_browse_connect_unsupported", "[sqlite][connection][browse]")
+{
+    test_browse_connect_unsupported();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_date", "[sqlite][date]")
 {
     test_date();

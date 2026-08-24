@@ -2756,6 +2756,31 @@ TEST_CASE_METHOD(mssql_fixture, "test_bind_without_prepare", "[mssql][statement]
     REQUIRE_THROWS_AS(undescribed.bind(0, &i), nanodbc::database_error);
 }
 
+// SQLBrowseConnect asks the driver what it needs in order to connect. SQL Server's driver
+// answers; most do not, and say so.
+TEST_CASE_METHOD(mssql_fixture, "test_browse_connect", "[mssql][connection][browse]")
+{
+    nanodbc::connection connection;
+    bool more_wanted = false;
+
+    // Whichever driver the suite is pointed at, rather than a name that is right on one
+    // runner and absent on the next.
+    auto const driver = NANODBC_TEXT("Driver={") +
+                        connection_string_parameter(NANODBC_TEXT("Driver")) + NANODBC_TEXT("}");
+    REQUIRE(driver != NANODBC_TEXT("Driver={}"));
+
+    auto const wanted = connection.browse_connect(driver, more_wanted);
+
+    // Given nothing but the driver, it wants the rest, and says which in a connection
+    // string of its own: the required attributes first, then the optional ones starred.
+    REQUIRE(more_wanted);
+    REQUIRE(!connection.connected());
+    REQUIRE(!wanted.empty());
+    REQUIRE(wanted.find(NANODBC_TEXT("SERVER")) != nanodbc::string::npos);
+    REQUIRE(wanted.find(NANODBC_TEXT("UID")) != nanodbc::string::npos);
+    REQUIRE(wanted.find(NANODBC_TEXT("PWD")) != nanodbc::string::npos);
+}
+
 // Binding a parameter in a direction other than PARAM_IN, which is what maps onto
 // SQL_PARAM_OUTPUT and SQL_PARAM_INPUT_OUTPUT.
 TEST_CASE_METHOD(mssql_fixture, "test_output_parameters", "[mssql][statement][bind]")
