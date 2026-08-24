@@ -2532,6 +2532,17 @@ public:
         }
     }
 
+    bool parameter_is_null(short param_index, std::size_t batch_index) const
+    {
+        auto const indicators = bind_len_or_null_.find(param_index);
+        if (indicators == bind_len_or_null_.end())
+            throw programming_error("no value is bound to that parameter");
+        if (batch_index >= indicators->second.size())
+            throw index_range_error();
+
+        return indicators->second[batch_index] == SQL_NULL_DATA;
+    }
+
     // initializes bind_len_or_null_ and gets information for bind
     void prepare_bind(
         short param_index,
@@ -6382,6 +6393,11 @@ short statement::parameter_scale(short param_index) const
 short statement::parameter_type(short param_index) const
 {
     return impl_->parameter_type(param_index);
+}
+
+bool statement::parameter_is_null(short param_index, std::size_t batch_index) const
+{
+    return impl_->parameter_is_null(param_index, batch_index);
 }
 
 // We need to instantiate each form of bind() for each of our supported data types.
