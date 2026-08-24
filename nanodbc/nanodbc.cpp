@@ -630,10 +630,21 @@ recent_error(SQLHANDLE handle, SQLSMALLINT handle_type, long& native, std::strin
             first_native_error = native_error;
         }
 
-        if (!result.empty())
-            result += ' ';
+        // The driver says how long the text is, and the buffer behind it is longer than
+        // that. Appending the whole buffer carries its unused tail into the message,
+        // which later becomes a run of spaces where the zeroes were. A record with no
+        // text contributes nothing at all, not even a separator.
+        auto const text_length =
+            std::min<std::size_t>(static_cast<std::size_t>(total_bytes), sql_message.size());
+        if (text_length > 0)
+        {
+            if (!result.empty())
+                result += ' ';
 
-        result += nanodbc::string(sql_message.begin(), sql_message.end());
+            result += nanodbc::string(
+                sql_message.begin(),
+                sql_message.begin() + static_cast<std::ptrdiff_t>(text_length));
+        }
         i++;
     } while (rc != SQL_NO_DATA);
 

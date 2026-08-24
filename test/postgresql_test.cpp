@@ -194,6 +194,14 @@ TEST_CASE_METHOD(postgresql_fixture, "test_error", "[postgresql][error]")
     test_error();
 }
 
+TEST_CASE_METHOD(
+    postgresql_fixture,
+    "test_error_message_carries_each_diagnostic_once",
+    "[postgresql][error]")
+{
+    test_error_message_carries_each_diagnostic_once();
+}
+
 TEST_CASE_METHOD(postgresql_fixture, "test_exception", "[postgresql][exception]")
 {
     test_exception();

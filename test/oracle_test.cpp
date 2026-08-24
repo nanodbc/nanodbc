@@ -142,6 +142,14 @@ TEST_CASE_METHOD(oracle_fixture, "test_error", "[oracle][error]")
     test_error();
 }
 
+TEST_CASE_METHOD(
+    oracle_fixture,
+    "test_error_message_carries_each_diagnostic_once",
+    "[oracle][error]")
+{
+    test_error_message_carries_each_diagnostic_once();
+}
+
 TEST_CASE_METHOD(oracle_fixture, "test_exception", "[oracle][exception]")
 {
     test_exception();

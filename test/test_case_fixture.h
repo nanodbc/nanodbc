@@ -5364,6 +5364,55 @@ PRIMARY KEY(t2_fid)
         }
     }
 
+    // A failure carries one or more diagnostic records, and what reaches the exception is
+    // their text and nothing else. Each is read into a buffer longer than the text, and
+    // appending the whole buffer carried its unused tail along, so a driver answering
+    // twice produced the same diagnostic twice over.
+    void test_error_message_carries_each_diagnostic_once()
+    {
+        auto connection = connect();
+
+        nanodbc::string message;
+        try
+        {
+            execute(connection, NANODBC_TEXT("this is not a statement"));
+            FAIL("a syntax error was expected");
+        }
+        catch (nanodbc::database_error const& e)
+        {
+            message = nanodbc::test::convert(std::string(e.what()));
+        }
+
+        REQUIRE(!message.empty());
+        REQUIRE(message.find_first_not_of(NANODBC_TEXT(" ")) != nanodbc::string::npos);
+
+        // Nothing of any length says the same thing twice. A window this wide will not
+        // repeat by chance in a sentence, but does repeat when a record is appended along
+        // with the tail of the buffer it was read into.
+        std::size_t const window = 24;
+        nanodbc::string repeated;
+        for (std::size_t i = 0; i + window <= message.size(); ++i)
+        {
+            auto const chunk = message.substr(i, window);
+            if (chunk.find_first_not_of(NANODBC_TEXT(" ")) == nanodbc::string::npos)
+                continue;
+            if (message.find(chunk, i + 1) != nanodbc::string::npos)
+            {
+                repeated = chunk;
+                break;
+            }
+        }
+        INFO("repeated in message: " << nanodbc::test::convert(repeated));
+        REQUIRE(repeated.empty());
+
+        // And it ends with what the driver said, not with the remains of a buffer.
+        std::size_t trailing = 0;
+        while (trailing < message.size() &&
+               message[message.size() - 1 - trailing] == NANODBC_TEXT(' '))
+            ++trailing;
+        REQUIRE(trailing <= 1);
+    }
+
     void test_std_optional()
     {
 #ifdef NANODBC_HAS_STD_OPTIONAL
