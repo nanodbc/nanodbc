@@ -331,6 +331,46 @@ Each connection allocates an ODBC environment of its own, so nothing is shared b
 Sharing one connection between threads is a different matter, and nanodbc makes no guarantee about it. A ``connection``, a ``statement`` and a ``result`` are handles onto driver state; two threads using one at the same time is for the caller to synchronize. Every thread joining before the objects it used go out of scope is the caller's business too — a crash on shutdown is more often threads outliving what they captured than anything the driver did.
 
 ******************************************************************************
+Binding without preparing
+******************************************************************************
+
+Binding a value asks the driver what the parameter is — its type, its size, its scale — through ``SQLDescribeParam``, and that needs a prepared statement. So a bind before ``prepare()`` fails:
+
+.. code-block:: text
+
+    HY010: [unixODBC][Driver Manager]Function sequence error
+
+For a stored procedure whose parameters the caller already knows, preparing is a round trip spent asking a question with a known answer. ``describe_parameters`` supplies it instead, after which binding has nothing to ask and ``execute_direct`` runs the statement:
+
+.. code-block:: cpp
+
+    #include <nanodbc/nanodbc.h>
+    #include <sql.h>
+    #include <sqlext.h>
+    #include <vector>
+
+    int main()
+    {
+        nanodbc::connection conn(NANODBC_TEXT("dsn"));
+        nanodbc::statement stmt(conn);
+
+        std::vector<short> const index{0, 1};
+        std::vector<short> const type{SQL_INTEGER, SQL_VARCHAR};
+        std::vector<unsigned long> const size{10, 20};
+        std::vector<short> const scale{0, 0};
+        stmt.describe_parameters(index, type, size, scale);
+
+        int const i = 7;
+        nanodbc::string const s = NANODBC_TEXT("no prepare");
+        stmt.bind(0, &i);
+        stmt.bind(1, s.c_str());
+
+        stmt.execute_direct(conn, NANODBC_TEXT("insert into t (i, s) values (?, ?)"));
+    }
+
+A description holds for as long as the statement does, so a statement executed repeatedly is described once. Describing only some of the parameters is allowed; the rest are asked about as usual, which then needs the statement prepared.
+
+******************************************************************************
 Examples
 ******************************************************************************
 
