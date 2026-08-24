@@ -240,6 +240,11 @@ TEST_CASE_METHOD(sqlite_fixture, "test_connection_environment", "[sqlite][connec
     test_connection_environment();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "test_connection_attributes", "[sqlite][connection][attributes]")
+{
+    test_connection_attributes();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_date", "[sqlite][date]")
 {
     test_date();

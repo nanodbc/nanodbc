@@ -266,6 +266,36 @@ The rowset size is what to vary if the read is slow. Its effect is the same as t
 ``batch_ops`` sets the rowset size where a statement also carries parameters, so that the two are chosen separately.
 
 ******************************************************************************
+Setting connection attributes
+******************************************************************************
+
+Some ODBC connection attributes govern how the connection is made, so they have to reach the driver before it connects rather than after. The constructors and ``connect()`` overloads taking a list of attributes set them on the handle between allocating it and connecting with it:
+
+.. code-block:: cpp
+
+    #include <nanodbc/nanodbc.h>
+    #include <cstdint>
+    #include <list>
+    #include <sql.h>
+    #include <sqlext.h>
+
+    int main()
+    {
+        std::list<nanodbc::connection::attribute> attributes;
+        attributes.push_back({SQL_ATTR_LOGIN_TIMEOUT, SQL_IS_UINTEGER, (std::uintptr_t)30});
+
+        nanodbc::connection conn(NANODBC_TEXT("dsn"), attributes);
+
+        // or, on a connection that has not connected yet
+        nanodbc::connection other;
+        other.connect(NANODBC_TEXT("dsn"), attributes);
+    }
+
+Allocating a connection and setting attributes on it by hand before calling ``connect()`` does not work, and is not meant to: ``connect()`` frees the handle it is given and allocates another, so anything set on the old one goes with it. The overloads above are how the ordering is expressed.
+
+Where the library is built as C++17 or later, an attribute's value may also be a string or a binary buffer, which it holds for as long as the attribute lives. Below that the value is a ``std::uintptr_t``, which covers the integer attributes.
+
+******************************************************************************
 Examples
 ******************************************************************************
 
