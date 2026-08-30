@@ -134,10 +134,9 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a24a9a0585c0ff03c849ba8e12eaaa4a0" id="r_a24a9a0585c0ff03c849ba8e12eaaa4a0"><td class="memItemLeft" align="right" valign="top"><a id="a24a9a0585c0ff03c849ba8e12eaaa4a0" name="a24a9a0585c0ff03c849ba8e12eaaa4a0"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>extractValuePtr</b> ()</td></tr>
-<tr class="memdesc:a24a9a0585c0ff03c849ba8e12eaaa4a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Points value_ptr_ at the resource, according to which type it holds. <br /></td></tr>
-<tr class="separator:a24a9a0585c0ff03c849ba8e12eaaa4a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c66ec4634f0aa0b2b2cdd704be8385a" id="r_a7c66ec4634f0aa0b2b2cdd704be8385a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1attribute.html#a7c66ec4634f0aa0b2b2cdd704be8385a">extractValuePtr</a> () noexcept</td></tr>
+<tr class="memdesc:a7c66ec4634f0aa0b2b2cdd704be8385a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Points value_ptr_ at the resource, according to which type it holds.  <br /></td></tr>
+<tr class="separator:a7c66ec4634f0aa0b2b2cdd704be8385a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -212,6 +211,35 @@ void *&#160;</td><td class="memItemRight" valign="bottom"><b>value_ptr_</b></td>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a7c66ec4634f0aa0b2b2cdd704be8385a" name="a7c66ec4634f0aa0b2b2cdd704be8385a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c66ec4634f0aa0b2b2cdd704be8385a">&#9670;&#160;</a></span>extractValuePtr()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nanodbc::attribute::extractValuePtr </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Points value_ptr_ at the resource, according to which type it holds. </p>
+<p>Visiting a variant that always holds an alternative cannot throw, and the two constructors calling this are themselves noexcept. </p>
 
 </div>
 </div>

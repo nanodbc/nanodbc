@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Use" href="use.html"><link rel="prev" title="nanodbc - C++ ODBC wrapper" href="index.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>Install - nanodbc 3.0.0 documentation</title>
+        <title>Install - nanodbc 3.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=649a27d8" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -231,7 +231,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">nanodbc 3.0.0 documentation</div></a>
+      <a href="index.html"><div class="brand">nanodbc 3.0.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -252,7 +252,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
-  <span class="sidebar-brand-text">nanodbc 3.0.0 documentation</span>
+  <span class="sidebar-brand-text">nanodbc 3.0.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -434,7 +434,7 @@
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">ctest --test-dir build --output-on-failure -R sqlite_tests</span>
 </pre></div>
 </div>
-<p>The utility tests need no database at all, and the SQLite tests need only a SQLite ODBC driver, registered as <code class="docutils literal notranslate"><span class="pre">SQLite3</span></code> on *nix systems and as <code class="docutils literal notranslate"><span class="pre">SQLite3</span> <span class="pre">ODBC</span> <span class="pre">Driver</span></code> on Windows, since the tests name the driver rather than a data source. Those two are the quickest way to check a build. The remaining suites need a running server, and the Vertica tests additionally need Vertica’s own ODBC driver, which is why a full run excludes them.</p>
+<p>The utility tests need no database at all, and the SQLite tests need only a SQLite ODBC driver, registered as <code class="docutils literal notranslate"><span class="pre">SQLite3</span></code> on *nix systems and as <code class="docutils literal notranslate"><span class="pre">SQLite3</span> <span class="pre">ODBC</span> <span class="pre">Driver</span></code> on Windows, since the tests name the driver rather than a data source. Those two are the quickest way to check a build. The remaining suites need a running server, and the Vertica tests additionally need Vertica’s own ODBC driver, which is why a full run excludes them. ClickHouse’s driver is published for Linux on x86_64 only, so that suite has to be excluded too on any other host.</p>
 <p>Each suite reads its own <code class="docutils literal notranslate"><span class="pre">NANODBC_TEST_CONNSTR_&lt;DB&gt;</span></code> environment variable for the connection string, falling back to <code class="docutils literal notranslate"><span class="pre">NANODBC_TEST_CONNSTR</span></code>. Rather than installing the servers, use the containers the repository provides, which preset those variables; see <a class="reference internal" href="develop.html#develop"><span class="std std-ref">Develop</span></a>.</p>
 </section>
 </section>
@@ -529,7 +529,7 @@
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=acc74ff5"></script>
+</div><script src="_static/documentation_options.js?v=08bfcbec"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
