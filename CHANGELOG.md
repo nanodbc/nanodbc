@@ -1,6 +1,6 @@
 # ChangeLog
 
-## Unreleased
+## v3.0.1
 
 - The C++ Core Guidelines checks are answered, closing the code scanning alerts they raised.
 - ClickHouse is tested, in a suite of its own, its driver needing every parameter described first. [`#485`](https://github.com/nanodbc/nanodbc/issues/485)
