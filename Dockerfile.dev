@@ -75,6 +75,23 @@ RUN arch="$(uname -m)" \
     | odbcinst -i -d -r \
     ; else echo "Instant Client is x86_64 only; skipping on ${arch}"; fi
 
+# ClickHouse ODBC, published for x86_64 only, so the driver is registered only where it
+# can load, the way Instant Client above is. The release ships an ANSI and a Unicode
+# driver, and both are registered, either serving either width of build.
+RUN arch="$(uname -m)" \
+    && if [ "${arch}" = "x86_64" ]; then \
+    apt-get -qy update \
+    && apt-get -qy install --no-upgrade --no-install-recommends unzip \
+    && apt-get clean && rm -rf /var/lib/apt/lists/* \
+    && curl -fsSL -o /tmp/clickhouse-odbc.zip https://github.com/ClickHouse/clickhouse-odbc/releases/download/v1.5.5.20260810/clickhouse-odbc-linux-Clang-UnixODBC-Release.zip \
+    && unzip -oq /tmp/clickhouse-odbc.zip -d /tmp/clickhouse-odbc \
+    && tar -xzf /tmp/clickhouse-odbc/clickhouse-odbc-1.5.5-Linux.tar.gz -C /opt \
+    && rm -rf /tmp/clickhouse-odbc.zip /tmp/clickhouse-odbc \
+    && mv /opt/clickhouse-odbc-1.5.5-Linux /opt/clickhouse-odbc \
+    && printf '[ClickHouse ODBC Driver (ANSI)]\nDescription=ODBC Driver (ANSI) for ClickHouse\nDriver=/opt/clickhouse-odbc/lib/libclickhouseodbc.so\n\n[ClickHouse ODBC Driver (Unicode)]\nDescription=ODBC Driver (Unicode) for ClickHouse\nDriver=/opt/clickhouse-odbc/lib/libclickhouseodbcw.so\n' \
+    | odbcinst -i -d -r \
+    ; else echo "ClickHouse ODBC is x86_64 only; skipping on ${arch}"; fi
+
 # MySQL names the x86_64 build x86-64bit and the arm64 one aarch64.
 RUN arch="$(uname -m)" \
     && if [ "${arch}" = "x86_64" ]; then arch="x86-64bit"; fi \

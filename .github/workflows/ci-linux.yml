@@ -512,3 +512,65 @@ jobs:
       - name: Test
         run: |
           ctest --test-dir ${GITHUB_WORKSPACE}/build --output-on-failure --no-tests=error -R sqlite_tests
+
+  test-clickhouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        cxxstd: ["17", "20"]
+        # The release ships an ANSI and a Unicode driver, and either serves either width
+        # of build, so each is covered by the build that matches it.
+        build:
+          - { unicode: "OFF", driver: "ANSI" }
+          - { unicode: "ON", driver: "Unicode" }
+    name: test-clickhouse (unicode ${{ matrix.build.unicode }}, c++${{ matrix.cxxstd }})
+    services:
+      clickhouse:
+        image: clickhouse/clickhouse-server:latest
+        ports:
+          - 8123:8123
+        env:
+          CLICKHOUSE_USER: nanodbc
+          CLICKHOUSE_PASSWORD: nanodbc
+          CLICKHOUSE_DB: nanodbc
+        options: >-
+          --health-cmd "clickhouse-client --user nanodbc --password nanodbc --query 'select 1'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install
+        run: |
+          apt-get -o DPkg::Lock::Timeout=120 update
+          apt-get -o DPkg::Lock::Timeout=120 install -y ccache unixodbc unixodbc-dev odbcinst unzip
+        shell: sudo bash {0}
+      # The release ships an ANSI and a Unicode driver and both are registered; the
+      # connection string below names the one this build uses. The Linux assets are
+      # published for x86_64 only, which the runners are.
+      - name: Install the ClickHouse ODBC driver
+        run: |
+          curl -fsSL -o /tmp/clickhouse-odbc.zip https://github.com/ClickHouse/clickhouse-odbc/releases/download/v1.5.5.20260810/clickhouse-odbc-linux-Clang-UnixODBC-Release.zip
+          unzip -oq /tmp/clickhouse-odbc.zip -d /tmp/clickhouse-odbc
+          sudo tar -xzf /tmp/clickhouse-odbc/clickhouse-odbc-1.5.5-Linux.tar.gz -C /opt
+          sudo mv /opt/clickhouse-odbc-1.5.5-Linux /opt/clickhouse-odbc
+          printf '[ClickHouse ODBC Driver (ANSI)]\nDescription=ODBC Driver (ANSI) for ClickHouse\nDriver=/opt/clickhouse-odbc/lib/libclickhouseodbc.so\n\n[ClickHouse ODBC Driver (Unicode)]\nDescription=ODBC Driver (Unicode) for ClickHouse\nDriver=/opt/clickhouse-odbc/lib/libclickhouseodbcw.so\n' \
+            | sudo odbcinst -i -d -r
+      - name: Restore compiled objects
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.ccache
+          key: ccache-clickhouse-${{ matrix.build.unicode }}-${{ matrix.cxxstd }}-${{ github.sha }}
+          restore-keys: ccache-clickhouse-${{ matrix.build.unicode }}-${{ matrix.cxxstd }}-
+      - name: Configure
+        run: |
+          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=${{ matrix.cxxstd }} -DNANODBC_ENABLE_UNICODE=${{ matrix.build.unicode }} -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+      - name: Build
+        run: |
+          cmake --build ${GITHUB_WORKSPACE}/build --parallel --target clickhouse_tests
+      - name: Test
+        run: |
+          export NANODBC_TEST_CONNSTR_CLICKHOUSE="Driver={ClickHouse ODBC Driver (${{ matrix.build.driver }})};Server=localhost;Port=8123;Database=nanodbc;UID=nanodbc;PWD=nanodbc;"
+          ctest --test-dir ${GITHUB_WORKSPACE}/build --output-on-failure --no-tests=error -R clickhouse_tests

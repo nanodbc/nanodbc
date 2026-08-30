@@ -1,5 +1,9 @@
 # ChangeLog
 
+## Unreleased
+
+- ClickHouse is tested, in a suite of its own, its driver needing every parameter described first. [`#485`](https://github.com/nanodbc/nanodbc/issues/485)
+
 ## v3.0.0
 
 - The documentation's landing page is titled "nanodbc - C++ ODBC wrapper", which fits on one line where the longer wording wrapped, the heading's own anchor link taking up the width that tipped it over.

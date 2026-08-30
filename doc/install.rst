@@ -157,7 +157,7 @@ There is one test program per database, so a single suite can be run on its own:
 
   ctest --test-dir build --output-on-failure -R sqlite_tests
 
-The utility tests need no database at all, and the SQLite tests need only a SQLite ODBC driver, registered as ``SQLite3`` on \*nix systems and as ``SQLite3 ODBC Driver`` on Windows, since the tests name the driver rather than a data source. Those two are the quickest way to check a build. The remaining suites need a running server, and the Vertica tests additionally need Vertica's own ODBC driver, which is why a full run excludes them.
+The utility tests need no database at all, and the SQLite tests need only a SQLite ODBC driver, registered as ``SQLite3`` on \*nix systems and as ``SQLite3 ODBC Driver`` on Windows, since the tests name the driver rather than a data source. Those two are the quickest way to check a build. The remaining suites need a running server, and the Vertica tests additionally need Vertica's own ODBC driver, which is why a full run excludes them. ClickHouse's driver is published for Linux on x86_64 only, so that suite has to be excluded too on any other host.
 
 Each suite reads its own ``NANODBC_TEST_CONNSTR_<DB>`` environment variable for the connection string, falling back to ``NANODBC_TEST_CONNSTR``. Rather than installing the servers, use the containers the repository provides, which preset those variables; see :ref:`Develop <develop>`.
 
