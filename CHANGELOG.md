@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- ClickHouse is covered by a suite of its own and a CI job, running against the server's own container and the Apache-2.0 ODBC driver, in a narrow build and a Unicode one. Its driver answers `SQLDescribeParam` with `SQL_UNKNOWN_TYPE` rather than failing, so the suite describes each parameter itself, and it covers what the driver does with an array of values, a rolled back transaction, a view and a null in a column not declared to hold one, none of which behaves the way the shared cases assume. [`#485`](https://github.com/nanodbc/nanodbc/issues/485)
+- ClickHouse is tested, in a suite of its own, its driver needing every parameter described first. [`#485`](https://github.com/nanodbc/nanodbc/issues/485)
 
 ## v3.0.0
 
