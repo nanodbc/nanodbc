@@ -185,7 +185,7 @@ root@hash:/opt/nanodbc# ctest --test-dir build --output-on-failure -R sqlite_tes
 
 The SQLite and utility tests need no server at all, so they are the quickest way to check a change.
 
-`POSTGRES_VERSION`, `MYSQL_VERSION`, `MARIADB_VERSION`, `MSSQL_VERSION` and `CLICKHOUSE_VERSION` override the image tag of the matching service, each defaulting to a current release of that server. This is how a version from the CI matrix is reproduced: the PostgreSQL matrix in [ci-linux.yml](.github/workflows/ci-linux.yml) covers every release still under support, 14 through 18, and the MySQL, MariaDB and PostgreSQL matrices in [ci-windows.yml](.github/workflows/ci-windows.yml) cover their own sets. The compose defaults do not all appear in those matrices, so pin the version explicitly when reproducing a CI failure:
+`POSTGRES_VERSION`, `MYSQL_VERSION`, `MARIADB_VERSION`, `MSSQL_VERSION`, `CLICKHOUSE_VERSION` and `FIREBIRD_VERSION` override the image tag of the matching service, each defaulting to a current release of that server. This is how a version from the CI matrix is reproduced: the PostgreSQL matrix in [ci-linux.yml](.github/workflows/ci-linux.yml) covers every release still under support, 14 through 18, and the MySQL, MariaDB and PostgreSQL matrices in [ci-windows.yml](.github/workflows/ci-windows.yml) cover their own sets. The compose defaults do not all appear in those matrices, so pin the version explicitly when reproducing a CI failure:
 
 ```shell
 POSTGRES_VERSION=14 docker compose up -d pgsql
@@ -202,6 +202,8 @@ docker compose run --rm \
 The Vertica tests need Vertica's own ODBC driver, which the development image does not carry, so a full `ctest` run excludes them with `-E vertica_tests`.
 
 ClickHouse's ODBC driver is published for Linux on x86_64 only, so the development image registers it only there. On an Apple Silicon host the server still starts, but nothing can reach it, and a full run excludes that suite as well with `-E 'vertica_tests|clickhouse_tests'`.
+
+Firebird's driver is published for x86_64 and arm64 alike, so that suite runs on an Apple Silicon host as it does in CI. It is built narrow only: the driver's Unicode entry points cannot open a connection, so `firebird_tests` is not built for `NANODBC_ENABLE_UNICODE=ON`.
 
 When you are done, `docker compose down` stops everything, and `docker compose down -v` also discards the databases' data.
 

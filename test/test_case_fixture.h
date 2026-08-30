@@ -3311,6 +3311,9 @@ struct test_case_fixture : public base_test_fixture
             // https://www.vertica.com/docs/11.1.x/HTML/Content/Authoring/ErrorCodes/SqlState-23505.htm
             error_result = {"23505", "Duplicate key values"};
             break;
+        case database_vendor::firebird:
+            error_result = {"23000", "violation of PRIMARY or UNIQUE KEY constraint"};
+            break;
         default:
             FAIL("Database vendor is unknown.");
         }

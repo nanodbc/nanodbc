@@ -125,6 +125,28 @@ services:
       retries: 30
       start_period: 30s
 
+  firebird:
+    image: firebirdsql/firebird:${FIREBIRD_VERSION:-5}
+    container_name: nanofirebird
+    restart: unless-stopped
+    ports:
+      - "3050:3050"
+    environment:
+      FIREBIRD_ROOT_PASSWORD: *default_credential
+      FIREBIRD_USER: *default_credential
+      FIREBIRD_PASSWORD: *default_credential
+      FIREBIRD_DATABASE: nanodbc.fdb
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "echo 'select 1 from rdb$$database;' | isql -user sysdba -password nanodbc -q /var/lib/firebird/data/nanodbc.fdb",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
   oracle:
     image: gvenzl/oracle-free:${ORACLE_VERSION:-23-slim-faststart}
     container_name: nanooracle
@@ -162,6 +184,8 @@ services:
         condition: service_healthy
       clickhouse:
         condition: service_healthy
+      firebird:
+        condition: service_healthy
     # Oracle is deliberately not depended on: it takes minutes to open and its driver is
     # published for x86_64 only, so waiting for it would cost every run on every host to
     # serve the one suite that cannot run on some of them. Start it when it is wanted,
@@ -192,3 +216,6 @@ services:
       # Either of the two drivers the release ships serves either width of build; the
       # Unicode one is named here, and CI pairs each with the build that matches it.
       NANODBC_TEST_CONNSTR_CLICKHOUSE: "Driver={ClickHouse ODBC Driver (Unicode)};Server=clickhouse;Port=8123;Database=nanodbc;UID=nanodbc;PWD=nanodbc;"
+      # A narrow build only: the driver's Unicode entry points cannot open a connection,
+      # so a Unicode build of nanodbc has no way to reach Firebird.
+      NANODBC_TEST_CONNSTR_FIREBIRD: "Driver={Firebird};DBNAME=firebird/3050:/var/lib/firebird/data/nanodbc.fdb;UID=sysdba;PWD=nanodbc;CHARSET=UTF8;"

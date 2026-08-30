@@ -92,6 +92,30 @@ RUN arch="$(uname -m)" \
     | odbcinst -i -d -r \
     ; else echo "ClickHouse ODBC is x86_64 only; skipping on ${arch}"; fi
 
+# Firebird ODBC, published for x86_64 and arm64 alike, so unlike Instant Client and
+# ClickHouse above it is registered wherever the image is built. The driver loads
+# libfbclient by its unversioned name, which only the development package carries, so the
+# link is made here rather than pulling the headers in for it.
+RUN arch="$(uname -m)" \
+    && case "${arch}" in \
+    x86_64) asset="linux_libs.zip"; dir="Release_x86_64" ;; \
+    aarch64) asset="linux_arm64_libs.zip"; dir="Release_aarch64" ;; \
+    *) echo "no Firebird ODBC build for ${arch}"; exit 1 ;; \
+    esac \
+    && apt-get -qy update \
+    && apt-get -qy install --no-upgrade --no-install-recommends libfbclient2 unzip \
+    && apt-get clean && rm -rf /var/lib/apt/lists/* \
+    && curl -fsSL -o /tmp/firebird-odbc.zip "https://github.com/FirebirdSQL/firebird-odbc-driver/releases/download/v3-0-1-release/${asset}" \
+    && unzip -oq /tmp/firebird-odbc.zip -d /tmp/firebird-odbc \
+    && mkdir -p /opt/firebird-odbc/lib \
+    && cp "/tmp/firebird-odbc/${dir}/libOdbcFb.so" /opt/firebird-odbc/lib/ \
+    && rm -rf /tmp/firebird-odbc.zip /tmp/firebird-odbc \
+    && libdir="$(dirname "$(find /usr/lib -name libfbclient.so.2 | head -1)")" \
+    && ln -sf "${libdir}/libfbclient.so.2" "${libdir}/libfbclient.so" \
+    && ldconfig \
+    && printf '[Firebird]\nDescription=Firebird ODBC Driver\nDriver=/opt/firebird-odbc/lib/libOdbcFb.so\n' \
+    | odbcinst -i -d -r
+
 # MySQL names the x86_64 build x86-64bit and the arm64 one aarch64.
 RUN arch="$(uname -m)" \
     && if [ "${arch}" = "x86_64" ]; then arch="x86-64bit"; fi \
