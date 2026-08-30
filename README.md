@@ -185,7 +185,7 @@ root@hash:/opt/nanodbc# ctest --test-dir build --output-on-failure -R sqlite_tes
 
 The SQLite and utility tests need no server at all, so they are the quickest way to check a change.
 
-`POSTGRES_VERSION`, `MYSQL_VERSION`, `MARIADB_VERSION` and `MSSQL_VERSION` override the image tag of the matching service, each defaulting to a current release of that server. This is how a version from the CI matrix is reproduced: the PostgreSQL matrix in [ci-linux.yml](.github/workflows/ci-linux.yml) covers every release still under support, 14 through 18, and the MySQL, MariaDB and PostgreSQL matrices in [ci-windows.yml](.github/workflows/ci-windows.yml) cover their own sets. The compose defaults do not all appear in those matrices, so pin the version explicitly when reproducing a CI failure:
+`POSTGRES_VERSION`, `MYSQL_VERSION`, `MARIADB_VERSION`, `MSSQL_VERSION` and `CLICKHOUSE_VERSION` override the image tag of the matching service, each defaulting to a current release of that server. This is how a version from the CI matrix is reproduced: the PostgreSQL matrix in [ci-linux.yml](.github/workflows/ci-linux.yml) covers every release still under support, 14 through 18, and the MySQL, MariaDB and PostgreSQL matrices in [ci-windows.yml](.github/workflows/ci-windows.yml) cover their own sets. The compose defaults do not all appear in those matrices, so pin the version explicitly when reproducing a CI failure:
 
 ```shell
 POSTGRES_VERSION=14 docker compose up -d pgsql
@@ -200,6 +200,8 @@ docker compose run --rm \
 ```
 
 The Vertica tests need Vertica's own ODBC driver, which the development image does not carry, so a full `ctest` run excludes them with `-E vertica_tests`.
+
+ClickHouse's ODBC driver is published for Linux on x86_64 only, so the development image registers it only there. On an Apple Silicon host the server still starts, but nothing can reach it, and a full run excludes that suite as well with `-E 'vertica_tests|clickhouse_tests'`.
 
 When you are done, `docker compose down` stops everything, and `docker compose down -v` also discards the databases' data.
 
@@ -225,7 +227,7 @@ The tests structure:
 To add new test case:
 
 1. In `test/test_case_fixture.h` file, add a new test case method to `test_case_fixture` class (e.g. `void my_feature_test()`).
-2. In each `test/<database>_test.cpp` file, copy and paste the `TEST_CASE_METHOD` boilerplate, updating name, tags, etc.
+2. In each `test/<database>_test.cpp` file, copy and paste the `TEST_CASE_METHOD` boilerplate, updating name, tags, etc. `clickhouse_test.cpp` runs only part of the shared set, its driver and server being unable to do the rest, so a new shared case belongs there only if it passes.
 
 If a feature requires a database-specific test case for each database, then skip the `test/test_case_fixture.h` step and write a dedicated test case directly in `test/<database>_test.cpp` file.
 

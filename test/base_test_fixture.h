@@ -257,7 +257,8 @@ struct base_test_fixture
         postgresql,
         mysql,
         sqlserver,
-        vertica
+        vertica,
+        clickhouse
     };
 
     base_test_fixture()
@@ -304,6 +305,8 @@ struct base_test_fixture
             return database_vendor::sqlserver;
         else if (contains_string(dbms, NANODBC_TEXT("Vertica")))
             return database_vendor::vertica;
+        else if (contains_string(dbms, NANODBC_TEXT("ClickHouse")))
+            return database_vendor::clickhouse;
         else
             return database_vendor::unknown;
     }

@@ -86,9 +86,9 @@ The tests are built with the ``tests`` target and run with `ctest`_. They are la
 * ``test/test_case_fixture.h`` holds the test cases that run against every backend.
 * ``test/<database>_test.cpp`` is the source for an independent test program that includes both the common and the database-specific test cases. ``test/main.cpp`` supplies the ``main()`` each of them links against, and ``test/CMakeLists.txt`` lists the databases a program is built for.
 
-To add a new test case, add a method to ``test_case_fixture`` in ``test/test_case_fixture.h``, then copy the ``TEST_CASE_METHOD`` boilerplate into each ``test/<database>_test.cpp``, updating name and tags. A test that only makes sense for one database goes straight into that database's source file instead.
+To add a new test case, add a method to ``test_case_fixture`` in ``test/test_case_fixture.h``, then copy the ``TEST_CASE_METHOD`` boilerplate into each ``test/<database>_test.cpp``, updating name and tags. A test that only makes sense for one database goes straight into that database's source file instead. ``clickhouse_test.cpp`` runs only part of the shared set, its driver and server being unable to do the rest, so a new shared case belongs there only if it passes.
 
-The SQLite and utility tests need no server, so they are the quickest way to check a change. The Vertica tests need Vertica's own ODBC driver, which the development image does not carry, so a full run excludes them:
+The SQLite and utility tests need no server, so they are the quickest way to check a change. The Vertica tests need Vertica's own ODBC driver, which the development image does not carry, so a full run excludes them. ClickHouse's driver is published for Linux on x86_64 only, so on an Apple Silicon host that suite has to be excluded as well, with ``-E 'vertica_tests|clickhouse_tests'``:
 
 .. code-block:: console
 

@@ -24,7 +24,7 @@ target_compile_features(utility_tests PRIVATE cxx_std_17)
 add_test(NAME utility_tests COMMAND utility_tests)
 add_dependencies(tests utility_tests)
 
-set(test_list mssql mysql oracle postgresql sqlite vertica)
+set(test_list clickhouse mssql mysql oracle postgresql sqlite vertica)
 
 foreach(test_item IN LISTS test_list)
   if (DEFINED ENV{CI} AND DEFINED ENV{DB})
