@@ -92,6 +92,22 @@ RUN arch="$(uname -m)" \
     | odbcinst -i -d -r \
     ; else echo "ClickHouse ODBC is x86_64 only; skipping on ${arch}"; fi
 
+# The IBM Data Server Driver for ODBC and CLI, published for Linux on x86_64 only, so it
+# is registered only where it can load, as Instant Client and ClickHouse ODBC are. The
+# download needs no credentials; the licence is IBM's International Program License
+# Agreement, which the tarball carries under clidriver/license.
+RUN arch="$(uname -m)" \
+    && if [ "${arch}" = "x86_64" ]; then \
+    curl -fsSL -o /tmp/db2-clidriver.tar.gz https://public.dhe.ibm.com/ibmdl/export/pub/software/data/db2/drivers/odbc_cli/linuxx64_odbc_cli.tar.gz \
+    && mkdir -p /opt/ibm \
+    && tar -xzf /tmp/db2-clidriver.tar.gz -C /opt/ibm \
+    && rm /tmp/db2-clidriver.tar.gz \
+    && echo /opt/ibm/clidriver/lib > /etc/ld.so.conf.d/db2-clidriver.conf \
+    && ldconfig \
+    && printf '[IBM DB2 ODBC DRIVER]\nDescription=IBM Data Server Driver for ODBC and CLI\nDriver=/opt/ibm/clidriver/lib/libdb2.so\n' \
+    | odbcinst -i -d -r \
+    ; else echo "The Db2 CLI driver is x86_64 only; skipping on ${arch}"; fi
+
 # Firebird ODBC, published for x86_64 and arm64 alike, so unlike Instant Client and
 # ClickHouse above it is registered wherever the image is built. The driver loads
 # libfbclient by its unversioned name, which only the development package carries, so the

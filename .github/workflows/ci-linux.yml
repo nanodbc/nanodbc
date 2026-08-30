@@ -638,3 +638,65 @@ jobs:
         run: |
           export NANODBC_TEST_CONNSTR_FIREBIRD="Driver={Firebird};DBNAME=localhost/3050:/var/lib/firebird/data/nanodbc.fdb;UID=sysdba;PWD=nanodbc;CHARSET=UTF8;"
           ctest --test-dir ${GITHUB_WORKSPACE}/build --output-on-failure --no-tests=error -R firebird_tests
+
+  test-db2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        cxxstd: ["17"]
+    name: test-db2 (c++${{ matrix.cxxstd }})
+    services:
+      db2:
+        image: icr.io/db2_community/db2:latest
+        ports:
+          - 50000:50000
+        options: >-
+          --privileged
+          --health-cmd "su - db2inst1 -c 'db2 connect to nanodbc'"
+          --health-interval 15s
+          --health-timeout 10s
+          --health-retries 40
+          --health-start-period 300s
+        env:
+          LICENSE: accept
+          DB2INSTANCE: db2inst1
+          DB2INST1_PASSWORD: nanodbc
+          DBNAME: nanodbc
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install
+        run: |
+          apt-get -o DPkg::Lock::Timeout=120 update
+          apt-get -o DPkg::Lock::Timeout=120 install -y ccache unixodbc unixodbc-dev odbcinst
+        shell: sudo bash {0}
+      # The download needs no credentials. The licence is IBM's International Program
+      # License Agreement, carried in the tarball under clidriver/license.
+      - name: Install the Db2 CLI driver
+        run: |
+          curl -fsSL -o /tmp/db2-clidriver.tar.gz https://public.dhe.ibm.com/ibmdl/export/pub/software/data/db2/drivers/odbc_cli/linuxx64_odbc_cli.tar.gz
+          sudo mkdir -p /opt/ibm
+          sudo tar -xzf /tmp/db2-clidriver.tar.gz -C /opt/ibm
+          echo /opt/ibm/clidriver/lib | sudo tee /etc/ld.so.conf.d/db2-clidriver.conf
+          sudo ldconfig
+          printf '[IBM DB2 ODBC DRIVER]\nDescription=IBM Data Server Driver for ODBC and CLI\nDriver=/opt/ibm/clidriver/lib/libdb2.so\n' \
+            | sudo odbcinst -i -d -r
+      - name: Configure
+        run: |
+          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=${{ matrix.cxxstd }}
+      - name: Build
+        run: |
+          cmake --build ${GITHUB_WORKSPACE}/build --parallel --target db2_tests
+      # TEMPORARY: this push is a diagnostic. The indicator probe establishes, on a native
+      # x86_64 runner, whether the driver writes only 32 bits of an 8 byte SQLLEN, and the
+      # loop reports which shared cases pass there. Both go before this is ready to merge.
+      - name: Diagnose the driver on native x86_64
+        run: |
+          export NANODBC_TEST_CONNSTR_DB2="Driver={IBM DB2 ODBC DRIVER};Database=nanodbc;Hostname=localhost;Port=50000;Protocol=TCPIP;Uid=db2inst1;Pwd=nanodbc;"
+          gcc -o /tmp/np2 ${GITHUB_WORKSPACE}/utility/db2-indicator-probe.c -lodbc
+          /tmp/np2 "$NANODBC_TEST_CONNSTR_DB2" || true
+          echo "===== per-test triage ====="
+          for t in $(${GITHUB_WORKSPACE}/build/test/db2_tests --list-tests --verbosity quiet | sed 's/^  //' | grep '^test_'); do
+            if ${GITHUB_WORKSPACE}/build/test/db2_tests "$t" >/dev/null 2>&1; then echo "PASS $t"; else echo "FAIL $t"; fi
+          done

@@ -259,7 +259,8 @@ struct base_test_fixture
         sqlserver,
         vertica,
         clickhouse,
-        firebird
+        firebird,
+        db2
     };
 
     base_test_fixture()
@@ -310,6 +311,8 @@ struct base_test_fixture
             return database_vendor::clickhouse;
         else if (contains_string(dbms, NANODBC_TEXT("Firebird")))
             return database_vendor::firebird;
+        else if (contains_string(dbms, NANODBC_TEXT("DB2")))
+            return database_vendor::db2;
         else
             return database_vendor::unknown;
     }
@@ -422,12 +425,13 @@ struct base_test_fixture
         }
     }
 
-    // An unquoted identifier folds to upper case on Oracle and on Firebird, which is what
+    // An unquoted identifier folds to upper case on Oracle, Firebird and Db2, which is what
     // the standard asks for, so a name written lower case in a query comes back upper case
     // from the catalog and has to be looked up that way.
     nanodbc::string as_identifier(nanodbc::string const& name) const
     {
-        if (vendor_ != database_vendor::oracle && vendor_ != database_vendor::firebird)
+        if (vendor_ != database_vendor::oracle && vendor_ != database_vendor::firebird &&
+            vendor_ != database_vendor::db2)
             return name;
 
         nanodbc::string folded;
