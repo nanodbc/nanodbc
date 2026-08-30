@@ -1153,7 +1153,7 @@ attribute::attribute(attribute const& other) noexcept
 {
     this->extractValuePtr();
 }
-void attribute::extractValuePtr()
+void attribute::extractValuePtr() noexcept
 {
     std::visit(
         [this](auto&& arg)
@@ -4818,6 +4818,8 @@ inline void result::result_impl::get_ref_impl<date>(short column, date& result) 
             return;
         }
     }
+        // A binary column that is not a timestampoffset is answered by the throw below.
+        [[fallthrough]];
     default:
         break;
     }
@@ -4848,6 +4850,8 @@ inline void result::result_impl::get_ref_impl<time>(short column, time& result) 
             return;
         }
     }
+        // A binary column that is not a timestampoffset is answered by the throw below.
+        [[fallthrough]];
     default:
         break;
     }
@@ -4880,6 +4884,8 @@ inline void result::result_impl::get_ref_impl<timestamp>(short column, timestamp
             return;
         }
     }
+        // A binary column that is not a timestampoffset is answered by the throw below.
+        [[fallthrough]];
     default:
         break;
     }
@@ -4914,6 +4920,8 @@ result::result_impl::get_ref_impl<timestampoffset>(short column, timestampoffset
             return;
         }
     }
+        // A binary column that is not a timestampoffset is answered by the throw below.
+        [[fallthrough]];
     default:
         break;
     }
@@ -5063,8 +5071,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
         }
         else
         { // bound and not blob
-            void* const data = col.pdata_.get() + rowset_position_ * col.clen_;
-            SQLWCHAR const* s = static_cast<SQLWCHAR*>(data);
+            void const* const data = col.pdata_.get() + rowset_position_ * col.clen_;
             // The indicator counts the characters available, which exceeds what the buffer
             // holds when the driver under-reported the column size and would not hand the
             // column over again. Reading past the buffer is not among the options.
@@ -5074,8 +5081,10 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
                 sizeof(SQLWCHAR);
             auto const str_size = static_cast<string::size_type>(
                 std::min(available, capacity > 0 ? capacity - 1 : std::size_t{0}));
-            // No-op, or unsigned short to signed char16_t.
-            auto const us = static_cast<wide_char_t const*>(static_cast<void const*>(s));
+            // The buffer holds SQLWCHAR, which is wide_char_t itself where the two agree
+            // and an unsigned short beside a signed char16_t where they do not, so the
+            // read goes through the void the buffer is already held as.
+            auto const us = static_cast<wide_char_t const*>(data);
             convert(us, str_size, result);
         }
         return;
@@ -6179,6 +6188,12 @@ statement::statement(class connection& conn, std::list<attribute> const& attribu
 {
 }
 
+// statement assigns by taking its right hand side by value and swapping with it, which is
+// one operation serving as both copy assignment and move assignment. C26432 counts the
+// declarations rather than what they do, and reads the pair it cannot find as missing.
+#ifdef _MSC_VER
+#pragma warning(suppress : 26432)
+#endif
 statement::statement(statement&& rhs) noexcept
     : impl_(std::move(rhs.impl_))
 {

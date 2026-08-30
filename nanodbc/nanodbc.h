@@ -447,7 +447,10 @@ public:
 
 protected:
     /// \brief Points value_ptr_ at the resource, according to which type it holds.
-    void extractValuePtr();
+    ///
+    /// Visiting a variant that always holds an alternative cannot throw, and the two
+    /// constructors calling this are themselves noexcept.
+    void extractValuePtr() noexcept;
 
     long attribute_;     ///< The Attribute argument of the ODBC call.
     long string_length_; ///< The StringLength argument of the ODBC call.
@@ -877,8 +880,6 @@ public:
     class attribute : public nanodbc::attribute
     {
     public:
-        attribute(attribute const& other) noexcept
-            : nanodbc::attribute(other) {};
         attribute(
             long const& attribute,
             long const& string_length,
@@ -1646,8 +1647,6 @@ public:
     class attribute : public nanodbc::attribute
     {
     public:
-        attribute(attribute const& other) noexcept
-            : nanodbc::attribute(other) {};
         attribute(
             long const& attribute,
             long const& string_length,
@@ -2927,7 +2926,7 @@ struct hold_column_value;
 template <>
 struct hold_column_value<std::any>
 {
-    static std::any from(std::any value) { return value; }
+    static std::any from(std::any value) noexcept { return value; }
 };
 
 template <class Alternative, class Variant>
