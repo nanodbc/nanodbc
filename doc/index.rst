@@ -141,7 +141,7 @@ Why should you use nanodbc?
 * Portable! nanodbc uses only standard C++ headers in addition to the ODBC API headers.
 * Robust! Where it makes sense, error handling is done with exceptions instead of return codes.
 * Features! nanodbc supports ODBC 3, SQLDriverConnect(), transactions, bound parameters, bulk operations, and much more.
-* Tested! The suites cover SQLite, PostgreSQL, MySQL, MariaDB, SQL Server, Oracle, ClickHouse and Vertica, each of which runs as a container so that none of them has to be installed to work on nanodbc.
+* Tested! The suites cover SQLite, PostgreSQL, MySQL, MariaDB, SQL Server, Oracle, ClickHouse, Firebird and Vertica, each of which runs as a container so that none of them has to be installed to work on nanodbc.
 * Documented! These pages cover :ref:`installation <install>` and :ref:`usage <use>`, and the :ref:`API reference <api>` is generated from the source.
 * Active! nanodbc is maintained and open to contributions, see :ref:`Develop <develop>`.
 

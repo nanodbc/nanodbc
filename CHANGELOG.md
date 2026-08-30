@@ -1,5 +1,9 @@
 # ChangeLog
 
+## Unreleased
+
+- Firebird is tested, in a narrow build, its driver taking one row of a bound array and no more. [`#489`](https://github.com/nanodbc/nanodbc/issues/489)
+
 ## v3.0.1
 
 - The C++ Core Guidelines checks are answered, closing the code scanning alerts they raised.

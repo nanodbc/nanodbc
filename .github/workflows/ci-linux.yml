@@ -574,3 +574,67 @@ jobs:
         run: |
           export NANODBC_TEST_CONNSTR_CLICKHOUSE="Driver={ClickHouse ODBC Driver (${{ matrix.build.driver }})};Server=localhost;Port=8123;Database=nanodbc;UID=nanodbc;PWD=nanodbc;"
           ctest --test-dir ${GITHUB_WORKSPACE}/build --output-on-failure --no-tests=error -R clickhouse_tests
+
+  test-firebird:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        cxxstd: ["17", "20"]
+    # A narrow build only. The driver exports Unicode entry points, but SQLDriverConnectW
+    # fails against them and answers with a malformed diagnostic, in the 3.0.1 release and
+    # in 3.5.0-rc1 alike, so a Unicode build has no way to reach Firebird.
+    name: test-firebird (c++${{ matrix.cxxstd }})
+    services:
+      firebird:
+        image: firebirdsql/firebird:5
+        ports:
+          - 3050:3050
+        env:
+          FIREBIRD_ROOT_PASSWORD: nanodbc
+          FIREBIRD_USER: nanodbc
+          FIREBIRD_PASSWORD: nanodbc
+          FIREBIRD_DATABASE: nanodbc.fdb
+        options: >-
+          --health-cmd "echo 'select 1 from rdb$database;' | isql -user sysdba -password nanodbc -q /var/lib/firebird/data/nanodbc.fdb"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 20
+          --health-start-period 20s
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install
+        run: |
+          apt-get -o DPkg::Lock::Timeout=120 update
+          apt-get -o DPkg::Lock::Timeout=120 install -y ccache unixodbc unixodbc-dev odbcinst unzip libfbclient2
+        shell: sudo bash {0}
+      # The driver loads libfbclient by its unversioned name, which only the development
+      # package carries, so the link is made rather than pulling the headers in for it.
+      - name: Install the Firebird ODBC driver
+        run: |
+          curl -fsSL -o /tmp/firebird-odbc.zip https://github.com/FirebirdSQL/firebird-odbc-driver/releases/download/v3-0-1-release/linux_libs.zip
+          unzip -oq /tmp/firebird-odbc.zip -d /tmp/firebird-odbc
+          sudo mkdir -p /opt/firebird-odbc/lib
+          sudo cp /tmp/firebird-odbc/Release_x86_64/libOdbcFb.so /opt/firebird-odbc/lib/
+          libdir=$(dirname "$(find /usr/lib -name libfbclient.so.2 | head -1)")
+          sudo ln -sf "${libdir}/libfbclient.so.2" "${libdir}/libfbclient.so"
+          sudo ldconfig
+          printf '[Firebird]\nDescription=Firebird ODBC Driver\nDriver=/opt/firebird-odbc/lib/libOdbcFb.so\n' \
+            | sudo odbcinst -i -d -r
+      - name: Restore compiled objects
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          key: ccache-firebird-${{ matrix.cxxstd }}-${{ github.sha }}
+          path: ~/.ccache
+          restore-keys: ccache-firebird-${{ matrix.cxxstd }}-
+      - name: Configure
+        run: |
+          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=${{ matrix.cxxstd }} -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+      - name: Build
+        run: |
+          cmake --build ${GITHUB_WORKSPACE}/build --parallel --target firebird_tests
+      - name: Test
+        run: |
+          export NANODBC_TEST_CONNSTR_FIREBIRD="Driver={Firebird};DBNAME=localhost/3050:/var/lib/firebird/data/nanodbc.fdb;UID=sysdba;PWD=nanodbc;CHARSET=UTF8;"
+          ctest --test-dir ${GITHUB_WORKSPACE}/build --output-on-failure --no-tests=error -R firebird_tests

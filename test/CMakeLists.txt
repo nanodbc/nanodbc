@@ -24,9 +24,15 @@ target_compile_features(utility_tests PRIVATE cxx_std_17)
 add_test(NAME utility_tests COMMAND utility_tests)
 add_dependencies(tests utility_tests)
 
-set(test_list clickhouse mssql mysql oracle postgresql sqlite vertica)
+set(test_list clickhouse firebird mssql mysql oracle postgresql sqlite vertica)
 
 foreach(test_item IN LISTS test_list)
+  # The Firebird driver's Unicode entry points cannot open a connection, so that suite is
+  # built for a narrow configuration only.
+  if(test_item STREQUAL "firebird" AND NANODBC_ENABLE_UNICODE)
+    message(STATUS "Skipping firebird tests in a Unicode build")
+    continue()
+  endif()
   if (DEFINED ENV{CI} AND DEFINED ENV{DB})
     string(TOLOWER $ENV{DB} test_db)
     string(FIND ${test_db} ${test_item} test_found)

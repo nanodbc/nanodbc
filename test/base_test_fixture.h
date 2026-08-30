@@ -258,7 +258,8 @@ struct base_test_fixture
         mysql,
         sqlserver,
         vertica,
-        clickhouse
+        clickhouse,
+        firebird
     };
 
     base_test_fixture()
@@ -307,6 +308,8 @@ struct base_test_fixture
             return database_vendor::vertica;
         else if (contains_string(dbms, NANODBC_TEXT("ClickHouse")))
             return database_vendor::clickhouse;
+        else if (contains_string(dbms, NANODBC_TEXT("Firebird")))
+            return database_vendor::firebird;
         else
             return database_vendor::unknown;
     }
@@ -332,6 +335,9 @@ struct base_test_fixture
             // Oracle spells a bounded binary raw, which holds 2000 bytes at most, and
             // anything longer than that a blob.
             return size > 0 && size <= 2000 ? NANODBC_TEXT("raw") + s : NANODBC_TEXT("blob");
+        case database_vendor::firebird:
+            // Firebird has no varbinary; a binary column is a blob of the binary subtype.
+            return NANODBC_TEXT("blob sub_type binary");
         default:
             return NANODBC_TEXT("varbinary") + s;
         }
@@ -381,6 +387,9 @@ struct base_test_fixture
         case database_vendor::oracle:
             // Oracle has no text; a character column with no bound is a clob.
             return NANODBC_TEXT("clob");
+        case database_vendor::firebird:
+            // Firebird spells an unbounded character column a text blob.
+            return NANODBC_TEXT("blob sub_type text");
         default:
             return NANODBC_TEXT("text");
         }
@@ -403,18 +412,22 @@ struct base_test_fixture
             // Oracle spells it listagg, and wants the order stated.
             return NANODBC_TEXT("listagg(") + column + NANODBC_TEXT(", '") + separator +
                    NANODBC_TEXT("') within group (order by ") + column + NANODBC_TEXT(")");
+        case database_vendor::firebird:
+            // Firebird spells it list.
+            return NANODBC_TEXT("list(") + column + NANODBC_TEXT(", '") + separator +
+                   NANODBC_TEXT("')");
         default:
             return NANODBC_TEXT("string_agg(") + column + NANODBC_TEXT(", '") + separator +
                    NANODBC_TEXT("')");
         }
     }
 
-    // An unquoted identifier folds to upper case on Oracle, which is what the standard
-    // asks for, so a name written lower case in a query comes back upper case from the
-    // catalog and has to be looked up that way.
+    // An unquoted identifier folds to upper case on Oracle and on Firebird, which is what
+    // the standard asks for, so a name written lower case in a query comes back upper case
+    // from the catalog and has to be looked up that way.
     nanodbc::string as_identifier(nanodbc::string const& name) const
     {
-        if (vendor_ != database_vendor::oracle)
+        if (vendor_ != database_vendor::oracle && vendor_ != database_vendor::firebird)
             return name;
 
         nanodbc::string folded;
