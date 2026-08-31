@@ -88,7 +88,7 @@ The tests are built with the ``tests`` target and run with `ctest`_. They are la
 
 To add a new test case, add a method to ``test_case_fixture`` in ``test/test_case_fixture.h``, then copy the ``TEST_CASE_METHOD`` boilerplate into each ``test/<database>_test.cpp``, updating name and tags. A test that only makes sense for one database goes straight into that database's source file instead. ``clickhouse_test.cpp`` runs only part of the shared set, its driver and server being unable to do the rest, so a new shared case belongs there only if it passes.
 
-The SQLite and utility tests need no server, so they are the quickest way to check a change. The Vertica tests need Vertica's own ODBC driver, which the development image does not carry, so a full run excludes them. ClickHouse's driver is published for Linux on x86_64 only, so on an Apple Silicon host that suite has to be excluded as well, with ``-E 'vertica_tests|clickhouse_tests'``:
+The SQLite and utility tests need no server, so they are the quickest way to check a change. The Vertica tests need Vertica's own ODBC driver, which the development image does not carry, so a full run excludes them. ClickHouse's driver is published for Linux on x86_64 only, so on an Apple Silicon host that suite has to be excluded as well, with ``-E 'vertica_tests|clickhouse_tests'``. Firebird's driver is published for both, so that suite runs anywhere, but narrow only, its Unicode entry points being unable to open a connection:
 
 .. code-block:: console
 
