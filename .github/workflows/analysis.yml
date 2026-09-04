@@ -46,7 +46,7 @@ jobs:
           ignoredPaths: ${{ github.workspace }}/test;${{ github.workspace }}/example
 
       - name: Upload SARIF to GitHub
-        uses: github/codeql-action/upload-sarif@db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28 # v4
+        uses: github/codeql-action/upload-sarif@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4
         with:
           sarif_file: ${{ steps.run-core-analysis.outputs.sarif }}
           category: msvc-core-guidelines
@@ -80,7 +80,7 @@ jobs:
           ignoredPaths: ${{ github.workspace }}/test;${{ github.workspace }}/example
 
       - name: Upload SARIF to GitHub
-        uses: github/codeql-action/upload-sarif@db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28 # v4
+        uses: github/codeql-action/upload-sarif@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4
         with:
           sarif_file: ${{ steps.run-native-analysis.outputs.sarif }}
           category: msvc-native-recommended
@@ -123,7 +123,7 @@ jobs:
             $(jq '.runs[0].results | length' flawfinder_raw.sarif) findings" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload analysis results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28 # v4
+        uses: github/codeql-action/upload-sarif@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4
         with:
           sarif_file: ${{github.workspace}}/flawfinder_results.sarif
           category: flawfinder
