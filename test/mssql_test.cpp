@@ -2211,7 +2211,8 @@ TEST_CASE_METHOD(
     p1.bind(1, p1_col1_.data(), p1_col1_.size());
     p1.bind_strings(2, p1_col2_);
     p1.bind_strings(3, p1_col3_);
-    p1.bind(4, p1_col4_, p1_col4_.front().data());
+    // The values run from 16 to 32 kB, so the sentry is shorter than most of them.
+    p1.bind(4, p1_col4_, p1_col4_.front());
     p1.close();
     stmt.bind(2, p2_.c_str());
 
@@ -2220,8 +2221,8 @@ TEST_CASE_METHOD(
     while (results.next())
         if (results.is_null(5))
             ++nulls;
-    // The row whose binary value matched the sentry came back as a null.
-    REQUIRE(nulls >= 0);
+    // Only the row whose binary value matched the sentry came back as a null.
+    REQUIRE(nulls == 1);
 }
 
 TEST_CASE_METHOD(

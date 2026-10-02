@@ -1129,6 +1129,21 @@ inline std::string render_floating_point(T value)
     return out.str();
 }
 
+// Whether a binary value is the one standing for null. A sentry with a known size is
+// matched whole, so a value is null only where it is the sentry, length and bytes both.
+// One handed over as a bare pointer carries no size, so the value's own is taken for it:
+// the comparison reads as far as the value is long, which the caller has to have made
+// good, and a value that is a prefix of the sentry, the empty one among them, matches.
+inline bool is_null_sentry(
+    std::vector<uint8_t> const& value,
+    uint8_t const* null_sentry,
+    std::optional<std::size_t> null_sentry_size)
+{
+    if (null_sentry_size && value.size() != *null_sentry_size)
+        return false;
+    return std::equal(value.begin(), value.end(), null_sentry);
+}
+
 } // namespace
 
 // nanodbc::attribute
@@ -2697,7 +2712,8 @@ public:
         short param_index,
         std::vector<std::vector<uint8_t>> const& values,
         bool const* nulls = nullptr,
-        uint8_t const* null_sentry = nullptr)
+        uint8_t const* null_sentry = nullptr,
+        std::optional<std::size_t> null_sentry_size = std::nullopt)
     {
         std::size_t const batch_size = values.size();
         bound_parameter param;
@@ -2720,7 +2736,7 @@ public:
         if (null_sentry)
         {
             for (std::size_t i = 0; i < batch_size; ++i)
-                if (!std::equal(values[i].begin(), values[i].end(), null_sentry))
+                if (!is_null_sentry(values[i], null_sentry, null_sentry_size))
                 {
                     bind_len_or_null_[param_index][i] = values[i].size();
                 }
@@ -3419,7 +3435,8 @@ public:
         short param_index,
         std::vector<std::vector<uint8_t>> const& values,
         bool const* nulls = nullptr,
-        uint8_t const* null_sentry = nullptr)
+        uint8_t const* null_sentry = nullptr,
+        std::optional<std::size_t> null_sentry_size = std::nullopt)
     {
         if (values.size() < row_count_)
             throw programming_error("invalid values.size()");
@@ -3445,7 +3462,7 @@ public:
         if (null_sentry)
         {
             for (std::size_t i = 0; i < batch_size; ++i)
-                if (!std::equal(values[i].begin(), values[i].end(), null_sentry))
+                if (!is_null_sentry(values[i], null_sentry, null_sentry_size))
                 {
                     bind_len_or_null_[param_index][i] = values[i].size();
                 }
@@ -6544,6 +6561,15 @@ void statement::bind(
     impl_->bind(direction, param_index, values, nullptr, null_sentry);
 }
 
+void statement::bind(
+    short param_index,
+    std::vector<std::vector<uint8_t>> const& values,
+    std::vector<uint8_t> const& null_sentry,
+    param_direction direction)
+{
+    impl_->bind(direction, param_index, values, nullptr, null_sentry.data(), null_sentry.size());
+}
+
 template <class T>
 void statement::bind(short param_index, std::vector<T> const& values, param_direction direction)
 {
@@ -7136,6 +7162,14 @@ void table_valued_parameter::bind(
     uint8_t const* null_sentry)
 {
     impl_->bind(param_index, values, nullptr, null_sentry);
+}
+
+void table_valued_parameter::bind(
+    short param_index,
+    std::vector<std::vector<uint8_t>> const& values,
+    std::vector<uint8_t> const& null_sentry)
+{
+    impl_->bind(param_index, values, nullptr, null_sentry.data(), null_sentry.size());
 }
 
 template <class T, typename>

@@ -3,6 +3,7 @@
 ## Unreleased
 
 - A `datetimeoffset` column read as bytes returns its 20-byte struct rather than reading past it.
+- A binary null sentry is taken as a vector and matched whole; the bare-pointer overloads are deprecated.
 
 ## v3.0.2
 
