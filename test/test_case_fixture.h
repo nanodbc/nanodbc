@@ -948,13 +948,17 @@ struct test_case_fixture : public base_test_fixture
             NANODBC_TEXT("test_bind_binary_null_sentry"),
             NANODBC_TEXT("(b ") + get_binary_type_name(4) + NANODBC_TEXT(")"));
 
+        // A value that only starts the way the sentry does is not null.
         std::vector<std::vector<std::uint8_t>> const values{
-            {0x01, 0x02, 0x03, 0x04}, {0xff, 0xff, 0xff, 0xff}, {0x05, 0x06, 0x07, 0x08}};
+            {0x01, 0x02, 0x03, 0x04},
+            {0xff, 0xff, 0xff, 0xff},
+            {0xff, 0xff},
+            {0x05, 0x06, 0x07, 0x08}};
         std::vector<std::uint8_t> const sentry{0xff, 0xff, 0xff, 0xff};
 
         nanodbc::statement statement(connection);
         prepare(statement, NANODBC_TEXT("insert into test_bind_binary_null_sentry(b) values (?);"));
-        statement.bind(0, values, sentry.data());
+        statement.bind(0, values, sentry);
         execute(statement, values.size());
 
         // Asked of the server rather than of the result set, so that the answer does not

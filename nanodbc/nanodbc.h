@@ -694,11 +694,23 @@ public:
     bind(short param_index, std::vector<std::vector<uint8_t>> const& values, bool const* nulls);
 
     /// \brief Binds multiple values.
+    ///
+    /// The sentry carries no size, so each value is compared with as many of its bytes as
+    /// the value is long: the sentry has to be at least as long as the longest value, and a
+    /// value that is a prefix of it counts as null. The overload taking the sentry as a
+    /// vector matches it whole instead.
+    /// \see bind_multi
+    NANODBC_DEPRECATED void bind(
+        short param_index,
+        std::vector<std::vector<uint8_t>> const& values,
+        uint8_t const* null_sentry);
+
+    /// \brief Binds multiple values, those equal to the sentry, in size and bytes, as null.
     /// \see bind_multi
     void bind(
         short param_index,
         std::vector<std::vector<uint8_t>> const& values,
-        uint8_t const* null_sentry);
+        std::vector<uint8_t> const& null_sentry);
 
     /// @}
 
@@ -1356,11 +1368,24 @@ public:
         param_direction direction = PARAM_IN);
 
     /// \brief Binds multiple values.
+    ///
+    /// The sentry carries no size, so each value is compared with as many of its bytes as
+    /// the value is long: the sentry has to be at least as long as the longest value, and a
+    /// value that is a prefix of it counts as null. The overload taking the sentry as a
+    /// vector matches it whole instead.
+    /// \see bind_multi
+    NANODBC_DEPRECATED void bind(
+        short param_index,
+        std::vector<std::vector<uint8_t>> const& values,
+        uint8_t const* null_sentry,
+        param_direction direction = PARAM_IN);
+
+    /// \brief Binds multiple values, those equal to the sentry, in size and bytes, as null.
     /// \see bind_multi
     void bind(
         short param_index,
         std::vector<std::vector<uint8_t>> const& values,
-        uint8_t const* null_sentry,
+        std::vector<uint8_t> const& null_sentry,
         param_direction direction = PARAM_IN);
 
     /// \brief Binds multiple values, holding a copy of them.

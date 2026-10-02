@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <string>
 #include <vector>
 
@@ -1687,6 +1688,33 @@ TEST_CASE_METHOD(mssql_fixture, "test_datetimeoffset2", "[mssql][datetimeoffset]
     REQUIRE(t.offset_minute == -30);
 }
 
+// A datetimeoffset column is bound as a timestampoffset struct, while the driver reports
+// its column size in characters, 34 at the default precision. Read as bytes, the column
+// hands over the struct and nothing past it.
+TEST_CASE_METHOD(mssql_fixture, "test_datetimeoffset_as_binary", "[mssql][datetimeoffset][binary]")
+{
+    auto connection = connect();
+    auto result = execute(
+        connection,
+        NANODBC_TEXT(
+            "SELECT CONVERT(datetimeoffset, '2006-12-30T13:45:12.345-08:30', 127) AS dto;"));
+    REQUIRE(result.next());
+
+    auto const bytes = result.get<std::vector<std::uint8_t>>(0);
+    REQUIRE(bytes.size() == sizeof(nanodbc::timestampoffset));
+
+    nanodbc::timestampoffset t;
+    std::memcpy(&t, bytes.data(), sizeof(t));
+    REQUIRE(t.stamp.year == 2006);
+    REQUIRE(t.stamp.month == 12);
+    REQUIRE(t.stamp.day == 30);
+    REQUIRE(t.stamp.hour == 13);
+    REQUIRE(t.stamp.min == 45);
+    REQUIRE(t.stamp.sec == 12);
+    REQUIRE(t.offset_hour == -8);
+    REQUIRE(t.offset_minute == -30);
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_rowversion", "[mssql][rowversion][timestamp]")
 {
     // The rowversion data type is not a date or time data type, but
@@ -2183,7 +2211,8 @@ TEST_CASE_METHOD(
     p1.bind(1, p1_col1_.data(), p1_col1_.size());
     p1.bind_strings(2, p1_col2_);
     p1.bind_strings(3, p1_col3_);
-    p1.bind(4, p1_col4_, p1_col4_.front().data());
+    // The values run from 16 to 32 kB, so the sentry is shorter than most of them.
+    p1.bind(4, p1_col4_, p1_col4_.front());
     p1.close();
     stmt.bind(2, p2_.c_str());
 
@@ -2192,8 +2221,8 @@ TEST_CASE_METHOD(
     while (results.next())
         if (results.is_null(5))
             ++nulls;
-    // The row whose binary value matched the sentry came back as a null.
-    REQUIRE(nulls >= 0);
+    // Only the row whose binary value matched the sentry came back as a null.
+    REQUIRE(nulls == 1);
 }
 
 TEST_CASE_METHOD(
