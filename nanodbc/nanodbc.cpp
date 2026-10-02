@@ -5233,7 +5233,6 @@ inline void result::result_impl::get_ref_impl<std::vector<std::uint8_t>>(
     std::vector<std::uint8_t>& result) const
 {
     bound_column& col = bound_columns_[column];
-    const SQLULEN column_size = col.sqlsize_;
 
     switch (col.ctype_)
     {
@@ -5295,9 +5294,11 @@ inline void result::result_impl::get_ref_impl<std::vector<std::uint8_t>>(
         }
         else
         {
-            // Read fixed-length binary data
+            // Read fixed-length binary data. The slot is as long as the struct bound into
+            // it, which the column size need not match: a datetimeoffset reports its size
+            // in characters, 34 at the default precision, against a 20-byte struct.
             const char* s = col.pdata_.get() + rowset_position_ * col.clen_;
-            result.assign(s, s + column_size);
+            result.assign(s, s + col.clen_);
         }
         return;
     }

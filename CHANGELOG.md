@@ -1,5 +1,9 @@
 # ChangeLog
 
+## Unreleased
+
+- A `datetimeoffset` column read as bytes returns its 20-byte struct rather than reading past it.
+
 ## v3.0.2
 
 - Firebird is tested, in a narrow build, its driver taking one row of a bound array and no more. [`#489`](https://github.com/nanodbc/nanodbc/issues/489)
