@@ -110,7 +110,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install SQL Server
-        uses: potatoqualitee/mssqlsuite@2291d923e83859edd871679c05b379037376761f # v1.12
+        uses: potatoqualitee/mssqlsuite@bc850f242e5fe551e36cea6fa4bed608c58fa489 # v2
         with:
           install: localdb
           sa-password: Password!123
