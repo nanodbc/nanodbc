@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Develop" href="develop.html"><link rel="prev" title="Install" href="install.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>Use - nanodbc 3.0.2 documentation</title>
+        <title>Use - nanodbc 3.0.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=649a27d8" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -231,7 +231,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">nanodbc 3.0.2 documentation</div></a>
+      <a href="index.html"><div class="brand">nanodbc 3.0.3 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -252,7 +252,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
-  <span class="sidebar-brand-text">nanodbc 3.0.2 documentation</span>
+  <span class="sidebar-brand-text">nanodbc 3.0.3 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -440,6 +440,7 @@
 </pre></div>
 </div>
 <p>The values are copied into the statement, so the vector is free to go out of scope before it runs. The sentry and flag overloads remain, and are what to reach for where the values are already laid out as a plain array.</p>
+<p>A sentry for binary values is handed over as a <code class="docutils literal notranslate"><span class="pre">std::vector&lt;std::uint8_t&gt;</span></code>, and a value is null only where it has the sentry’s length and bytes. The overloads taking the sentry as a bare pointer are deprecated: it carries no length, so each value is compared with as many of its bytes as the value is long, which reads past a sentry shorter than the longest value and counts a prefix of it as null.</p>
 <p>Reading a column back the same way is <code class="docutils literal notranslate"><span class="pre">get</span></code> with a <code class="docutils literal notranslate"><span class="pre">std::optional</span></code>, which holds nothing where the column was null rather than throwing <code class="docutils literal notranslate"><span class="pre">null_access_error</span></code>:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;nanodbc/nanodbc.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
@@ -1031,7 +1032,7 @@
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=3f474186"></script>
+</div><script src="_static/documentation_options.js?v=9b3fc59f"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

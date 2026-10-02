@@ -66,7 +66,7 @@ var NAVTREEINDEX =
 [
 "annotated.html",
 "classnanodbc_1_1statement.html#a7e0fa9a8e7388f235b2c24bbcb2d0737",
-"structnanodbc_1_1driver.html#a199181975093cc309564d0de3b296c71"
+"structnanodbc_1_1detail_1_1is__optional_3_01std_1_1optional_3_01T_01_4_01_4.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

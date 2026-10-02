@@ -171,6 +171,8 @@ The batch forms read the values and which of them are null out of the one vector
 
 The values are copied into the statement, so the vector is free to go out of scope before it runs. The sentry and flag overloads remain, and are what to reach for where the values are already laid out as a plain array.
 
+A sentry for binary values is handed over as a ``std::vector<std::uint8_t>``, and a value is null only where it has the sentry's length and bytes. The overloads taking the sentry as a bare pointer are deprecated: it carries no length, so each value is compared with as many of its bytes as the value is long, which reads past a sentry shorter than the longest value and counts a prefix of it as null.
+
 Reading a column back the same way is ``get`` with a ``std::optional``, which holds nothing where the column was null rather than throwing ``null_access_error``:
 
 .. code-block:: cpp
