@@ -313,9 +313,7 @@ constexpr bool success(RETCODE rc) noexcept
 }
 #endif
 
-// How much of a chunk of `chunk` units SQLGetData filled, `terminator` of them being kept
-// for the null it writes after character data. The indicator is the length that was left
-// before the call, not what the call wrote, and is not written at all when the call fails.
+// The indicator is not written when SQLGetData fails.
 constexpr std::size_t
 read_get_data_chunk(RETCODE rc, SQLLEN indicator, std::size_t chunk, std::size_t terminator)
 {
@@ -328,16 +326,14 @@ read_get_data_chunk(RETCODE rc, SQLLEN indicator, std::size_t chunk, std::size_t
     return 0;
 }
 
-// How large the next chunk is after a call that did not get the whole value: what the
-// driver said was left, or twice the last one where it gave no length or one too short.
 constexpr std::size_t
 next_get_data_chunk(RETCODE rc, SQLLEN indicator, std::size_t chunk, std::size_t terminator)
 {
     if (rc != SQL_SUCCESS_WITH_INFO)
         return chunk;
-    std::size_t const read = read_get_data_chunk(rc, indicator, chunk, terminator);
-    if (indicator > 0 && static_cast<std::size_t>(indicator) > read)
-        return static_cast<std::size_t>(indicator) - read + terminator;
+    std::size_t const filled = read_get_data_chunk(rc, indicator, chunk, terminator);
+    if (indicator > 0 && static_cast<std::size_t>(indicator) > filled)
+        return static_cast<std::size_t>(indicator) - filled + terminator;
     return chunk * 2;
 }
 
@@ -5023,9 +5019,6 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
 #endif
 
             void* handle = native_statement_handle();
-            // The driver writes straight into the string. The first chunk is small, and
-            // each one after it is as long as the driver says is left, so a value whose
-            // length is reported takes two calls and one allocation of the right size.
             std::size_t const terminator = col.ctype_ == SQL_C_BINARY ? 0 : 1;
             std::size_t chunk = 1024;
             do
@@ -5081,7 +5074,6 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
 #endif
 
             void* handle = native_statement_handle();
-            // As in the narrow loop, counted in characters here and in bytes by the driver.
             std::size_t chunk = 512;
             do
             {
