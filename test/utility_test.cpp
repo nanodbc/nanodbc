@@ -130,6 +130,25 @@ TEST_CASE("convert", "[string]")
             convert(u32, out);
             REQUIRE(u32 == out);
         }
+
+        // A long value read from a column arrives this way, so copying it would hold the
+        // value twice. Past the small-string buffer, a move keeps the allocation it had.
+        SECTION("an rvalue is moved rather than copied")
+        {
+            std::string in(1000, 'x');
+            auto const* const data = in.data();
+            std::string out;
+            convert(std::move(in), out);
+            REQUIRE(out.data() == data);
+            REQUIRE(out == std::string(1000, 'x'));
+
+            std::u16string win(1000, u'x');
+            auto const* const wdata = win.data();
+            std::u16string wout;
+            convert(std::move(win), wout);
+            REQUIRE(wout.data() == wdata);
+            REQUIRE(wout == std::u16string(1000, u'x'));
+        }
     }
 
     SECTION("widening conversion")
