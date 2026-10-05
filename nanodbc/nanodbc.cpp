@@ -529,7 +529,8 @@ inline void convert(wchar_t const* beg, std::basic_string<T>& out)
 template <class T>
 inline void convert(std::basic_string<T>&& in, std::basic_string<T>& out)
 {
-    out.assign(in);
+    // A named rvalue reference is an lvalue, so assigning it as it stands copies it.
+    out = std::move(in);
 }
 
 template <class T, class U>

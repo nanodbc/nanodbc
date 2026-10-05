@@ -1,5 +1,9 @@
 # ChangeLog
 
+## Unreleased
+
+- A long string column is moved into the result once read, rather than copied and held twice. [`#554`](https://github.com/nanodbc/nanodbc/issues/554)
+
 ## v3.0.3
 
 - A `datetimeoffset` column read as bytes returns its 20-byte struct rather than reading past it.
