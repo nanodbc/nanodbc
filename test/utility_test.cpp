@@ -11,6 +11,14 @@
 #include <utility>
 #include <vector>
 
+#if __has_include(<version>)
+#include <version>
+#endif
+#if defined(__cpp_lib_ranges)
+#include <ranges>
+static_assert(std::ranges::input_range<nanodbc::result>);
+#endif
+
 // The UTF-8 codec replaced std::wstring_convert, so it is exercised directly here:
 // round trips across every encoded length, the surrogate pairs UTF-16 needs for anything
 // past the basic plane, and the malformed input it is expected to reject.

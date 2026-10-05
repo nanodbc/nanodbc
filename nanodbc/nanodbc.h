@@ -2398,20 +2398,20 @@ public:
 
     /// Create result iterator for a given result set.
     explicit result_iterator(result& r)
-        : result_(r)
+        : result_{r}
     {
-        ++(*this);
+        ++*this;
     }
 
     /// Dereference.
-    reference operator*() noexcept { return result_; }
+    reference operator*() const noexcept { return result_; }
 
     /// Access through dereference.
-    pointer operator->()
+    pointer operator->() const
     {
         if (!result_)
             throw std::runtime_error("result is empty");
-        return &(operator*());
+        return &operator*();
     }
 
     /// Iteration.
@@ -2420,11 +2420,11 @@ public:
         try
         {
             if (!result_.next())
-                result_ = result();
+                result_ = {};
         }
         catch (...)
         {
-            result_ = result();
+            result_ = {};
         }
         return *this;
     }
@@ -2434,7 +2434,7 @@ public:
     /// \note Returns nothing, so `*it++` does not compile: copies of a result_iterator
     ///       share one cursor, so none can name a row the iterator has moved past. Read
     ///       through `*it` before advancing.
-    void operator++(int) { ++(*this); }
+    void operator++(int) { ++*this; }
 
     /// Iterators are equal if they a tied to the same native statemnt handle, or both empty.
     bool operator==(result_iterator const& rhs) const noexcept
@@ -2449,7 +2449,7 @@ public:
     bool operator!=(result_iterator const& rhs) const noexcept { return !(*this == rhs); }
 
 private:
-    result result_;
+    mutable result result_;
 };
 
 /// \brief Returns an iterator to the beginning of the given result set.
