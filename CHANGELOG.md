@@ -1,5 +1,9 @@
 # ChangeLog
 
+## Unreleased
+
+- A long unbound column is read in chunks sized from the length left, rather than 1 KB at a time. [`#553`](https://github.com/nanodbc/nanodbc/issues/553)
+
 ## v3.0.3
 
 - A `datetimeoffset` column read as bytes returns its 20-byte struct rather than reading past it.

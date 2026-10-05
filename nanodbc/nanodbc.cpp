@@ -313,6 +313,34 @@ constexpr bool success(RETCODE rc) noexcept
 }
 #endif
 
+// How much of a chunk of `chunk` units SQLGetData filled, `terminator` of them being kept
+// for the null it writes after character data. The indicator is the length that was left
+// before the call, not what the call wrote, and is not written at all when the call fails.
+constexpr std::size_t
+read_get_data_chunk(RETCODE rc, SQLLEN indicator, std::size_t chunk, std::size_t terminator)
+{
+    if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO)
+        return 0;
+    if (indicator == SQL_NO_TOTAL)
+        return chunk - terminator;
+    if (indicator > 0)
+        return std::min(static_cast<std::size_t>(indicator), chunk - terminator);
+    return 0;
+}
+
+// How large the next chunk is after a call that did not get the whole value: what the
+// driver said was left, or twice the last one where it gave no length or one too short.
+constexpr std::size_t
+next_get_data_chunk(RETCODE rc, SQLLEN indicator, std::size_t chunk, std::size_t terminator)
+{
+    if (rc != SQL_SUCCESS_WITH_INFO)
+        return chunk;
+    std::size_t const read = read_get_data_chunk(rc, indicator, chunk, terminator);
+    if (indicator > 0 && static_cast<std::size_t>(indicator) > read)
+        return static_cast<std::size_t>(indicator) - read + terminator;
+    return chunk * 2;
+}
+
 using std::size;
 
 template <std::size_t N>
@@ -4995,29 +5023,28 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
 #endif
 
             void* handle = native_statement_handle();
+            // The driver writes straight into the string. The first chunk is small, and
+            // each one after it is as long as the driver says is left, so a value whose
+            // length is reported takes two calls and one allocation of the right size.
+            std::size_t const terminator = col.ctype_ == SQL_C_BINARY ? 0 : 1;
+            std::size_t chunk = 1024;
             do
             {
-                char buffer[1024] = {0};
-                constexpr std::size_t buffer_size = sizeof(buffer);
+                std::size_t const offset = out.size();
+                out.resize(offset + chunk);
                 NANODBC_CALL_RC(
                     SQLGetData,
                     rc,
                     handle,                                // StatementHandle
                     static_cast<SQLUSMALLINT>(column + 1), // Col_or_Param_Num
                     col.ctype_,                            // TargetType
-                    buffer,                                // TargetValuePtr
-                    buffer_size,                           // BufferLength
+                    &out[offset],                          // TargetValuePtr
+                    static_cast<SQLLEN>(chunk),            // BufferLength
                     &ValueLenOrInd);                       // StrLen_or_IndPtr
-                if (ValueLenOrInd == SQL_NO_TOTAL)
-                    out.append(buffer, col.ctype_ == SQL_C_BINARY ? buffer_size : buffer_size - 1);
-                else if (ValueLenOrInd > 0)
-                    out.append(
-                        buffer,
-                        std::min<std::size_t>(
-                            ValueLenOrInd,
-                            col.ctype_ == SQL_C_BINARY ? buffer_size : buffer_size - 1));
-                else if (ValueLenOrInd == SQL_NULL_DATA)
+                out.resize(offset + read_get_data_chunk(rc, ValueLenOrInd, chunk, terminator));
+                if (success(rc) && ValueLenOrInd == SQL_NULL_DATA)
                     col.cbdata_[static_cast<size_t>(rowset_position_)] = (SQLINTEGER)SQL_NULL_DATA;
+                chunk = next_get_data_chunk(rc, ValueLenOrInd, chunk, terminator);
                 // Sequence of successful calls is:
                 // SQL_NO_DATA or SQL_SUCCESS_WITH_INFO followed by SQL_SUCCESS.
             } while (rc == SQL_SUCCESS_WITH_INFO);
@@ -5054,30 +5081,28 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
 #endif
 
             void* handle = native_statement_handle();
+            // As in the narrow loop, counted in characters here and in bytes by the driver.
+            std::size_t chunk = 512;
             do
             {
-                wide_char_t buffer[512] = {0};
-                constexpr std::size_t buffer_size = sizeof(buffer);
+                std::size_t const offset = out.size();
+                out.resize(offset + chunk);
                 NANODBC_CALL_RC(
                     SQLGetData,
                     rc,
-                    handle,                                // StatementHandle
-                    static_cast<SQLUSMALLINT>(column + 1), // Col_or_Param_Num
-                    col.ctype_,                            // TargetType
-                    buffer,                                // TargetValuePtr
-                    buffer_size,                           // BufferLength
-                    &ValueLenOrInd);                       // StrLen_or_IndPtr
-                if (ValueLenOrInd == SQL_NO_TOTAL)
-                    out.append(buffer, (buffer_size / sizeof(wide_char_t)) - 1);
-                else if (ValueLenOrInd > 0)
-                    out.append(
-                        buffer,
-                        std::min<std::size_t>(
-                            ValueLenOrInd / sizeof(wide_char_t),
-                            (buffer_size / sizeof(wide_char_t)) - 1));
-                else if (ValueLenOrInd == SQL_NULL_DATA)
+                    handle,                                           // StatementHandle
+                    static_cast<SQLUSMALLINT>(column + 1),            // Col_or_Param_Num
+                    col.ctype_,                                       // TargetType
+                    &out[offset],                                     // TargetValuePtr
+                    static_cast<SQLLEN>(chunk * sizeof(wide_char_t)), // BufferLength
+                    &ValueLenOrInd);                                  // StrLen_or_IndPtr
+                SQLLEN const characters =
+                    ValueLenOrInd > 0 ? ValueLenOrInd / SQLLEN{sizeof(wide_char_t)} : ValueLenOrInd;
+                out.resize(offset + read_get_data_chunk(rc, characters, chunk, 1));
+                if (success(rc) && ValueLenOrInd == SQL_NULL_DATA)
                     col.cbdata_[static_cast<std::size_t>(rowset_position_)] =
                         (SQLINTEGER)SQL_NULL_DATA;
+                chunk = next_get_data_chunk(rc, characters, chunk, 1);
                 // Sequence of successful calls is:
                 // SQL_NO_DATA or SQL_SUCCESS_WITH_INFO followed by SQL_SUCCESS.
             } while (rc == SQL_SUCCESS_WITH_INFO);
