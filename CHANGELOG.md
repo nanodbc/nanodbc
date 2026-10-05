@@ -3,6 +3,7 @@
 ## Unreleased
 
 - A long unbound column is read in chunks sized from the length left, rather than 1 KB at a time. [`#553`](https://github.com/nanodbc/nanodbc/issues/553)
+- A long string column is moved into the result once read, rather than copied and held twice. [`#554`](https://github.com/nanodbc/nanodbc/issues/554)
 
 ## v3.0.3
 
