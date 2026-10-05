@@ -1,5 +1,9 @@
 # ChangeLog
 
+## Unreleased
+
+- Add static_assert on concept to ensure result is an input_range when building with C++20. [`#558`](https://github.com/nanodbc/nanodbc/issues/558)
+
 ## v3.0.4
 
 - A long unbound column is read in chunks sized from the length left, rather than 1 KB at a time. [`#553`](https://github.com/nanodbc/nanodbc/issues/553)
