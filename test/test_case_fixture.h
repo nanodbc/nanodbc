@@ -2103,7 +2103,8 @@ struct test_case_fixture : public base_test_fixture
               std::size_t{1023},
               std::size_t{1024},
               std::size_t{1025},
-              std::size_t{5000}})
+              std::size_t{5000},
+              std::size_t{20000}})
         {
             execute(connection, NANODBC_TEXT("delete from test_long_text_chunk_boundaries;"));
 
