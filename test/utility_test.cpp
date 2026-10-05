@@ -11,7 +11,10 @@
 #include <utility>
 #include <vector>
 
-#if defined(__cpp_concepts) && __cpp_concepts >= 201907L
+#if __has_include(<version>)
+#include <version>
+#endif
+#if defined(__cpp_lib_ranges)
 #include <ranges>
 static_assert(std::ranges::input_range<nanodbc::result>);
 #endif
