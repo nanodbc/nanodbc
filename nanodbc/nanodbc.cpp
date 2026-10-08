@@ -12,7 +12,6 @@
 
 #include <algorithm>
 #include <clocale>
-#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
@@ -23,6 +22,7 @@
 #include <map>
 #include <sstream>
 #include <type_traits>
+#include <utility>
 
 #ifndef __clang__
 #include <cstdint>
@@ -267,7 +267,7 @@ using nanodbc::wide_string;
 namespace
 {
 #ifdef NANODBC_ODBC_API_DEBUG
-inline std::string return_code(RETCODE rc)
+std::string return_code(RETCODE rc)
 {
     switch (rc)
     {
@@ -293,7 +293,7 @@ inline std::string return_code(RETCODE rc)
 
 // Easy way to check if a return code signifies success.
 #ifdef NANODBC_ODBC_API_DEBUG
-inline bool success(RETCODE rc) noexcept
+bool success(RETCODE rc) noexcept
 {
     try
     {
@@ -340,7 +340,7 @@ next_get_data_chunk(RETCODE rc, SQLLEN indicator, std::size_t chunk, std::size_t
 using std::size;
 
 template <std::size_t N>
-inline std::size_t size(NANODBC_SQLCHAR const (&array)[N]) noexcept
+std::size_t size(NANODBC_SQLCHAR const (&array)[N]) noexcept
 {
     std::size_t len = 0;
     NANODBC_SQLCHAR const* s = array;
@@ -357,7 +357,7 @@ inline std::size_t size(NANODBC_SQLCHAR const (&array)[N]) noexcept
 // wide_char_t decides it: four bytes is UTF-32, which iODBC takes, two is UTF-16, which the
 // rest take. Malformed input throws std::range_error.
 
-inline void throw_invalid_encoding()
+void throw_invalid_encoding()
 {
     throw std::range_error("nanodbc: could not convert between UTF-8 and the driver encoding");
 }
@@ -368,7 +368,7 @@ constexpr bool is_valid_code_point(char32_t cp)
     return cp <= 0x10FFFF && !(cp >= 0xD800 && cp <= 0xDFFF);
 }
 
-inline void append_as_utf8(char32_t cp, std::string& out)
+void append_as_utf8(char32_t cp, std::string& out)
 {
     if (cp < 0x80)
     {
@@ -397,7 +397,7 @@ inline void append_as_utf8(char32_t cp, std::string& out)
 // Appends to a wide string: UTF-32, where every code point is one unit, or UTF-16, which
 // splits anything past the basic plane into a surrogate pair.
 template <class T>
-inline void append_as_wide(char32_t cp, std::basic_string<T>& out)
+void append_as_wide(char32_t cp, std::basic_string<T>& out)
 {
     static_assert(sizeof(T) == 2 || sizeof(T) == 4, "a wide character is UTF-16 or UTF-32");
 
@@ -418,7 +418,7 @@ inline void append_as_wide(char32_t cp, std::basic_string<T>& out)
 }
 
 // Reads one code point from UTF-8, leaving beg on the byte after it.
-inline char32_t next_utf8_code_point(char const*& beg, char const* end)
+char32_t next_utf8_code_point(char const*& beg, char const* end)
 {
     auto const lead = static_cast<unsigned char>(*beg++);
     if (lead < 0x80)
@@ -474,7 +474,7 @@ inline char32_t next_utf8_code_point(char const*& beg, char const* end)
 // Reads one code point from a wide string: from UTF-32, where it is one unit, or from
 // UTF-16, joining a surrogate pair back together.
 template <class T>
-inline char32_t next_wide_code_point(T const*& beg, [[maybe_unused]] T const* end)
+char32_t next_wide_code_point(T const*& beg, [[maybe_unused]] T const* end)
 {
     static_assert(sizeof(T) == 2 || sizeof(T) == 4, "a wide character is UTF-16 or UTF-32");
 
@@ -505,12 +505,12 @@ inline char32_t next_wide_code_point(T const*& beg, [[maybe_unused]] T const* en
 }
 
 template <class T>
-inline void convert(T const* beg, size_t n, std::basic_string<T>& out)
+void convert(T const* beg, size_t n, std::basic_string<T>& out)
 {
     out.assign(beg, n);
 }
 
-inline void convert(wide_char_t const* beg, size_t n, std::string& out)
+void convert(wide_char_t const* beg, size_t n, std::string& out)
 {
 #ifdef NANODBC_ENABLE_BOOST
     using boost::locale::conv::utf_to_utf;
@@ -524,7 +524,7 @@ inline void convert(wide_char_t const* beg, size_t n, std::string& out)
 #endif
 }
 
-inline void convert(char const* beg, size_t n, wide_string& out)
+void convert(char const* beg, size_t n, wide_string& out)
 {
 #ifdef NANODBC_ENABLE_BOOST
     using boost::locale::conv::utf_to_utf;
@@ -539,32 +539,32 @@ inline void convert(char const* beg, size_t n, wide_string& out)
 }
 
 template <class T>
-inline void convert(char const* beg, std::basic_string<T>& out)
+void convert(char const* beg, std::basic_string<T>& out)
 {
     convert(beg, std::strlen(beg), out);
 }
 
 template <class T>
-inline void convert(wchar_t const* beg, std::basic_string<T>& out)
+void convert(wchar_t const* beg, std::basic_string<T>& out)
 {
     convert(beg, std::wcslen(beg), out);
 }
 
 template <class T>
-inline void convert(std::basic_string<T>&& in, std::basic_string<T>& out)
+void convert(std::basic_string<T>&& in, std::basic_string<T>& out)
 {
     out = std::move(in);
 }
 
 template <class T, class U>
-inline void convert(std::basic_string<T> const& in, std::basic_string<U>& out)
+void convert(std::basic_string<T> const& in, std::basic_string<U>& out)
 {
     convert(in.data(), in.size(), out);
 }
 
 // Attempts to get the most recent ODBC error as a string.
 // Always returns std::string, even in unicode mode.
-inline std::string
+std::string
 recent_error(SQLHANDLE handle, SQLSMALLINT handle_type, long& native, std::string& state)
 {
     nanodbc::string result;
@@ -921,23 +921,7 @@ public:
     bound_column(bound_column&&) = delete;
     bound_column& operator=(bound_column&&) = delete;
 
-    bound_column() noexcept
-        : name_()
-        , column_(0)
-        , sqltype_(0)
-        , sqlsize_(0)
-        , scale_(0)
-        , ctype_(0)
-        , clen_(0)
-        , blob_(false)
-        , cbdata_(nullptr)
-        , pdata_(nullptr)
-        , bound_(false)
-        , cached_(false)
-    {
-    }
-
-    ~bound_column() noexcept = default;
+    bound_column() = default;
 
     // Written out rather than with std::fill_n, which is not noexcept.
     void clear_indicators(std::size_t count) noexcept
@@ -949,26 +933,26 @@ public:
     }
 
 public:
-    nanodbc::string name_;
-    short column_;
-    SQLSMALLINT sqltype_;
-    SQLULEN sqlsize_;
-    SQLSMALLINT scale_;
-    SQLSMALLINT ctype_;
-    SQLULEN clen_;
-    bool blob_;
-    std::unique_ptr<nanodbc::null_type[]> cbdata_;
-    std::unique_ptr<char[]> pdata_;
-    bool bound_;
+    nanodbc::string name_{};
+    short column_{};
+    SQLSMALLINT sqltype_{};
+    SQLULEN sqlsize_{};
+    SQLSMALLINT scale_{};
+    SQLSMALLINT ctype_{};
+    SQLULEN clen_{};
+    std::unique_ptr<nanodbc::null_type[]> cbdata_{};
+    std::unique_ptr<char[]> pdata_{};
+    bool blob_{};
+    bool bound_{};
+    bool cached_{};
     // An unbound column read ahead of time, because asking whether it is null costs the
     // only reading of it there is. Emptied when the row moves.
-    std::vector<std::uint8_t> cache_;
-    bool cached_;
+    std::vector<std::uint8_t> cache_{};
 };
 
 // Renders value as decimal digits, zero padded to at least width, keeping a minus sign in
 // front of the padding. Wider values keep all their digits rather than being truncated.
-inline std::string zero_padded(long value, std::size_t width)
+std::string zero_padded(long value, std::size_t width)
 {
     // Negating the most negative value is undefined, so the digits come from an unsigned
     // copy. Fields of a driver-filled struct are not assumed to be in range.
@@ -984,8 +968,7 @@ inline std::string zero_padded(long value, std::size_t width)
 // Renders a timestampoffset as a backend renders datetimeoffset, for example
 // "2006-12-30 13:45:12.3450000 -08:00". The struct counts fractional seconds in billionths;
 // scale says how many of those digits the column carries.
-inline std::string
-timestampoffset_as_string(nanodbc::timestampoffset const& value, SQLSMALLINT scale)
+std::string timestampoffset_as_string(nanodbc::timestampoffset const& value, SQLSMALLINT scale)
 {
     auto const& stamp = value.stamp;
 
@@ -1026,8 +1009,6 @@ timestampoffset_as_string(nanodbc::timestampoffset const& value, SQLSMALLINT sca
 // Parameter corresponds to parameter marker associated with a prepared SQL statement.
 struct bound_parameter
 {
-    bound_parameter() = default;
-
     SQLULEN size_ = 0;       // SQL data size of column or expression inbytes or characters
     SQLUSMALLINT index_ = 0; // Zero-based index of parameter marker
     SQLSMALLINT iotype_ = 0; // Input/Output type of parameter
@@ -1067,7 +1048,7 @@ struct bound_buffer
     SQLSMALLINT ctype_ = sql_ctype<T>::value;
 };
 
-inline void deallocate_handle(SQLHANDLE& handle, short handle_type)
+void deallocate_handle(SQLHANDLE& handle, short handle_type)
 {
     if (!handle)
         return;
@@ -1079,7 +1060,7 @@ inline void deallocate_handle(SQLHANDLE& handle, short handle_type)
     handle = nullptr;
 }
 
-inline void allocate_env_handle(SQLHENV& env)
+void allocate_env_handle(SQLHENV& env)
 {
     if (env)
         return;
@@ -1108,7 +1089,7 @@ inline void allocate_env_handle(SQLHENV& env)
     }
 }
 
-inline void allocate_dbc_handle(SQLHDBC& conn, SQLHENV env)
+void allocate_dbc_handle(SQLHDBC& conn, SQLHENV env)
 {
     NANODBC_ASSERT(env);
     if (conn)
@@ -1132,7 +1113,7 @@ inline void allocate_dbc_handle(SQLHDBC& conn, SQLHENV env)
 // point value as %f, six digits after the point whatever the magnitude, which drops
 // precision from a large value and all of a small one: 1.23e-07 comes out "0.000000".
 template <class T>
-inline std::string render_floating_point(T value)
+std::string render_floating_point(T value)
 {
     std::ostringstream out;
     out.imbue(std::locale::classic());
@@ -1158,7 +1139,7 @@ inline std::string render_floating_point(T value)
 // One handed over as a bare pointer carries no size, so the value's own is taken for it:
 // the comparison reads as far as the value is long, which the caller has to have made
 // good, and a value that is a prefix of the sentry, the empty one among them, matches.
-inline bool is_null_sentry(
+bool is_null_sentry(
     std::vector<uint8_t> const& value,
     uint8_t const* null_sentry,
     std::optional<std::size_t> null_sentry_size)
@@ -1173,14 +1154,10 @@ inline bool is_null_sentry(
 // nanodbc::attribute
 namespace nanodbc
 {
-attribute::attribute(
-    long const& attribute,
-    long const& string_length,
-    attribute::variant const& resource) noexcept
+attribute::attribute(long const& attribute, long const& string_length, variant resource) noexcept
     : attribute_(attribute)
     , string_length_(string_length)
-    , resource_(resource)
-    , value_ptr_(nullptr)
+    , resource_(std::move(resource))
 {
     this->extractValuePtr();
 }
@@ -1188,7 +1165,6 @@ attribute::attribute(attribute const& other) noexcept
     : attribute_(other.attribute_)
     , string_length_(other.string_length_)
     , resource_(other.resource_)
-    , value_ptr_(nullptr)
 {
     this->extractValuePtr();
 }
@@ -1241,21 +1217,9 @@ public:
     connection_impl(connection_impl const&) = delete;
     connection_impl& operator=(connection_impl const&) = delete;
 
-    connection_impl() noexcept
-        : env_(nullptr)
-        , dbc_(nullptr)
-        , connected_(false)
-        , transactions_(0)
-        , rollback_(false)
-    {
-    }
+    connection_impl() = default;
 
     connection_impl(string const& dsn, string const& user, string const& pass, long timeout)
-        : env_(nullptr)
-        , dbc_(nullptr)
-        , connected_(false)
-        , transactions_(0)
-        , rollback_(false)
     {
         allocate();
 
@@ -1271,11 +1235,6 @@ public:
     }
 
     connection_impl(string const& connection_string, long timeout)
-        : env_(nullptr)
-        , dbc_(nullptr)
-        , connected_(false)
-        , transactions_(0)
-        , rollback_(false)
     {
         allocate();
 
@@ -1295,11 +1254,6 @@ public:
         string const& user,
         string const& pass,
         const std::list<attribute>& attributes)
-        : env_(nullptr)
-        , dbc_(nullptr)
-        , connected_(false)
-        , transactions_(0)
-        , rollback_(false)
     {
         allocate();
 
@@ -1314,12 +1268,7 @@ public:
         }
     }
 
-    connection_impl(string const& connection_string, std::list<attribute> attributes)
-        : env_(nullptr)
-        , dbc_(nullptr)
-        , connected_(false)
-        , transactions_(0)
-        , rollback_(false)
+    connection_impl(string const& connection_string, const std::list<attribute>& attributes)
     {
         allocate();
         try
@@ -1433,8 +1382,8 @@ public:
         // operation is not supported by the Driver.
         if (timeout != 0)
         {
-            attributes.push_back(
-                {SQL_ATTR_LOGIN_TIMEOUT, SQL_IS_UINTEGER, (std::uintptr_t)timeout});
+            attributes.emplace_back(
+                SQL_ATTR_LOGIN_TIMEOUT, SQL_IS_UINTEGER, (std::uintptr_t)timeout);
         }
 #if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_EVENT)
         if (event_handle != nullptr)
@@ -1509,8 +1458,8 @@ public:
         // operation is not supported by the Driver.
         if (timeout != 0)
         {
-            attributes.push_back(
-                {SQL_ATTR_LOGIN_TIMEOUT, SQL_IS_UINTEGER, (std::uintptr_t)timeout});
+            attributes.emplace_back(
+                SQL_ATTR_LOGIN_TIMEOUT, SQL_IS_UINTEGER, (std::uintptr_t)timeout);
         }
 #if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_EVENT)
         if (event_handle != nullptr)
@@ -1614,7 +1563,7 @@ public:
         if (rc == SQL_NEED_DATA)
         {
             more_wanted = true;
-            return string(out.begin(), out.begin() + static_cast<std::ptrdiff_t>(length));
+            return {out.begin(), out.begin() + static_cast<std::ptrdiff_t>(length)};
         }
 
         if (!success(rc))
@@ -1622,7 +1571,7 @@ public:
 
         more_wanted = false;
         connected_ = true;
-        return string();
+        return {};
     }
 
     bool connected() const noexcept { return connected_; }
@@ -1698,11 +1647,11 @@ private:
     template <class T, std::enable_if_t<is_string<T>::value, int> = 0>
     T get_info_impl(short info_type) const;
 
-    HENV env_;
-    HDBC dbc_;
-    bool connected_;
-    std::size_t transactions_;
-    bool rollback_; // if true, this connection is marked for eventual transaction rollback
+    HENV env_{};
+    HDBC dbc_{};
+    bool connected_{};
+    bool rollback_{}; // if true, this connection is marked for eventual transaction rollback
+    std::size_t transactions_{};
 };
 
 template <class T, std::enable_if_t<!is_string<T>::value, int>>
@@ -1800,7 +1749,6 @@ public:
 
     explicit transaction_impl(class connection conn)
         : conn_(std::move(conn))
-        , committed_(false)
     {
         if (conn_.transactions() == 0 && conn_.connected())
         {
@@ -1891,7 +1839,7 @@ public:
 
 private:
     class connection conn_;
-    bool committed_;
+    bool committed_{};
 };
 
 } // namespace nanodbc
@@ -1923,82 +1871,16 @@ public:
     statement_impl(statement_impl const&) = delete;
     statement_impl& operator=(statement_impl const&) = delete;
 
-    statement_impl()
-        : stmt_(nullptr)
-        , open_(false)
-        , conn_()
-        , bind_len_or_null_()
-#if defined(NANODBC_DO_ASYNC_IMPL)
-        , async_(false)
-        , async_enabled_(false)
-        , async_event_(nullptr)
-#endif
-#ifndef NANODBC_DISABLE_MSSQL_TVP
-        , tvp_data_()
-        , open_tvp_(false)
-#endif
-    {
-    }
+    statement_impl() = default;
 
-    explicit statement_impl(class connection& conn)
-        : stmt_(nullptr)
-        , open_(false)
-        , conn_()
-        , bind_len_or_null_()
-        , wide_string_data_()
-        , string_data_()
-        , binary_data_()
-#if defined(NANODBC_DO_ASYNC_IMPL)
-        , async_(false)
-        , async_enabled_(false)
-        , async_event_(nullptr)
-#endif
-#ifndef NANODBC_DISABLE_MSSQL_TVP
-        , tvp_data_()
-        , open_tvp_(false)
-#endif
-    {
-        open(conn);
-    }
+    explicit statement_impl(class connection& conn) { open(conn); }
 
     explicit statement_impl(class connection& conn, const std::list<attribute>& attributes)
-        : stmt_(nullptr)
-        , open_(false)
-        , conn_()
-        , bind_len_or_null_()
-        , wide_string_data_()
-        , string_data_()
-        , binary_data_()
-#if defined(NANODBC_DO_ASYNC_IMPL)
-        , async_(false)
-        , async_enabled_(false)
-        , async_event_(nullptr)
-#endif
-#ifndef NANODBC_DISABLE_MSSQL_TVP
-        , tvp_data_()
-        , open_tvp_(false)
-#endif
     {
         open(conn, attributes);
     }
 
     statement_impl(class connection& conn, string const& query, long timeout)
-        : stmt_(nullptr)
-        , open_(false)
-        , conn_()
-        , bind_len_or_null_()
-        , wide_string_data_()
-        , string_data_()
-        , binary_data_()
-#if defined(NANODBC_DO_ASYNC_IMPL)
-        , async_(false)
-        , async_enabled_(false)
-        , async_event_(nullptr)
-#endif
-#ifndef NANODBC_DISABLE_MSSQL_TVP
-        , tvp_data_()
-        , open_tvp_(false)
-#endif
     {
         prepare(conn, query, timeout);
     }
@@ -2098,7 +1980,7 @@ public:
         if (param.type_ != SQL_SS_TABLE)
             throw programming_error("invalid tvp param type");
 
-        tvp_data_.emplace(std::make_pair(param_index, tvp));
+        tvp_data_.emplace(param_index, tvp);
         *bind_len_or_null = &bind_len_or_null_[param_index];
         open_tvp_ = true;
     }
@@ -2167,7 +2049,6 @@ public:
                 throw;
             }
         }
-        return;
     }
 
     void set_attribute(long const& attr, long const& size, const void* buffer)
@@ -2889,8 +2770,8 @@ public:
     std::vector<T>& get_bound_string_data(short param_index);
 
 private:
-    HSTMT stmt_;
-    bool open_;
+    HSTMT stmt_{};
+    bool open_{};
     class connection conn_;
     std::map<short, std::vector<null_type>> bind_len_or_null_;
     std::map<short, std::vector<wide_string::value_type>> wide_string_data_;
@@ -2903,15 +2784,15 @@ private:
     std::map<short, bound_parameter> param_descr_data_;
 
 #if defined(NANODBC_DO_ASYNC_IMPL)
-    bool async_;                 // true if statement is currently in SQL_STILL_EXECUTING mode
-    mutable bool async_enabled_; // true if statement currently has SQL_ATTR_ASYNC_ENABLE =
-                                 // SQL_ASYNC_ENABLE_ON
-    void* async_event_;          // currently active event handle for async notifications
+    bool async_{};                 // true if statement is currently in SQL_STILL_EXECUTING mode
+    mutable bool async_enabled_{}; // true if statement currently has SQL_ATTR_ASYNC_ENABLE =
+                                   // SQL_ASYNC_ENABLE_ON
+    void* async_event_{};          // currently active event handle for async notifications
 #endif
 
 #ifndef NANODBC_DISABLE_MSSQL_TVP
     std::map<short, table_valued_parameter> tvp_data_;
-    bool open_tvp_;
+    bool open_tvp_{};
 #endif
 };
 
@@ -3112,12 +2993,7 @@ public:
     table_valued_parameter_impl(table_valued_parameter_impl&&) = delete;
     table_valued_parameter_impl& operator=(table_valued_parameter_impl&&) = delete;
 
-    table_valued_parameter_impl() noexcept
-        : row_count_(0)
-        , param_index_(0)
-        , open_(false)
-    {
-    }
+    table_valued_parameter_impl() = default;
 
     ~table_valued_parameter_impl() noexcept
     {
@@ -3282,7 +3158,7 @@ public:
         auto stmt_impl = stmt_.lock();
         NANODBC_ASSERT(stmt_impl != nullptr);
 
-        auto stmt = nanodbc::statement(stmt_impl->connection());
+        auto stmt = statement(stmt_impl->connection());
         auto hstmt = stmt.native_statement_handle();
 
         SQLRETURN rc = SQL_SUCCESS;
@@ -3636,11 +3512,11 @@ public:
     std::vector<T>& get_bound_string_data(short param_index);
 
 private:
-    std::weak_ptr<nanodbc::statement::statement_impl> stmt_;
-    std::size_t row_count_;
-    nanodbc::string tvp_name_;
-    short param_index_;
-    bool open_;
+    std::weak_ptr<statement::statement_impl> stmt_;
+    std::size_t row_count_{};
+    string tvp_name_{};
+    short param_index_{};
+    bool open_{};
     std::map<short, std::vector<null_type>> bind_len_or_null_;
     std::map<short, std::vector<wide_string::value_type>> wide_string_data_;
     std::map<short, std::vector<std::string::value_type>> string_data_;
@@ -3863,23 +3739,6 @@ public:
     result_impl(statement stmt, long rowset_size)
         : stmt_(std::move(stmt))
         , rowset_size_(rowset_size)
-        , row_count_(0)
-        , bound_columns_(nullptr)
-        , bound_columns_size_(0)
-        , rowset_position_(0)
-        , bound_columns_by_name_()
-        , at_end_(false)
-#if defined(NANODBC_DO_ASYNC_IMPL)
-        , async_(false)
-#endif
-        /*
-         * It is set to true if `unbind` is ever
-         * called either by the caller or during the
-         * auto_bind process ( blob ).
-         * This variable is only used to optimize
-         * away unnecessary SQLSetPos calls.
-         */
-        , has_unbound_(false)
     {
         RETCODE rc = SQL_SUCCESS;
         NANODBC_CALL_RC(
@@ -4819,24 +4678,31 @@ private:
     }
 
 private:
-    statement stmt_;
-    const long rowset_size_;
-    SQLULEN row_count_;
-    std::unique_ptr<bound_column[]> bound_columns_;
-    short bound_columns_size_;
-    long rowset_position_;
-    std::map<string, bound_column*> bound_columns_by_name_;
-    bool at_end_;
+    statement stmt_{};
+    const long rowset_size_{};
+    SQLULEN row_count_{};
+    std::unique_ptr<bound_column[]> bound_columns_{};
+    short bound_columns_size_{};
+    long rowset_position_{};
+    std::map<string, bound_column*> bound_columns_by_name_{};
+    bool at_end_{};
 #if defined(NANODBC_DO_ASYNC_IMPL)
-    bool async_; // true if statement is currently in SQL_STILL_EXECUTING mode
+    bool async_{}; // true if statement is currently in SQL_STILL_EXECUTING mode
 #endif
-    bool has_unbound_;
+    /*
+     * It is set to true if `unbind` is ever
+     * called either by the caller or during the
+     * auto_bind process ( blob ).
+     * This variable is only used to optimize
+     * away unnecessary SQLSetPos calls.
+     */
+    bool has_unbound_{};
     // SQL_GETDATA_EXTENSIONS, read once on first use. -1 until then.
     mutable int get_data_extensions_ = -1;
 };
 
 template <>
-inline void result::result_impl::get_ref_impl<date>(short column, date& result) const
+void result::result_impl::get_ref_impl<date>(short column, date& result) const
 {
     bound_column const& col = bound_columns_[column];
     switch (col.ctype_)
@@ -4868,7 +4734,7 @@ inline void result::result_impl::get_ref_impl<date>(short column, date& result) 
 }
 
 template <>
-inline void result::result_impl::get_ref_impl<time>(short column, time& result) const
+void result::result_impl::get_ref_impl<time>(short column, time& result) const
 {
     bound_column const& col = bound_columns_[column];
     switch (col.ctype_)
@@ -4900,7 +4766,7 @@ inline void result::result_impl::get_ref_impl<time>(short column, time& result) 
 }
 
 template <>
-inline void result::result_impl::get_ref_impl<timestamp>(short column, timestamp& result) const
+void result::result_impl::get_ref_impl<timestamp>(short column, timestamp& result) const
 {
     bound_column const& col = bound_columns_[column];
     switch (col.ctype_)
@@ -4934,8 +4800,7 @@ inline void result::result_impl::get_ref_impl<timestamp>(short column, timestamp
 }
 
 template <>
-inline void
-result::result_impl::get_ref_impl<timestampoffset>(short column, timestampoffset& result) const
+void result::result_impl::get_ref_impl<timestampoffset>(short column, timestampoffset& result) const
 {
     bound_column const& col = bound_columns_[column];
     switch (col.ctype_)
@@ -4970,7 +4835,7 @@ result::result_impl::get_ref_impl<timestampoffset>(short column, timestampoffset
 }
 
 template <class T, std::enable_if_t<is_string<T>::value, int>>
-inline void result::result_impl::get_ref_impl(short column, T& result) const
+void result::result_impl::get_ref_impl(short column, T& result) const
 {
     bound_column const& col = bound_columns_[column];
     const SQLULEN column_size = col.sqlsize_;
@@ -5262,7 +5127,7 @@ inline void result::result_impl::get_ref_impl(short column, T& result) const
 }
 
 template <>
-inline void result::result_impl::get_ref_impl<std::vector<std::uint8_t>>(
+void result::result_impl::get_ref_impl<std::vector<std::uint8_t>>(
     short column,
     std::vector<std::uint8_t>& result) const
 {
@@ -5344,7 +5209,7 @@ inline void result::result_impl::get_ref_impl<std::vector<std::uint8_t>>(
 
 #if defined(_MSC_VER)
 template <>
-inline void result::result_impl::get_ref_impl<_variant_t>(short column, _variant_t& result) const
+void result::result_impl::get_ref_impl<_variant_t>(short column, _variant_t& result) const
 {
     result.Clear(); // VT_EMPTY, not SQL-like VT_NULL
     bound_column const& col = bound_columns_[column];
@@ -5566,7 +5431,7 @@ auto from_string(std::string const& s, unsigned long long)
 // A bool is tested rather than narrowed. Reading 42 as a bool is true, which is what it
 // is where the driver hands the value over as a number rather than as text, and the
 // answer should not turn on which of the two a driver chose.
-inline auto from_string(std::string const& s, bool)
+auto from_string(std::string const& s, bool)
 {
     return from_string(s, static_cast<long long>(0)) != 0;
 }
@@ -5919,26 +5784,9 @@ void prepare(statement& stmt, string const& query, long timeout)
 
 namespace nanodbc
 {
-
 connection::connection()
     : impl_(std::make_shared<connection_impl>())
 {
-}
-
-connection::connection(const connection& rhs) noexcept
-    : impl_(rhs.impl_)
-{
-}
-
-connection::connection(connection&& rhs) noexcept
-    : impl_(std::move(rhs.impl_))
-{
-}
-
-connection& connection::operator=(connection rhs) noexcept
-{
-    swap(rhs);
-    return *this;
 }
 
 void connection::swap(connection& rhs) noexcept
@@ -5970,8 +5818,6 @@ connection::connection(string const& connection_string, std::list<attribute> con
     : impl_(std::make_shared<connection_impl>(connection_string, attributes))
 {
 }
-
-connection::~connection() noexcept {}
 
 void connection::allocate()
 {
@@ -6137,22 +5983,6 @@ transaction::transaction(const class connection& conn)
 {
 }
 
-transaction::transaction(const transaction& rhs) noexcept
-    : impl_(rhs.impl_)
-{
-}
-
-transaction::transaction(transaction&& rhs) noexcept
-    : impl_(std::move(rhs.impl_))
-{
-}
-
-transaction& transaction::operator=(transaction rhs) noexcept
-{
-    swap(rhs);
-    return *this;
-}
-
 void transaction::swap(transaction& rhs) noexcept
 {
     using std::swap;
@@ -6223,31 +6053,9 @@ statement::statement(class connection& conn, std::list<attribute> const& attribu
 {
 }
 
-// statement assigns by taking its right hand side by value and swapping with it, which is
-// one operation serving as both copy assignment and move assignment. C26432 counts the
-// declarations rather than what they do, and reads the pair it cannot find as missing.
-#ifdef _MSC_VER
-#pragma warning(suppress : 26432)
-#endif
-statement::statement(statement&& rhs) noexcept
-    : impl_(std::move(rhs.impl_))
-{
-}
-
 statement::statement(class connection& conn, string const& query, long timeout)
     : impl_(std::make_shared<statement_impl>(conn, query, timeout))
 {
-}
-
-statement::statement(const statement& rhs) noexcept
-    : impl_(rhs.impl_)
-{
-}
-
-statement& statement::operator=(statement rhs) noexcept
-{
-    swap(rhs);
-    return *this;
 }
 
 void statement::swap(statement& rhs) noexcept
@@ -6255,8 +6063,6 @@ void statement::swap(statement& rhs) noexcept
     using std::swap;
     swap(impl_, rhs.impl_);
 }
-
-statement::~statement() noexcept {}
 
 void statement::open(class connection& conn)
 {
@@ -7049,23 +6855,11 @@ table_valued_parameter::table_valued_parameter()
 {
 }
 
-table_valued_parameter::table_valued_parameter(const table_valued_parameter& rhs) noexcept
-    : impl_(rhs.impl_)
-{
-}
-
-table_valued_parameter::table_valued_parameter(table_valued_parameter&& rhs) noexcept
-    : impl_(std::move(rhs.impl_))
-{
-}
-
 table_valued_parameter::table_valued_parameter(statement& stmt, short param_index, size_t row_count)
     : impl_(std::make_shared<table_valued_parameter_impl>())
 {
     impl_->open(*this, stmt, param_index, row_count);
 }
-
-table_valued_parameter::~table_valued_parameter() noexcept {}
 
 void table_valued_parameter::open(statement& stmt, short param_index, size_t row_count)
 {
@@ -7751,7 +7545,7 @@ catalog::tables catalog::find_tables(
         NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
 
     result find_result(stmt, 1);
-    catalog::tables tables(find_result);
+    tables tables(find_result);
     return tables;
 }
 
@@ -7777,7 +7571,7 @@ catalog::find_procedures(string const& procedure, string const& schema, string c
         NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
 
     result find_result(stmt, 1);
-    catalog::procedures procedures(find_result);
+    procedures procedures(find_result);
     return procedures;
 }
 
@@ -7805,7 +7599,7 @@ catalog::procedure_columns catalog::find_procedure_columns(
         NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
 
     result find_result(stmt, 1);
-    catalog::procedure_columns columns(find_result);
+    procedure_columns columns(find_result);
     return columns;
 }
 
@@ -7831,7 +7625,7 @@ catalog::find_table_privileges(string const& catalog, string const& table, strin
         NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
 
     result find_result(stmt, 1);
-    catalog::table_privileges privileges(find_result);
+    table_privileges privileges(find_result);
     return privileges;
 }
 
@@ -7859,7 +7653,7 @@ catalog::columns catalog::find_columns(
         NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
 
     result find_result(stmt, 1);
-    catalog::columns columns(find_result);
+    columns columns(find_result);
     return columns;
 }
 
@@ -7882,7 +7676,7 @@ catalog::find_primary_keys(string const& table, string const& schema, string con
         NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
 
     result find_result(stmt, 1);
-    catalog::primary_keys keys(find_result);
+    primary_keys keys(find_result);
     return keys;
 }
 
@@ -7908,7 +7702,7 @@ std::list<string> catalog::list_catalogs()
         NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
 
     result find_result(stmt, 1);
-    catalog::tables catalogs(find_result);
+    tables catalogs(find_result);
 
     std::list<string> names;
     while (catalogs.next())
@@ -7938,7 +7732,7 @@ std::list<string> catalog::list_schemas()
         NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
 
     result find_result(stmt, 1);
-    catalog::tables schemas(find_result);
+    tables schemas(find_result);
 
     std::list<string> names;
     while (schemas.next())
@@ -7966,7 +7760,7 @@ std::list<string> catalog::list_table_types()
         NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
 
     result find_result(stmt, 1);
-    catalog::tables table_types(find_result);
+    tables table_types(find_result);
 
     std::list<string> names;
     while (table_types.next())
@@ -7991,32 +7785,9 @@ std::list<string> catalog::list_table_types()
 namespace nanodbc
 {
 
-result::result() noexcept
-    : impl_()
-{
-}
-
-result::~result() noexcept {}
-
 result::result(statement stmt, long rowset_size)
     : impl_(std::make_shared<result_impl>(std::move(stmt), rowset_size))
 {
-}
-
-result::result(result&& rhs) noexcept
-    : impl_(std::move(rhs.impl_))
-{
-}
-
-result::result(const result& rhs) noexcept
-    : impl_(rhs.impl_)
-{
-}
-
-result& result::operator=(result rhs) noexcept
-{
-    swap(rhs);
-    return *this;
 }
 
 void result::swap(result& rhs) noexcept
@@ -8281,38 +8052,38 @@ std::any read_column_as_its_own_type(result const& results, short column)
     switch (results.column_datatype(column))
     {
     case SQL_BIT:
-        return std::any(results.get<bool>(column));
+        return {results.get<bool>(column)};
     case SQL_TINYINT:
-        return std::any(results.get<signed char>(column));
+        return {results.get<signed char>(column)};
     case SQL_SMALLINT:
-        return std::any(results.get<short>(column));
+        return {results.get<short>(column)};
     case SQL_INTEGER:
-        return std::any(results.get<int>(column));
+        return {results.get<int>(column)};
     case SQL_BIGINT:
-        return std::any(results.get<long long>(column));
+        return {results.get<long long>(column)};
     case SQL_REAL:
-        return std::any(results.get<float>(column));
+        return {results.get<float>(column)};
     case SQL_FLOAT:
     case SQL_DOUBLE:
-        return std::any(results.get<double>(column));
+        return {results.get<double>(column)};
     case SQL_DATE:
     case SQL_TYPE_DATE:
-        return std::any(results.get<date>(column));
+        return {results.get<date>(column)};
     case SQL_TIME:
     case SQL_TYPE_TIME:
-        return std::any(results.get<time>(column));
+        return {results.get<time>(column)};
     case SQL_TIMESTAMP:
     case SQL_TYPE_TIMESTAMP:
-        return std::any(results.get<timestamp>(column));
+        return {results.get<timestamp>(column)};
     case SQL_BINARY:
     case SQL_VARBINARY:
     case SQL_LONGVARBINARY:
-        return std::any(results.get<std::vector<std::uint8_t>>(column));
+        return {results.get<std::vector<std::uint8_t>>(column)};
     default:
         // Character types, and the numeric ones carrying more digits than a double holds,
         // where the text the driver renders is the value rather than an approximation of
         // it.
-        return std::any(results.get<string>(column));
+        return {results.get<string>(column)};
     }
 }
 } // namespace
