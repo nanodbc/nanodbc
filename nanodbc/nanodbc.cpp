@@ -551,7 +551,7 @@ void convert(wchar_t const* beg, std::basic_string<T>& out)
 }
 
 template <class T>
-void convert(std::basic_string<T>&& in, std::basic_string<T>& out)
+void convert(std::basic_string<T>&& in, std::basic_string<T>& out) noexcept
 {
     out = std::move(in);
 }
