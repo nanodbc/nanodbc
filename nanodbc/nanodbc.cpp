@@ -551,7 +551,7 @@ void convert(wchar_t const* beg, std::basic_string<T>& out)
 }
 
 template <class T>
-void convert(std::basic_string<T>&& in, std::basic_string<T>& out)
+void convert(std::basic_string<T>&& in, std::basic_string<T>& out) noexcept
 {
     out = std::move(in);
 }
@@ -1574,11 +1574,24 @@ public:
         return {};
     }
 
-    bool connected() const noexcept { return connected_; }
+    bool connected() const noexcept
+    {
+        if (!connected_)
+            return false;
+#ifdef SQL_ATTR_CONNECTION_DEAD
+        SQLUINTEGER dead = SQL_CD_FALSE;
+        RETCODE rc = SQL_SUCCESS;
+        NANODBC_CALL_RC(
+            SQLGetConnectAttr, rc, dbc_, SQL_ATTR_CONNECTION_DEAD, &dead, SQL_IS_UINTEGER, nullptr);
+        return !success(rc) || dead != SQL_CD_TRUE;
+#else
+        return true;
+#endif
+    }
 
     void disconnect()
     {
-        if (connected())
+        if (connected_)
         {
             RETCODE rc = SQL_SUCCESS;
             NANODBC_CALL_RC(SQLDisconnect, rc, dbc_);
@@ -1640,6 +1653,10 @@ public:
 
     void rollback(bool onoff) noexcept { rollback_ = onoff; }
 
+    bool restore_autocommit() const noexcept { return restore_autocommit_; }
+
+    void restore_autocommit(bool onoff) noexcept { restore_autocommit_ = onoff; }
+
 private:
     template <class T, std::enable_if_t<!is_string<T>::value, int> = 0>
     T get_info_impl(short info_type) const;
@@ -1651,6 +1668,7 @@ private:
     HDBC dbc_{};
     bool connected_{};
     bool rollback_{}; // if true, this connection is marked for eventual transaction rollback
+    bool restore_autocommit_{true}; // autocommit as the outermost transaction found it
     std::size_t transactions_{};
 };
 
@@ -1753,6 +1771,17 @@ public:
         if (conn_.transactions() == 0 && conn_.connected())
         {
             RETCODE rc = SQL_SUCCESS;
+            SQLUINTEGER autocommit = SQL_AUTOCOMMIT_ON;
+            NANODBC_CALL_RC(
+                SQLGetConnectAttr,
+                rc,
+                conn_.native_dbc_handle(),
+                SQL_ATTR_AUTOCOMMIT,
+                &autocommit,
+                SQL_IS_UINTEGER,
+                nullptr);
+            conn_.restore_autocommit(!success(rc) || autocommit != SQL_AUTOCOMMIT_OFF);
+
             NANODBC_CALL_RC(
                 SQLSetConnectAttr,
                 rc,
@@ -1789,7 +1818,8 @@ public:
                     SQLSetConnectAttr,
                     conn_.native_dbc_handle(),
                     SQL_ATTR_AUTOCOMMIT,
-                    (SQLPOINTER)SQL_AUTOCOMMIT_ON,
+                    (SQLPOINTER)(conn_.restore_autocommit() ? SQL_AUTOCOMMIT_ON
+                                                            : SQL_AUTOCOMMIT_OFF),
                     SQL_IS_UINTEGER);
             }
         }
@@ -5952,6 +5982,16 @@ bool connection::rollback() const noexcept
 void connection::rollback(bool onoff) noexcept
 {
     impl_->rollback(onoff);
+}
+
+bool connection::restore_autocommit() const noexcept
+{
+    return impl_->restore_autocommit();
+}
+
+void connection::restore_autocommit(bool onoff) noexcept
+{
+    impl_->restore_autocommit(onoff);
 }
 
 } // namespace nanodbc

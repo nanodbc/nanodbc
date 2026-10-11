@@ -467,6 +467,14 @@ TEST_CASE_METHOD(
 
 TEST_CASE_METHOD(
     postgresql_fixture,
+    "test_transaction_restores_autocommit",
+    "[postgresql][transaction]")
+{
+    test_transaction_restores_autocommit();
+}
+
+TEST_CASE_METHOD(
+    postgresql_fixture,
     "test_long_text_chunk_boundaries",
     "[postgresql][result][string]")
 {
