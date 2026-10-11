@@ -1346,6 +1346,12 @@ struct test_case_fixture : public base_test_fixture
                     .empty());
 
         REQUIRE(!results.next());
+
+        results = execute(
+            connection, NANODBC_TEXT("select long_b from test_binary_read_shapes where id = 0;"));
+        REQUIRE(results.next());
+        REQUIRE(!results.is_null(0));
+        REQUIRE(results.get<std::vector<std::uint8_t>>(0) == long_value);
     }
 
     void test_statement_timeout()

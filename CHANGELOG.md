@@ -1,5 +1,9 @@
 # ChangeLog
 
+## Unreleased
+
+- A long unbound binary column is read in chunks sized from the length left, rather than 1 KB at a time. [`#559`](https://github.com/nanodbc/nanodbc/issues/559)
+
 ## v3.0.5
 
 - Add static_assert on concept to ensure result is an input_range when building with C++20. [`#558`](https://github.com/nanodbc/nanodbc/issues/558)
