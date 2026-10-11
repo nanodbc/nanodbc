@@ -69,6 +69,11 @@ TEST_CASE_METHOD(oracle_fixture, "test_binary_read_shapes", "[oracle][result][bi
     test_binary_read_shapes();
 }
 
+TEST_CASE_METHOD(oracle_fixture, "test_get_chunks", "[oracle][result][chunks]")
+{
+    test_get_chunks();
+}
+
 TEST_CASE_METHOD(oracle_fixture, "test_bind_arithmetic_null_sentry", "[oracle][bind][null]")
 {
     test_bind_arithmetic_null_sentry();
@@ -262,6 +267,11 @@ TEST_CASE_METHOD(
     "[oracle][transaction][rollback]")
 {
     test_nested_transaction_rollback();
+}
+
+TEST_CASE_METHOD(oracle_fixture, "test_transaction_restores_autocommit", "[oracle][transaction]")
+{
+    test_transaction_restores_autocommit();
 }
 
 TEST_CASE_METHOD(oracle_fixture, "test_null", "[oracle][null]")

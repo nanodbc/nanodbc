@@ -1346,6 +1346,97 @@ struct test_case_fixture : public base_test_fixture
                     .empty());
 
         REQUIRE(!results.next());
+
+        results = execute(
+            connection, NANODBC_TEXT("select long_b from test_binary_read_shapes where id = 0;"));
+        REQUIRE(results.next());
+        REQUIRE(!results.is_null(0));
+        REQUIRE(results.get<std::vector<std::uint8_t>>(0) == long_value);
+    }
+
+    void test_get_chunks()
+    {
+        nanodbc::connection connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_get_chunks"),
+            NANODBC_TEXT("(id int, t ") + get_text_type_name() + NANODBC_TEXT(", b ") +
+                (vendor_ == database_vendor::postgresql ? get_binary_type_name()
+                                                        : get_binary_type_name(5000)) +
+                NANODBC_TEXT(")"));
+
+        nanodbc::string text;
+        for (std::size_t i = 0; i < 5000; ++i)
+            text.push_back(
+                static_cast<nanodbc::string::value_type>(NANODBC_TEXT("abcdefghij")[i % 10]));
+        std::vector<std::uint8_t> binary(5000);
+        for (std::size_t i = 0; i < binary.size(); ++i)
+            binary[i] = static_cast<std::uint8_t>(i % 251);
+
+        {
+            nanodbc::statement statement(connection);
+            prepare(
+                statement,
+                NANODBC_TEXT("insert into test_get_chunks (id, t, b) values (0, ?, ?);"));
+            statement.bind(0, text.c_str());
+            std::vector<std::vector<std::uint8_t>> const binaries{binary};
+            statement.bind(1, binaries);
+            nanodbc::execute(statement);
+        }
+        execute(
+            connection,
+            NANODBC_TEXT("insert into test_get_chunks (id, t, b) values (1, null, null);"));
+
+        auto const select = [&](nanodbc::string const& column, int id)
+        {
+            auto results = execute(
+                connection,
+                NANODBC_TEXT("select ") + column +
+                    NANODBC_TEXT(" from test_get_chunks where id = ") +
+                    (id == 0 ? NANODBC_TEXT("0") : NANODBC_TEXT("1")) + NANODBC_TEXT(";"));
+            REQUIRE(results.next());
+            return results;
+        };
+
+        {
+            auto results = select(NANODBC_TEXT("t"), 0);
+            nanodbc::string joined;
+            int chunks = 0;
+            REQUIRE(results.get_chunks<nanodbc::string>(
+                0,
+                [&](nanodbc::string const& chunk)
+                {
+                    joined += chunk;
+                    ++chunks;
+                },
+                256));
+            REQUIRE(joined == text);
+            REQUIRE(chunks > 1);
+        }
+        {
+            auto results = select(NANODBC_TEXT("b"), 0);
+            std::vector<std::uint8_t> joined;
+            int chunks = 0;
+            REQUIRE(results.get_chunks<std::vector<std::uint8_t>>(
+                as_identifier(NANODBC_TEXT("b")),
+                [&](std::vector<std::uint8_t> const& chunk)
+                {
+                    joined.insert(joined.end(), chunk.begin(), chunk.end());
+                    ++chunks;
+                },
+                256));
+            REQUIRE(joined == binary);
+            REQUIRE(chunks > 1);
+        }
+        {
+            auto results = select(NANODBC_TEXT("t, b"), 1);
+            bool called = false;
+            REQUIRE_FALSE(results.get_chunks<nanodbc::string>(
+                0, [&](nanodbc::string const&) { called = true; }));
+            REQUIRE_FALSE(results.get_chunks<std::vector<std::uint8_t>>(
+                1, [&](std::vector<std::uint8_t> const&) { called = true; }));
+            REQUIRE_FALSE(called);
+        }
     }
 
     void test_statement_timeout()
@@ -2083,6 +2174,52 @@ struct test_case_fixture : public base_test_fixture
             outer.commit();
         }
         REQUIRE(count() == 1);
+    }
+
+    // Autocommit may have been turned off on the native handle by someone else.
+    void test_transaction_restores_autocommit()
+    {
+        auto connection = connect();
+        auto const dbc = static_cast<SQLHDBC>(connection.native_dbc_handle());
+        auto const autocommit = [&]()
+        {
+            SQLUINTEGER value = 0;
+            REQUIRE(SQL_SUCCEEDED(
+                SQLGetConnectAttr(dbc, SQL_ATTR_AUTOCOMMIT, &value, SQL_IS_UINTEGER, nullptr)));
+            return value;
+        };
+        auto const set_autocommit = [&](SQLULEN value)
+        {
+            REQUIRE(SQL_SUCCEEDED(SQLSetConnectAttr(
+                dbc, SQL_ATTR_AUTOCOMMIT, reinterpret_cast<SQLPOINTER>(value), SQL_IS_UINTEGER)));
+        };
+
+        REQUIRE(autocommit() == SQL_AUTOCOMMIT_ON);
+        {
+            nanodbc::transaction transaction(connection);
+            transaction.commit();
+        }
+        REQUIRE(autocommit() == SQL_AUTOCOMMIT_ON);
+
+        set_autocommit(SQL_AUTOCOMMIT_OFF);
+        {
+            nanodbc::transaction transaction(connection);
+            transaction.commit();
+        }
+        REQUIRE(autocommit() == SQL_AUTOCOMMIT_OFF);
+        {
+            nanodbc::transaction transaction(connection);
+            transaction.rollback();
+        }
+        REQUIRE(autocommit() == SQL_AUTOCOMMIT_OFF);
+        {
+            nanodbc::transaction outer(connection);
+            nanodbc::transaction inner(connection);
+        }
+        REQUIRE(autocommit() == SQL_AUTOCOMMIT_OFF);
+
+        SQLEndTran(SQL_HANDLE_DBC, dbc, SQL_ROLLBACK);
+        set_autocommit(SQL_AUTOCOMMIT_ON);
     }
 
     // A long column is read in fixed-size pieces with repeated SQLGetData calls, 1024

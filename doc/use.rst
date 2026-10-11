@@ -335,6 +335,33 @@ The rowset size is what to vary if the read is slow. Its effect is the same as t
 ``batch_ops`` sets the rowset size where a statement also carries parameters, so that the two are chosen separately.
 
 ******************************************************************************
+Reading a long value in chunks
+******************************************************************************
+
+``get`` and ``get_ref`` return a value whole, so a document of tens of megabytes is all in memory before any of it can be used. ``get_chunks`` hands the value over as ``SQLGetData`` returns it instead, one buffer at a time, and returns ``false`` without calling back if it is null:
+
+.. code-block:: cpp
+
+    #include <nanodbc/nanodbc.h>
+    #include <fstream>
+    #include <string>
+
+    int main()
+    {
+        nanodbc::connection conn(NANODBC_TEXT("dsn"));
+        auto results = execute(conn, NANODBC_TEXT("select doc from t"));
+
+        std::ofstream out("doc.json", std::ios::binary);
+        while (results.next())
+        {
+            results.get_chunks<std::string>(
+                0, [&](std::string const& chunk) { out.write(chunk.data(), chunk.size()); });
+        }
+    }
+
+The chunks joined are what ``get<T>`` returns for the same column, for ``std::string``, ``wide_string`` and ``std::vector<std::uint8_t>``. Only an unbound column is read in pieces, which a long one always is. A bound column arrives as one chunk. A driver that does not report ``SQL_GD_ANY_COLUMN`` wants a long column read after the bound ones, which ``unbind()`` sidesteps by unbinding them all.
+
+******************************************************************************
 Setting connection attributes
 ******************************************************************************
 
