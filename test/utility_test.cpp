@@ -436,6 +436,17 @@ static_assert(
         !std::is_move_assignable_v<nanodbc::table_valued_parameter>,
     "table_valued_parameter has no assignment: its move constructor withdrew both");
 
+TEST_CASE("incomplete_utf8_tail", "[result][string]")
+{
+    REQUIRE(incomplete_utf8_tail("") == 0);
+    REQUIRE(incomplete_utf8_tail("abc") == 0);
+    REQUIRE(incomplete_utf8_tail("a\xC3") == 1);
+    REQUIRE(incomplete_utf8_tail("a\xC3\xB6") == 0);
+    REQUIRE(incomplete_utf8_tail("a\xF0\x9F\x98") == 3);
+    REQUIRE(incomplete_utf8_tail("a\xF0\x9F\x98\x80") == 0);
+    REQUIRE(incomplete_utf8_tail("a\xE2\x82") == 2);
+}
+
 TEST_CASE("get_data_chunk_sizes", "[result][string]")
 {
     SECTION("a reported length sizes the next chunk to the rest of the value")

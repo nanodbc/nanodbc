@@ -2709,6 +2709,31 @@ TEST_CASE_METHOD(mssql_fixture, "test_binary_read_shapes", "[mssql][result][bina
     test_binary_read_shapes();
 }
 
+// The narrow string is converted from UTF-16 a chunk at a time, and an odd chunk size
+// splits surrogate pairs between reads.
+TEST_CASE_METHOD(mssql_fixture, "test_get_chunks_wide_to_utf8", "[mssql][result][chunks]")
+{
+    auto connection = connect();
+    auto results = execute(
+        connection,
+        NANODBC_TEXT(
+            "select replicate(cast(nchar(0xD83D) + nchar(0xDE00) as nvarchar(max)), 1000);"));
+    REQUIRE(results.next());
+    std::string joined;
+    REQUIRE(
+        results.get_chunks<std::string>(0, [&](std::string const& chunk) { joined += chunk; }, 40));
+
+    std::string expected;
+    for (int i = 0; i < 1000; ++i)
+        expected += "\xF0\x9F\x98\x80";
+    REQUIRE(joined == expected);
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_get_chunks", "[mssql][result][chunks]")
+{
+    test_get_chunks();
+}
+
 // An output parameter that comes back null leaves the buffer as it found it, so the value
 // alone cannot say whether the procedure set it. The indicator can.
 TEST_CASE_METHOD(mssql_fixture, "test_output_parameter_is_null", "[mssql][statement][bind]")

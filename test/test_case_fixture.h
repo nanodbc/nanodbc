@@ -1354,6 +1354,91 @@ struct test_case_fixture : public base_test_fixture
         REQUIRE(results.get<std::vector<std::uint8_t>>(0) == long_value);
     }
 
+    void test_get_chunks()
+    {
+        nanodbc::connection connection = connect();
+        create_table(
+            connection,
+            NANODBC_TEXT("test_get_chunks"),
+            NANODBC_TEXT("(id int, t ") + get_text_type_name() + NANODBC_TEXT(", b ") +
+                (vendor_ == database_vendor::postgresql ? get_binary_type_name()
+                                                        : get_binary_type_name(5000)) +
+                NANODBC_TEXT(")"));
+
+        nanodbc::string text;
+        for (std::size_t i = 0; i < 5000; ++i)
+            text.push_back(
+                static_cast<nanodbc::string::value_type>(NANODBC_TEXT("abcdefghij")[i % 10]));
+        std::vector<std::uint8_t> binary(5000);
+        for (std::size_t i = 0; i < binary.size(); ++i)
+            binary[i] = static_cast<std::uint8_t>(i % 251);
+
+        {
+            nanodbc::statement statement(connection);
+            prepare(
+                statement,
+                NANODBC_TEXT("insert into test_get_chunks (id, t, b) values (0, ?, ?);"));
+            statement.bind(0, text.c_str());
+            std::vector<std::vector<std::uint8_t>> const binaries{binary};
+            statement.bind(1, binaries);
+            nanodbc::execute(statement);
+        }
+        execute(
+            connection,
+            NANODBC_TEXT("insert into test_get_chunks (id, t, b) values (1, null, null);"));
+
+        auto const select = [&](nanodbc::string const& column, int id)
+        {
+            auto results = execute(
+                connection,
+                NANODBC_TEXT("select ") + column +
+                    NANODBC_TEXT(" from test_get_chunks where id = ") +
+                    (id == 0 ? NANODBC_TEXT("0") : NANODBC_TEXT("1")) + NANODBC_TEXT(";"));
+            REQUIRE(results.next());
+            return results;
+        };
+
+        {
+            auto results = select(NANODBC_TEXT("t"), 0);
+            nanodbc::string joined;
+            int chunks = 0;
+            REQUIRE(results.get_chunks<nanodbc::string>(
+                0,
+                [&](nanodbc::string const& chunk)
+                {
+                    joined += chunk;
+                    ++chunks;
+                },
+                256));
+            REQUIRE(joined == text);
+            REQUIRE(chunks > 1);
+        }
+        {
+            auto results = select(NANODBC_TEXT("b"), 0);
+            std::vector<std::uint8_t> joined;
+            int chunks = 0;
+            REQUIRE(results.get_chunks<std::vector<std::uint8_t>>(
+                as_identifier(NANODBC_TEXT("b")),
+                [&](std::vector<std::uint8_t> const& chunk)
+                {
+                    joined.insert(joined.end(), chunk.begin(), chunk.end());
+                    ++chunks;
+                },
+                256));
+            REQUIRE(joined == binary);
+            REQUIRE(chunks > 1);
+        }
+        {
+            auto results = select(NANODBC_TEXT("t, b"), 1);
+            bool called = false;
+            REQUIRE_FALSE(results.get_chunks<nanodbc::string>(
+                0, [&](nanodbc::string const&) { called = true; }));
+            REQUIRE_FALSE(results.get_chunks<std::vector<std::uint8_t>>(
+                1, [&](std::vector<std::uint8_t> const&) { called = true; }));
+            REQUIRE_FALSE(called);
+        }
+    }
+
     void test_statement_timeout()
     {
         nanodbc::connection connection = connect();
