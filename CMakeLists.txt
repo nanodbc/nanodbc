@@ -31,6 +31,7 @@ cmake_policy( SET CMP0127 NEW )
 option( NANODBC_DISABLE_ASYNC "Disable async features entirely (default off)" OFF )
 option( NANODBC_DISABLE_MSSQL_TVP "Do not use MSSQL Table-valued parameter (default off)" OFF )
 option( NANODBC_ENABLE_UNICODE "Enable Unicode support (default on)" OFF )
+option( NANODBC_ENABLE_UTF8 "Keep strings narrow as UTF-8 but call the wide ODBC functions (default off)" OFF )
 option( NANODBC_ENABLE_WORKAROUND_NODATA "Enable SQL_NO_DATA workaround (see Issue #43) (default off)" OFF )
 
 include( CheckCXXCompilerFlag )
@@ -157,6 +158,15 @@ else()
 endif()
 
 message( STATUS "nanodbc feature: Enable Unicode - ${NANODBC_ENABLE_UNICODE}" )
+message( STATUS "nanodbc feature: Enable UTF-8 - ${NANODBC_ENABLE_UTF8}" )
+
+if( NANODBC_ENABLE_UNICODE AND NANODBC_ENABLE_UTF8 )
+  message( FATAL_ERROR "NANODBC_ENABLE_UNICODE and NANODBC_ENABLE_UTF8 are alternatives; enable one" )
+endif()
+
+if( NANODBC_ENABLE_UTF8 )
+  target_compile_definitions( nanodbc PUBLIC NANODBC_ENABLE_UTF8 )
+endif()
 
 if( NANODBC_ENABLE_UNICODE )
   target_compile_definitions( nanodbc PUBLIC

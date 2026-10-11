@@ -159,6 +159,10 @@ namespace nanodbc
 /// @}
 
 // You must explicitly request Unicode support by defining NANODBC_ENABLE_UNICODE at compile time.
+// NANODBC_ENABLE_UTF8 keeps string narrow, holding UTF-8, and calls the wide ODBC functions.
+#if defined(NANODBC_ENABLE_UNICODE) && defined(NANODBC_ENABLE_UTF8)
+#error "NANODBC_ENABLE_UNICODE and NANODBC_ENABLE_UTF8 are alternatives; define one"
+#endif
 #ifndef DOXYGEN
 #ifdef NANODBC_ENABLE_UNICODE
 #ifdef NANODBC_USE_IODBC_WIDE_STRINGS

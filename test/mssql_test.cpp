@@ -3229,6 +3229,68 @@ TEST_CASE_METHOD(mssql_fixture, "test_error_message_multibyte", "[mssql][error]"
 }
 #endif
 
+#ifdef NANODBC_ENABLE_UTF8
+// The process stays in the C locale, which a driver manager converting narrow text for a
+// W-only driver would use.
+TEST_CASE_METHOD(mssql_fixture, "test_utf8_text", "[mssql][utf8]")
+{
+    auto connection = connect();
+
+    {
+        auto column = execute(
+            connection,
+            "declare @q nvarchar(99) = N'select 1 as ' + quotename(nchar(246)); exec(@q);");
+        REQUIRE(column.column_name(0) == "\xC3\xB6");
+    }
+    {
+        auto text = execute(
+            connection,
+            "select convert(varchar(64), cast(N'\xC3\xB6\xF0\x9F\x98\x80' as varbinary(64)), "
+            "2);");
+        REQUIRE(text.next());
+        REQUIRE(text.get<std::string>(0) == "F6003DD800DE");
+    }
+    {
+        nanodbc::statement statement(connection);
+        prepare(statement, "select N'\xC3\xB6\xF0\x9F\x98\x80' as v;");
+        auto prepared = statement.execute();
+        REQUIRE(prepared.next());
+        REQUIRE(prepared.get<std::string>(0) == "\xC3\xB6\xF0\x9F\x98\x80");
+    }
+
+    std::string message;
+    try
+    {
+        execute(connection, "declare @m nvarchar(20) = N'g' + nchar(246); raiserror(@m, 16, 1);");
+    }
+    catch (nanodbc::database_error const& e)
+    {
+        message = e.what();
+    }
+    REQUIRE(message.size() >= 3);
+    REQUIRE(message.substr(message.size() - 3) == "g\xC3\xB6");
+
+    std::string const database = "nanodbc_utf8_\xC3\xB6";
+    execute(
+        connection,
+        "declare @q nvarchar(99) = N'drop database if exists ' + quotename(N'nanodbc_utf8_' + "
+        "nchar(246)) + N'; create database ' + quotename(N'nanodbc_utf8_' + nchar(246)); "
+        "exec(@q);");
+    {
+        std::string connection_string = connection_string_;
+        auto const at = connection_string.find("Database=");
+        if (at != std::string::npos)
+            connection_string.erase(at, connection_string.find(';', at) - at + 1);
+        nanodbc::connection other(connection_string + ";Database=" + database + ";");
+        REQUIRE(other.catalog_name() == database);
+    }
+    execute(
+        connection,
+        "declare @q nvarchar(99) = N'drop database ' + quotename(N'nanodbc_utf8_' + nchar(246)); "
+        "exec(@q);");
+}
+#endif
+
 TEST_CASE_METHOD(mssql_fixture, "test_bind_date_to_timestamp_parameter", "[mssql][bind][date]")
 {
     test_bind_date_to_timestamp_parameter();
