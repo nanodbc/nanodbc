@@ -467,6 +467,14 @@ TEST_CASE_METHOD(
 
 TEST_CASE_METHOD(
     postgresql_fixture,
+    "test_transaction_restores_autocommit",
+    "[postgresql][transaction]")
+{
+    test_transaction_restores_autocommit();
+}
+
+TEST_CASE_METHOD(
+    postgresql_fixture,
     "test_long_text_chunk_boundaries",
     "[postgresql][result][string]")
 {
@@ -763,6 +771,11 @@ TEST_CASE_METHOD(
 TEST_CASE_METHOD(postgresql_fixture, "test_binary_read_shapes", "[postgresql][result][binary]")
 {
     test_binary_read_shapes();
+}
+
+TEST_CASE_METHOD(postgresql_fixture, "test_get_chunks", "[postgresql][result][chunks]")
+{
+    test_get_chunks();
 }
 
 TEST_CASE_METHOD(postgresql_fixture, "test_null_long_text_fallback", "[postgresql][result][null]")
