@@ -551,6 +551,9 @@ split_optional(std::vector<std::optional<T>> const& values, std::vector<T>& colu
 // clang-format on
 
 /// \brief A resource for managing transaction commits and rollbacks.
+///
+/// Copies share one transaction. If it has not been committed when the last copy is destroyed,
+/// it rolls back any modifying operations.
 /// \attention You will want to use transactions if you are doing batch operations because it will
 ///            prevent auto commits from occurring after each individual operation is executed.
 class transaction
@@ -563,9 +566,6 @@ public:
 
     /// Member swap.
     void swap(transaction& rhs) noexcept;
-
-    /// \brief If this transaction has not been committed, it will rollback any modifying ops.
-    ~transaction() noexcept;
 
     /// \brief Commits transaction immediately.
     /// \throws database_error
