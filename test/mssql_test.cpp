@@ -1302,6 +1302,11 @@ TEST_CASE_METHOD(
     test_nested_transaction_rollback();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_transaction_restores_autocommit", "[mssql][transaction]")
+{
+    test_transaction_restores_autocommit();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_long_text_chunk_boundaries", "[mssql][result][string]")
 {
     test_long_text_chunk_boundaries();

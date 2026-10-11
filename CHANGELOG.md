@@ -1,5 +1,9 @@
 # ChangeLog
 
+## Unreleased
+
+- A transaction leaves autocommit as it found it, rather than always turning it on. [`#565`](https://github.com/nanodbc/nanodbc/issues/565)
+
 ## v3.0.5
 
 - Add static_assert on concept to ensure result is an input_range when building with C++20. [`#558`](https://github.com/nanodbc/nanodbc/issues/558)
