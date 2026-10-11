@@ -494,6 +494,11 @@ TEST_CASE_METHOD(
     test_nested_transaction_rollback();
 }
 
+TEST_CASE_METHOD(mysql_fixture, "test_transaction_restores_autocommit", "[mysql][transaction]")
+{
+    test_transaction_restores_autocommit();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "test_long_text_chunk_boundaries", "[mysql][result][string]")
 {
     test_long_text_chunk_boundaries();
