@@ -309,7 +309,7 @@ static_assert(
     post_increment_is_dereferenceable<std::vector<int>::iterator>::value,
     "and the trait says yes for an iterator that can do it, so the check above means something");
 static_assert(
-    std::is_void<decltype(std::declval<nanodbc::result_iterator&>()++)>::value,
+    std::is_void_v<decltype(std::declval<nanodbc::result_iterator&>()++)>,
     "post-increment advances and returns nothing");
 
 // What a noexcept promises is not something a run can check. One that lies does not fail to
@@ -319,15 +319,15 @@ static_assert(
 
 // Declared to throw nothing, and callers may rely on it.
 static_assert(
-    std::is_nothrow_default_constructible<nanodbc::result>::value,
+    std::is_nothrow_default_constructible_v<nanodbc::result>,
     "result holds one shared_ptr, whose default constructor cannot throw");
 static_assert(
-    std::is_nothrow_default_constructible<nanodbc::result_iterator>::value,
+    std::is_nothrow_default_constructible_v<nanodbc::result_iterator>,
     "result_iterator follows result");
 static_assert(
-    std::is_nothrow_default_constructible<nanodbc::date>::value &&
-        std::is_nothrow_default_constructible<nanodbc::time>::value &&
-        std::is_nothrow_default_constructible<nanodbc::timestamp>::value,
+    std::is_nothrow_default_constructible_v<nanodbc::date> &&
+        std::is_nothrow_default_constructible_v<nanodbc::time> &&
+        std::is_nothrow_default_constructible_v<nanodbc::timestamp>,
     "the temporal types are aggregates of integers");
 
 // The handle accessors forward through a shared_ptr and reach no further.
@@ -373,22 +373,22 @@ static_assert(
 // Its result wrappers do the same with a result, but their constructors are private and
 // out of the trait's reach.
 static_assert(
-    std::is_nothrow_constructible<nanodbc::catalog, nanodbc::connection&>::value,
+    std::is_nothrow_constructible_v<nanodbc::catalog, nanodbc::connection&>,
     "catalog copies a connection");
 
 // And the other way about. These allocate, so they must not claim otherwise: saying
 // noexcept over an allocation turns running out of memory into a call to terminate. If one
 // of them stops allocating, say so here and take the noexcept with it.
 static_assert(
-    !std::is_nothrow_default_constructible<nanodbc::connection>::value,
+    !std::is_nothrow_default_constructible_v<nanodbc::connection>,
     "connection allocates its implementation");
 static_assert(
-    !std::is_nothrow_default_constructible<nanodbc::statement>::value,
+    !std::is_nothrow_default_constructible_v<nanodbc::statement>,
     "statement allocates its implementation");
 static_assert(
-    !std::is_nothrow_default_constructible<nanodbc::type_incompatible_error>::value &&
-        !std::is_nothrow_default_constructible<nanodbc::null_access_error>::value &&
-        !std::is_nothrow_default_constructible<nanodbc::index_range_error>::value,
+    !std::is_nothrow_default_constructible_v<nanodbc::type_incompatible_error> &&
+        !std::is_nothrow_default_constructible_v<nanodbc::null_access_error> &&
+        !std::is_nothrow_default_constructible_v<nanodbc::index_range_error>,
     "the error types hand a literal to std::runtime_error, which may allocate");
 
 // Which operations a type offers is decided by which ones it declares, and the deciding is
@@ -424,16 +424,16 @@ NANODBC_ASSERT_COPY_AND_SWAP(nanodbc::result_iterator);
 // from another and never assigned from one. Stated so that restoring the assignments is a
 // decision someone takes rather than a side effect of editing a constructor.
 static_assert(
-    std::is_copy_constructible<nanodbc::table_valued_parameter>::value &&
-        std::is_move_constructible<nanodbc::table_valued_parameter>::value,
+    std::is_copy_constructible_v<nanodbc::table_valued_parameter> &&
+        std::is_move_constructible_v<nanodbc::table_valued_parameter>,
     "table_valued_parameter can be built from another");
 static_assert(
-    std::is_nothrow_copy_constructible<nanodbc::table_valued_parameter>::value &&
-        std::is_nothrow_move_constructible<nanodbc::table_valued_parameter>::value,
+    std::is_nothrow_copy_constructible_v<nanodbc::table_valued_parameter> &&
+        std::is_nothrow_move_constructible_v<nanodbc::table_valued_parameter>,
     "and doing so copies a shared_ptr, which cannot throw");
 static_assert(
-    !std::is_copy_assignable<nanodbc::table_valued_parameter>::value &&
-        !std::is_move_assignable<nanodbc::table_valued_parameter>::value,
+    !std::is_copy_assignable_v<nanodbc::table_valued_parameter> &&
+        !std::is_move_assignable_v<nanodbc::table_valued_parameter>,
     "table_valued_parameter has no assignment: its move constructor withdrew both");
 
 TEST_CASE("get_data_chunk_sizes", "[result][string]")

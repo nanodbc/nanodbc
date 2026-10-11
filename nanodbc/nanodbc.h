@@ -362,13 +362,11 @@ private:
 /// number of rows in a rowset of a result.
 struct batch_ops
 {
-    long parameter_array_length; ///< Number of parameter values bound per execution.
-    long rowset_size;            ///< Number of rows fetched into a rowset at a time.
+    long parameter_array_length{-1}; ///< Number of parameter values bound per execution.
+    long rowset_size{-1};            ///< Number of rows fetched into a rowset at a time.
 
     /// \brief Creates lengths of -1, meaning neither has been chosen.
-    batch_ops() noexcept
-        : parameter_array_length(-1L)
-        , rowset_size(-1L) {};
+    batch_ops() = default;
 
     /// \brief Creates both lengths with the same value.
     /// \param all_length Value used for the parameter array length and the rowset size.
@@ -443,7 +441,7 @@ public:
     /// \param attribute The Attribute argument of SQLSetConnectAttr or SQLSetStmtAttr.
     /// \param string_length The StringLength argument.
     /// \param resource The value the ValuePtr argument should refer to.
-    attribute(long const& attribute, long const& string_length, variant const& resource) noexcept;
+    attribute(long const& attribute, long const& string_length, variant resource) noexcept;
 
 protected:
     /// \brief Points value_ptr_ at the resource, according to which type it holds.
@@ -455,7 +453,7 @@ protected:
     long attribute_;     ///< The Attribute argument of the ODBC call.
     long string_length_; ///< The StringLength argument of the ODBC call.
     variant resource_;   ///< Owns the value that value_ptr_ refers to.
-    void* value_ptr_;    ///< The ValuePtr argument of the ODBC call.
+    void* value_ptr_{};  ///< The ValuePtr argument of the ODBC call.
 };
 
 /// \brief A type trait for testing if a type is a std::basic_string compatible with the current
@@ -559,15 +557,6 @@ public:
     /// \throws database_error
     explicit transaction(const class connection& conn);
 
-    /// Copy constructor.
-    transaction(const transaction& rhs) noexcept;
-
-    /// Move constructor.
-    transaction(transaction&& rhs) noexcept;
-
-    /// Assignment.
-    transaction& operator=(transaction rhs) noexcept;
-
     /// Member swap.
     void swap(transaction& rhs) noexcept;
 
@@ -621,18 +610,14 @@ public:
     /// \brief Creates a table-valued parameter that is not yet open.
     table_valued_parameter();
 
-    /// \brief Copy constructor.
-    table_valued_parameter(const table_valued_parameter& rhs) noexcept;
-
-    /// \brief Move constructor.
-    table_valued_parameter(table_valued_parameter&& rhs) noexcept;
+    table_valued_parameter(const table_valued_parameter&) = default;
+    table_valued_parameter(table_valued_parameter&&) = default;
+    void operator=(const table_valued_parameter&) = delete;
+    void operator=(table_valued_parameter&&) = delete;
 
     /// \brief Creates a table-valued parameter and opens it on the given statement.
     /// \see open()
     table_valued_parameter(statement& stmt, short param_index, size_t row_count);
-
-    /// \brief Closes the parameter, if it is still open.
-    ~table_valued_parameter() noexcept;
 
     /// \brief Opens the parameter on a statement, ready for values to be bound to it.
     ///
@@ -940,21 +925,8 @@ public:
     /// \see execute(), just_execute(), execute_direct(), just_execute_direct(), open(), prepare()
     statement(class connection& conn, string const& query, long timeout = 0);
 
-    /// \brief Copy constructor.
-    statement(const statement& rhs) noexcept;
-
-    /// \brief Move constructor.
-    statement(statement&& rhs) noexcept;
-
-    /// \brief Assignment.
-    statement& operator=(statement rhs) noexcept;
-
     /// \brief Member swap.
     void swap(statement& rhs) noexcept;
-
-    /// \brief Closes the statement.
-    /// \see close()
-    ~statement() noexcept;
 
     /// \brief Creates a statement for the given connection.
     /// \param conn The connection where the statement will be executed.
@@ -1686,15 +1658,6 @@ public:
     /// \brief Create new connection object, initially not connected.
     connection();
 
-    /// Copy constructor.
-    connection(const connection& rhs) noexcept;
-
-    /// Move constructor.
-    connection(connection&& rhs) noexcept;
-
-    /// Assignment.
-    connection& operator=(connection rhs) noexcept;
-
     /// Member swap.
     void swap(connection&) noexcept;
 
@@ -1750,11 +1713,6 @@ public:
     /// \throws database_error
     /// \see connected(), connect(), attribute
     connection(string const& connection_string, std::list<attribute> const& attributes);
-    /// \brief Automatically disconnects from the database and frees all associated resources.
-    ///
-    /// Will not throw even if disconnecting causes some kind of error and raises an exception.
-    /// If you explicitly need to know if disconnect() succeeds, call it directly.
-    ~connection() noexcept;
 
     /// \brief Allocate environment and connection handles.
     ///
@@ -1954,19 +1912,7 @@ class result
 {
 public:
     /// \brief Empty result set.
-    result() noexcept;
-
-    /// \brief Free result set.
-    ~result() noexcept;
-
-    /// \brief Copy constructor.
-    result(const result& rhs) noexcept;
-
-    /// \brief Move constructor.
-    result(result&& rhs) noexcept;
-
-    /// \brief Assignment.
-    result& operator=(result rhs) noexcept;
+    result() = default;
 
     /// \brief Member swap.
     void swap(result& rhs) noexcept;
@@ -2371,7 +2317,6 @@ public:
 private:
     result(statement statement, long rowset_size);
 
-private:
     class result_impl;
     friend class nanodbc::statement::statement_impl;
     friend class nanodbc::catalog;
@@ -2826,10 +2771,10 @@ public:
     /// All arguments are treated as the Pattern Value Arguments.
     /// Empty string argument is equivalent to passing the search pattern '%'.
     catalog::tables find_tables(
-        string const& table = string(),
-        string const& type = string(),
-        string const& schema = string(),
-        string const& catalog = string());
+        string const& table = {},
+        string const& type = {},
+        string const& schema = {},
+        string const& catalog = {});
 
     /// \brief Creates result set with tables and the privileges associated with each table.
     /// Tables information is obtained by executing `SQLTablePrivileges` function within
@@ -2846,8 +2791,8 @@ public:
     ///       order of parameters is different than in the other catalog look-up functions.
     catalog::table_privileges find_table_privileges(
         string const& catalog,
-        string const& table = string(),
-        string const& schema = string());
+        string const& table = {},
+        string const& schema = {});
 
     /// \brief Creates result set with columns in one or more tables.
     ///
@@ -2859,10 +2804,10 @@ public:
     /// All arguments are treated as the Pattern Value Arguments.
     /// Empty string argument is equivalent to passing the search pattern '%'.
     catalog::columns find_columns(
-        string const& column = string(),
-        string const& table = string(),
-        string const& schema = string(),
-        string const& catalog = string());
+        string const& column = {},
+        string const& table = {},
+        string const& schema = {},
+        string const& catalog = {});
 
     /// \brief Creates result set with columns that compose the primary key of a single table.
     ///
@@ -2872,10 +2817,8 @@ public:
     ///
     /// All arguments are treated as the Pattern Value Arguments.
     /// Empty string argument is equivalent to passing the search pattern '%'.
-    catalog::primary_keys find_primary_keys(
-        string const& table,
-        string const& schema = string(),
-        string const& catalog = string());
+    catalog::primary_keys
+    find_primary_keys(string const& table, string const& schema = {}, string const& catalog = {});
 
     /// \brief Creates result set with catalog, schema, procedure, and procedure types.
     ///
@@ -2888,9 +2831,9 @@ public:
     /// Empty string argument is equivalent to passing the search pattern '%'.
 
     catalog::procedures find_procedures(
-        string const& procedure = string(),
-        string const& schema = string(),
-        string const& catalog = string());
+        string const& procedure = {},
+        string const& schema = {},
+        string const& catalog = {});
 
     /// \brief Creates result set with columns in one or more procedures.
     ///
@@ -2903,10 +2846,10 @@ public:
     /// All arguments are treated as the Pattern Value Arguments.
     /// Empty string argument is equivalent to passing the search pattern '%'.
     catalog::procedure_columns find_procedure_columns(
-        string const& column = string(),
-        string const& procedure = string(),
-        string const& schema = string(),
-        string const& catalog = string());
+        string const& column = {},
+        string const& procedure = {},
+        string const& schema = {},
+        string const& catalog = {});
 
     /// \brief Returns names of all catalogs (or databases) available in connected data source.
     ///
