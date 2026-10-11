@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Develop" href="develop.html"><link rel="prev" title="Install" href="install.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>Use - nanodbc 3.0.5 documentation</title>
+        <title>Use - nanodbc 3.0.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=649a27d8" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -231,7 +231,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">nanodbc 3.0.5 documentation</div></a>
+      <a href="index.html"><div class="brand">nanodbc 3.0.6 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -252,7 +252,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
-  <span class="sidebar-brand-text">nanodbc 3.0.5 documentation</span>
+  <span class="sidebar-brand-text">nanodbc 3.0.6 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -357,7 +357,8 @@
 </section>
 <section id="non-ascii-text">
 <h2>Non-ASCII text<a class="headerlink" href="#non-ascii-text" title="Link to this heading">¶</a></h2>
-<p>In a narrow build, which is the default, text crosses between nanodbc and the driver as bytes in whatever the client character set happens to be, and a character that set cannot represent does not survive the trip. On Linux with unixODBC that set is normally UTF-8, which covers everything; on Windows it is the system ANSI codepage, which does not, so a character outside the basic multilingual plane is lost in both directions. Build with <code class="docutils literal notranslate"><span class="pre">NANODBC_ENABLE_UNICODE</span></code> set to <code class="docutils literal notranslate"><span class="pre">ON</span></code> to exchange UTF-16 with the driver instead.</p>
+<p>In a narrow build, which is the default, text crosses between nanodbc and the driver as bytes in whatever the client character set happens to be, and a character that set cannot represent does not survive the trip. On Linux with unixODBC and a driver that exports only the wide functions, such as ODBC Driver 18 for SQL Server, the driver manager converts using the process locale, which is <code class="docutils literal notranslate"><span class="pre">C</span></code> until the program calls <code class="docutils literal notranslate"><span class="pre">setlocale</span></code>, so non-ASCII column names, connection strings and messages come out wrong unless the program has selected a UTF-8 locale. On Windows it is the system ANSI codepage, so a character outside the basic multilingual plane is lost in both directions. Build with <code class="docutils literal notranslate"><span class="pre">NANODBC_ENABLE_UNICODE</span></code> set to <code class="docutils literal notranslate"><span class="pre">ON</span></code> to exchange UTF-16 with the driver instead.</p>
+<p>To keep <code class="docutils literal notranslate"><span class="pre">std::string</span></code> but have it hold UTF-8 whatever the locale, build with <code class="docutils literal notranslate"><span class="pre">NANODBC_ENABLE_UTF8=ON</span></code>. nanodbc then calls the wide ODBC functions and converts statement text, connection strings, column names, catalog names and diagnostic messages between UTF-8 and UTF-16 itself. Values in <code class="docutils literal notranslate"><span class="pre">nchar</span></code> and <code class="docutils literal notranslate"><span class="pre">nvarchar</span></code> columns read as <code class="docutils literal notranslate"><span class="pre">std::string</span></code> are UTF-8 as well. Values in narrow columns, and narrow parameters, are still converted by the driver.</p>
 <p>Statement text is the more fragile of the two, because unlike a bound parameter it reaches the driver with neither a length nor a type. Bind values as parameters rather than writing them into statement text.</p>
 </section>
 <section id="batches-and-multiple-result-sets">
@@ -594,6 +595,29 @@
 <p>Reserving on the vectors is worth it where the row count is known or can be estimated, since the loop otherwise grows them as it goes.</p>
 <p>The rowset size is what to vary if the read is slow. Its effect is the same as the one batch parameters have, described above: the round trip is what costs, and fetching a thousand rows in one is far cheaper than a thousand round trips. Sizes beyond a few thousand rarely pay for the memory they take, since the rowset is held in full.</p>
 <p><code class="docutils literal notranslate"><span class="pre">batch_ops</span></code> sets the rowset size where a statement also carries parameters, so that the two are chosen separately.</p>
+</section>
+<section id="reading-a-long-value-in-chunks">
+<h2>Reading a long value in chunks<a class="headerlink" href="#reading-a-long-value-in-chunks" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">get</span></code> and <code class="docutils literal notranslate"><span class="pre">get_ref</span></code> return a value whole, so a document of tens of megabytes is all in memory before any of it can be used. <code class="docutils literal notranslate"><span class="pre">get_chunks</span></code> hands the value over as <code class="docutils literal notranslate"><span class="pre">SQLGetData</span></code> returns it instead, one buffer at a time, and returns <code class="docutils literal notranslate"><span class="pre">false</span></code> without calling back if it is null:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;nanodbc/nanodbc.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;fstream&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">nanodbc</span><span class="o">::</span><span class="n">connection</span><span class="w"> </span><span class="n">conn</span><span class="p">(</span><span class="n">NANODBC_TEXT</span><span class="p">(</span><span class="s">&quot;dsn&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">execute</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span><span class="w"> </span><span class="n">NANODBC_TEXT</span><span class="p">(</span><span class="s">&quot;select doc from t&quot;</span><span class="p">));</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">ofstream</span><span class="w"> </span><span class="n">out</span><span class="p">(</span><span class="s">&quot;doc.json&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">ios</span><span class="o">::</span><span class="n">binary</span><span class="p">);</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">results</span><span class="p">.</span><span class="n">next</span><span class="p">())</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">results</span><span class="p">.</span><span class="n">get_chunks</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">            </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="p">](</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="k">const</span><span class="o">&amp;</span><span class="w"> </span><span class="n">chunk</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">out</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"> </span><span class="n">chunk</span><span class="p">.</span><span class="n">size</span><span class="p">());</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The chunks joined are what <code class="docutils literal notranslate"><span class="pre">get&lt;T&gt;</span></code> returns for the same column, for <code class="docutils literal notranslate"><span class="pre">std::string</span></code>, <code class="docutils literal notranslate"><span class="pre">wide_string</span></code> and <code class="docutils literal notranslate"><span class="pre">std::vector&lt;std::uint8_t&gt;</span></code>. Only an unbound column is read in pieces, which a long one always is. A bound column arrives as one chunk. A driver that does not report <code class="docutils literal notranslate"><span class="pre">SQL_GD_ANY_COLUMN</span></code> wants a long column read after the bound ones, which <code class="docutils literal notranslate"><span class="pre">unbind()</span></code> sidesteps by unbinding them all.</p>
 </section>
 <section id="setting-connection-attributes">
 <h2>Setting connection attributes<a class="headerlink" href="#setting-connection-attributes" title="Link to this heading">¶</a></h2>
@@ -1017,6 +1041,7 @@
 <li><a class="reference internal" href="#binding-a-batch-held-as-rows">Binding a batch held as rows</a></li>
 <li><a class="reference internal" href="#reading-a-result-other-than-forwards">Reading a result other than forwards</a></li>
 <li><a class="reference internal" href="#reading-many-rows-into-containers">Reading many rows into containers</a></li>
+<li><a class="reference internal" href="#reading-a-long-value-in-chunks">Reading a long value in chunks</a></li>
 <li><a class="reference internal" href="#setting-connection-attributes">Setting connection attributes</a></li>
 <li><a class="reference internal" href="#threads">Threads</a></li>
 <li><a class="reference internal" href="#binding-without-preparing">Binding without preparing</a></li>
@@ -1032,7 +1057,7 @@
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=f4ced14b"></script>
+</div><script src="_static/documentation_options.js?v=c3365b21"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

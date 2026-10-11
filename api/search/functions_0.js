@@ -10,6 +10,6 @@ var searchData=
   ['async_5fnext_7',['async_next',['../classnanodbc_1_1result.html#a8c690c95797a04a6ea022e64867d0f53',1,'nanodbc::result']]],
   ['async_5fprepare_8',['async_prepare',['../classnanodbc_1_1statement.html#a546cabd038f659d63323b070b66de372',1,'nanodbc::statement']]],
   ['at_5fend_9',['at_end',['../classnanodbc_1_1result.html#ab6c9e33d74b195c57766dcdd37d101d2',1,'nanodbc::result']]],
-  ['attribute_10',['attribute',['../classnanodbc_1_1attribute.html#a5a84f051630f6974cad6ebe655d18fb7',1,'nanodbc::attribute::attribute(attribute const &amp;other) noexcept'],['../classnanodbc_1_1attribute.html#a002bc1fe4331db3eb73de7d7bbed259f',1,'nanodbc::attribute::attribute(long const &amp;attribute, long const &amp;string_length, variant const &amp;resource) noexcept']]],
+  ['attribute_10',['attribute',['../classnanodbc_1_1attribute.html#a5a84f051630f6974cad6ebe655d18fb7',1,'nanodbc::attribute::attribute(attribute const &amp;other) noexcept'],['../classnanodbc_1_1attribute.html#ac31ccb804ed8265fac7feafc6e51ff58',1,'nanodbc::attribute::attribute(long const &amp;attribute, long const &amp;string_length, variant resource) noexcept']]],
   ['auto_5funique_5fvalue_11',['auto_unique_value',['../classnanodbc_1_1implementation__row__descriptor.html#ac297ccadfeb44569180589fb3590bfaf',1,'nanodbc::implementation_row_descriptor']]]
 ];

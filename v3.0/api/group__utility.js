@@ -2,7 +2,7 @@ var group__utility =
 [
     [ "nanodbc::detail", "namespacenanodbc_1_1detail.html", null ],
     [ "nanodbc::batch_ops", "structnanodbc_1_1batch__ops.html", [
-      [ "batch_ops", "structnanodbc_1_1batch__ops.html#a17896f9356c529ccdf90347bd1556451", null ],
+      [ "batch_ops", "structnanodbc_1_1batch__ops.html#a134c4d62883baadcc7c6666c3d77a62a", null ],
       [ "batch_ops", "structnanodbc_1_1batch__ops.html#a8d00e1d05f70e71ca69b349193f23d72", null ],
       [ "parameter_array_length", "structnanodbc_1_1batch__ops.html#afecd69373517497e28d605c9eb2fe090", null ],
       [ "rowset_size", "structnanodbc_1_1batch__ops.html#aec10138176194b84e0d57209cc43a4d7", null ]
@@ -33,7 +33,7 @@ var group__utility =
     ] ],
     [ "nanodbc::attribute", "classnanodbc_1_1attribute.html", [
       [ "attribute", "classnanodbc_1_1attribute.html#a5a84f051630f6974cad6ebe655d18fb7", null ],
-      [ "attribute", "classnanodbc_1_1attribute.html#a002bc1fe4331db3eb73de7d7bbed259f", null ],
+      [ "attribute", "classnanodbc_1_1attribute.html#ac31ccb804ed8265fac7feafc6e51ff58", null ],
       [ "extractValuePtr", "classnanodbc_1_1attribute.html#a7c66ec4634f0aa0b2b2cdd704be8385a", null ],
       [ "attribute_", "classnanodbc_1_1attribute.html#a8944241b136540fd8d6fbb1ac9ccbcaf", null ],
       [ "string_length_", "classnanodbc_1_1attribute.html#a1ce8f555627fa0bc0ee22d1f86e38b97", null ],

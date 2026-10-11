@@ -1,10 +1,7 @@
 var classnanodbc_1_1table__valued__parameter =
 [
     [ "table_valued_parameter", "classnanodbc_1_1table__valued__parameter.html#adc9ee3cb51fece50f2ec08f19846b55c", null ],
-    [ "table_valued_parameter", "classnanodbc_1_1table__valued__parameter.html#a8d70927d96563ab1445219c4ef4563d9", null ],
-    [ "table_valued_parameter", "classnanodbc_1_1table__valued__parameter.html#ad9a543dfc59a8eb9a96e8f66dddaa075", null ],
     [ "table_valued_parameter", "classnanodbc_1_1table__valued__parameter.html#a050037e18f2588246e63419e0d5f8a5a", null ],
-    [ "~table_valued_parameter", "classnanodbc_1_1table__valued__parameter.html#a312a6e7c0021df0fff2cc5e1a8f03c51", null ],
     [ "open", "classnanodbc_1_1table__valued__parameter.html#a418d6014257d5322c9e768e1284399ab", null ],
     [ "close", "classnanodbc_1_1table__valued__parameter.html#a71c3858aa36faa3b6345122a414d9384", null ],
     [ "bind", "group__bind__multi.html#ga8e4aacae8b135f8b742bececbde33874", null ],

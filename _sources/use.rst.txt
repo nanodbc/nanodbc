@@ -70,7 +70,9 @@ If you must use iODBC, consider disabling Unicode mode in nanodbc build configur
 Non-ASCII text
 ******************************************************************************
 
-In a narrow build, which is the default, text crosses between nanodbc and the driver as bytes in whatever the client character set happens to be, and a character that set cannot represent does not survive the trip. On Linux with unixODBC that set is normally UTF-8, which covers everything; on Windows it is the system ANSI codepage, which does not, so a character outside the basic multilingual plane is lost in both directions. Build with ``NANODBC_ENABLE_UNICODE`` set to ``ON`` to exchange UTF-16 with the driver instead.
+In a narrow build, which is the default, text crosses between nanodbc and the driver as bytes in whatever the client character set happens to be, and a character that set cannot represent does not survive the trip. On Linux with unixODBC and a driver that exports only the wide functions, such as ODBC Driver 18 for SQL Server, the driver manager converts using the process locale, which is ``C`` until the program calls ``setlocale``, so non-ASCII column names, connection strings and messages come out wrong unless the program has selected a UTF-8 locale. On Windows it is the system ANSI codepage, so a character outside the basic multilingual plane is lost in both directions. Build with ``NANODBC_ENABLE_UNICODE`` set to ``ON`` to exchange UTF-16 with the driver instead.
+
+To keep ``std::string`` but have it hold UTF-8 whatever the locale, build with ``NANODBC_ENABLE_UTF8=ON``. nanodbc then calls the wide ODBC functions and converts statement text, connection strings, column names, catalog names and diagnostic messages between UTF-8 and UTF-16 itself. Values in ``nchar`` and ``nvarchar`` columns read as ``std::string`` are UTF-8 as well. Values in narrow columns, and narrow parameters, are still converted by the driver.
 
 Statement text is the more fragile of the two, because unlike a bound parameter it reaches the driver with neither a length nor a type. Bind values as parameters rather than writing them into statement text.
 
@@ -333,6 +335,33 @@ Reserving on the vectors is worth it where the row count is known or can be esti
 The rowset size is what to vary if the read is slow. Its effect is the same as the one batch parameters have, described above: the round trip is what costs, and fetching a thousand rows in one is far cheaper than a thousand round trips. Sizes beyond a few thousand rarely pay for the memory they take, since the rowset is held in full.
 
 ``batch_ops`` sets the rowset size where a statement also carries parameters, so that the two are chosen separately.
+
+******************************************************************************
+Reading a long value in chunks
+******************************************************************************
+
+``get`` and ``get_ref`` return a value whole, so a document of tens of megabytes is all in memory before any of it can be used. ``get_chunks`` hands the value over as ``SQLGetData`` returns it instead, one buffer at a time, and returns ``false`` without calling back if it is null:
+
+.. code-block:: cpp
+
+    #include <nanodbc/nanodbc.h>
+    #include <fstream>
+    #include <string>
+
+    int main()
+    {
+        nanodbc::connection conn(NANODBC_TEXT("dsn"));
+        auto results = execute(conn, NANODBC_TEXT("select doc from t"));
+
+        std::ofstream out("doc.json", std::ios::binary);
+        while (results.next())
+        {
+            results.get_chunks<std::string>(
+                0, [&](std::string const& chunk) { out.write(chunk.data(), chunk.size()); });
+        }
+    }
+
+The chunks joined are what ``get<T>`` returns for the same column, for ``std::string``, ``wide_string`` and ``std::vector<std::uint8_t>``. Only an unbound column is read in pieces, which a long one always is. A bound column arrives as one chunk. A driver that does not report ``SQL_GD_ANY_COLUMN`` wants a long column read after the bound ones, which ``unbind()`` sidesteps by unbinding them all.
 
 ******************************************************************************
 Setting connection attributes

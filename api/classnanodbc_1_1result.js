@@ -1,10 +1,6 @@
 var classnanodbc_1_1result =
 [
-    [ "result", "classnanodbc_1_1result.html#af3e37b38111ad12d49b46c58659ff9b2", null ],
-    [ "~result", "classnanodbc_1_1result.html#a19f6d7665824d9b06d7c2db22b34b4f3", null ],
-    [ "result", "classnanodbc_1_1result.html#a491b261594b64eec52a97f21914db342", null ],
-    [ "result", "classnanodbc_1_1result.html#af616d94ee18fa55cfd60687b98ff9ebd", null ],
-    [ "operator=", "classnanodbc_1_1result.html#a4040bef5c9be0f47aae9c5fb0038a525", null ],
+    [ "result", "classnanodbc_1_1result.html#a5f5802398cca427fadc11e66b6c542cc", null ],
     [ "swap", "classnanodbc_1_1result.html#a8cfba4b26f5dbddc955494484bc41a0d", null ],
     [ "native_statement_handle", "classnanodbc_1_1result.html#a7a73483826e817b9182fcf7ff941683f", null ],
     [ "rowset_size", "classnanodbc_1_1result.html#adea873810ff2e393096c16aabeadd48f", null ],
@@ -35,6 +31,8 @@ var classnanodbc_1_1result =
     [ "get_as", "group__result__get.html#ga086e083bae63faf0e3febb2d3c4bc44c", null ],
     [ "get", "group__result__get.html#ga1f6af1fe076915f81073505a123b0a5b", null ],
     [ "get", "group__result__get.html#gaa45bae0bf398fa113deb19cb8bc0f9da", null ],
+    [ "get_chunks", "classnanodbc_1_1result.html#af2045f360fb6248843c4f79e21091955", null ],
+    [ "get_chunks", "classnanodbc_1_1result.html#a135d25ace854fba984c7e1f74404e713", null ],
     [ "is_null", "classnanodbc_1_1result.html#a85462f6eaed91a5b03739319bd2712e7", null ],
     [ "is_null", "classnanodbc_1_1result.html#aeeb6337dd95b3c1718a916797ae3e6c0", null ],
     [ "is_bound", "classnanodbc_1_1result.html#aa2c248c125cc8ac8ac2d9d39f4a18b57", null ],

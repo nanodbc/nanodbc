@@ -128,9 +128,9 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><b>attribute</b> (<a class="el" href="classnanodbc_1_1attribute.html">attribute</a> const &amp;other) noexcept</td></tr>
 <tr class="memdesc:a5a84f051630f6974cad6ebe655d18fb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor. <br /></td></tr>
 <tr class="separator:a5a84f051630f6974cad6ebe655d18fb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a002bc1fe4331db3eb73de7d7bbed259f" id="r_a002bc1fe4331db3eb73de7d7bbed259f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1attribute.html#a002bc1fe4331db3eb73de7d7bbed259f">attribute</a> (long const &amp;<a class="el" href="classnanodbc_1_1attribute.html">attribute</a>, long const &amp;string_length, variant const &amp;resource) noexcept</td></tr>
-<tr class="memdesc:a002bc1fe4331db3eb73de7d7bbed259f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an attribute from the three arguments the ODBC call takes.  <br /></td></tr>
-<tr class="separator:a002bc1fe4331db3eb73de7d7bbed259f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac31ccb804ed8265fac7feafc6e51ff58" id="r_ac31ccb804ed8265fac7feafc6e51ff58"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1attribute.html#ac31ccb804ed8265fac7feafc6e51ff58">attribute</a> (long const &amp;<a class="el" href="classnanodbc_1_1attribute.html">attribute</a>, long const &amp;string_length, variant resource) noexcept</td></tr>
+<tr class="memdesc:ac31ccb804ed8265fac7feafc6e51ff58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an attribute from the three arguments the ODBC call takes.  <br /></td></tr>
+<tr class="separator:ac31ccb804ed8265fac7feafc6e51ff58"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -153,7 +153,7 @@ variant&#160;</td><td class="memItemRight" valign="bottom"><b>resource_</b></td>
 <tr class="memdesc:a3a7fb68752263b6ae6c9e73e626136c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owns the value that value_ptr_ refers to. <br /></td></tr>
 <tr class="separator:a3a7fb68752263b6ae6c9e73e626136c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8515d403d6b18fa0f078a6a3031cb895" id="r_a8515d403d6b18fa0f078a6a3031cb895"><td class="memItemLeft" align="right" valign="top"><a id="a8515d403d6b18fa0f078a6a3031cb895" name="a8515d403d6b18fa0f078a6a3031cb895"></a>
-void *&#160;</td><td class="memItemRight" valign="bottom"><b>value_ptr_</b></td></tr>
+void *&#160;</td><td class="memItemRight" valign="bottom"><b>value_ptr_</b> {}</td></tr>
 <tr class="memdesc:a8515d403d6b18fa0f078a6a3031cb895"><td class="mdescLeft">&#160;</td><td class="mdescRight">The ValuePtr argument of the ODBC call. <br /></td></tr>
 <tr class="separator:a8515d403d6b18fa0f078a6a3031cb895"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -162,8 +162,8 @@ void *&#160;</td><td class="memItemRight" valign="bottom"><b>value_ptr_</b></td>
 <p>Callers should create attributes using the 3 argument constructor. First argument is the Attribute argument to the ODBC API call - a std::variant, is a type safe union of std::vector&lt;uint8_t&gt; ( binary buffer payloads ), <a class="el" href="namespacenanodbc.html#a0de29d9d1755ed0179195851a26538bd" title="string will be std::u16string or std::32string if NANODBC_ENABLE_UNICODE defined.">nanodbc::string</a> ( string payloads ), or std::(u)intptr_t, for both u/int payloads, as well as pointers to more generic buffers.</p>
 <p>See <a href="https://learn.microsoft.com/en-us/sql/odbc/reference/syntax/sqlsetconnectattr-function">https://learn.microsoft.com/en-us/sql/odbc/reference/syntax/sqlsetconnectattr-function</a> </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a002bc1fe4331db3eb73de7d7bbed259f" name="a002bc1fe4331db3eb73de7d7bbed259f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a002bc1fe4331db3eb73de7d7bbed259f">&#9670;&#160;</a></span>attribute()</h2>
+<a id="ac31ccb804ed8265fac7feafc6e51ff58" name="ac31ccb804ed8265fac7feafc6e51ff58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac31ccb804ed8265fac7feafc6e51ff58">&#9670;&#160;</a></span>attribute()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -186,7 +186,7 @@ void *&#160;</td><td class="memItemRight" valign="bottom"><b>value_ptr_</b></td>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">variant const &amp;&#160;</td>
+          <td class="paramtype">variant&#160;</td>
           <td class="paramname"><em>resource</em>&#160;</td>
         </tr>
         <tr>

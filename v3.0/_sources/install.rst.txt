@@ -110,6 +110,9 @@ NANODBC_ENABLE_COVERAGE : *boolean*
 NANODBC_ENABLE_UNICODE : *boolean*
     Enable Unicode support. ``nanodbc::string`` becomes ``std::u16string`` or ``std::u32string``.
 
+NANODBC_ENABLE_UTF8 : *boolean*
+    Keep ``nanodbc::string`` as ``std::string`` holding UTF-8, and call the wide ODBC functions. An alternative to ``NANODBC_ENABLE_UNICODE``.
+
 NANODBC_ENABLE_WORKAROUND_NODATA : *boolean*
     Enable ``SQL_NO_DATA`` workaround `#43 <https://github.com/nanodbc/nanodbc/issues/43>`_.
 
