@@ -1,6 +1,6 @@
 # ChangeLog
 
-## Unreleased
+## v3.0.7
 
 - `transaction` drops its empty destructor, so moving one moves its handle rather than copying it.
 
