@@ -1574,11 +1574,24 @@ public:
         return {};
     }
 
-    bool connected() const noexcept { return connected_; }
+    bool connected() const noexcept
+    {
+        if (!connected_)
+            return false;
+#ifdef SQL_ATTR_CONNECTION_DEAD
+        SQLUINTEGER dead = SQL_CD_FALSE;
+        RETCODE rc = SQL_SUCCESS;
+        NANODBC_CALL_RC(
+            SQLGetConnectAttr, rc, dbc_, SQL_ATTR_CONNECTION_DEAD, &dead, SQL_IS_UINTEGER, nullptr);
+        return !success(rc) || dead != SQL_CD_TRUE;
+#else
+        return true;
+#endif
+    }
 
     void disconnect()
     {
-        if (connected())
+        if (connected_)
         {
             RETCODE rc = SQL_SUCCESS;
             NANODBC_CALL_RC(SQLDisconnect, rc, dbc_);

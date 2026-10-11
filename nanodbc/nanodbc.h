@@ -1833,6 +1833,10 @@ public:
 #endif
 
     /// \brief Returns true if connected to the database.
+    ///
+    /// Returns false once the driver reports the connection dead (`SQL_ATTR_CONNECTION_DEAD`),
+    /// for example after a statement or a rollback failed because the link was lost.
+    /// `disconnect()` still releases a dead connection.
     [[nodiscard]] bool connected() const noexcept;
 
     /// \brief Disconnects from the database, but maintains environment and handle resources.
