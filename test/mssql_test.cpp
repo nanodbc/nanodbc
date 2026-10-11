@@ -1,5 +1,6 @@
 #include "test_case_fixture.h"
 
+#include <clocale>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -3199,6 +3200,34 @@ TEST_CASE_METHOD(mssql_fixture, "test_connected_after_connection_lost", "[mssql]
     connection.disconnect();
     REQUIRE_FALSE(connection.connected());
 }
+
+#if defined(__linux__) && !defined(NANODBC_ENABLE_UNICODE)
+// unixODBC converts a W-only driver's message to the locale's charset and reports its
+// length in characters, not bytes.
+TEST_CASE_METHOD(mssql_fixture, "test_error_message_multibyte", "[mssql][error]")
+{
+    std::string const previous = std::setlocale(LC_ALL, nullptr);
+    if (!std::setlocale(LC_ALL, "C.UTF-8"))
+        SKIP("C.UTF-8 locale not available");
+
+    std::string message;
+    try
+    {
+        auto connection = connect();
+        execute(
+            connection,
+            NANODBC_TEXT("declare @m nvarchar(20) = N'g' + nchar(246); raiserror(@m, 16, 1);"));
+    }
+    catch (nanodbc::database_error const& e)
+    {
+        message = e.what();
+    }
+    std::setlocale(LC_ALL, previous.c_str());
+
+    REQUIRE(message.size() >= 3);
+    REQUIRE(message.substr(message.size() - 3) == "g\xC3\xB6");
+}
+#endif
 
 #ifdef NANODBC_ENABLE_UTF8
 // The process stays in the C locale, which a driver manager converting narrow text for a

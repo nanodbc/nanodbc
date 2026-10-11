@@ -6,6 +6,7 @@
 - `connected()` returns false once the driver reports the connection dead, as after a failed rollback. [`#564`](https://github.com/nanodbc/nanodbc/issues/564)
 - A long unbound binary column is read in chunks sized from the length left, rather than 1 KB at a time. [`#559`](https://github.com/nanodbc/nanodbc/issues/559)
 - `result::get_chunks` reads a long value a buffer at a time, rather than whole. [`#562`](https://github.com/nanodbc/nanodbc/issues/562)
+- A narrow build keeps the whole of a non-ASCII diagnostic message, rather than losing its last bytes. [`#560`](https://github.com/nanodbc/nanodbc/issues/560)
 - `NANODBC_ENABLE_UTF8` keeps strings narrow as UTF-8 but calls the wide ODBC functions. [`#561`](https://github.com/nanodbc/nanodbc/issues/561)
 
 ## v3.0.5
