@@ -436,7 +436,12 @@ jobs:
       matrix:
         unicode: ["OFF", "ON"]
         cxxstd: ["17", "20"]
-    name: test-mssql (unicode ${{ matrix.unicode }}, c++${{ matrix.cxxstd }})
+        utf8: ["OFF"]
+        include:
+          - unicode: "OFF"
+            cxxstd: "17"
+            utf8: "ON"
+    name: test-mssql (unicode ${{ matrix.unicode }}, utf8 ${{ matrix.utf8 }}, c++${{ matrix.cxxstd }})
     services:
       sqlserver:
         image: mcr.microsoft.com/mssql/server:2022-latest
@@ -458,11 +463,11 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.ccache
-          key: ccache-mssql-${{ matrix.unicode }}-${{ matrix.cxxstd }}-${{ github.sha }}
-          restore-keys: ccache-mssql-${{ matrix.unicode }}-${{ matrix.cxxstd }}-
+          key: ccache-mssql-${{ matrix.unicode }}-${{ matrix.utf8 }}-${{ matrix.cxxstd }}-${{ github.sha }}
+          restore-keys: ccache-mssql-${{ matrix.unicode }}-${{ matrix.utf8 }}-${{ matrix.cxxstd }}-
       - name: Configure
         run: |
-          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=${{ matrix.cxxstd }} -DNANODBC_ENABLE_UNICODE=${{ matrix.unicode }} -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+          cmake -S ${GITHUB_WORKSPACE} -B ${GITHUB_WORKSPACE}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=${{ matrix.cxxstd }} -DNANODBC_ENABLE_UNICODE=${{ matrix.unicode }} -DNANODBC_ENABLE_UTF8=${{ matrix.utf8 }} -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
       - name: Build
         run: |
           cmake --build ${GITHUB_WORKSPACE}/build --parallel --target mssql_tests

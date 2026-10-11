@@ -1,5 +1,9 @@
 # ChangeLog
 
+## Unreleased
+
+- `NANODBC_ENABLE_UTF8` keeps strings narrow as UTF-8 but calls the wide ODBC functions. [`#561`](https://github.com/nanodbc/nanodbc/issues/561)
+
 ## v3.0.5
 
 - Add static_assert on concept to ensure result is an input_range when building with C++20. [`#558`](https://github.com/nanodbc/nanodbc/issues/558)
