@@ -114,10 +114,6 @@ Public Member Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>swap</b> (<a class="el" href="classnanodbc_1_1transaction.html">transaction</a> &amp;rhs) noexcept</td></tr>
 <tr class="memdesc:ada0f4ab08a0fb530e904306f3eceb32c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Member swap. <br /></td></tr>
 <tr class="separator:ada0f4ab08a0fb530e904306f3eceb32c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0da67846a9ff51f1fa5d1f81d4fde0ea" id="r_a0da67846a9ff51f1fa5d1f81d4fde0ea"><td class="memItemLeft" align="right" valign="top"><a id="a0da67846a9ff51f1fa5d1f81d4fde0ea" name="a0da67846a9ff51f1fa5d1f81d4fde0ea"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>~transaction</b> () noexcept</td></tr>
-<tr class="memdesc:a0da67846a9ff51f1fa5d1f81d4fde0ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">If this transaction has not been committed, it will rollback any modifying ops. <br /></td></tr>
-<tr class="separator:a0da67846a9ff51f1fa5d1f81d4fde0ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad13c6871ac5f572456e881c2e52c2c91" id="r_ad13c6871ac5f572456e881c2e52c2c91"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1transaction.html#ad13c6871ac5f572456e881c2e52c2c91">commit</a> ()</td></tr>
 <tr class="memdesc:ad13c6871ac5f572456e881c2e52c2c91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Commits transaction immediately.  <br /></td></tr>
 <tr class="separator:ad13c6871ac5f572456e881c2e52c2c91"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -144,7 +140,7 @@ const class <a class="el" href="classnanodbc_1_1connection.html">connection</a> 
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A resource for managing transaction commits and rollbacks. </p>
-<dl class="section attention"><dt>Attention</dt><dd>You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed. </dd></dl>
+<p>Copies share one transaction. If it has not been committed when the last copy is destroyed, it rolls back any modifying operations. </p><dl class="section attention"><dt>Attention</dt><dd>You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed. </dd></dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a2327256b4198143da5f7c84d64834f5b" name="a2327256b4198143da5f7c84d64834f5b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2327256b4198143da5f7c84d64834f5b">&#9670;&#160;</a></span>transaction()</h2>

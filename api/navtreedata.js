@@ -66,7 +66,7 @@ var NAVTREEINDEX =
 [
 "annotated.html",
 "classnanodbc_1_1statement.html#a9929d7a8fc4894b9c731e76dabf06b50",
-"structnanodbc_1_1timestamp.html#a6d43619ba944b287e1db1c41493ba2a3"
+"structnanodbc_1_1timestampoffset.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
