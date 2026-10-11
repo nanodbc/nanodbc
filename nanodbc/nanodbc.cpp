@@ -596,8 +596,14 @@ recent_error(SQLHANDLE handle, SQLSMALLINT handle_type, long& native, std::strin
             0,
             &total_bytes);
 
+        // unixODBC reports a converted narrow message's length in characters, not bytes.
+        constexpr std::size_t max_bytes_per_char = sizeof(NANODBC_SQLCHAR) == 1 ? 4 : 1;
         if (success(rc) && total_bytes > 0)
-            sql_message.resize(static_cast<std::size_t>(total_bytes) + 1);
+            sql_message.assign(
+                std::min<std::size_t>(
+                    (static_cast<std::size_t>(total_bytes) + 1) * max_bytes_per_char,
+                    std::numeric_limits<SQLSMALLINT>::max()),
+                0);
 
         if (rc == SQL_NO_DATA)
             break;
@@ -629,9 +635,12 @@ recent_error(SQLHANDLE handle, SQLSMALLINT handle_type, long& native, std::strin
         // The driver says how long the text is, and the buffer behind it is longer than
         // that. Appending the whole buffer carries its unused tail into the message,
         // which later becomes a run of spaces where the zeroes were. A record with no
-        // text contributes nothing at all, not even a separator.
-        auto const text_length =
+        // text contributes nothing at all, not even a separator. Text the driver wrote
+        // past the length it reported runs up to its terminator.
+        auto text_length =
             std::min<std::size_t>(static_cast<std::size_t>(total_bytes), sql_message.size());
+        while (text_length < sql_message.size() && sql_message[text_length] != 0)
+            ++text_length;
         if (text_length > 0)
         {
             if (!result.empty())

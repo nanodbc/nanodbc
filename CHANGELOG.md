@@ -1,5 +1,9 @@
 # ChangeLog
 
+## Unreleased
+
+- A narrow build keeps the whole of a non-ASCII diagnostic message, rather than losing its last bytes. [`#560`](https://github.com/nanodbc/nanodbc/issues/560)
+
 ## v3.0.5
 
 - Add static_assert on concept to ensure result is an input_range when building with C++20. [`#558`](https://github.com/nanodbc/nanodbc/issues/558)
