@@ -269,6 +269,11 @@ TEST_CASE_METHOD(
     test_nested_transaction_rollback();
 }
 
+TEST_CASE_METHOD(oracle_fixture, "test_transaction_restores_autocommit", "[oracle][transaction]")
+{
+    test_transaction_restores_autocommit();
+}
+
 TEST_CASE_METHOD(oracle_fixture, "test_null", "[oracle][null]")
 {
     test_null();

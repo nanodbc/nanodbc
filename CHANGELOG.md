@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- A transaction leaves autocommit as it found it, rather than always turning it on. [`#565`](https://github.com/nanodbc/nanodbc/issues/565)
+- `connected()` returns false once the driver reports the connection dead, as after a failed rollback. [`#564`](https://github.com/nanodbc/nanodbc/issues/564)
+- A long unbound binary column is read in chunks sized from the length left, rather than 1 KB at a time. [`#559`](https://github.com/nanodbc/nanodbc/issues/559)
 - `result::get_chunks` reads a long value a buffer at a time, rather than whole. [`#562`](https://github.com/nanodbc/nanodbc/issues/562)
 
 ## v3.0.5

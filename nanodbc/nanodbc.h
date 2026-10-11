@@ -1833,6 +1833,10 @@ public:
 #endif
 
     /// \brief Returns true if connected to the database.
+    ///
+    /// Returns false once the driver reports the connection dead (`SQL_ATTR_CONNECTION_DEAD`),
+    /// for example after a statement or a rollback failed because the link was lost.
+    /// `disconnect()` still releases a dead connection.
     [[nodiscard]] bool connected() const noexcept;
 
     /// \brief Disconnects from the database, but maintains environment and handle resources.
@@ -1884,6 +1888,8 @@ private:
     std::size_t unref_transaction() noexcept;
     bool rollback() const noexcept;
     void rollback(bool onoff) noexcept;
+    bool restore_autocommit() const noexcept;
+    void restore_autocommit(bool onoff) noexcept;
 
 private:
     std::shared_ptr<connection_impl> impl_;

@@ -1346,6 +1346,12 @@ struct test_case_fixture : public base_test_fixture
                     .empty());
 
         REQUIRE(!results.next());
+
+        results = execute(
+            connection, NANODBC_TEXT("select long_b from test_binary_read_shapes where id = 0;"));
+        REQUIRE(results.next());
+        REQUIRE(!results.is_null(0));
+        REQUIRE(results.get<std::vector<std::uint8_t>>(0) == long_value);
     }
 
     void test_get_chunks()
@@ -2168,6 +2174,52 @@ struct test_case_fixture : public base_test_fixture
             outer.commit();
         }
         REQUIRE(count() == 1);
+    }
+
+    // Autocommit may have been turned off on the native handle by someone else.
+    void test_transaction_restores_autocommit()
+    {
+        auto connection = connect();
+        auto const dbc = static_cast<SQLHDBC>(connection.native_dbc_handle());
+        auto const autocommit = [&]()
+        {
+            SQLUINTEGER value = 0;
+            REQUIRE(SQL_SUCCEEDED(
+                SQLGetConnectAttr(dbc, SQL_ATTR_AUTOCOMMIT, &value, SQL_IS_UINTEGER, nullptr)));
+            return value;
+        };
+        auto const set_autocommit = [&](SQLULEN value)
+        {
+            REQUIRE(SQL_SUCCEEDED(SQLSetConnectAttr(
+                dbc, SQL_ATTR_AUTOCOMMIT, reinterpret_cast<SQLPOINTER>(value), SQL_IS_UINTEGER)));
+        };
+
+        REQUIRE(autocommit() == SQL_AUTOCOMMIT_ON);
+        {
+            nanodbc::transaction transaction(connection);
+            transaction.commit();
+        }
+        REQUIRE(autocommit() == SQL_AUTOCOMMIT_ON);
+
+        set_autocommit(SQL_AUTOCOMMIT_OFF);
+        {
+            nanodbc::transaction transaction(connection);
+            transaction.commit();
+        }
+        REQUIRE(autocommit() == SQL_AUTOCOMMIT_OFF);
+        {
+            nanodbc::transaction transaction(connection);
+            transaction.rollback();
+        }
+        REQUIRE(autocommit() == SQL_AUTOCOMMIT_OFF);
+        {
+            nanodbc::transaction outer(connection);
+            nanodbc::transaction inner(connection);
+        }
+        REQUIRE(autocommit() == SQL_AUTOCOMMIT_OFF);
+
+        SQLEndTran(SQL_HANDLE_DBC, dbc, SQL_ROLLBACK);
+        set_autocommit(SQL_AUTOCOMMIT_ON);
     }
 
     // A long column is read in fixed-size pieces with repeated SQLGetData calls, 1024

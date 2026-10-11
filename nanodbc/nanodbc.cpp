@@ -565,7 +565,7 @@ void convert(wchar_t const* beg, std::basic_string<T>& out)
 }
 
 template <class T>
-void convert(std::basic_string<T>&& in, std::basic_string<T>& out)
+void convert(std::basic_string<T>&& in, std::basic_string<T>& out) noexcept
 {
     out = std::move(in);
 }
@@ -1588,11 +1588,24 @@ public:
         return {};
     }
 
-    bool connected() const noexcept { return connected_; }
+    bool connected() const noexcept
+    {
+        if (!connected_)
+            return false;
+#ifdef SQL_ATTR_CONNECTION_DEAD
+        SQLUINTEGER dead = SQL_CD_FALSE;
+        RETCODE rc = SQL_SUCCESS;
+        NANODBC_CALL_RC(
+            SQLGetConnectAttr, rc, dbc_, SQL_ATTR_CONNECTION_DEAD, &dead, SQL_IS_UINTEGER, nullptr);
+        return !success(rc) || dead != SQL_CD_TRUE;
+#else
+        return true;
+#endif
+    }
 
     void disconnect()
     {
-        if (connected())
+        if (connected_)
         {
             RETCODE rc = SQL_SUCCESS;
             NANODBC_CALL_RC(SQLDisconnect, rc, dbc_);
@@ -1654,6 +1667,10 @@ public:
 
     void rollback(bool onoff) noexcept { rollback_ = onoff; }
 
+    bool restore_autocommit() const noexcept { return restore_autocommit_; }
+
+    void restore_autocommit(bool onoff) noexcept { restore_autocommit_ = onoff; }
+
 private:
     template <class T, std::enable_if_t<!is_string<T>::value, int> = 0>
     T get_info_impl(short info_type) const;
@@ -1665,6 +1682,7 @@ private:
     HDBC dbc_{};
     bool connected_{};
     bool rollback_{}; // if true, this connection is marked for eventual transaction rollback
+    bool restore_autocommit_{true}; // autocommit as the outermost transaction found it
     std::size_t transactions_{};
 };
 
@@ -1767,6 +1785,17 @@ public:
         if (conn_.transactions() == 0 && conn_.connected())
         {
             RETCODE rc = SQL_SUCCESS;
+            SQLUINTEGER autocommit = SQL_AUTOCOMMIT_ON;
+            NANODBC_CALL_RC(
+                SQLGetConnectAttr,
+                rc,
+                conn_.native_dbc_handle(),
+                SQL_ATTR_AUTOCOMMIT,
+                &autocommit,
+                SQL_IS_UINTEGER,
+                nullptr);
+            conn_.restore_autocommit(!success(rc) || autocommit != SQL_AUTOCOMMIT_OFF);
+
             NANODBC_CALL_RC(
                 SQLSetConnectAttr,
                 rc,
@@ -1803,7 +1832,8 @@ public:
                     SQLSetConnectAttr,
                     conn_.native_dbc_handle(),
                     SQL_ATTR_AUTOCOMMIT,
-                    (SQLPOINTER)SQL_AUTOCOMMIT_ON,
+                    (SQLPOINTER)(conn_.restore_autocommit() ? SQL_AUTOCOMMIT_ON
+                                                            : SQL_AUTOCOMMIT_OFF),
                     SQL_IS_UINTEGER);
             }
         }
@@ -3951,22 +3981,25 @@ public:
     {
         bound_column& col = bound_columns_[column];
         std::vector<std::uint8_t> out;
-        std::uint8_t buffer[1024] = {0};
+        std::size_t chunk = 1024;
         SQLLEN indicator = 0;
         RETCODE rc = SQL_SUCCESS;
         bool answered = false;
 
         do
         {
+            std::size_t const offset = out.size();
+            out.resize(offset + chunk);
             NANODBC_CALL_RC(
                 SQLGetData,
                 rc,
                 stmt_.native_statement_handle(),       // StatementHandle
                 static_cast<SQLUSMALLINT>(column + 1), // Col_or_Param_Num
                 SQL_C_BINARY,                          // TargetType
-                buffer,                                // TargetValuePtr
-                sizeof(buffer),                        // BufferLength
+                out.data() + offset,                   // TargetValuePtr
+                static_cast<SQLLEN>(chunk),            // BufferLength
                 &indicator);                           // StrLen_or_IndPtr
+            out.resize(offset + read_get_data_chunk(rc, indicator, chunk, 0));
             if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO)
                 break;
             answered = true;
@@ -3977,11 +4010,7 @@ public:
                 col.cached_ = true;
                 return;
             }
-            auto const filled =
-                indicator == SQL_NO_TOTAL
-                    ? sizeof(buffer)
-                    : std::min<std::size_t>(static_cast<std::size_t>(indicator), sizeof(buffer));
-            out.insert(out.end(), buffer, buffer + filled);
+            chunk = next_get_data_chunk(rc, indicator, chunk, 0);
         } while (rc == SQL_SUCCESS_WITH_INFO);
 
         if (!answered)
@@ -5259,8 +5288,6 @@ void result::result_impl::get_ref_impl<std::vector<std::uint8_t>>(
 
             // Input and output is always array of bytes.
             std::vector<std::uint8_t> out;
-            std::uint8_t buffer[1024] = {0};
-            constexpr std::size_t buffer_size = sizeof(buffer);
             // Data still available, which shrinks with each SQLGetData; not the amount
             // written into the buffer, except on the final call.
             SQLLEN ValueLenOrInd = 0;
@@ -5271,28 +5298,24 @@ void result::result_impl::get_ref_impl<std::vector<std::uint8_t>>(
 #endif
 
             void* handle = native_statement_handle();
+            std::size_t chunk = 1024;
             do
             {
+                std::size_t const offset = out.size();
+                out.resize(offset + chunk);
                 NANODBC_CALL_RC(
                     SQLGetData,
                     rc,
                     handle,                                // StatementHandle
                     static_cast<SQLUSMALLINT>(column + 1), // Col_or_Param_Num
                     SQL_C_BINARY,                          // TargetType
-                    buffer,                                // TargetValuePtr
-                    buffer_size,                           // BufferLength
+                    out.data() + offset,                   // TargetValuePtr
+                    static_cast<SQLLEN>(chunk),            // BufferLength
                     &ValueLenOrInd);                       // StrLen_or_IndPtr
-                if (ValueLenOrInd == SQL_NO_TOTAL)
-                    out.insert(std::end(out), buffer, buffer + buffer_size);
-                else if (ValueLenOrInd > 0)
-                {
-                    auto const buffer_size_filled =
-                        std::min<std::size_t>(ValueLenOrInd, buffer_size);
-                    NANODBC_ASSERT(buffer_size_filled <= buffer_size);
-                    out.insert(std::end(out), buffer, buffer + buffer_size_filled);
-                }
-                else if (ValueLenOrInd == SQL_NULL_DATA)
+                out.resize(offset + read_get_data_chunk(rc, ValueLenOrInd, chunk, 0));
+                if (success(rc) && ValueLenOrInd == SQL_NULL_DATA)
                     col.cbdata_[static_cast<size_t>(rowset_position_)] = (SQLINTEGER)SQL_NULL_DATA;
+                chunk = next_get_data_chunk(rc, ValueLenOrInd, chunk, 0);
                 // Sequence of successful calls is:
                 // SQL_NO_DATA or SQL_SUCCESS_WITH_INFO followed by SQL_SUCCESS.
             } while (rc == SQL_SUCCESS_WITH_INFO);
@@ -6069,6 +6092,16 @@ bool connection::rollback() const noexcept
 void connection::rollback(bool onoff) noexcept
 {
     impl_->rollback(onoff);
+}
+
+bool connection::restore_autocommit() const noexcept
+{
+    return impl_->restore_autocommit();
+}
+
+void connection::restore_autocommit(bool onoff) noexcept
+{
+    impl_->restore_autocommit(onoff);
 }
 
 } // namespace nanodbc

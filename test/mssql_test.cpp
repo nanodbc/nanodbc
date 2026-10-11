@@ -1302,6 +1302,11 @@ TEST_CASE_METHOD(
     test_nested_transaction_rollback();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_transaction_restores_autocommit", "[mssql][transaction]")
+{
+    test_transaction_restores_autocommit();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_long_text_chunk_boundaries", "[mssql][result][string]")
 {
     test_long_text_chunk_boundaries();
@@ -3168,6 +3173,31 @@ TEST_CASE_METHOD(
     }
     REQUIRE(sentry_nulls == 1);
     REQUIRE(flagged_nulls == 1);
+}
+
+TEST_CASE_METHOD(mssql_fixture, "test_connected_after_connection_lost", "[mssql][connection]")
+{
+    auto admin = connect();
+    auto connection = connect();
+    auto spid = execute(connection, NANODBC_TEXT("select @@SPID;"));
+    REQUIRE(spid.next());
+    int const session = spid.get<int>(0);
+
+    {
+        nanodbc::transaction transaction(connection);
+        execute(connection, NANODBC_TEXT("select 1;"));
+        nanodbc::statement kill(
+            admin,
+            NANODBC_TEXT(
+                "declare @q nvarchar(32) = N'kill ' + cast(? as nvarchar(10)); exec(@q);"));
+        kill.bind(0, &session);
+        execute(kill);
+        transaction.rollback();
+    }
+    REQUIRE_FALSE(connection.connected());
+
+    connection.disconnect();
+    REQUIRE_FALSE(connection.connected());
 }
 
 TEST_CASE_METHOD(mssql_fixture, "test_bind_date_to_timestamp_parameter", "[mssql][bind][date]")
