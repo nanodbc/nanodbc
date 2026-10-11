@@ -1888,6 +1888,8 @@ private:
     std::size_t unref_transaction() noexcept;
     bool rollback() const noexcept;
     void rollback(bool onoff) noexcept;
+    bool restore_autocommit() const noexcept;
+    void restore_autocommit(bool onoff) noexcept;
 
 private:
     std::shared_ptr<connection_impl> impl_;

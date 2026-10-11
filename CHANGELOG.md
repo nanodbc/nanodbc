@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- A transaction leaves autocommit as it found it, rather than always turning it on. [`#565`](https://github.com/nanodbc/nanodbc/issues/565)
 - `connected()` returns false once the driver reports the connection dead, as after a failed rollback. [`#564`](https://github.com/nanodbc/nanodbc/issues/564)
 
 ## v3.0.5
