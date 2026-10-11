@@ -2176,6 +2176,37 @@ public:
 
     /// @}
 
+    /// \brief Reads a column's value in chunks rather than whole.
+    ///
+    /// Calls `callback` once for each chunk, in order. Joined, the chunks are what
+    /// `get<T>(column)` returns. An unbound character or binary column is read with repeated
+    /// calls to SQLGetData into one buffer of about `chunk_size` bytes, so the whole value is
+    /// never in memory at once. Any other column, or one whose value is already read, arrives
+    /// as a single chunk.
+    ///
+    /// Columns are numbered from left to right and 0-indexed.
+    /// \tparam T std::string, wide_string or std::vector<std::uint8_t>.
+    /// \param column position.
+    /// \param callback Called with each chunk.
+    /// \param chunk_size The buffer size in bytes for each read.
+    /// \return false if the value is null, in which case `callback` is not called.
+    /// \throws database_error
+    /// \throws index_range_error
+    /// \throws type_incompatible_error
+    template <class T>
+    bool get_chunks(
+        short column,
+        std::function<void(T const&)> const& callback,
+        std::size_t chunk_size = 65536) const;
+
+    /// \brief Reads a column's value in chunks rather than whole.
+    /// \see get_chunks(short, std::function<void(T const&)> const&, std::size_t) const
+    template <class T>
+    bool get_chunks(
+        string const& column_name,
+        std::function<void(T const&)> const& callback,
+        std::size_t chunk_size = 65536) const;
+
     /// \brief Returns true if and only if the given column of the current rowset is null.
     ///
     /// A long column is not bound to a buffer, and most drivers leave its length/indicator

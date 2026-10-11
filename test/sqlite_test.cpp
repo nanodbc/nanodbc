@@ -736,6 +736,11 @@ TEST_CASE_METHOD(sqlite_fixture, "test_binary_read_shapes", "[sqlite][result][bi
     test_binary_read_shapes();
 }
 
+TEST_CASE_METHOD(sqlite_fixture, "test_get_chunks", "[sqlite][result][chunks]")
+{
+    test_get_chunks();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "test_null_long_text_fallback", "[sqlite][result][null]")
 {
     test_null_long_text_fallback();

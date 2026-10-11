@@ -337,6 +337,20 @@ next_get_data_chunk(RETCODE rc, SQLLEN indicator, std::size_t chunk, std::size_t
     return chunk * 2;
 }
 
+// The bytes at the end of s that begin a UTF-8 sequence without finishing it.
+std::size_t incomplete_utf8_tail(std::string const& s) noexcept
+{
+    std::size_t continuation = 0;
+    while (continuation < s.size() && continuation < 3 &&
+           (static_cast<unsigned char>(s[s.size() - 1 - continuation]) & 0xC0) == 0x80)
+        ++continuation;
+    if (continuation == s.size())
+        return 0;
+    auto const lead = static_cast<unsigned char>(s[s.size() - 1 - continuation]);
+    std::size_t const length = lead >= 0xF0 ? 4 : lead >= 0xE0 ? 3 : lead >= 0xC0 ? 2 : 1;
+    return continuation + 1 < length ? continuation + 1 : 0;
+}
+
 using std::size;
 
 template <std::size_t N>
@@ -4171,6 +4185,102 @@ public:
     }
 
     template <class T>
+    bool
+    get_chunks(short column, std::function<void(T const&)> const& callback, std::size_t chunk_size)
+        const
+    {
+        throw_if_column_is_out_of_range(column);
+        if (rowset_position_ >= rows())
+            throw index_range_error();
+        bound_column const& col = bound_columns_[column];
+
+        bool streams = false;
+        if constexpr (std::is_same_v<T, std::vector<std::uint8_t>>)
+            streams = col.ctype_ == SQL_C_BINARY;
+        else
+            streams = col.ctype_ == SQL_C_CHAR || col.ctype_ == SQL_C_WCHAR;
+
+        if (col.bound_ || col.cached_ || !streams)
+        {
+            std::optional<T> value;
+            get_ref(column, value);
+            if (!value)
+                return false;
+            if (!value->empty())
+                callback(*value);
+            return true;
+        }
+
+#if defined(NANODBC_DO_ASYNC_IMPL)
+        stmt_.disable_async();
+#endif
+
+        bool const wide = col.ctype_ == SQL_C_WCHAR;
+        std::size_t const unit = wide ? sizeof(wide_char_t) : 1;
+        std::size_t const terminator = col.ctype_ == SQL_C_BINARY ? 0 : unit;
+        std::size_t const chunk = std::max<std::size_t>(chunk_size / unit, 16) * unit;
+        std::vector<char> buffer(chunk);
+        wide_string carried_wide;
+        std::string carried_narrow;
+        T piece;
+        SQLLEN indicator = 0;
+        RETCODE rc = SQL_SUCCESS;
+        do
+        {
+            NANODBC_CALL_RC(
+                SQLGetData,
+                rc,
+                stmt_.native_statement_handle(),       // StatementHandle
+                static_cast<SQLUSMALLINT>(column + 1), // Col_or_Param_Num
+                col.ctype_,                            // TargetType
+                buffer.data(),                         // TargetValuePtr
+                static_cast<SQLLEN>(chunk),            // BufferLength
+                &indicator);                           // StrLen_or_IndPtr
+            if (!success(rc))
+                break;
+            if (indicator == SQL_NULL_DATA)
+                return false;
+            std::size_t const filled = read_get_data_chunk(rc, indicator, chunk, terminator);
+            bool const more = rc == SQL_SUCCESS_WITH_INFO;
+            piece.clear();
+            if constexpr (std::is_same_v<T, std::vector<std::uint8_t>>)
+            {
+                piece.assign(buffer.data(), buffer.data() + filled);
+            }
+            else if (wide)
+            {
+                carried_wide.append(
+                    reinterpret_cast<wide_char_t const*>(buffer.data()), filled / unit);
+                // A surrogate pair split across two reads is converted with the second.
+                std::size_t const keep =
+                    more && sizeof(wide_char_t) == 2 && !carried_wide.empty() &&
+                            carried_wide.back() >= 0xD800 && carried_wide.back() <= 0xDBFF
+                        ? 1
+                        : 0;
+                convert(carried_wide.data(), carried_wide.size() - keep, piece);
+                carried_wide.erase(0, carried_wide.size() - keep);
+            }
+            else if constexpr (std::is_same_v<T, std::string>)
+            {
+                piece.assign(buffer.data(), filled);
+            }
+            else
+            {
+                carried_narrow.append(buffer.data(), filled);
+                std::size_t const keep = more ? incomplete_utf8_tail(carried_narrow) : 0;
+                convert(carried_narrow.data(), carried_narrow.size() - keep, piece);
+                carried_narrow.erase(0, carried_narrow.size() - keep);
+            }
+            if (!piece.empty())
+                callback(piece);
+        } while (rc == SQL_SUCCESS_WITH_INFO);
+
+        if (!success(rc) && rc != SQL_NO_DATA)
+            NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
+        return true;
+    }
+
+    template <class T>
     void get_ref(short column, T& result) const
     {
         throw_if_column_is_out_of_range(column);
@@ -7993,6 +8103,45 @@ void result::get_ref(short column, T& result) const
 {
     return impl_->get_ref<T>(column, result);
 }
+
+template <class T>
+bool result::get_chunks(
+    short column,
+    std::function<void(T const&)> const& callback,
+    std::size_t chunk_size) const
+{
+    return impl_->get_chunks<T>(column, callback, chunk_size);
+}
+
+template <class T>
+bool result::get_chunks(
+    string const& column_name,
+    std::function<void(T const&)> const& callback,
+    std::size_t chunk_size) const
+{
+    return impl_->get_chunks<T>(impl_->column(column_name), callback, chunk_size);
+}
+
+template bool
+result::get_chunks(short, std::function<void(std::string const&)> const&, std::size_t) const;
+template bool
+result::get_chunks(short, std::function<void(wide_string const&)> const&, std::size_t) const;
+template bool result::get_chunks(
+    short,
+    std::function<void(std::vector<std::uint8_t> const&)> const&,
+    std::size_t) const;
+template bool result::get_chunks(
+    string const&,
+    std::function<void(std::string const&)> const&,
+    std::size_t) const;
+template bool result::get_chunks(
+    string const&,
+    std::function<void(wide_string const&)> const&,
+    std::size_t) const;
+template bool result::get_chunks(
+    string const&,
+    std::function<void(std::vector<std::uint8_t> const&)> const&,
+    std::size_t) const;
 
 template <class T>
 void result::get_ref(short column, T const& fallback, T& result) const
