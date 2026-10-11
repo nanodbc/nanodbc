@@ -6205,8 +6205,6 @@ void transaction::swap(transaction& rhs) noexcept
     swap(impl_, rhs.impl_);
 }
 
-transaction::~transaction() noexcept {}
-
 void transaction::commit()
 {
     impl_->commit();

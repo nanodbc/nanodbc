@@ -1,5 +1,9 @@
 # ChangeLog
 
+## Unreleased
+
+- `transaction` drops its empty destructor, so moving one moves its handle rather than copying it.
+
 ## v3.0.6
 
 - A transaction leaves autocommit as it found it, rather than always turning it on. [`#565`](https://github.com/nanodbc/nanodbc/issues/565)
