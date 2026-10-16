@@ -277,6 +277,11 @@ TEST_CASE_METHOD(mssql_fixture, "test_std_any", "[mssql][any]")
     test_std_any();
 }
 
+TEST_CASE_METHOD(mssql_fixture, "test_std_any_column_types", "[mssql][any]")
+{
+    test_std_any_column_types();
+}
+
 TEST_CASE_METHOD(mssql_fixture, "test_std_variant", "[mssql][variant]")
 {
     test_std_variant();
@@ -2229,6 +2234,87 @@ TEST_CASE_METHOD(
             ++nulls;
     // Only the row whose binary value matched the sentry came back as a null.
     REQUIRE(nulls == 1);
+}
+
+TEST_CASE_METHOD(
+    mssql_table_valued_parameter_fixture,
+    "test_table_valued_parameter_string_null_sentry",
+    "[mssql][table_valued_paramter]")
+{
+    auto conn = connect();
+    auto stmt = nanodbc::statement(conn);
+    stmt.prepare(NANODBC_TEXT("{ CALL tvp_test(?, ?, ?) }"));
+    stmt.bind(0, &p0_);
+
+    auto p1 = nanodbc::table_valued_parameter(stmt, 1, num_rows_);
+    p1.bind(0, p1_col0_.data(), p1_col0_.size());
+    p1.bind(1, p1_col1_.data(), p1_col1_.size());
+    p1.bind_strings(2, p1_col2_, p1_col2_.front().c_str());
+    p1.bind_strings(3, p1_col3_, p1_col3_.back().c_str());
+    p1.bind(4, p1_col4_);
+    p1.close();
+    stmt.bind(2, p2_.c_str());
+
+    auto results = stmt.execute();
+    std::vector<int> narrow_nulls;
+    std::vector<int> wide_nulls;
+    while (results.next())
+    {
+        int const id = results.get<int>(1);
+        if (!results.get<std::optional<std::string>>(3))
+            narrow_nulls.push_back(id);
+        if (!results.get<std::optional<nanodbc::wide_string>>(4))
+            wide_nulls.push_back(id);
+    }
+    REQUIRE(narrow_nulls == std::vector<int>{p1_col0_.front()});
+    REQUIRE(wide_nulls == std::vector<int>{p1_col0_.back()});
+}
+
+TEST_CASE_METHOD(
+    mssql_fixture,
+    "test_table_valued_parameter_temporal_null_sentry",
+    "[mssql][table_valued_paramter]")
+{
+    auto conn = connect();
+    drop_procedure(conn, NANODBC_TEXT("tvp_temporal_test"));
+    create_table_type(
+        conn,
+        NANODBC_TEXT("tvp_temporal_param"),
+        NANODBC_TEXT("(id INT, d DATE NULL, t TIME(0) NULL, ts DATETIME2(0) NULL)"));
+    execute(
+        conn,
+        NANODBC_TEXT(
+            "CREATE PROCEDURE tvp_temporal_test(@p tvp_temporal_param READONLY)"
+            " AS SELECT id, d, t, ts FROM @p ORDER BY id;"));
+
+    std::vector<int> const ids{1, 2, 3};
+    std::vector<nanodbc::date> const dates{{2026, 1, 1}, {2026, 1, 2}, {2026, 1, 3}};
+    std::vector<nanodbc::time> const times{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+    std::vector<nanodbc::timestamp> const stamps{
+        {2026, 1, 1, 1, 2, 3, 0}, {2026, 1, 2, 4, 5, 6, 0}, {2026, 1, 3, 7, 8, 9, 0}};
+
+    auto stmt = nanodbc::statement(conn);
+    stmt.prepare(NANODBC_TEXT("{ CALL tvp_temporal_test(?) }"));
+    auto p = nanodbc::table_valued_parameter(stmt, 0, ids.size());
+    p.bind(0, ids.data(), ids.size());
+    p.bind(1, dates.data(), dates.size(), &dates[0]);
+    p.bind(2, times.data(), times.size(), &times[1]);
+    p.bind(3, stamps.data(), stamps.size(), &stamps[2]);
+    p.close();
+
+    auto results = stmt.execute();
+    for (int id : ids)
+    {
+        REQUIRE(results.next());
+        REQUIRE(results.get<int>(0) == id);
+        REQUIRE(results.is_null(1) == (id == 1));
+        REQUIRE(results.is_null(2) == (id == 2));
+        REQUIRE(results.is_null(3) == (id == 3));
+    }
+    REQUIRE(!results.next());
+
+    drop_procedure(conn, NANODBC_TEXT("tvp_temporal_test"));
+    drop_table_type(conn, NANODBC_TEXT("tvp_temporal_param"));
 }
 
 TEST_CASE_METHOD(

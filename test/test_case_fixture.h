@@ -1437,6 +1437,14 @@ struct test_case_fixture : public base_test_fixture
                 1, [&](std::vector<std::uint8_t> const&) { called = true; }));
             REQUIRE_FALSE(called);
         }
+        {
+            // A column that does not stream is handed over whole, as a single piece.
+            auto results = select(NANODBC_TEXT("id"), 1);
+            std::vector<nanodbc::string> pieces;
+            REQUIRE(results.get_chunks<nanodbc::string>(
+                0, [&](nanodbc::string const& piece) { pieces.push_back(piece); }, 256));
+            REQUIRE(pieces == std::vector<nanodbc::string>{NANODBC_TEXT("1")});
+        }
     }
 
     void test_statement_timeout()
@@ -1715,6 +1723,16 @@ struct test_case_fixture : public base_test_fixture
 
         // The transaction is gone, so the connection is counting none.
         REQUIRE(connection.transactions() == 0);
+
+        {
+            nanodbc::connection other = connect();
+            auto const handle = connection.native_dbc_handle();
+            auto const other_handle = other.native_dbc_handle();
+            REQUIRE(other_handle != handle);
+            connection.swap(other);
+            REQUIRE(connection.native_dbc_handle() == other_handle);
+            REQUIRE(other.native_dbc_handle() == handle);
+        }
     }
 
     // The forms that run a statement and build no result. Each must reach the database, so
@@ -5738,6 +5756,57 @@ PRIMARY KEY(t2_fid)
         REQUIRE_THROWS_AS(std::any_cast<nanodbc::string>(i), std::bad_any_cast);
     }
 
+    // Each SQL type read_column_as_its_own_type names, read back as the type it maps to.
+    void test_std_any_column_types()
+    {
+        auto connection = connect();
+        bool const mssql = vendor_ == database_vendor::sqlserver;
+        // Binary columns are unbound, which SQL Server reads only after every bound column.
+        create_table(
+            connection,
+            NANODBC_TEXT("test_std_any_column_types"),
+            NANODBC_TEXT("(sm smallint, bg bigint, r real, d date, ts ") +
+                get_timestamp_type_name() +
+                (mssql ? NANODBC_TEXT(", bt bit, ti tinyint, b varbinary(4))")
+                       : NANODBC_TEXT(", t time, b bytea)")));
+        execute(
+            connection,
+            mssql ? NANODBC_TEXT(
+                        "insert into test_std_any_column_types values (7, 1234567890123, 1.5, "
+                        "'2026-10-16', '2026-10-16 12:34:56', 1, 9, 0x01020304);")
+                  : NANODBC_TEXT(
+                        "insert into test_std_any_column_types values (7, 1234567890123, 1.5, "
+                        "'2026-10-16', '2026-10-16 12:34:56', '12:34:56', '\\x01020304');"));
+
+        auto results =
+            execute(connection, NANODBC_TEXT("select * from test_std_any_column_types;"));
+        REQUIRE(results.next());
+
+        REQUIRE(std::any_cast<short>(results.get<std::any>(0)) == 7);
+        REQUIRE(std::any_cast<long long>(results.get<std::any>(1)) == 1234567890123LL);
+        REQUIRE(std::any_cast<float>(results.get<std::any>(2)) == 1.5f);
+        REQUIRE(values_equal(
+            std::any_cast<nanodbc::date>(results.get<std::any>(3)), nanodbc::date{2026, 10, 16}));
+        REQUIRE(values_equal(
+            std::any_cast<nanodbc::timestamp>(results.get<std::any>(4)),
+            nanodbc::timestamp{2026, 10, 16, 12, 34, 56, 0}));
+        short binary = 6;
+        if (mssql)
+        {
+            REQUIRE(std::any_cast<bool>(results.get<std::any>(5)));
+            REQUIRE(std::any_cast<signed char>(results.get<std::any>(6)) == 9);
+            binary = 7;
+        }
+        else
+        {
+            REQUIRE(values_equal(
+                std::any_cast<nanodbc::time>(results.get<std::any>(5)), nanodbc::time{12, 34, 56}));
+        }
+        REQUIRE(
+            std::any_cast<std::vector<std::uint8_t>>(results.get<std::any>(binary)) ==
+            std::vector<std::uint8_t>{1, 2, 3, 4});
+    }
+
     void test_std_variant()
     {
         using value = std::variant<std::monostate, nanodbc::string, int, double>;
@@ -5802,6 +5871,22 @@ PRIMARY KEY(t2_fid)
             test_time_optional();
             test_date_optional();
         }
+        test_optional_by_name();
+    }
+
+    void test_optional_by_name()
+    {
+        auto connection = connect();
+        create_table(
+            connection, NANODBC_TEXT("test_optional_by_name"), NANODBC_TEXT("(i int, n int)"));
+        execute(
+            connection,
+            NANODBC_TEXT("insert into test_optional_by_name (i, n) values (42, NULL);"));
+
+        auto results = execute(connection, NANODBC_TEXT("select i, n from test_optional_by_name;"));
+        REQUIRE(results.next());
+        REQUIRE(results.get<std::optional<int>>(as_identifier(NANODBC_TEXT("i"))) == 42);
+        REQUIRE(!results.get<std::optional<int>>(as_identifier(NANODBC_TEXT("n"))));
     }
 };
 
