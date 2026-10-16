@@ -5,6 +5,7 @@
 #include "nanodbc/nanodbc.cpp" // access private conversion routines
 // clang-format on
 
+#include <list>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
@@ -288,6 +289,19 @@ TEST_CASE("exception_types", "[exception]")
         REQUIRE(error.native() == 0);
         REQUIRE(error.state() == "00000");
     }
+}
+
+TEST_CASE("connect_failure_throws", "[connection]")
+{
+    nanodbc::string const dsn = NANODBC_TEXT("nanodbc_no_such_dsn");
+    nanodbc::string const connection_string = NANODBC_TEXT("Driver={nanodbc no such driver};");
+    nanodbc::string const none;
+    std::list<nanodbc::connection::attribute> const attributes;
+
+    REQUIRE_THROWS_AS(nanodbc::connection(dsn, none, none, 0), nanodbc::database_error);
+    REQUIRE_THROWS_AS(nanodbc::connection(dsn, none, none, attributes), nanodbc::database_error);
+    REQUIRE_THROWS_AS(nanodbc::connection(connection_string, 0), nanodbc::database_error);
+    REQUIRE_THROWS_AS(nanodbc::connection(connection_string, attributes), nanodbc::database_error);
 }
 
 // result_iterator's postfix increment returns void, so *it++ does not compile. Nothing
