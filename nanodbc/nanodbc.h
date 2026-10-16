@@ -1225,7 +1225,8 @@ public:
     ///            std::vector<std::vector<std::uint8_t>> overloads, and strings through
     ///            bind_strings().
     ///
-    /// \attention bool is bound as ODBC's SQL_C_BIT, and only the overloads that carry no
+    /// \attention bool is bound as ODBC's SQL_C_BIT, or as an unsigned integer of the same
+    ///            width where bool is wider than a byte, and only the overloads that carry no
     ///            null information are available for it. The null_sentry overload takes
     ///            `T const*` and the null flags overload takes `bool const*`, so for
     ///            T=bool the two collapse into one signature that neither an explicit
