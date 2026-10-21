@@ -1,6 +1,6 @@
 # ChangeLog
 
-## Unreleased
+## v3.0.8
 
 - Binding `bool` builds where `bool` is wider than a byte, as on PowerPC Darwin. [`#579`](https://github.com/nanodbc/nanodbc/issues/579)
 
