@@ -1,5 +1,9 @@
 # ChangeLog
 
+## Unreleased
+
+- Binding `bool` builds where `bool` is wider than a byte, as on PowerPC Darwin. [`#579`](https://github.com/nanodbc/nanodbc/issues/579)
+
 ## v3.0.7
 
 - `transaction` drops its empty destructor, so moving one moves its handle rather than copying it.

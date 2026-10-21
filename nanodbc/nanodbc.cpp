@@ -897,10 +897,13 @@ struct sql_ctype
 template <>
 struct sql_ctype<bool>
 {
-    // ODBC represents SQL_C_BIT as a single byte holding 0 or 1, which matches the
-    // representation of bool on every platform nanodbc supports.
-    static_assert(sizeof(bool) == 1, "binding bool as SQL_C_BIT requires a single byte bool");
-    static constexpr SQLSMALLINT value = SQL_C_BIT;
+    // SQL_C_BIT is one byte, so a wider bool binds as the unsigned integer of its width.
+    static_assert(
+        sizeof(bool) == 1 || sizeof(bool) == 2 || sizeof(bool) == 4,
+        "bool must be one, two or four bytes wide");
+    static constexpr SQLSMALLINT value = sizeof(bool) == 1   ? SQL_C_BIT
+                                         : sizeof(bool) == 2 ? SQL_C_USHORT
+                                                             : SQL_C_ULONG;
 };
 
 template <typename T>
